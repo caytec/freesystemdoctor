@@ -1,27 +1,13 @@
-# Python
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-*.egg-info/
-.venv/
-venv/
-env/
-
-# PyInstaller — keep dist/ for distribution but ignore intermediate build/
+# Build artifacts
 build/
 *.manifest
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
+*.log
 
 # OS
 Thumbs.db
 .DS_Store
 desktop.ini
 
-# Logs
-*.log
+# IDE
+.vscode/
+.idea/

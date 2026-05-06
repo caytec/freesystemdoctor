@@ -1,6 +1,0 @@
-@echo off
-echo Installing dependencies...
-pip install -r requirements.txt >nul 2>&1
-echo Starting FreeSystemDoctor...
-python main.py
-pause
