@@ -388,6 +388,42 @@ section {
   color: var(--fg2);
 }
 
+/* ── Support / Ko-fi section ── */
+.support-section {
+  background: linear-gradient(180deg, transparent, rgba(114,164,242,.06));
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.support-cta {
+  text-align: center;
+}
+.kofi-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 32px;
+  background: linear-gradient(135deg, #72a4f2, #4f7ef8);
+  color: white;
+  font-weight: 700;
+  font-size: 16px;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(114,164,242,.35);
+  transition: transform .12s, box-shadow .12s;
+}
+.kofi-btn:hover {
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 14px 32px rgba(114,164,242,.55);
+}
+.kofi-emoji {
+  font-size: 22px;
+}
+.support-note {
+  margin-top: 18px;
+  color: var(--fg2);
+  font-size: 14px;
+}
+
 /* ── FAQ ── */
 .faq {
   background: var(--panel);
