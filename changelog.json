@@ -1,7 +1,12 @@
 {
-  "updated": "2026-05-06T06:09:41.049741Z",
-  "count": 4,
+  "updated": "2026-05-06T06:16:00.819817Z",
+  "count": 5,
   "commits": [
+    {
+      "sha": "69eec4716f5a667949d8d151e306f03a6c6b00f6",
+      "date": "2026-05-06T08:15:47+02:00",
+      "msg": "feat: add releases page and auto-release workflow"
+    },
     {
       "sha": "1b7ce2fe811beb4fc4df51945914f075f6a51a94",
       "date": "2026-05-06T08:09:23+02:00",
