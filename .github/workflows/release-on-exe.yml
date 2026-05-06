@@ -1,0 +1,64 @@
+name: Create Release on EXE Update
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - 'dist/FreeSystemDoctor.exe'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Build version tag
+        id: ver
+        run: |
+          DATE=$(date -u +%Y.%m.%d)
+          SHORT_SHA=${GITHUB_SHA::7}
+          TAG="v${DATE}-${SHORT_SHA}"
+          echo "tag=${TAG}" >> $GITHUB_OUTPUT
+          echo "date=${DATE}" >> $GITHUB_OUTPUT
+          echo "sha=${SHORT_SHA}" >> $GITHUB_OUTPUT
+
+      - name: Get commit message
+        id: msg
+        run: |
+          MSG=$(git log -1 --pretty=%B | head -20)
+          {
+            echo "body<<EOF"
+            echo "$MSG"
+            echo ""
+            echo "---"
+            echo ""
+            echo "**Auto-build** z commita \`${GITHUB_SHA::7}\` z dnia $(date -u +%Y-%m-%d)."
+            echo ""
+            echo "Pobierz \`FreeSystemDoctor.exe\` poniżej. 25 MB, x64, Windows 10/11."
+            echo "EOF"
+          } >> $GITHUB_OUTPUT
+
+      - name: Get EXE size
+        id: size
+        run: |
+          SIZE=$(stat -c%s dist/FreeSystemDoctor.exe)
+          MB=$(echo "scale=1; $SIZE / 1048576" | bc)
+          echo "mb=${MB}" >> $GITHUB_OUTPUT
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.ver.outputs.tag }}
+          name: "FreeSystemDoctor ${{ steps.ver.outputs.tag }} (${{ steps.size.outputs.mb }} MB)"
+          body: ${{ steps.msg.outputs.body }}
+          files: dist/FreeSystemDoctor.exe
+          draft: false
+          prerelease: false
+          make_latest: "true"

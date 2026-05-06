@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aktualizacje — FreeSystemDoctor</title>
+<meta name="description" content="Historia buildów FreeSystemDoctor. Każdy push aktualizuje EXE.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav class="topnav">
+  <div class="container nav-inner">
+    <a href="index.html" class="logo">
+      <span class="logo-icon">⚕</span>
+      <span class="logo-text">FreeSystemDoctor</span>
+    </a>
+    <div class="nav-links">
+      <a href="index.html#features">Funkcje</a>
+      <a href="index.html#compare">Porównanie</a>
+      <a href="index.html#download">Pobierz</a>
+      <a href="aktualizacje.html">Aktualizacje</a>
+      <a href="changelog.html">Changelog</a>
+      <a href="https://github.com/caytec/freesystemdoctor" target="_blank">GitHub</a>
+    </div>
+  </div>
+</nav>
+
+<header class="changelog-hero">
+  <div class="container">
+    <div class="badge" id="latest-badge">Ładowanie najnowszego buildu...</div>
+    <h1>Aktualizacje</h1>
+    <p>Każdy build .EXE. Automatycznie z każdym pushem.</p>
+  </div>
+</header>
+
+<section class="container" style="padding-bottom: 40px;">
+  <div class="dl-card primary" id="latest-card" style="max-width: 600px; margin: 0 auto;">
+    <div class="dl-platform">Najnowszy build</div>
+    <div class="dl-name" id="latest-version">FreeSystemDoctor.exe</div>
+    <div class="dl-meta" id="latest-meta">Ładowanie metadanych...</div>
+    <a id="latest-dl"
+       href="https://github.com/caytec/freesystemdoctor/raw/main/dist/FreeSystemDoctor.exe"
+       class="btn btn-primary" download>⬇ Pobierz najnowszą wersję</a>
+    <div class="dl-hint">Plik bezpośrednio z głównej gałęzi repo. Aktualizowany przy każdym pushu nowego buildu.</div>
+  </div>
+</section>
+
+<main class="changelog-list" id="releases">
+  <h2 class="section-title" style="font-size:24px;text-align:left;margin-bottom:24px;">Historia wersji</h2>
+  <div class="changelog-empty">
+    <p>Ładowanie historii buildów...</p>
+  </div>
+</main>
+
+<footer class="footer">
+  <div class="container footer-inner">
+    <div class="footer-brand">
+      <span class="logo-icon">⚕</span>
+      <strong>FreeSystemDoctor</strong>
+      <span class="footer-meta">© 2024 · MIT License · Open Source</span>
+    </div>
+    <div class="footer-links">
+      <a href="https://github.com/caytec/freesystemdoctor" target="_blank">GitHub</a>
+      <a href="https://github.com/caytec/freesystemdoctor/issues" target="_blank">Zgłoś błąd</a>
+      <a href="aktualizacje.html">Aktualizacje</a>
+      <a href="changelog.html">Changelog</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+const REPO = 'caytec/freesystemdoctor';
+const RAW_EXE = `https://github.com/${REPO}/raw/main/dist/FreeSystemDoctor.exe`;
+
+function fmtBytes(b) {
+  if (!b) return '— MB';
+  const mb = b / (1024 * 1024);
+  return mb >= 1 ? mb.toFixed(1) + ' MB' : (b/1024).toFixed(0) + ' KB';
+}
+
+function fmtDate(iso) {
+  const d = new Date(iso);
+  return d.toLocaleString('pl-PL', {
+    year: 'numeric', month: 'long', day: 'numeric',
+    hour: '2-digit', minute: '2-digit'
+  });
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[c]));
+}
+
+async function loadLatestBuildMeta() {
+  try {
+    const resp = await fetch(`https://api.github.com/repos/${REPO}/commits?path=dist/FreeSystemDoctor.exe&per_page=1`);
+    if (!resp.ok) throw new Error('API error');
+    const commits = await resp.json();
+    if (!commits.length) return null;
+    return commits[0];
+  } catch { return null; }
+}
+
+async function loadFileSize() {
+  try {
+    const resp = await fetch(RAW_EXE, { method: 'HEAD' });
+    const len = resp.headers.get('content-length');
+    return len ? parseInt(len, 10) : null;
+  } catch { return null; }
+}
+
+async function loadReleases() {
+  try {
+    const resp = await fetch(`https://api.github.com/repos/${REPO}/releases?per_page=30`);
+    if (!resp.ok) throw new Error('API error');
+    return await resp.json();
+  } catch { return []; }
+}
+
+async function loadCommitHistory() {
+  // Fallback: show commits that touched dist/FreeSystemDoctor.exe
+  try {
+    const resp = await fetch(`https://api.github.com/repos/${REPO}/commits?path=dist/FreeSystemDoctor.exe&per_page=30`);
+    if (!resp.ok) throw new Error('API error');
+    return await resp.json();
+  } catch { return []; }
+}
+
+async function init() {
+  // Latest build card
+  const [latestCommit, fileSize] = await Promise.all([
+    loadLatestBuildMeta(),
+    loadFileSize(),
+  ]);
+
+  const badge = document.getElementById('latest-badge');
+  const meta = document.getElementById('latest-meta');
+  const ver = document.getElementById('latest-version');
+
+  if (latestCommit) {
+    const sha = latestCommit.sha.substring(0, 7);
+    const date = fmtDate(latestCommit.commit.author.date);
+    badge.textContent = `🟢 Najnowszy build: ${date}`;
+    meta.innerHTML = `${fmtBytes(fileSize)} · x64 · build <code>${sha}</code> · ${escapeHtml(latestCommit.commit.message.split('\n')[0])}`;
+    ver.textContent = `FreeSystemDoctor.exe`;
+  } else {
+    badge.textContent = '🟢 Build dostępny';
+    meta.textContent = `${fmtBytes(fileSize)} · x64 · Windows 10/11`;
+  }
+
+  // Release/build history
+  const target = document.getElementById('releases');
+  const titleEl = target.querySelector('.section-title');
+
+  const [releases, commitHistory] = await Promise.all([
+    loadReleases(),
+    loadCommitHistory(),
+  ]);
+
+  let entries = [];
+
+  if (releases.length > 0) {
+    entries = releases.map(r => ({
+      title: r.name || r.tag_name,
+      date: r.published_at || r.created_at,
+      body: r.body || '',
+      sha: r.target_commitish,
+      asset: (r.assets || []).find(a => a.name.endsWith('.exe')),
+      tag: r.tag_name,
+      url: r.html_url,
+    }));
+  } else if (commitHistory.length > 0) {
+    entries = commitHistory.map(c => ({
+      title: c.commit.message.split('\n')[0],
+      date: c.commit.author.date,
+      body: '',
+      sha: c.sha,
+      asset: null,
+      tag: c.sha.substring(0, 7),
+      url: c.html_url,
+    }));
+  }
+
+  if (entries.length === 0) {
+    target.innerHTML = `
+      <h2 class="section-title" style="font-size:24px;text-align:left;margin-bottom:24px;">Historia wersji</h2>
+      <div class="changelog-empty">
+        <p>Brak historii buildów.</p>
+        <p style="margin-top:12px;font-size:13px;">
+          Pierwszy build pojawi się po następnym pushu .exe na <a href="https://github.com/${REPO}" target="_blank">GitHub</a>.
+        </p>
+      </div>`;
+    return;
+  }
+
+  const html = entries.map(e => {
+    const dlUrl = e.asset
+      ? e.asset.browser_download_url
+      : `https://github.com/${REPO}/raw/${e.sha}/dist/FreeSystemDoctor.exe`;
+    const sizeStr = e.asset ? fmtBytes(e.asset.size) : '~25 MB';
+    const shaShort = e.sha ? e.sha.substring(0, 7) : '';
+    return `
+      <article class="changelog-entry">
+        <div class="changelog-date">
+          ${fmtDate(e.date)}
+          <div style="margin-top:8px;">
+            <a href="${dlUrl}" class="btn btn-ghost" download style="font-size:12px;padding:8px 14px;">⬇ ${sizeStr}</a>
+          </div>
+        </div>
+        <div class="changelog-commits">
+          <div style="font-weight:600;font-size:15px;color:var(--fg);">${escapeHtml(e.title)}</div>
+          ${shaShort ? `<div style="font-family:monospace;font-size:12px;color:var(--fg2);margin-top:4px;">build <a href="${e.url}" target="_blank">${shaShort}</a></div>` : ''}
+          ${e.body ? `<div style="margin-top:8px;color:var(--fg2);font-size:14px;white-space:pre-wrap;">${escapeHtml(e.body)}</div>` : ''}
+        </div>
+      </article>`;
+  }).join('');
+
+  target.innerHTML = `
+    <h2 class="section-title" style="font-size:24px;text-align:left;margin-bottom:24px;">
+      Historia wersji <span style="color:var(--fg2);font-weight:400;font-size:16px;">(${entries.length})</span>
+    </h2>
+    ${html}`;
+}
+
+init();
+</script>
+
+</body>
+</html>
