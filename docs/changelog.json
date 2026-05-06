@@ -1,7 +1,12 @@
 {
-  "updated": "2026-05-06T06:01:46.896890Z",
-  "count": 1,
+  "updated": "2026-05-06T06:04:35.031150Z",
+  "count": 2,
   "commits": [
+    {
+      "sha": "00595722d6e0baa4338c6e4bcf22fe244a9209ee",
+      "date": "2026-05-06T08:04:21+02:00",
+      "msg": "chore: remove Python source, keep only built EXE + landing page"
+    },
     {
       "sha": "ca8099a8d5e886dec13f14c6737217a94dd6a7d4",
       "date": "2026-05-06T08:00:44+02:00",
