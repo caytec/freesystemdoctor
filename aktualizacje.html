@@ -40,9 +40,9 @@
     <div class="dl-name" id="latest-version">FreeSystemDoctor.exe</div>
     <div class="dl-meta" id="latest-meta">Ładowanie metadanych...</div>
     <a id="latest-dl"
-       href="https://github.com/caytec/freesystemdoctor/raw/main/dist/FreeSystemDoctor.exe"
+       href="https://github.com/caytec/freesystemdoctor/releases/latest/download/FreeSystemDoctor.exe"
        class="btn btn-primary" download>⬇ Pobierz najnowszą wersję</a>
-    <div class="dl-hint">Plik bezpośrednio z głównej gałęzi repo. Aktualizowany przy każdym pushu nowego buildu.</div>
+    <div class="dl-hint">Pobierane z najnowszego GitHub Release. Auto-aktualizowane przy każdym pushu nowego buildu.</div>
   </div>
 </section>
 
@@ -71,7 +71,7 @@
 
 <script>
 const REPO = 'caytec/freesystemdoctor';
-const RAW_EXE = `https://github.com/${REPO}/raw/main/dist/FreeSystemDoctor.exe`;
+const RAW_EXE = `https://github.com/${REPO}/releases/latest/download/FreeSystemDoctor.exe`;
 
 function fmtBytes(b) {
   if (!b) return '— MB';
