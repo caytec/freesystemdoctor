@@ -1,7 +1,12 @@
 {
-  "updated": "2026-05-06T06:16:00.819817Z",
-  "count": 5,
+  "updated": "2026-05-06T06:18:48.417918Z",
+  "count": 6,
   "commits": [
+    {
+      "sha": "8cadf8c9642e3a1b7de7f9c1eea0ea483883252e",
+      "date": "2026-05-06T08:18:40+02:00",
+      "msg": "feat: switch download links to GitHub Releases latest"
+    },
     {
       "sha": "69eec4716f5a667949d8d151e306f03a6c6b00f6",
       "date": "2026-05-06T08:15:47+02:00",
