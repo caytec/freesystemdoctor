@@ -1,7 +1,12 @@
 {
-  "updated": "2026-05-06T06:29:33.218102Z",
-  "count": 9,
+  "updated": "2026-05-06T14:00:10.209618Z",
+  "count": 10,
   "commits": [
+    {
+      "sha": "0420399d16c88c532d01e681dbe04f6ae93af3a4",
+      "date": "2026-05-06T15:59:53+02:00",
+      "msg": "feat: silent processes, UAC admin manifest, System HUD overlay"
+    },
     {
       "sha": "b5092d5ef0ac487a9e9df4b0882b5906962a63e7",
       "date": "2026-05-06T08:29:31+02:00",
