@@ -29,22 +29,6 @@ jobs:
           echo "date=${DATE}" >> $GITHUB_OUTPUT
           echo "sha=${SHORT_SHA}" >> $GITHUB_OUTPUT
 
-      - name: Get commit message
-        id: msg
-        run: |
-          MSG=$(git log -1 --pretty=%B | head -20)
-          {
-            echo "body<<EOF"
-            echo "$MSG"
-            echo ""
-            echo "---"
-            echo ""
-            echo "**Auto-build** z commita \`${GITHUB_SHA::7}\` z dnia $(date -u +%Y-%m-%d)."
-            echo ""
-            echo "Pobierz \`FreeSystemDoctor.exe\` poniżej. 25 MB, x64, Windows 10/11."
-            echo "EOF"
-          } >> $GITHUB_OUTPUT
-
       - name: Get EXE size
         id: size
         run: |
@@ -52,12 +36,95 @@ jobs:
           MB=$(echo "scale=1; $SIZE / 1048576" | bc)
           echo "mb=${MB}" >> $GITHUB_OUTPUT
 
+      - name: Generate release notes
+        id: notes
+        run: |
+          python3 <<'PYEOF'
+          import subprocess, os, re
+
+          # Find last release tag (if any)
+          try:
+              last_tag = subprocess.check_output(
+                  ['git', 'describe', '--tags', '--abbrev=0', 'HEAD~1'],
+                  text=True, stderr=subprocess.DEVNULL
+              ).strip()
+              range_spec = f"{last_tag}..HEAD"
+          except subprocess.CalledProcessError:
+              range_spec = "HEAD"
+
+          raw = subprocess.check_output(
+              ['git', 'log', range_spec, '--pretty=format:%s', '--no-merges'],
+              text=True
+          ).strip()
+
+          commits = [c for c in raw.splitlines() if c and '[skip ci]' not in c]
+
+          categories = {
+              'feat':     {'label': '✨ Nowe funkcje',  'items': []},
+              'fix':      {'label': '🐛 Poprawki błędów', 'items': []},
+              'refactor': {'label': '♻️ Refaktoryzacja', 'items': []},
+              'docs':     {'label': '📄 Dokumentacja',   'items': []},
+              'chore':    {'label': '🔧 Pozostałe zmiany', 'items': []},
+          }
+
+          def classify(msg):
+              m = msg.lower()
+              if re.match(r'^(feat|add|nowy|dodaj|stwórz|nowe|new)', m):    return 'feat'
+              if re.match(r'^(fix|napraw|popraw|bug)', m):                   return 'fix'
+              if re.match(r'^(refactor|refaktor|cleanup|przepisz)', m):      return 'refactor'
+              if re.match(r'^(docs|doc|readme)', m):                         return 'docs'
+              return 'chore'
+
+          def clean(msg):
+              # Strip conventional commit prefix
+              return re.sub(r'^(feat|fix|docs|refactor|chore|add|napraw|popraw|nowy|dodaj|stwórz)[:\s]+', '', msg, flags=re.I).strip()
+
+          for c in commits:
+              cat = classify(c)
+              categories[cat]['items'].append(clean(c))
+
+          sha = os.environ.get('GITHUB_SHA', '')[:7]
+          date = subprocess.check_output(['date', '-u', '+%Y-%m-%d'], text=True).strip()
+          size_mb = subprocess.check_output(
+              ['bash', '-c', 'echo "scale=1; $(stat -c%s dist/FreeSystemDoctor.exe) / 1048576" | bc'],
+              text=True
+          ).strip()
+
+          lines = []
+          for cat_data in categories.values():
+              if cat_data['items']:
+                  lines.append(f"### {cat_data['label']}")
+                  for item in cat_data['items']:
+                      lines.append(f"- {item}")
+                  lines.append('')
+
+          if not lines:
+              lines = [f"- Aktualizacja buildu EXE"]
+
+          lines += [
+              '---',
+              f'**Build:** `{sha}` · {date} · {size_mb} MB · x64 · Windows 10/11',
+              '',
+              '📥 Pobierz `FreeSystemDoctor.exe` poniżej.',
+          ]
+
+          body = '\n'.join(lines)
+
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+              f.write('body<<BODY_EOF\n')
+              f.write(body + '\n')
+              f.write('BODY_EOF\n')
+
+          print("Generated release notes:")
+          print(body)
+          PYEOF
+
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.ver.outputs.tag }}
           name: "FreeSystemDoctor ${{ steps.ver.outputs.tag }} (${{ steps.size.outputs.mb }} MB)"
-          body: ${{ steps.msg.outputs.body }}
+          body: ${{ steps.notes.outputs.body }}
           files: dist/FreeSystemDoctor.exe
           draft: false
           prerelease: false

@@ -93,6 +93,39 @@ function escapeHtml(s) {
   }[c]));
 }
 
+function renderBody(md) {
+  if (!md) return '';
+  const lines = md.split('\n');
+  let html = '';
+  let inList = false;
+
+  for (const raw of lines) {
+    const line = raw.trimEnd();
+
+    if (line.startsWith('### ')) {
+      if (inList) { html += '</ul>'; inList = false; }
+      html += `<div class="rel-section">${escapeHtml(line.slice(4))}</div>`;
+    } else if (line.startsWith('- ')) {
+      if (!inList) { html += '<ul class="rel-list">'; inList = true; }
+      html += `<li>${escapeHtml(line.slice(2))}</li>`;
+    } else if (line.startsWith('---')) {
+      if (inList) { html += '</ul>'; inList = false; }
+      html += '<hr class="rel-divider">';
+    } else if (line.startsWith('**Build:**')) {
+      if (inList) { html += '</ul>'; inList = false; }
+      const formatted = line
+        .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+        .replace(/`([^`]+)`/g, '<code>$1</code>');
+      html += `<div class="rel-meta">${formatted}</div>`;
+    } else if (line.trim()) {
+      if (inList) { html += '</ul>'; inList = false; }
+      html += `<div class="rel-text">${escapeHtml(line)}</div>`;
+    }
+  }
+  if (inList) html += '</ul>';
+  return html;
+}
+
 async function loadLatestBuildMeta() {
   try {
     const resp = await fetch(`https://api.github.com/repos/${REPO}/commits?path=dist/FreeSystemDoctor.exe&per_page=1`);
@@ -212,7 +245,7 @@ async function init() {
         <div class="changelog-commits">
           <div style="font-weight:600;font-size:15px;color:var(--fg);">${escapeHtml(e.title)}</div>
           ${shaShort ? `<div style="font-family:monospace;font-size:12px;color:var(--fg2);margin-top:4px;">build <a href="${e.url}" target="_blank">${shaShort}</a></div>` : ''}
-          ${e.body ? `<div style="margin-top:8px;color:var(--fg2);font-size:14px;white-space:pre-wrap;">${escapeHtml(e.body)}</div>` : ''}
+          ${e.body ? `<div class="rel-body">${renderBody(e.body)}</div>` : ''}
         </div>
       </article>`;
   }).join('');

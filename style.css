@@ -574,6 +574,61 @@ section {
   color: var(--fg2);
 }
 
+/* ── Release body renderer ── */
+.rel-body {
+  margin-top: 12px;
+}
+.rel-section {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--highlight);
+  text-transform: uppercase;
+  letter-spacing: .4px;
+  margin: 12px 0 6px;
+}
+.rel-section:first-child {
+  margin-top: 0;
+}
+.rel-list {
+  list-style: none;
+  margin: 0 0 4px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.rel-list li {
+  font-size: 14px;
+  color: var(--fg);
+  padding-left: 16px;
+  position: relative;
+  line-height: 1.5;
+}
+.rel-list li::before {
+  content: "→";
+  position: absolute;
+  left: 0;
+  color: var(--highlight);
+  font-weight: 700;
+}
+.rel-divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 10px 0 8px;
+}
+.rel-meta {
+  font-size: 12px;
+  color: var(--fg2);
+  font-family: 'Fira Code', Consolas, monospace;
+}
+.rel-meta code {
+  font-size: 11px;
+}
+.rel-text {
+  font-size: 14px;
+  color: var(--fg2);
+}
+
 /* ── Responsive ── */
 @media (max-width: 900px) {
   .hero-title { font-size: 44px; }
