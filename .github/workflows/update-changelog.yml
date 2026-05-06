@@ -1,0 +1,69 @@
+name: Update Changelog
+
+on:
+  push:
+    branches: [main, master]
+    paths-ignore:
+      - 'docs/changelog.json'
+
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Generate changelog.json
+        run: |
+          mkdir -p docs
+          python3 <<'EOF'
+          import json, subprocess, datetime, os
+
+          # Get all commits with hash, ISO date, subject
+          fmt = '%H|%aI|%s'
+          out = subprocess.check_output(
+              ['git', 'log', f'--pretty=format:{fmt}', '--no-merges', '-n', '500'],
+              text=True
+          )
+
+          commits = []
+          for line in out.strip().split('\n'):
+              if not line: continue
+              parts = line.split('|', 2)
+              if len(parts) != 3: continue
+              sha, date, msg = parts
+              # Skip changelog auto-commits to avoid noise
+              if 'changelog' in msg.lower() and 'auto' in msg.lower():
+                  continue
+              commits.append({'sha': sha, 'date': date, 'msg': msg})
+
+          data = {
+              'updated': datetime.datetime.utcnow().isoformat() + 'Z',
+              'count': len(commits),
+              'commits': commits,
+          }
+
+          with open('docs/changelog.json', 'w', encoding='utf-8') as f:
+              json.dump(data, f, ensure_ascii=False, indent=2)
+
+          print(f'Generated changelog.json with {len(commits)} commits')
+          EOF
+
+      - name: Commit and push if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/changelog.json
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "chore: auto-update changelog [skip ci]"
+            git push
+          fi

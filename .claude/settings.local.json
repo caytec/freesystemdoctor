@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -n \"^import os$\" engine/performance_profiles.py engine/smart_defrag.py engine/system_backup.py engine/windows_update_manager.py)"
+    ]
+  }
+}

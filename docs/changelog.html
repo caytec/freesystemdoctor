@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Changelog — FreeSystemDoctor</title>
+<meta name="description" content="Historia zmian FreeSystemDoctor — automatycznie aktualizowana z każdym commitem.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav class="topnav">
+  <div class="container nav-inner">
+    <a href="index.html" class="logo">
+      <span class="logo-icon">⚕</span>
+      <span class="logo-text">FreeSystemDoctor</span>
+    </a>
+    <div class="nav-links">
+      <a href="index.html#features">Funkcje</a>
+      <a href="index.html#compare">Porównanie</a>
+      <a href="index.html#download">Pobierz</a>
+      <a href="changelog.html">Changelog</a>
+      <a href="https://github.com/caytec/freesystemdoctor" target="_blank">GitHub</a>
+    </div>
+  </div>
+</nav>
+
+<header class="changelog-hero">
+  <div class="container">
+    <div class="badge" id="last-updated">Ładowanie...</div>
+    <h1>Changelog</h1>
+    <p>Każdy commit. Automatycznie. Z GitHuba.</p>
+  </div>
+</header>
+
+<main class="changelog-list" id="changelog">
+  <div class="changelog-empty">
+    <p>Ładowanie historii zmian...</p>
+  </div>
+</main>
+
+<footer class="footer">
+  <div class="container footer-inner">
+    <div class="footer-brand">
+      <span class="logo-icon">⚕</span>
+      <strong>FreeSystemDoctor</strong>
+      <span class="footer-meta">© 2024 · MIT License · Open Source</span>
+    </div>
+    <div class="footer-links">
+      <a href="https://github.com/caytec/freesystemdoctor" target="_blank">GitHub</a>
+      <a href="https://github.com/caytec/freesystemdoctor/issues" target="_blank">Zgłoś błąd</a>
+      <a href="changelog.html">Changelog</a>
+      <a href="https://github.com/caytec/freesystemdoctor/blob/main/LICENSE" target="_blank">Licencja</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+// Klasyfikacja commitów wg konwencji conventional commits + heurystyki
+function classifyCommit(msg) {
+  const m = msg.toLowerCase();
+  if (m.match(/^(feat|feature|add|nowy|dodaj|stwórz)/)) return "feat";
+  if (m.match(/^(fix|napraw|popraw|bug)/))               return "fix";
+  if (m.match(/^(docs|doc|readme)/))                      return "docs";
+  if (m.match(/^(refactor|refaktor|cleanup|przepisz)/))   return "refactor";
+  if (m.match(/^(chore|build|ci|deps|bump)/))             return "chore";
+  return "chore";
+}
+
+function formatDate(iso) {
+  const d = new Date(iso);
+  return d.toLocaleDateString('pl-PL', { year: 'numeric', month: 'long', day: 'numeric' });
+}
+
+function groupByDate(commits) {
+  const groups = {};
+  commits.forEach(c => {
+    const day = c.date.split('T')[0];
+    if (!groups[day]) groups[day] = [];
+    groups[day].push(c);
+  });
+  return groups;
+}
+
+async function loadChangelog() {
+  const target = document.getElementById('changelog');
+  const updatedEl = document.getElementById('last-updated');
+  try {
+    const resp = await fetch('changelog.json?t=' + Date.now());
+    if (!resp.ok) throw new Error('changelog.json niedostępny');
+    const data = await resp.json();
+    const commits = data.commits || [];
+
+    if (commits.length === 0) {
+      target.innerHTML = '<div class="changelog-empty"><p>Brak commitów do wyświetlenia.</p></div>';
+      return;
+    }
+
+    if (data.updated) {
+      updatedEl.textContent = '🔄 Ostatnia aktualizacja: ' + formatDate(data.updated);
+    }
+
+    const groups = groupByDate(commits);
+    const days = Object.keys(groups).sort().reverse();
+
+    target.innerHTML = days.map(day => {
+      const dayCommits = groups[day];
+      const commitsHtml = dayCommits.map(c => {
+        const tag = classifyCommit(c.msg);
+        const cleanMsg = c.msg.replace(/^(feat|fix|docs|refactor|chore|add|napraw|popraw|nowy|dodaj|stwórz)[:\s]*/i, '');
+        const shaShort = c.sha ? c.sha.substring(0, 7) : '';
+        return `
+          <div class="changelog-commit">
+            <span class="commit-tag ${tag}">${tag}</span>
+            <span class="commit-msg">
+              ${escapeHtml(cleanMsg)}
+              ${shaShort ? `<a href="https://github.com/caytec/freesystemdoctor/commit/${c.sha}" target="_blank" class="commit-sha">${shaShort}</a>` : ''}
+            </span>
+          </div>
+        `;
+      }).join('');
+
+      return `
+        <article class="changelog-entry">
+          <div class="changelog-date">${formatDate(day)}</div>
+          <div class="changelog-commits">${commitsHtml}</div>
+        </article>
+      `;
+    }).join('');
+
+  } catch (err) {
+    target.innerHTML = `
+      <div class="changelog-empty">
+        <p>Nie udało się załadować changeloga.</p>
+        <p style="margin-top:12px;font-size:13px;">
+          Sprawdź <a href="https://github.com/caytec/freesystemdoctor/commits/main" target="_blank">historię commitów na GitHubie</a>.
+        </p>
+      </div>
+    `;
+    updatedEl.textContent = 'Brak danych';
+  }
+}
+
+function escapeHtml(s) {
+  return s.replace(/[&<>"']/g, c => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[c]));
+}
+
+loadChangelog();
+</script>
+
+</body>
+</html>
