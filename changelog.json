@@ -1,7 +1,12 @@
 {
-  "updated": "2026-05-06T06:29:02.323879Z",
-  "count": 8,
+  "updated": "2026-05-06T06:29:33.218102Z",
+  "count": 9,
   "commits": [
+    {
+      "sha": "b5092d5ef0ac487a9e9df4b0882b5906962a63e7",
+      "date": "2026-05-06T08:29:31+02:00",
+      "msg": "feat: replace Ko-fi widget with floating-chat overlay on all pages"
+    },
     {
       "sha": "71b1ebe063953cbf065148090b0ebca1edd6af35",
       "date": "2026-05-06T08:28:39+02:00",
