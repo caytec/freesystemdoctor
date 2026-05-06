@@ -1,31 +1,11 @@
 {
-  "updated": "2026-05-06T00:00:00Z",
-  "count": 5,
+  "updated": "2026-05-06T06:01:46.896890Z",
+  "count": 1,
   "commits": [
     {
-      "sha": "0000000000000000000000000000000000000005",
-      "date": "2026-05-06T08:00:00Z",
-      "msg": "feat: improve Fix All flow with live progress, stats and category-aware fixes"
-    },
-    {
-      "sha": "0000000000000000000000000000000000000004",
-      "date": "2026-05-06T07:30:00Z",
-      "msg": "fix: add ProgressBar.set_value alias to fix runtime errors in 50+ pages"
-    },
-    {
-      "sha": "0000000000000000000000000000000000000003",
-      "date": "2026-05-06T07:00:00Z",
-      "msg": "fix: hoist `import os` in 6 modules so PyInstaller bundle starts cleanly"
-    },
-    {
-      "sha": "0000000000000000000000000000000000000002",
-      "date": "2026-05-06T06:30:00Z",
-      "msg": "chore: add PyInstaller spec and build a single-file 25 MB Windows EXE"
-    },
-    {
-      "sha": "0000000000000000000000000000000000000001",
-      "date": "2026-05-06T06:00:00Z",
-      "msg": "docs: add landing page and auto-updated changelog for GitHub Pages"
+      "sha": "ca8099a8d5e886dec13f14c6737217a94dd6a7d4",
+      "date": "2026-05-06T08:00:44+02:00",
+      "msg": "Initial release v2.1 — 62 engine modules, 45 GUI tools, landing page"
     }
   ]
 }
