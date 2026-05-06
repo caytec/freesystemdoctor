@@ -1,7 +1,12 @@
 {
-  "updated": "2026-05-06T06:18:48.417918Z",
-  "count": 6,
+  "updated": "2026-05-06T06:25:43.831004Z",
+  "count": 7,
   "commits": [
+    {
+      "sha": "dc201fb61d71a04e45117de8853b691ae86f4093",
+      "date": "2026-05-06T08:25:30+02:00",
+      "msg": "feat: add Ko-fi donate button on website and in app sidebar"
+    },
     {
       "sha": "8cadf8c9642e3a1b7de7f9c1eea0ea483883252e",
       "date": "2026-05-06T08:18:40+02:00",
