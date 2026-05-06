@@ -6,11 +6,11 @@
 [![Platform](https://img.shields.io/badge/platform-Windows%2010%2F11-blue.svg)]()
 [![Download](https://img.shields.io/badge/download-25%20MB-blue.svg)](dist/FreeSystemDoctor.exe)
 
-🌐 **Strona projektu:** [caytec.github.io/freesystemdoctor](https://caytec.github.io/freesystemdoctor)
+🌐 **Strona projektu:** [caytec.github.io/freesystemdoctor](https://caytec.github.io/freesystemdoctor) · [Changelog](https://caytec.github.io/freesystemdoctor/changelog.html)
 
 ## Pobierz
 
-➡️ **[`dist/FreeSystemDoctor.exe`](dist/FreeSystemDoctor.exe)** — 25 MB, x64, Windows 10/11
+➡️ **[`dist/FreeSystemDoctor.exe`](dist/FreeSystemDoctor.exe?raw=1)** — 25 MB, x64, Windows 10/11
 
 Pojedynczy plik. Bez instalatora. Bez kont. Uruchom i działa.
 

@@ -4,7 +4,7 @@ on:
   push:
     branches: [main, master]
     paths-ignore:
-      - 'docs/changelog.json'
+      - 'changelog.json'
 
   workflow_dispatch:
 
@@ -22,11 +22,9 @@ jobs:
 
       - name: Generate changelog.json
         run: |
-          mkdir -p docs
           python3 <<'EOF'
-          import json, subprocess, datetime, os
+          import json, subprocess, datetime
 
-          # Get all commits with hash, ISO date, subject
           fmt = '%H|%aI|%s'
           out = subprocess.check_output(
               ['git', 'log', f'--pretty=format:{fmt}', '--no-merges', '-n', '500'],
@@ -39,7 +37,6 @@ jobs:
               parts = line.split('|', 2)
               if len(parts) != 3: continue
               sha, date, msg = parts
-              # Skip changelog auto-commits to avoid noise
               if 'changelog' in msg.lower() and 'auto' in msg.lower():
                   continue
               commits.append({'sha': sha, 'date': date, 'msg': msg})
@@ -50,7 +47,7 @@ jobs:
               'commits': commits,
           }
 
-          with open('docs/changelog.json', 'w', encoding='utf-8') as f:
+          with open('changelog.json', 'w', encoding='utf-8') as f:
               json.dump(data, f, ensure_ascii=False, indent=2)
 
           print(f'Generated changelog.json with {len(commits)} commits')
@@ -60,7 +57,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add docs/changelog.json
+          git add changelog.json
           if git diff --staged --quiet; then
             echo "No changes to commit"
           else
