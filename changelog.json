@@ -1,7 +1,12 @@
 {
-  "updated": "2026-05-06T06:25:43.831004Z",
-  "count": 7,
+  "updated": "2026-05-06T06:29:02.323879Z",
+  "count": 8,
   "commits": [
+    {
+      "sha": "71b1ebe063953cbf065148090b0ebca1edd6af35",
+      "date": "2026-05-06T08:28:39+02:00",
+      "msg": "feat: rich release notes with category grouping and styled renderer"
+    },
     {
       "sha": "dc201fb61d71a04e45117de8853b691ae86f4093",
       "date": "2026-05-06T08:25:30+02:00",
