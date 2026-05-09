@@ -25,6 +25,16 @@ Aplikacja Windows z 45 modułami narzędzi:
 - **Monitoring:** real-time CPU/RAM/Dysk, hardware monitor, benchmark
 - **Zaawansowane:** Smart Defrag (SSD-aware), file recovery, asystent AI
 
+## Cybersecurity Scanner (online)
+
+Pełny audyt bezpieczeństwa działający w przeglądarce — bez logowania, bez wysyłania danych:
+
+- **Moduły:** system, sieć, pamięć, storage, przeglądarka, prywatność, malware (skan plików)
+- **Hashing plików:** SHA-256 + SHA-1 + MD5, lokalna baza znanych zagrożeń (m.in. EICAR)
+- **Raporty:** PDF (jsPDF) albo lokalny link `blob:` do pobrania, eksport JSON
+- **Threat Intel feed:** anonimowe IOC (hash + werdykt + region) — bez nazw plików, bez IP
+- 🌐 [`scanner.html`](https://caytec.github.io/freesystemdoctor/scanner.html) · [`threat-intel.html`](https://caytec.github.io/freesystemdoctor/threat-intel.html)
+
 ## Wymagania
 
 - Windows 10 (build 1809+) lub Windows 11

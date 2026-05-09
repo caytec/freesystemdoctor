@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Globalny anonimowy strumień Cyber Threat Intelligence — pliki przeskanowane przez FreeSystemDoctor Cybersecurity Scanner.">
+<meta name="keywords" content="threat intelligence, cti feed, malware hashes, ioc, freesystemdoctor">
+<meta property="og:title" content="Threat Intelligence Feed — FreeSystemDoctor">
+<meta property="og:description" content="Anonimowe IOC z plików przeskanowanych przez naszych użytkowników.">
+<meta property="og:type" content="website">
+<title>Threat Intelligence — FreeSystemDoctor</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav class="topnav">
+  <div class="container nav-inner">
+    <a href="index.html" class="logo">
+      <span class="logo-icon">⚕</span>
+      <span class="logo-text">FreeSystemDoctor</span>
+    </a>
+    <div class="nav-links">
+      <a href="index.html#features">Funkcje</a>
+      <a href="scanner.html">Scanner</a>
+      <a href="threat-intel.html" class="active">Threat Intel</a>
+      <a href="index.html#download">Pobierz</a>
+      <a href="changelog.html">Changelog</a>
+      <a href="https://github.com/caytec/freesystemdoctor" target="_blank">GitHub</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero scanner-hero">
+  <div class="container">
+    <div class="badge">📡 Anonymized · Hash-only · No PII</div>
+    <h1 class="hero-title">
+      Globalny strumień <span class="grad">Threat Intelligence</span>
+    </h1>
+    <p class="hero-sub">
+      Pliki przeskanowane lokalnie przez naszych użytkowników, anonimowo opublikowane jako IOC.
+      Brak nazw plików. Brak adresów IP. Brak identyfikatorów użytkownika.
+      Tylko hash, werdykt, rozmiar, rozszerzenie i przybliżony region.
+    </p>
+  </div>
+</header>
+
+<section class="cti-stats-section">
+  <div class="container">
+    <div class="cti-stats" id="cti-stats">
+      <div class="cti-stat"><div class="cti-stat-num" id="cti-total">—</div><div class="cti-stat-lbl">Wszystkich zdarzeń</div></div>
+      <div class="cti-stat"><div class="cti-stat-num danger" id="cti-mal">—</div><div class="cti-stat-lbl">Malicious</div></div>
+      <div class="cti-stat"><div class="cti-stat-num warn" id="cti-sus">—</div><div class="cti-stat-lbl">Suspicious</div></div>
+      <div class="cti-stat"><div class="cti-stat-num ok" id="cti-clean">—</div><div class="cti-stat-lbl">Clean</div></div>
+      <div class="cti-stat"><div class="cti-stat-num" id="cti-24h">—</div><div class="cti-stat-lbl">Ostatnie 24h</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="cti-charts-section">
+  <div class="container">
+    <div class="cti-charts">
+      <div class="cti-chart">
+        <h3>Top rodziny malware</h3>
+        <ul id="cti-top-fams" class="cti-bar-list"></ul>
+      </div>
+      <div class="cti-chart">
+        <h3>Top rozszerzenia</h3>
+        <ul id="cti-top-exts" class="cti-bar-list"></ul>
+      </div>
+      <div class="cti-chart">
+        <h3>Top regiony (timezone)</h3>
+        <ul id="cti-top-regions" class="cti-bar-list"></ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cti-feed-section">
+  <div class="container">
+    <div class="cti-feed-head">
+      <h2 class="section-title" style="text-align:left;">Strumień zdarzeń</h2>
+      <div class="cti-filters">
+        <label>Werdykt:
+          <select id="cti-filter-verdict">
+            <option value="">wszystkie</option>
+            <option value="malicious">malicious</option>
+            <option value="suspicious">suspicious</option>
+            <option value="clean">clean</option>
+          </select>
+        </label>
+        <label>Szukaj hash/ext:
+          <input type="text" id="cti-filter-q" placeholder="np. exe lub fragment SHA-256">
+        </label>
+        <button class="btn btn-ghost" id="cti-export">⬇ Eksport JSON</button>
+        <button class="btn btn-ghost" id="cti-export-csv">⬇ Eksport CSV</button>
+        <button class="btn btn-ghost" id="cti-clear">⌫ Wyczyść lokalnie</button>
+      </div>
+    </div>
+    <div class="cti-feed" id="cti-feed"></div>
+  </div>
+</section>
+
+<section class="cti-how-section">
+  <div class="container">
+    <h2 class="section-title">Jak to działa</h2>
+    <div class="hook-grid">
+      <div class="hook">
+        <div class="hook-icon">🔒</div>
+        <h3>Lokalne hashe</h3>
+        <p>Plik nigdy nie opuszcza Twojego urządzenia. Liczone są tylko hashe SHA-256, SHA-1 i MD5 — i to one trafiają do feedu, nie sam plik.</p>
+      </div>
+      <div class="hook">
+        <div class="hook-icon">🌍</div>
+        <h3>Region zamiast IP</h3>
+        <p>Jako lokalizację używamy kodu kontynentu wyciągniętego ze strefy czasowej przeglądarki. Bez zapisu adresu IP, bez geolokalizacji.</p>
+      </div>
+      <div class="hook">
+        <div class="hook-icon">📡</div>
+        <h3>Opt-in</h3>
+        <p>Dane wchodzą do feedu dopiero gdy klikniesz „Wyślij do Threat Intel” w skanerze. Można też wyczyścić lokalny strumień jednym kliknięciem.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container footer-inner">
+    <div class="footer-brand">
+      <span class="logo-icon">⚕</span>
+      <strong>FreeSystemDoctor</strong>
+      <span class="footer-meta">© 2024 · MIT License · Open Source</span>
+    </div>
+    <div class="footer-links">
+      <a href="index.html">Strona główna</a>
+      <a href="scanner.html">Scanner</a>
+      <a href="threat-intel.html">Threat Intel</a>
+      <a href="https://github.com/caytec/freesystemdoctor" target="_blank">GitHub</a>
+    </div>
+  </div>
+</footer>
+
+<script src="threat-intel.js" defer></script>
+<script defer>
+document.addEventListener('DOMContentLoaded', () => {
+  const $ = sel => document.querySelector(sel);
+  const escapeHtml = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const humanBytes = n => {
+    if (!n) return '0 B';
+    const u=['B','KB','MB','GB','TB']; let i=0;
+    while (n>=1024 && i<u.length-1){n/=1024;i++;}
+    return n.toFixed(n<10&&i?1:0)+' '+u[i];
+  };
+
+  function renderStats() {
+    const s = window.FSD_CTI.stats();
+    $('#cti-total').textContent  = s.total;
+    $('#cti-mal').textContent    = s.verdicts.malicious || 0;
+    $('#cti-sus').textContent    = s.verdicts.suspicious || 0;
+    $('#cti-clean').textContent  = s.verdicts.clean || 0;
+    $('#cti-24h').textContent    = s.last24;
+
+    const drawBars = (sel, arr) => {
+      const max = Math.max(1, ...arr.map(a => a[1]));
+      $(sel).innerHTML = arr.map(([k,v]) => `
+        <li>
+          <span class="cti-bar-label">${escapeHtml(k)}</span>
+          <span class="cti-bar"><span class="cti-bar-fill" style="width:${(v/max*100).toFixed(0)}%"></span></span>
+          <span class="cti-bar-num">${v}</span>
+        </li>`).join('') || '<li class="muted">brak danych</li>';
+    };
+    drawBars('#cti-top-fams', s.topFamilies);
+    drawBars('#cti-top-exts', s.topExt);
+    drawBars('#cti-top-regions', s.topCountry);
+  }
+
+  function applyFilter() {
+    const verdict = $('#cti-filter-verdict').value;
+    const q = $('#cti-filter-q').value.toLowerCase().trim();
+    const items = window.FSD_CTI.all().filter(r =>
+      (!verdict || r.verdict === verdict) &&
+      (!q || (r.sha256||'').includes(q) || (r.ext||'').includes(q) || (r.family||'').toLowerCase().includes(q))
+    );
+    if (!items.length) {
+      $('#cti-feed').innerHTML = '<div class="scan-empty"><p>Brak zdarzeń pasujących do filtra.</p></div>';
+      return;
+    }
+    $('#cti-feed').innerHTML = items.map(r => `
+      <div class="cti-row sev-${r.verdict === 'malicious' ? 'crit' : r.verdict === 'suspicious' ? 'warn' : 'ok'}">
+        <span class="cti-time">${new Date(r.ts).toISOString().replace('T',' ').slice(0,19)} UTC</span>
+        <span class="cti-country">${escapeHtml(r.country)}</span>
+        <span class="cti-verdict v-${escapeHtml(r.verdict)}">${escapeHtml(r.verdict)}</span>
+        <code class="cti-hash" title="SHA-256">${escapeHtml((r.sha256||'').slice(0, 32))}…</code>
+        <span class="cti-meta">${humanBytes(r.size)} · .${escapeHtml(r.ext||'?')}</span>
+        ${r.family ? `<span class="cti-family">${escapeHtml(r.family)}</span>` : ''}
+      </div>`).join('');
+  }
+
+  function exportJson() {
+    const blob = new Blob([JSON.stringify(window.FSD_CTI.all(), null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `freesystemdoctor-cti-${new Date().toISOString().slice(0,10)}.json`;
+    a.click();
+  }
+  function exportCsv() {
+    const items = window.FSD_CTI.all();
+    const head = 'ts_iso,verdict,country,ext,size,sha256,sha1,md5,family\n';
+    const rows = items.map(r =>
+      [new Date(r.ts).toISOString(), r.verdict, r.country, r.ext, r.size, r.sha256, r.sha1, r.md5, r.family || '']
+        .map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')
+    ).join('\n');
+    const blob = new Blob([head + rows], { type: 'text/csv' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `freesystemdoctor-cti-${new Date().toISOString().slice(0,10)}.csv`;
+    a.click();
+  }
+
+  $('#cti-filter-verdict').addEventListener('change', applyFilter);
+  $('#cti-filter-q').addEventListener('input', applyFilter);
+  $('#cti-export').addEventListener('click', exportJson);
+  $('#cti-export-csv').addEventListener('click', exportCsv);
+  $('#cti-clear').addEventListener('click', () => {
+    if (confirm('Wyczyścić lokalny feed Threat Intel? (Tej operacji nie da się cofnąć.)')) {
+      window.FSD_CTI.clear();
+      renderStats(); applyFilter();
+    }
+  });
+
+  renderStats();
+  applyFilter();
+});
+</script>
+</body>
+</html>
