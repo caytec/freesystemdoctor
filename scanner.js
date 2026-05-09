@@ -125,6 +125,7 @@
     if (enabled.includes('memory'))  tasks.push(['Pamięć i wydajność', scanMemory]);
     if (enabled.includes('storage')) tasks.push(['Storage, ciasteczka, IndexedDB', scanStorage]);
     if (enabled.includes('privacy')) tasks.push(['Prywatność i trackery', scanPrivacy]);
+    if (enabled.includes('website')) tasks.push(['Strona internetowa (URL)', scanWebsite]);
     if (enabled.includes('malware')) tasks.push(['Malware (skan plików)', scanMalware]);
 
     for (let i = 0; i < tasks.length; i++) {
@@ -490,6 +491,184 @@
     return Array.from(found);
   }
 
+  /* ── Module: Website (URL audit) ──────────────────────
+     - DNS over HTTPS (Cloudflare + Google fallback): A / AAAA / MX
+       / TXT (SPF, DMARC) / CAA / NS  + DNSSEC AD-flag
+     - Optional CORS-proxy fetch for security headers + cookies
+       + mixed-content + Server / X-Powered-By disclosure
+     The proxy step is OFF by default — the user opts in via the
+     "Deep scan przez proxy" checkbox in the Website panel.       */
+  async function scanWebsite() {
+    const findings = [];
+    const raw = ($('#website-url')?.value || '').trim();
+    if (!raw) {
+      findings.push(finding(SEV.INFO, 'URL', 'nie podano',
+        'Wpisz adres w polu „Strona internetowa” żeby uruchomić audyt.'));
+      return { id: 'website', title: 'Strona internetowa (URL)', icon: '🔎', findings };
+    }
+
+    let url;
+    try { url = new URL(/^https?:\/\//i.test(raw) ? raw : 'https://' + raw); }
+    catch (e) {
+      findings.push(finding(SEV.CRIT, 'URL', raw, 'Niepoprawny adres — popraw i spróbuj ponownie.'));
+      return { id: 'website', title: 'Strona internetowa (URL)', icon: '🔎', findings };
+    }
+
+    findings.push(finding(SEV.INFO, 'URL', url.href));
+    findings.push(finding(SEV.INFO, 'Host', url.hostname));
+    findings.push(finding(url.protocol === 'https:' ? SEV.OK : SEV.CRIT,
+      'Schemat', url.protocol,
+      url.protocol === 'https:' ? '' : 'HTTP nie szyfruje połączeń. Wymuś HTTPS lub dodaj redirect 301.'));
+
+    if (/^\d+\.\d+\.\d+\.\d+$/.test(url.hostname)) {
+      findings.push(finding(SEV.WARN, 'Host = adres IP', url.hostname,
+        'Certyfikat TLS dla nazwy domeny nie zadziała — używaj FQDN.'));
+    }
+
+    /* ── DNS over HTTPS (CORS-friendly, no proxy needed) ── */
+    const dohQuery = async (name, type) => {
+      const endpoints = [
+        `https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(name)}&type=${type}`,
+        `https://dns.google/resolve?name=${encodeURIComponent(name)}&type=${type}`,
+      ];
+      for (const u of endpoints) {
+        try {
+          const r = await fetch(u, { headers: { 'Accept': 'application/dns-json' } });
+          if (r.ok) return r.json();
+        } catch (_) { /* try next */ }
+      }
+      return null;
+    };
+
+    const a    = await dohQuery(url.hostname, 'A');
+    const aaaa = await dohQuery(url.hostname, 'AAAA');
+    const mx   = await dohQuery(url.hostname, 'MX');
+    const txt  = await dohQuery(url.hostname, 'TXT');
+    const caa  = await dohQuery(url.hostname, 'CAA');
+    const ns   = await dohQuery(url.hostname, 'NS');
+    const dmarcQ = await dohQuery('_dmarc.' + url.hostname, 'TXT');
+
+    const recs = (resp) => (resp && resp.Answer) ? resp.Answer.map(r => r.data) : [];
+
+    const aRecs = recs(a), aaaaRecs = recs(aaaa);
+    findings.push(finding(aRecs.length    ? SEV.OK : SEV.WARN, 'Rekordy A (IPv4)',  aRecs.join(', ')   || 'brak'));
+    findings.push(finding(aaaaRecs.length ? SEV.OK : SEV.INFO, 'Rekordy AAAA (IPv6)', aaaaRecs.join(', ') || 'brak',
+      aaaaRecs.length ? '' : 'Brak IPv6 to nie błąd, ale nowoczesne sieci coraz częściej go preferują.'));
+
+    const mxRecs = recs(mx);
+    findings.push(finding(SEV.INFO, 'Rekordy MX', mxRecs.join(' | ') || 'brak'));
+
+    const txtRecs = recs(txt).map(s => s.replace(/^"|"$/g, ''));
+    const spf = txtRecs.find(t => /^v=spf1/i.test(t));
+    findings.push(finding(spf ? SEV.OK : SEV.WARN, 'SPF', spf || 'brak rekordu SPF',
+      spf ? '' : 'Bez SPF łatwiej spoofować nadawcę. Dodaj v=spf1 ... -all w TXT.'));
+
+    const dmarcRecs = recs(dmarcQ).map(s => s.replace(/^"|"$/g, ''));
+    const dmarc = dmarcRecs.find(t => /^v=DMARC1/i.test(t));
+    findings.push(finding(dmarc ? SEV.OK : SEV.WARN, 'DMARC', dmarc || 'brak rekordu DMARC w _dmarc.' + url.hostname,
+      dmarc ? '' : 'Brak DMARC = brak polityki anty-spoofing. Dodaj rekord _dmarc.<domena>.'));
+
+    const caaRecs = recs(caa);
+    findings.push(finding(caaRecs.length ? SEV.OK : SEV.WARN, 'CAA', caaRecs.join(' | ') || 'brak',
+      caaRecs.length ? '' : 'Bez CAA każdy CA może wystawić cert dla Twojej domeny. Dodaj rekord CAA.'));
+
+    const nsRecs = recs(ns);
+    findings.push(finding(SEV.INFO, 'Serwery NS', nsRecs.join(', ') || 'brak'));
+
+    const ad = a && a.AD;
+    findings.push(finding(ad ? SEV.OK : SEV.INFO, 'DNSSEC (AD flag)', ad ? 'TAK — odpowiedź uwierzytelniona' : 'brak / nieobsługiwane',
+      ad ? '' : 'Resolver nie ustawił flagi AD. DNSSEC może być wyłączony albo niepoprawnie skonfigurowany.'));
+
+    /* ── Optional deep scan via CORS proxy ── */
+    const deepEnabled = $('#website-deep')?.checked;
+    if (!deepEnabled) {
+      findings.push(finding(SEV.INFO, 'Deep scan (HTTP headers)', 'pominięty',
+        'Włącz „Deep scan przez proxy” w panelu Website żeby pobrać nagłówki, ciasteczka i sprawdzić mixed content. Żądanie idzie przez publiczny proxy CORS.'));
+      return { id: 'website', title: 'Strona internetowa (URL)', icon: '🔎', findings };
+    }
+
+    try {
+      const proxy = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url.href);
+      const ctrl = AbortSignal.timeout ? AbortSignal.timeout(15000) : undefined;
+      const r = await fetch(proxy, { signal: ctrl });
+
+      // Headers visible to JS (proxied response — these are headers as seen by the proxy)
+      const h = (n) => r.headers.get(n);
+      const hsts  = h('strict-transport-security');
+      const csp   = h('content-security-policy');
+      const xfo   = h('x-frame-options');
+      const xcto  = h('x-content-type-options');
+      const refp  = h('referrer-policy');
+      const perm  = h('permissions-policy');
+      const coop  = h('cross-origin-opener-policy');
+      const corp  = h('cross-origin-resource-policy');
+      const srv   = h('server');
+      const xpb   = h('x-powered-by');
+      const setc  = h('set-cookie');
+
+      findings.push(finding(hsts ? SEV.OK : SEV.WARN, 'HSTS (Strict-Transport-Security)', hsts || 'brak',
+        hsts ? '' : 'Brak HSTS — pierwsze połączenie HTTP może być przechwycone. Dodaj nagłówek z max-age >= 15768000.'));
+      findings.push(finding(csp ? SEV.OK : SEV.WARN, 'Content-Security-Policy',
+        csp ? csp.slice(0, 120) + (csp.length > 120 ? '…' : '') : 'brak',
+        csp ? '' : 'Brak CSP — ataki XSS mają znacznie ułatwione zadanie.'));
+      findings.push(finding(xfo ? SEV.OK : SEV.WARN, 'X-Frame-Options', xfo || 'brak',
+        xfo ? '' : 'Brak X-Frame-Options i CSP frame-ancestors → ryzyko clickjackingu.'));
+      findings.push(finding(xcto === 'nosniff' ? SEV.OK : SEV.WARN, 'X-Content-Type-Options', xcto || 'brak',
+        xcto === 'nosniff' ? '' : 'Powinno być „nosniff”. Bez tego przeglądarka może źle zinterpretować typ pliku.'));
+      findings.push(finding(refp ? SEV.OK : SEV.WARN, 'Referrer-Policy', refp || 'brak',
+        refp ? '' : 'Bez tego nagłówka domyślnie wycieka pełny URL referer do trzecich stron.'));
+      findings.push(finding(perm ? SEV.OK : SEV.INFO, 'Permissions-Policy', perm || 'brak',
+        perm ? '' : 'Permissions-Policy ogranicza dostęp do API (kamera, geolokalizacja). Warto skonfigurować.'));
+      findings.push(finding(coop ? SEV.OK : SEV.INFO, 'Cross-Origin-Opener-Policy', coop || 'brak'));
+      findings.push(finding(corp ? SEV.OK : SEV.INFO, 'Cross-Origin-Resource-Policy', corp || 'brak'));
+      findings.push(finding(srv ? SEV.WARN : SEV.OK, 'Server (banner)', srv || 'ukryty',
+        srv ? 'Ukryj wersję serwera — atakujący poznaje stack i wersję.' : ''));
+      findings.push(finding(xpb ? SEV.WARN : SEV.OK, 'X-Powered-By (banner)', xpb || 'ukryty',
+        xpb ? 'Usuń nagłówek X-Powered-By — ujawnia framework.' : ''));
+
+      if (setc) {
+        const flags = [
+          ['HttpOnly', /HttpOnly/i.test(setc)],
+          ['Secure',   /Secure/i.test(setc)],
+          ['SameSite', /SameSite=/i.test(setc)],
+        ];
+        flags.forEach(([k, ok]) => findings.push(finding(ok ? SEV.OK : SEV.WARN,
+          'Set-Cookie · flaga ' + k, ok ? 'obecna' : 'brak',
+          ok ? '' : 'Każde wrażliwe ciasteczko powinno mieć ' + k + '.')));
+      } else {
+        findings.push(finding(SEV.INFO, 'Set-Cookie', 'brak ciasteczek w odpowiedzi'));
+      }
+
+      // Mixed content scan on the body
+      try {
+        const body = await r.text();
+        const httpResources = (body.match(/(?:src|href|action)=["']http:\/\/[^"'\s]+/gi) || [])
+          .filter(s => !/127\.0\.0\.1|localhost/i.test(s)).slice(0, 5);
+        findings.push(finding(httpResources.length === 0 ? SEV.OK : SEV.CRIT,
+          'Mixed content (zasoby http:// na stronie https://)',
+          httpResources.length === 0 ? 'brak wykrytych' : httpResources.join(' | '),
+          httpResources.length === 0 ? '' : 'Mixed content — przeglądarki blokują takie zasoby. Przepisz na https://.'));
+
+        // Outdated jQuery sniff (illustrative)
+        const jq = body.match(/jquery[-/]?(\d+\.\d+\.\d+)/i);
+        if (jq) {
+          const major = parseInt(jq[1].split('.')[0], 10);
+          findings.push(finding(major >= 3 ? SEV.OK : SEV.WARN,
+            'jQuery wersja', jq[1],
+            major >= 3 ? '' : 'jQuery < 3 ma znane CVE (XSS w .html(), $.ajax). Zaktualizuj.'));
+        }
+      } catch (_) {}
+
+      findings.push(finding(SEV.INFO, '↳ proxy użyty', 'api.allorigins.win',
+        'Pamiętaj że proxy widział pełen URL. Nie używaj deep-scan dla zasobów wewnętrznych/intranetowych.'));
+    } catch (err) {
+      findings.push(finding(SEV.WARN, 'Deep scan', 'błąd: ' + (err.message || err),
+        'Proxy mogło wyłączyć żądanie (timeout / CORS / rate-limit). Spróbuj ponownie.'));
+    }
+
+    return { id: 'website', title: 'Strona internetowa (URL)', icon: '🔎', findings };
+  }
+
   /* ── Module: Malware (file hashing) ───────────────── */
   async function scanMalware() {
     const findings = [];
@@ -843,6 +1022,10 @@ Raport powstał lokalnie w przeglądarce. Żadne dane nie zostały wysłane do s
     setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 200);
   }
 
-  // Expose for debugging
-  window.FSD_SCAN = { state, runScan, exportPdf, exportUrl, exportJson };
+  // Expose for debugging + AI analyst integration
+  window.FSD_SCAN = {
+    state, runScan, exportPdf, exportUrl, exportJson,
+    /** Build the report data the AI analyst can read. Returns null if no scan ran. */
+    getReport: () => state.sections.length ? buildReportData() : null,
+  };
 })();

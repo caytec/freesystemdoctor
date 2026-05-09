@@ -29,7 +29,9 @@ Aplikacja Windows z 45 modułami narzędzi:
 
 Pełny audyt bezpieczeństwa działający w przeglądarce — bez logowania, bez wysyłania danych:
 
-- **Moduły:** system, sieć, pamięć, storage, przeglądarka, prywatność, malware (skan plików)
+- **Moduły:** system, sieć, pamięć, storage, przeglądarka, prywatność, **strona internetowa (URL)**, malware (skan plików)
+- **Website audit:** DNS over HTTPS (A/AAAA/MX/TXT/SPF/DMARC/CAA/NS + DNSSEC AD-flag), HTTPS check, opcjonalny deep-scan przez CORS proxy (HSTS/CSP/X-Frame-Options/cookies/mixed-content/banner disclosure)
+- **AI Risk Analyst (BYOK):** chat panel oparty o Claude (Anthropic), Groq, Cerebras albo dowolny endpoint OpenAI-compatible. Klucz przechowywany lokalnie, żądania idą bezpośrednio z przeglądarki — nie mamy serwera. Anthropic używa nagłówka `anthropic-dangerous-direct-browser-access`.
 - **Hashing plików:** SHA-256 + SHA-1 + MD5, lokalna baza znanych zagrożeń (m.in. EICAR)
 - **Raporty:** PDF (jsPDF) albo lokalny link `blob:` do pobrania, eksport JSON
 - **Threat Intel feed:** anonimowe IOC (hash + werdykt + region) — bez nazw plików, bez IP
