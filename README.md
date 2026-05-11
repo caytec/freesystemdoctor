@@ -47,3 +47,21 @@ Pełny audyt bezpieczeństwa działający w przeglądarce — bez logowania, bez
 ## Licencja
 
 MIT — zobacz [LICENSE](LICENSE).
+
+## Hosting (Railway / Docker)
+
+Repo ma gotowy `Dockerfile` + `Caddyfile` + `railway.json` — strona stawia się jednym kliknięciem.
+
+**Railway:**
+1. New Project → Deploy from GitHub repo → wybierz `caytec/freesystemdoctor`.
+2. Railway sam wykryje `Dockerfile`. Nie trzeba ustawiać żadnych env vars (Caddy używa `$PORT` ustawionego przez Railway).
+3. Po pierwszym deployu otwórz Settings → Networking → Generate Domain (albo dodaj custom domain).
+
+**Lokalnie (sanity check):**
+```sh
+docker build -t fsd .
+docker run --rm -p 8080:8080 -e PORT=8080 fsd
+# → http://localhost:8080
+```
+
+Caddy ustawia HSTS, X-Frame-Options, X-Content-Type-Options, Referrer-Policy i Permissions-Policy. **CSP jest świadomie pominięty** — AI Risk Analyst pozwala wskazać dowolny endpoint OpenAI-compatible, co bez luźnego `connect-src` by przestało działać. Jeśli wdrażasz pod jeden konkretny zestaw providerów, dostosuj `Caddyfile`.
