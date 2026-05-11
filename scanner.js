@@ -327,7 +327,68 @@
         'Identyfikator stabilności renderowania — powiązany z GPU/sterownikiem.'));
     } catch (_) {}
 
+    // Subresource Integrity audit on cross-origin <script>/<link>
+    const sri = sriAudit();
+    if (sri.crossOrigin === 0) {
+      findings.push(finding(SEV.OK, 'Subresource Integrity', 'brak zasobów cross-origin',
+        'Strona nie ładuje skryptów/styli z zewnętrznych origin — nie potrzebuje SRI.'));
+    } else {
+      const sev = sri.withSri === sri.crossOrigin ? SEV.OK : SEV.WARN;
+      findings.push(finding(sev, 'Subresource Integrity',
+        `${sri.withSri}/${sri.crossOrigin} zasobów cross-origin z atrybutem integrity`,
+        sri.withSri === sri.crossOrigin ? ''
+          : 'Niezweryfikowany skrypt z CDN może być zamieniony — dodaj integrity="sha384-..." na każdym <script src=> i <link rel=stylesheet>.'));
+      sri.unsafe.slice(0, 5).forEach(u =>
+        findings.push(finding(SEV.WARN, '  ↳ bez SRI', u)));
+    }
+
+    // Service worker registrations
+    if ('serviceWorker' in navigator) {
+      try {
+        const regs = await navigator.serviceWorker.getRegistrations();
+        if (regs.length === 0) {
+          findings.push(finding(SEV.OK, 'Service Workers zarejestrowane', '0',
+            'Brak SW. Strona nie ma zaplecza w tle.'));
+        } else {
+          findings.push(finding(SEV.INFO, 'Service Workers zarejestrowane', regs.length + '',
+            'SW może cache\'ować odpowiedzi i działać offline. Sprawdź czy każdy jest zaufany.'));
+          regs.forEach(r => findings.push(finding(SEV.INFO, '  ↳ scope', r.scope)));
+        }
+      } catch (_) {}
+    }
+
+    // Mixed content scan of the current page
+    const mixed = mixedContentOnPage();
+    findings.push(finding(mixed.length === 0 ? SEV.OK : SEV.CRIT,
+      'Mixed content na tej stronie', mixed.length === 0 ? 'brak' : mixed.length + ' zasobów http://',
+      mixed.length === 0 ? '' : 'Zasoby HTTP na stronie HTTPS — przeglądarka zablokuje albo zdegraduje bezpieczeństwo.'));
+    mixed.slice(0, 5).forEach(u => findings.push(finding(SEV.CRIT, '  ↳ mixed', u)));
+
     return { id: 'browser', title: 'Przeglądarka i fingerprint', icon: '🧭', findings };
+  }
+
+  /** Audit cross-origin <script> and <link rel=stylesheet> for the integrity attr. */
+  function sriAudit() {
+    const out = { crossOrigin: 0, withSri: 0, unsafe: [] };
+    const probe = (url, hasIntegrity) => {
+      try {
+        if (new URL(url, location.href).origin === location.origin) return;
+      } catch (_) { return; }
+      out.crossOrigin++;
+      if (hasIntegrity) out.withSri++; else out.unsafe.push(url);
+    };
+    document.querySelectorAll('script[src]').forEach(s => probe(s.getAttribute('src'), !!s.integrity));
+    document.querySelectorAll('link[rel="stylesheet"][href]').forEach(l => probe(l.getAttribute('href'), !!l.integrity));
+    return out;
+  }
+  function mixedContentOnPage() {
+    if (location.protocol !== 'https:') return [];
+    const urls = [];
+    const seen = new Set();
+    const push = (u) => { if (u && /^http:\/\//i.test(u) && !seen.has(u)) { seen.add(u); urls.push(u); } };
+    document.querySelectorAll('script[src], link[href], img[src], iframe[src], video[src], audio[src], source[src]')
+      .forEach(el => push(el.getAttribute('src') || el.getAttribute('href')));
+    return urls;
   }
 
   /* ── Module: Network ──────────────────────────────── */
@@ -376,11 +437,67 @@
         'Możliwe że masz blokujące rozszerzenie albo politykę CSP.'));
     }
 
-    // WebRTC leak hint
-    findings.push(finding(SEV.INFO, 'WebRTC', 'RTCPeerConnection w window: ' + ('RTCPeerConnection' in window),
-      'WebRTC potrafi wyciekać lokalne IP — używaj VPN-a z blokadą WebRTC, jeśli to ważne.'));
+    // WebRTC ICE candidate leak test — actually probe RTCPeerConnection
+    const leaked = await webrtcCandidates();
+    if (leaked === null) {
+      findings.push(finding(SEV.INFO, 'WebRTC', 'RTCPeerConnection niedostępne',
+        'Przeglądarka albo polityka blokuje WebRTC. Brak ryzyka leaka.'));
+    } else if (leaked.length === 0) {
+      findings.push(finding(SEV.OK, 'WebRTC IP leak test', 'brak kandydatów ICE',
+        'Świetnie — żaden adres nie wyciekł przez RTCPeerConnection.'));
+    } else {
+      const publicIps = leaked.filter(ip => !isPrivateIp(ip));
+      const sev = publicIps.length ? SEV.CRIT : SEV.WARN;
+      findings.push(finding(sev, 'WebRTC IP leak test',
+        leaked.join(', '),
+        publicIps.length
+          ? 'Publiczny adres wyciekł przez WebRTC — VPN nie blokuje WebRTC. Włącz blokadę w przeglądarce/rozszerzeniu.'
+          : 'Tylko adresy lokalne (RFC1918 / link-local / mDNS). Niska wartość dla atakującego, ale i tak fingerprintable.'));
+    }
+
+    // HTTP/3 / QUIC support indication (via Alt-Svc on a probe to self)
+    try {
+      const r = await fetch(location.href, { method: 'HEAD', cache: 'no-store' });
+      const alt = r.headers.get('alt-svc') || '';
+      const h3 = /\bh3(?:-\d+)?=/i.test(alt);
+      findings.push(finding(h3 ? SEV.OK : SEV.INFO,
+        'HTTP/3 (Alt-Svc na tym origin)', h3 ? alt : (alt || 'brak'),
+        h3 ? '' : 'Brak Alt-Svc h3 — przeglądarka korzysta z TCP/TLS. HTTP/3 jest szybsze na słabych sieciach.'));
+    } catch (_) {}
 
     return { id: 'network', title: 'Sieć i łączność', icon: '🌐', findings };
+  }
+
+  /** Enumerate WebRTC ICE candidates to detect IP leaks.
+   *  Returns null if WebRTC unavailable, [] if nothing leaked, or array of IPs. */
+  function webrtcCandidates() {
+    if (!('RTCPeerConnection' in window)) return Promise.resolve(null);
+    return new Promise(resolve => {
+      let pc;
+      try {
+        pc = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
+      } catch (_) { return resolve(null); }
+      const ips = new Set();
+      try { pc.createDataChannel(''); } catch (_) {}
+      pc.onicecandidate = (e) => {
+        if (!e.candidate) { try { pc.close(); } catch (_) {} return resolve([...ips]); }
+        const c = e.candidate.candidate || '';
+        const m = c.match(/([0-9a-fA-F]{1,4}(?::[0-9a-fA-F]{1,4}){2,}|(?:\d{1,3}\.){3}\d{1,3})/);
+        if (m && !/\.local$/i.test(c)) ips.add(m[1]);
+      };
+      pc.createOffer().then(o => pc.setLocalDescription(o)).catch(() => resolve([]));
+      setTimeout(() => { try { pc.close(); } catch (_) {} resolve([...ips]); }, 2000);
+    });
+  }
+  function isPrivateIp(ip) {
+    return /^10\./.test(ip) ||
+           /^192\.168\./.test(ip) ||
+           /^172\.(1[6-9]|2\d|3[0-1])\./.test(ip) ||
+           /^127\./.test(ip) ||
+           /^169\.254\./.test(ip) ||
+           /^fc|^fd/i.test(ip) ||      // ULA fc00::/7
+           /^fe80/i.test(ip) ||        // link-local
+           /^::1$/.test(ip);
   }
 
   /* ── Module: Memory ───────────────────────────────── */
@@ -458,6 +575,39 @@
     findings.push(finding(SEV.INFO, 'Liczba pluginów', String((navigator.plugins || []).length)));
     findings.push(finding(SEV.INFO, 'Mediadevices API', navigator.mediaDevices ? 'dostępny' : 'brak'));
 
+    // AudioContext fingerprint — DynamicsCompressor output is hardware/codec-stable
+    const audioFp = await audioFingerprint();
+    if (audioFp !== null) {
+      findings.push(finding(SEV.INFO, 'Audio fingerprint',
+        audioFp.slice(0, 16) + (audioFp.length > 16 ? '…' : ''),
+        'AudioContext zwraca identyfikator powiązany z biblioteką audio systemu — używany do śledzenia.'));
+    } else {
+      findings.push(finding(SEV.OK, 'Audio fingerprint', 'niedostępny',
+        'Przeglądarka blokuje albo nie wspiera OfflineAudioContext — dobre dla prywatności.'));
+    }
+
+    // Hardware sensors exposure — fingerprintable & sometimes leak data
+    const sensors = [];
+    if ('getBattery' in navigator)    sensors.push('Battery');
+    if ('getGamepads'  in navigator)  sensors.push('Gamepad');
+    if ('DeviceMotionEvent' in window)      sensors.push('DeviceMotion');
+    if ('DeviceOrientationEvent' in window) sensors.push('DeviceOrientation');
+    if ('Accelerometer' in window)    sensors.push('Accelerometer');
+    if ('Gyroscope' in window)        sensors.push('Gyroscope');
+    if ('Magnetometer' in window)     sensors.push('Magnetometer');
+    if ('AmbientLightSensor' in window) sensors.push('AmbientLight');
+    findings.push(finding(sensors.length > 4 ? SEV.WARN : SEV.INFO,
+      'Sensor / hardware API dostępne', sensors.join(', ') || 'brak',
+      sensors.length > 4 ? 'Wiele API sprzętowych ułatwia fingerprinting. Wyłącz w ustawieniach strony.' : ''));
+
+    // Fonts fingerprint — count unique fonts measurable via canvas
+    try {
+      const fp = await fontsFingerprint();
+      findings.push(finding(SEV.INFO, 'Wykryte czcionki (fingerprint)',
+        `${fp.detected}/${fp.tested} z testowanej listy`,
+        'Większa liczba „znanych” czcionek = łatwiejsze odróżnienie od innych użytkowników.'));
+    } catch (_) {}
+
     // Permissions API snapshot
     if (navigator.permissions && navigator.permissions.query) {
       const probe = ['geolocation','notifications','camera','microphone','clipboard-read'];
@@ -471,6 +621,54 @@
       }
     }
     return { id: 'privacy', title: 'Prywatność i trackery', icon: '🕶', findings };
+  }
+
+  /** OfflineAudioContext fingerprint — DynamicsCompressor output sample */
+  async function audioFingerprint() {
+    try {
+      const AC = window.OfflineAudioContext || window.webkitOfflineAudioContext;
+      if (!AC) return null;
+      const ctx = new AC(1, 44100, 44100);
+      const osc = ctx.createOscillator();
+      osc.type = 'triangle'; osc.frequency.value = 1000;
+      const comp = ctx.createDynamicsCompressor();
+      ['threshold','knee','ratio','attack','release'].forEach((k, i) => {
+        if (comp[k]) comp[k].value = [-50, 40, 12, 0, 0.25][i];
+      });
+      osc.connect(comp); comp.connect(ctx.destination);
+      osc.start(0);
+      const buf = await ctx.startRendering();
+      const data = buf.getChannelData(0);
+      let sum = 0;
+      for (let i = 4500; i < 5000; i++) sum += Math.abs(data[i]);
+      return sum.toString(36);
+    } catch (_) { return null; }
+  }
+
+  /** Detect a curated list of installed fonts via canvas measurement */
+  async function fontsFingerprint() {
+    const base = ['monospace', 'sans-serif', 'serif'];
+    const test = ['Arial','Verdana','Helvetica','Times New Roman','Courier New','Georgia','Trebuchet MS',
+      'Comic Sans MS','Impact','Lucida Console','Tahoma','Palatino','Garamond','Calibri','Cambria',
+      'Consolas','Segoe UI','Roboto','Open Sans','Fira Code','Inter','Menlo','Monaco','SF Pro Text'];
+    const text = 'mmmmmmmmmmlli';
+    const size = '72px';
+    const c = document.createElement('canvas'); c.width = 600; c.height = 90;
+    const ctx = c.getContext('2d');
+    ctx.textBaseline = 'top'; ctx.fillStyle = '#000';
+    const baseline = {};
+    base.forEach(b => {
+      ctx.font = `${size} ${b}`;
+      baseline[b] = ctx.measureText(text).width;
+    });
+    let detected = 0;
+    for (const f of test) {
+      for (const b of base) {
+        ctx.font = `${size} "${f}", ${b}`;
+        if (Math.abs(ctx.measureText(text).width - baseline[b]) > 0.5) { detected++; break; }
+      }
+    }
+    return { detected, tested: test.length };
   }
 
   function detectKnownTrackers() {
@@ -579,6 +777,53 @@
     findings.push(finding(ad ? SEV.OK : SEV.INFO, 'DNSSEC (AD flag)', ad ? 'TAK — odpowiedź uwierzytelniona' : 'brak / nieobsługiwane',
       ad ? '' : 'Resolver nie ustawił flagi AD. DNSSEC może być wyłączony albo niepoprawnie skonfigurowany.'));
 
+    /* ── Mail-security & branding records (DoH only, no proxy needed) ── */
+    const mtaStsQ  = await dohQuery('_mta-sts.' + url.hostname, 'TXT');
+    const tlsRptQ  = await dohQuery('_smtp._tls.' + url.hostname, 'TXT');
+    const bimiQ    = await dohQuery('default._bimi.' + url.hostname, 'TXT');
+
+    const mtaSts = recs(mtaStsQ).map(s => s.replace(/^"|"$/g, ''))
+      .find(t => /^v=STSv1/i.test(t));
+    findings.push(finding(mtaSts ? SEV.OK : SEV.INFO, 'MTA-STS', mtaSts || 'brak rekordu _mta-sts',
+      mtaSts ? '' : 'Bez MTA-STS atakujący może wymusić downgrade TLS dla maila. Dodaj _mta-sts.<domena> TXT i /.well-known/mta-sts.txt.'));
+
+    const tlsRpt = recs(tlsRptQ).map(s => s.replace(/^"|"$/g, ''))
+      .find(t => /^v=TLSRPTv1/i.test(t));
+    findings.push(finding(tlsRpt ? SEV.OK : SEV.INFO, 'TLS-RPT', tlsRpt || 'brak rekordu _smtp._tls',
+      tlsRpt ? '' : 'TLS-RPT pozwala odbierać raporty o problemach z TLS w mailu. Dodaj rekord rua=mailto:...'));
+
+    const bimi = recs(bimiQ).map(s => s.replace(/^"|"$/g, ''))
+      .find(t => /^v=BIMI1/i.test(t));
+    findings.push(finding(bimi ? SEV.OK : SEV.INFO, 'BIMI', bimi || 'brak rekordu default._bimi',
+      bimi ? '' : 'BIMI pokazuje Twoje logo w klientach pocztowych. Wymaga DMARC z polityką enforce.'));
+
+    /* ── Certificate Transparency: enumerate subdomains via crt.sh ── */
+    try {
+      const ctrl = AbortSignal.timeout ? AbortSignal.timeout(8000) : undefined;
+      const ctR = await fetch(
+        `https://crt.sh/?q=${encodeURIComponent('%.' + url.hostname)}&output=json`,
+        { signal: ctrl });
+      if (ctR.ok) {
+        const arr = await ctR.json();
+        const names = new Set();
+        for (const e of arr) {
+          (e.name_value || '').split(/\s+/).forEach(n => {
+            n = n.trim().toLowerCase();
+            if (n && !n.includes('*') && n.endsWith(url.hostname)) names.add(n);
+          });
+        }
+        const sample = [...names].slice(0, 8).join(', ');
+        findings.push(finding(SEV.INFO, 'Subdomeny w CT logach (crt.sh)',
+          `${names.size} unikalnych` + (sample ? ' · ' + sample + (names.size > 8 ? ', …' : '') : ''),
+          names.size > 50
+            ? 'Duża liczba subdomen w publicznych logach CT — zweryfikuj czy nie ma „shadow IT” pod Twoją domeną.'
+            : ''));
+      }
+    } catch (_) {
+      findings.push(finding(SEV.INFO, 'Subdomeny w CT logach (crt.sh)', 'błąd / timeout',
+        'crt.sh odpowiada wolno albo blokuje CORS — spróbuj ponownie później.'));
+    }
+
     /* ── Optional deep scan via CORS proxy ── */
     const deepEnabled = $('#website-deep')?.checked;
     if (!deepEnabled) {
@@ -659,6 +904,40 @@
         }
       } catch (_) {}
 
+      // HTTP/3 / QUIC support via Alt-Svc on the target
+      const alt = h('alt-svc') || '';
+      const h3 = /\bh3(?:-\d+)?=/i.test(alt);
+      findings.push(finding(h3 ? SEV.OK : SEV.INFO, 'HTTP/3 (Alt-Svc)', h3 ? alt : (alt || 'brak'),
+        h3 ? '' : 'Brak h3 w Alt-Svc — strona nie negocjuje HTTP/3. Włącz w CDN / serwerze.'));
+
+      // robots.txt + security.txt + /.well-known/mta-sts.txt — fetch via proxy in parallel
+      const wellKnown = async (path, label, hintOk, hintMissing) => {
+        try {
+          const u = url.origin + path;
+          const r2 = await fetch('https://api.allorigins.win/raw?url=' + encodeURIComponent(u),
+            { signal: AbortSignal.timeout ? AbortSignal.timeout(8000) : undefined });
+          if (r2.ok) {
+            const len = (await r2.text()).length;
+            findings.push(finding(SEV.OK, label, `${path} (${len} B)`, hintOk));
+          } else {
+            findings.push(finding(SEV.WARN, label, `${r2.status} ${path}`, hintMissing));
+          }
+        } catch (_) {
+          findings.push(finding(SEV.WARN, label, 'błąd / timeout', hintMissing));
+        }
+      };
+      await wellKnown('/robots.txt', 'robots.txt',
+        'Plik obecny.',
+        'Brak robots.txt — boty crawlują wszystko. Dodaj plik z polityką dla web crawlerów.');
+      await wellKnown('/.well-known/security.txt', 'security.txt',
+        'security.txt obecny — researchersi wiedzą gdzie zgłaszać luki.',
+        'Brak /.well-known/security.txt (RFC 9116). Dodaj kontakt do zgłaszania podatności.');
+      if (mtaSts) {
+        await wellKnown('/.well-known/mta-sts.txt', 'mta-sts.txt (well-known)',
+          'Polityka MTA-STS obecna — spójna z rekordem DNS.',
+          'Rekord _mta-sts istnieje, ale plik /.well-known/mta-sts.txt jest niedostępny — niespójna konfiguracja.');
+      }
+
       findings.push(finding(SEV.INFO, '↳ proxy użyty', 'api.allorigins.win',
         'Pamiętaj że proxy widział pełen URL. Nie używaj deep-scan dla zasobów wewnętrznych/intranetowych.'));
     } catch (err) {
@@ -669,7 +948,15 @@
     return { id: 'website', title: 'Strona internetowa (URL)', icon: '🔎', findings };
   }
 
-  /* ── Module: Malware (file hashing) ───────────────── */
+  /* ── Module: Malware (file hashing + static analysis) ─
+     Layered checks per file:
+       1. Triple hash (SHA-256 + SHA-1 + MD5)         → KNOWN_BAD lookup
+       2. Magic-bytes vs claimed extension            → mismatch flag
+       3. Shannon entropy of first 256 KB             → packed/encrypted hint
+       4. Office macro detection (vbaProject.bin)     → for ZIP-based Office
+       5. PDF risk token sweep (/JavaScript /Launch…) → for PDFs
+       6. Printable-string scan for embedded URLs     → basic IOC mining
+       7. Suspicious extension list                   → final risk weighting   */
   async function scanMalware() {
     const findings = [];
     if (!state.files.length) {
@@ -685,39 +972,164 @@
 
     for (const f of state.files) {
       if (state.aborted) break;
-      const buf = await f.arrayBuffer();
+      const buf  = await f.arrayBuffer();
+      const u8   = new Uint8Array(buf);
+
       const sha256 = await sha256Hex(buf);
       const sha1   = await sha1Hex(buf);
-      const md5    = md5Hex(new Uint8Array(buf));
+      const md5    = md5Hex(u8);
 
       const ext = (f.name.split('.').pop() || '').toLowerCase();
       const suspicious = SUSPICIOUS_EXT.has(ext);
       const knownBad = KNOWN_BAD.sha256.has(sha256) || KNOWN_BAD.sha1.has(sha1) || KNOWN_BAD.md5.has(md5);
 
-      const sev = knownBad ? SEV.CRIT : (suspicious ? SEV.WARN : SEV.OK);
-      const verdict = knownBad
-        ? 'KNOWN MALWARE — hash trafił do lokalnej bazy CTI.'
-        : (suspicious
-            ? 'Rozszerzenie podwyższonego ryzyka — przeskanuj dodatkowo Defenderem/clamav.'
-            : 'Brak trafień w lokalnej bazie. Hash wysyłany do feedu Threat Intel po Twojej akceptacji.');
+      // Magic-bytes
+      const magic = detectMagic(u8);
+      const claimed = ext || 'no-ext';
+      const mismatch = magic && magic.exts.length && !magic.exts.includes(claimed) && claimed !== 'no-ext';
 
-      findings.push(finding(sev, f.name, `${humanBytes(f.size)} · ${ext || 'no-ext'}`, verdict));
+      // Entropy
+      const ent = shannonEntropy(u8);
+      const packed = ent > 7.5;
+
+      // Format-specific deep checks
+      let macros = false, pdfRisk = [];
+      const isOfficeZip = magic && magic.type.startsWith('ZIP') &&
+        ['docm','xlsm','pptm','docx','xlsx','pptx'].includes(claimed);
+      if (isOfficeZip) macros = findBytes(u8, ENC_VBA, Math.min(u8.length, 4_000_000)) !== -1;
+      if (magic && magic.type === 'PDF') pdfRisk = pdfRiskTokens(u8);
+
+      // Embedded URLs (basic IOC mining)
+      const urls = extractUrls(u8);
+
+      // Final severity — combine all signals
+      let sev = SEV.OK;
+      const reasons = [];
+      if (knownBad)        { sev = SEV.CRIT; reasons.push('hash w lokalnej bazie KNOWN_BAD'); }
+      if (macros)          { sev = SEV.CRIT; reasons.push('makra VBA w pliku Office'); }
+      if (pdfRisk.length)  { sev = sev === SEV.OK ? SEV.WARN : sev;
+                             reasons.push('PDF zawiera ' + pdfRisk.join(', ')); }
+      if (mismatch)        { sev = sev === SEV.OK ? SEV.WARN : sev;
+                             reasons.push(`magic = ${magic.type} ale rozszerzenie .${claimed}`); }
+      if (packed && suspicious) {
+                             sev = sev === SEV.OK ? SEV.WARN : sev;
+                             reasons.push(`entropy ${ent.toFixed(2)} (możliwy packer/UPX/krypter)`); }
+      if (suspicious && sev === SEV.OK) {
+                             sev = SEV.WARN;
+                             reasons.push(`rozszerzenie .${claimed} podwyższonego ryzyka`); }
+
+      const verdict = reasons.length ? reasons.join('; ')
+        : 'Brak trafień. Plik wygląda na nieszkodliwy w analizie statycznej.';
+
+      findings.push(finding(sev, f.name, `${humanBytes(f.size)} · ${claimed}`, verdict));
+      findings.push(finding(SEV.INFO, '  ↳ Magic-bytes', magic ? magic.type : 'nieznany format'));
+      findings.push(finding(SEV.INFO, '  ↳ Entropy (0–8)', ent.toFixed(3) + (packed ? ' ⚠ packed/encrypted' : '')));
+      if (macros) findings.push(finding(SEV.CRIT, '  ↳ Office macros', 'WYKRYTE (vbaProject.bin)'));
+      if (pdfRisk.length) findings.push(finding(SEV.WARN, '  ↳ PDF risk tokens', pdfRisk.join(', ')));
+      if (urls.length) findings.push(finding(SEV.WARN, `  ↳ Embedded URLs (${urls.length})`,
+        urls.slice(0, 3).join(' | ') + (urls.length > 3 ? ' …' : ''),
+        'Sprawdź IOC na VirusTotal / abuse.ch / Shodan przed otwarciem.'));
       findings.push(finding(SEV.INFO, '  ↳ SHA-256', sha256));
       findings.push(finding(SEV.INFO, '  ↳ SHA-1',   sha1));
       findings.push(finding(SEV.INFO, '  ↳ MD5',     md5));
 
-      // Always queue an anonymized intel record (user has to confirm via "Wyślij do Threat Intel")
+      // Queue anonymized intel record (sent to feed only on explicit confirmation)
       pendingIntel.push({
         ts: Date.now(),
         sha256, sha1, md5,
         size: f.size,
-        ext,
-        verdict: knownBad ? 'malicious' : (suspicious ? 'suspicious' : 'clean'),
+        ext: claimed,
+        verdict: sev === SEV.CRIT ? 'malicious' : (sev === SEV.WARN ? 'suspicious' : 'clean'),
         country: anonymizedCountry(),
+        family: macros ? 'Macro.Office' : (pdfRisk.length ? 'PDF.Risky' : (knownBad ? 'KnownHash' : undefined)),
       });
     }
 
     return { id: 'malware', title: 'Malware (skan plików)', icon: '🦠', findings };
+  }
+
+  /* ── Static-analysis helpers ─────────────────────── */
+  const ENC_VBA = new TextEncoder().encode('vbaProject.bin');
+
+  /** Magic-byte / file-signature table — top 24 formats seen in the wild. */
+  const MAGIC_TABLE = [
+    { sig: [0x4D, 0x5A],                         type: 'PE/EXE/DLL (Windows)',          exts: ['exe','dll','sys','scr','com','cpl','ocx'] },
+    { sig: [0x7F, 0x45, 0x4C, 0x46],             type: 'ELF (Linux/Unix executable)',   exts: ['elf','so','o','axf','bin'] },
+    { sig: [0xFE, 0xED, 0xFA, 0xCE],             type: 'Mach-O 32-bit',                 exts: ['macho','dylib'] },
+    { sig: [0xFE, 0xED, 0xFA, 0xCF],             type: 'Mach-O 64-bit',                 exts: ['macho','dylib'] },
+    { sig: [0xCA, 0xFE, 0xBA, 0xBE],             type: 'Mach-O Universal / Java class', exts: ['class','macho'] },
+    { sig: [0x25, 0x50, 0x44, 0x46],             type: 'PDF',                           exts: ['pdf'] },
+    { sig: [0x50, 0x4B, 0x03, 0x04],             type: 'ZIP (incl. Office OOXML / JAR / APK)', exts: ['zip','docx','xlsx','pptx','docm','xlsm','pptm','jar','apk','xpi','epub','odt','ods','odp'] },
+    { sig: [0x50, 0x4B, 0x05, 0x06],             type: 'ZIP (empty)',                   exts: ['zip'] },
+    { sig: [0x52, 0x61, 0x72, 0x21, 0x1A, 0x07], type: 'RAR',                           exts: ['rar'] },
+    { sig: [0x37, 0x7A, 0xBC, 0xAF, 0x27, 0x1C], type: '7-Zip',                         exts: ['7z'] },
+    { sig: [0x1F, 0x8B],                         type: 'GZIP',                          exts: ['gz','tgz'] },
+    { sig: [0x42, 0x5A, 0x68],                   type: 'BZip2',                         exts: ['bz2'] },
+    { sig: [0xFD, 0x37, 0x7A, 0x58, 0x5A, 0x00], type: 'XZ',                            exts: ['xz'] },
+    { sig: [0x89, 0x50, 0x4E, 0x47],             type: 'PNG',                           exts: ['png'] },
+    { sig: [0xFF, 0xD8, 0xFF],                   type: 'JPEG',                          exts: ['jpg','jpeg'] },
+    { sig: [0x47, 0x49, 0x46, 0x38],             type: 'GIF',                           exts: ['gif'] },
+    { sig: [0x52, 0x49, 0x46, 0x46],             type: 'RIFF (WAV/AVI/WebP)',           exts: ['wav','avi','webp'] },
+    { sig: [0x49, 0x49, 0x2A, 0x00],             type: 'TIFF (LE)',                     exts: ['tif','tiff'] },
+    { sig: [0x4D, 0x4D, 0x00, 0x2A],             type: 'TIFF (BE)',                     exts: ['tif','tiff'] },
+    { sig: [0x4F, 0x67, 0x67, 0x53],             type: 'Ogg',                           exts: ['ogg','ogv','oga'] },
+    { sig: [0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1],
+                                                  type: 'OLE compound (legacy Office / MSI / MSG)',
+                                                  exts: ['doc','xls','ppt','msi','msg'] },
+    { sig: [0x23, 0x21],                         type: 'Script (shebang)',              exts: ['sh','py','pl','rb','js','ts'] },
+    { sig: [0x3C, 0x21, 0x44, 0x4F, 0x43, 0x54, 0x59, 0x50, 0x45],
+                                                  type: 'HTML (DOCTYPE)',                exts: ['html','htm'] },
+    { sig: [0x3C, 0x3F, 0x78, 0x6D, 0x6C],       type: 'XML',                           exts: ['xml','xhtml','svg','rss'] },
+  ];
+  function detectMagic(u8) {
+    for (const m of MAGIC_TABLE) {
+      if (u8.length < m.sig.length) continue;
+      let ok = true;
+      for (let i = 0; i < m.sig.length; i++) {
+        if (u8[i] !== m.sig[i]) { ok = false; break; }
+      }
+      if (ok) return m;
+    }
+    return null;
+  }
+  /** Shannon entropy on the first 256 KB. Returns 0..8 (bits/byte). */
+  function shannonEntropy(u8) {
+    const len = Math.min(u8.length, 262144);
+    if (len === 0) return 0;
+    const c = new Uint32Array(256);
+    for (let i = 0; i < len; i++) c[u8[i]]++;
+    let h = 0;
+    for (let i = 0; i < 256; i++) {
+      if (c[i] === 0) continue;
+      const p = c[i] / len;
+      h -= p * Math.log2(p);
+    }
+    return h;
+  }
+  /** Byte-wise needle search in haystack within `limit` bytes. -1 if not found. */
+  function findBytes(haystack, needle, limit) {
+    const end = Math.min(haystack.length, limit) - needle.length;
+    outer: for (let i = 0; i <= end; i++) {
+      for (let j = 0; j < needle.length; j++) {
+        if (haystack[i + j] !== needle[j]) continue outer;
+      }
+      return i;
+    }
+    return -1;
+  }
+  /** Risky PDF action tokens in the first 1 MB of the file. */
+  function pdfRiskTokens(u8) {
+    const slice = u8.subarray(0, Math.min(u8.length, 1_048_576));
+    const s = new TextDecoder('latin1').decode(slice);
+    const tokens = ['/JavaScript','/JS','/OpenAction','/Launch','/AA','/URI','/EmbeddedFile','/AcroForm','/SubmitForm','/RichMedia','/GoToE','/GoToR'];
+    return tokens.filter(t => s.includes(t));
+  }
+  /** Extract HTTP(S)/FTP URLs from the first 256 KB as printable strings. */
+  function extractUrls(u8) {
+    const slice = u8.subarray(0, Math.min(u8.length, 262144));
+    const s = new TextDecoder('latin1').decode(slice);
+    const rx = /(?:https?|ftp):\/\/[A-Za-z0-9.\-]+(?:[\/?#][^\s"'<>()\\]{0,200})?/g;
+    return [...new Set(s.match(rx) || [])].slice(0, 10);
   }
 
   const pendingIntel = [];
