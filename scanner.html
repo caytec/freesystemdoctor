@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="FreeSystemDoctor Cybersecurity Scanner — pełny skan systemu, sieci, pamięci i plików. Raport PDF lub link do pobrania. Bez konta, bez logowania.">
+<meta name="keywords" content="cybersecurity scanner, skaner bezpieczeństwa, skaner malware, raport pdf, threat intelligence, skanowanie online">
+<meta property="og:title" content="Cybersecurity Scanner — FreeSystemDoctor">
+<meta property="og:description" content="Pełny skan systemu, sieci, pamięci i plików. Raport PDF + link.">
+<meta property="og:type" content="website">
+<title>Cybersecurity Scanner — FreeSystemDoctor</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav class="topnav">
+  <div class="container nav-inner">
+    <a href="index.html" class="logo">
+      <span class="logo-icon">⚕</span>
+      <span class="logo-text">FreeSystemDoctor</span>
+    </a>
+    <div class="nav-links">
+      <a href="index.html#features">Funkcje</a>
+      <a href="scanner.html" class="active">Scanner</a>
+      <a href="threat-intel.html">Threat Intel</a>
+      <a href="index.html#download">Pobierz</a>
+      <a href="changelog.html">Changelog</a>
+      <a href="https://github.com/caytec/freesystemdoctor" target="_blank">GitHub</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero scanner-hero">
+  <div class="container">
+    <div class="badge">🛡 Cybersecurity Scanner · v1.0 · Client-side</div>
+    <h1 class="hero-title">
+      Pełny audyt bezpieczeństwa<br>
+      <span class="grad">w przeglądarce</span>
+    </h1>
+    <p class="hero-sub">
+      System, sieć, pamięć i pliki — wszystko w jednym przebiegu.
+      Twoje dane nie opuszczają urządzenia. Raport pobierasz jako PDF
+      albo lokalny link, którym dzielisz się jak chcesz.
+    </p>
+    <div class="hero-stats scanner-stats">
+      <div class="stat"><div class="stat-num" id="stat-modules">8</div><div class="stat-lbl">Modułów skanu</div></div>
+      <div class="stat"><div class="stat-num" id="stat-checks">200+</div><div class="stat-lbl">Pojedynczych testów</div></div>
+      <div class="stat"><div class="stat-num">0</div><div class="stat-lbl">Wysłanych bajtów</div></div>
+      <div class="stat"><div class="stat-num">0 zł</div><div class="stat-lbl">Bez logowania</div></div>
+    </div>
+  </div>
+</header>
+
+<section class="scanner-controls">
+  <div class="container">
+    <div class="scan-card">
+      <div class="scan-card-head">
+        <h2>Wybierz zakres skanowania</h2>
+        <p class="section-sub" style="margin: 6px 0 0;">Możesz uruchomić moduły osobno albo „Skanuj wszystko” jednym kliknięciem.</p>
+      </div>
+
+      <div class="scan-modules" role="group" aria-label="Moduły skanowania">
+        <label class="scan-mod"><input type="checkbox" data-mod="system" checked><span class="scan-mod-icon">🖥</span><span class="scan-mod-name">System</span><span class="scan-mod-desc">OS, hardware, locale, GPU</span></label>
+        <label class="scan-mod"><input type="checkbox" data-mod="network" checked><span class="scan-mod-icon">🌐</span><span class="scan-mod-name">Sieć</span><span class="scan-mod-desc">IP, RTT, DNS, TLS, headery</span></label>
+        <label class="scan-mod"><input type="checkbox" data-mod="memory" checked><span class="scan-mod-icon">🧠</span><span class="scan-mod-name">Pamięć</span><span class="scan-mod-desc">Heap, JS engine, GC pressure</span></label>
+        <label class="scan-mod"><input type="checkbox" data-mod="storage" checked><span class="scan-mod-icon">💾</span><span class="scan-mod-name">Storage</span><span class="scan-mod-desc">Quota, IndexedDB, ciasteczka</span></label>
+        <label class="scan-mod"><input type="checkbox" data-mod="browser" checked><span class="scan-mod-icon">🧭</span><span class="scan-mod-name">Przeglądarka</span><span class="scan-mod-desc">Wersja, pluginy, fingerprint</span></label>
+        <label class="scan-mod"><input type="checkbox" data-mod="privacy" checked><span class="scan-mod-icon">🕶</span><span class="scan-mod-name">Prywatność</span><span class="scan-mod-desc">DNT, GPC, trackery, leaki</span></label>
+        <label class="scan-mod"><input type="checkbox" data-mod="website" checked><span class="scan-mod-icon">🔎</span><span class="scan-mod-name">Strona (URL)</span><span class="scan-mod-desc">DNS, SPF/DMARC, TLS, headery</span></label>
+        <label class="scan-mod"><input type="checkbox" data-mod="malware" checked><span class="scan-mod-icon">🦠</span><span class="scan-mod-name">Malware (plik)</span><span class="scan-mod-desc">Hash + lokalna baza CTI</span></label>
+      </div>
+
+      <div class="scan-website" id="scan-website-zone">
+        <div class="scan-website-row">
+          <label for="website-url" class="scan-website-label">🔎 Strona internetowa do skanowania:</label>
+          <input type="url" id="website-url" placeholder="https://example.com" autocomplete="off" spellcheck="false">
+        </div>
+        <div class="scan-website-meta">
+          <label class="scan-website-deep">
+            <input type="checkbox" id="website-deep">
+            <span><strong>Deep scan przez proxy</strong> — pobierz nagłówki HTTP, ciasteczka i sprawdź mixed content przez publiczny CORS proxy (api.allorigins.win). Proxy widzi pełen URL — nie używaj dla zasobów wewnętrznych.</span>
+          </label>
+          <p class="scan-website-hint">DNS (A/AAAA/MX/TXT/SPF/DMARC/CAA/NS + DNSSEC) jest pobierane przez Cloudflare DoH bez proxy — działa zawsze i nie wymaga zgody.</p>
+        </div>
+      </div>
+
+      <div class="scan-file" id="scan-file-zone">
+        <input type="file" id="scan-file-input" multiple hidden>
+        <div class="scan-file-inner">
+          <div class="scan-file-icon">📁</div>
+          <div>
+            <strong>Przeciągnij plik(i) do skanowania malware</strong>
+            <p class="scan-file-hint">albo <a href="#" id="scan-file-pick">wybierz z dysku</a>. Pliki są mielone lokalnie (SHA-256 + SHA-1 + MD5) i porównywane z bazą znanych zagrożeń. Nic nie wychodzi z Twojej przeglądarki.</p>
+            <ul class="scan-file-list" id="scan-file-list"></ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="scan-actions">
+        <button class="btn btn-primary" id="scan-run">▶ Skanuj wszystko</button>
+        <button class="btn btn-ghost" id="scan-stop" disabled>■ Zatrzymaj</button>
+        <button class="btn btn-ghost" id="scan-reset">⟲ Reset</button>
+      </div>
+
+      <div class="scan-progress" id="scan-progress" hidden>
+        <div class="scan-progress-bar"><div class="scan-progress-fill" id="scan-progress-fill"></div></div>
+        <div class="scan-progress-meta">
+          <span id="scan-progress-text">Inicjalizacja…</span>
+          <span id="scan-progress-pct">0%</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="scan-results-section">
+  <div class="container">
+    <div class="scan-results-head">
+      <h2 class="section-title" style="text-align:left;">Wyniki skanowania</h2>
+      <div class="scan-report-actions">
+        <button class="btn btn-primary" id="report-pdf" disabled>📄 Pobierz PDF</button>
+        <button class="btn btn-ghost" id="report-url" disabled>🔗 Wygeneruj link do raportu</button>
+        <button class="btn btn-ghost" id="report-json" disabled>{} JSON</button>
+        <button class="btn btn-ghost" id="report-share" disabled>📡 Wyślij do Threat Intel (anon.)</button>
+      </div>
+    </div>
+
+    <div class="scan-summary" id="scan-summary" hidden>
+      <div class="scan-summary-grid">
+        <div class="sum-card sum-score">
+          <div class="sum-label">Risk Score</div>
+          <div class="sum-value" id="sum-score">—</div>
+          <div class="sum-bar"><div id="sum-score-bar"></div></div>
+        </div>
+        <div class="sum-card"><div class="sum-label">Krytyczne</div><div class="sum-value danger" id="sum-crit">0</div></div>
+        <div class="sum-card"><div class="sum-label">Ostrzeżenia</div><div class="sum-value warn" id="sum-warn">0</div></div>
+        <div class="sum-card"><div class="sum-label">OK</div><div class="sum-value ok" id="sum-ok">0</div></div>
+        <div class="sum-card"><div class="sum-label">Czas skanu</div><div class="sum-value" id="sum-time">—</div></div>
+      </div>
+      <div class="scan-share-link" id="scan-share-link" hidden>
+        <strong>Link do raportu:</strong>
+        <a id="scan-share-link-a" href="#" download="freesystemdoctor-report.html">freesystemdoctor-report.html</a>
+        <button class="btn-mini" id="scan-share-copy">Kopiuj</button>
+      </div>
+    </div>
+
+    <div class="scan-results" id="scan-results">
+      <div class="scan-empty">
+        <div class="scan-empty-icon">🛡</div>
+        <h3>Skan nie został jeszcze uruchomiony</h3>
+        <p>Kliknij <strong>Skanuj wszystko</strong> żeby uruchomić wszystkie moduły. Każdy moduł generuje własną kartę z wynikami i wskazówkami.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="ai-section">
+  <div class="container">
+    <div class="ai-head">
+      <h2 class="section-title" style="text-align:left;margin-bottom:8px;">🤖 AI Risk Analyst</h2>
+      <p class="section-sub" style="text-align:left;margin:0 0 16px;">Wytłumaczy raport, posortuje ryzyka i poda kroki naprawcze. Używasz <strong>swojego klucza API</strong> — żaden ruch nie idzie przez nasz serwer (nie mamy serwera). Klucz zapisuje się tylko w Twojej przeglądarce.</p>
+    </div>
+
+    <div class="ai-panel" id="ai-panel">
+      <aside class="ai-config">
+        <div class="ai-config-row">
+          <label for="ai-provider">Provider</label>
+          <select id="ai-provider">
+            <option value="anthropic">Anthropic (Claude)</option>
+            <option value="groq">Groq</option>
+            <option value="cerebras">Cerebras</option>
+            <option value="custom">Custom (OpenAI-compatible)</option>
+          </select>
+        </div>
+        <div class="ai-config-row">
+          <label for="ai-model">Model</label>
+          <select id="ai-model"></select>
+        </div>
+        <div class="ai-config-row" id="ai-baseurl-row" hidden>
+          <label for="ai-baseurl">Base URL</label>
+          <input type="url" id="ai-baseurl" placeholder="https://api.example.com" autocomplete="off">
+        </div>
+        <div class="ai-config-row">
+          <label for="ai-key">Klucz API <a id="ai-key-link" href="#" target="_blank" rel="noopener" hidden>↗</a></label>
+          <input type="password" id="ai-key" placeholder="sk-ant-..." autocomplete="off" spellcheck="false">
+        </div>
+        <div class="ai-config-row ai-remember-row">
+          <label class="ai-remember">
+            <input type="checkbox" id="ai-remember" checked>
+            <span>Zapamiętaj klucz w localStorage</span>
+          </label>
+        </div>
+        <div class="ai-privacy">
+          <strong>Prywatność:</strong> żądania idą bezpośrednio z Twojej przeglądarki do wybranego dostawcy. FreeSystemDoctor nie loguje promptów ani kluczy. Anthropic odbiera wywołania z przeglądarki przez nagłówek <code>anthropic-dangerous-direct-browser-access</code> — używaj swojego osobistego klucza, nie firmowego.
+        </div>
+      </aside>
+
+      <div class="ai-chat">
+        <div class="ai-transcript" id="ai-transcript"></div>
+        <div class="ai-input-row">
+          <textarea id="ai-input" rows="3" placeholder="Zadaj pytanie (Ctrl/Cmd+Enter wysyła)…"></textarea>
+          <div class="ai-input-actions">
+            <button class="btn btn-primary" id="ai-send">Wyślij (Ctrl/Cmd+Enter)</button>
+            <button class="btn btn-ghost" id="ai-analyze">📊 Analizuj raport</button>
+            <button class="btn btn-ghost" id="ai-clear">⌫ Wyczyść historię</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cti-preview">
+  <div class="container">
+    <div class="cti-preview-head">
+      <h2 class="section-title" style="margin-bottom:8px;">Globalny strumień Threat Intelligence</h2>
+      <p class="section-sub">Anonimowe wyniki skanów z całego świata — bez IP, bez nazw plików, bez metadanych użytkownika. Tylko hash, werdykt i timestamp.</p>
+    </div>
+    <div class="cti-preview-list" id="cti-preview-list">
+      <div class="scan-empty"><p>Ładuję ostatnie zdarzenia…</p></div>
+    </div>
+    <div style="text-align:center; margin-top: 24px;">
+      <a href="threat-intel.html" class="btn btn-ghost">Otwórz pełny feed Threat Intel →</a>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container footer-inner">
+    <div class="footer-brand">
+      <span class="logo-icon">⚕</span>
+      <strong>FreeSystemDoctor</strong>
+      <span class="footer-meta">© 2024 · MIT License · Open Source</span>
+    </div>
+    <div class="footer-links">
+      <a href="index.html">Strona główna</a>
+      <a href="scanner.html">Scanner</a>
+      <a href="threat-intel.html">Threat Intel</a>
+      <a href="https://github.com/caytec/freesystemdoctor" target="_blank">GitHub</a>
+      <a href="https://github.com/caytec/freesystemdoctor/blob/main/LICENSE" target="_blank">Licencja</a>
+    </div>
+  </div>
+</footer>
+
+<!-- jsPDF for PDF report generation -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
+<script src="threat-intel.js" defer></script>
+<script src="scanner.js" defer></script>
+<script src="ai-analyst.js" defer></script>
+</body>
+</html>

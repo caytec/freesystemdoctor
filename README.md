@@ -25,6 +25,18 @@ Aplikacja Windows z 45 modułami narzędzi:
 - **Monitoring:** real-time CPU/RAM/Dysk, hardware monitor, benchmark
 - **Zaawansowane:** Smart Defrag (SSD-aware), file recovery, asystent AI
 
+## Cybersecurity Scanner (online)
+
+Pełny audyt bezpieczeństwa działający w przeglądarce — bez logowania, bez wysyłania danych:
+
+- **Moduły:** system, sieć, pamięć, storage, przeglądarka, prywatność, **strona internetowa (URL)**, malware (skan plików)
+- **Website audit:** DNS over HTTPS (A/AAAA/MX/TXT/SPF/DMARC/CAA/NS + DNSSEC AD-flag), HTTPS check, opcjonalny deep-scan przez CORS proxy (HSTS/CSP/X-Frame-Options/cookies/mixed-content/banner disclosure)
+- **AI Risk Analyst (BYOK):** chat panel oparty o Claude (Anthropic), Groq, Cerebras albo dowolny endpoint OpenAI-compatible. Klucz przechowywany lokalnie, żądania idą bezpośrednio z przeglądarki — nie mamy serwera. Anthropic używa nagłówka `anthropic-dangerous-direct-browser-access`.
+- **Hashing plików:** SHA-256 + SHA-1 + MD5, lokalna baza znanych zagrożeń (m.in. EICAR)
+- **Raporty:** PDF (jsPDF) albo lokalny link `blob:` do pobrania, eksport JSON
+- **Threat Intel feed:** anonimowe IOC (hash + werdykt + region) — bez nazw plików, bez IP
+- 🌐 [`scanner.html`](https://caytec.github.io/freesystemdoctor/scanner.html) · [`threat-intel.html`](https://caytec.github.io/freesystemdoctor/threat-intel.html)
+
 ## Wymagania
 
 - Windows 10 (build 1809+) lub Windows 11
@@ -35,3 +47,21 @@ Aplikacja Windows z 45 modułami narzędzi:
 ## Licencja
 
 MIT — zobacz [LICENSE](LICENSE).
+
+## Hosting (Railway / Docker)
+
+Repo ma gotowy `Dockerfile` + `Caddyfile` + `railway.json` — strona stawia się jednym kliknięciem.
+
+**Railway:**
+1. New Project → Deploy from GitHub repo → wybierz `caytec/freesystemdoctor`.
+2. Railway sam wykryje `Dockerfile`. Nie trzeba ustawiać żadnych env vars (Caddy używa `$PORT` ustawionego przez Railway).
+3. Po pierwszym deployu otwórz Settings → Networking → Generate Domain (albo dodaj custom domain).
+
+**Lokalnie (sanity check):**
+```sh
+docker build -t fsd .
+docker run --rm -p 8080:8080 -e PORT=8080 fsd
+# → http://localhost:8080
+```
+
+Caddy ustawia HSTS, X-Frame-Options, X-Content-Type-Options, Referrer-Policy i Permissions-Policy. **CSP jest świadomie pominięty** — AI Risk Analyst pozwala wskazać dowolny endpoint OpenAI-compatible, co bez luźnego `connect-src` by przestało działać. Jeśli wdrażasz pod jeden konkretny zestaw providerów, dostosuj `Caddyfile`.
