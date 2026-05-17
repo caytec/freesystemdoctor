@@ -1,7 +1,12 @@
 {
-  "updated": "2026-05-06T15:01:26.413535Z",
-  "count": 12,
+  "updated": "2026-05-17T13:25:14.913633Z",
+  "count": 13,
   "commits": [
+    {
+      "sha": "17c365c93918478d0cd833322abc1bcd1b57bbf1",
+      "date": "2026-05-17T15:22:38+02:00",
+      "msg": "fix(game-booster): ANTI-CHEAT SAFE rewrite for Arena Breakout Infinite"
+    },
     {
       "sha": "442b1c5990a7ed46e47fe8dc4d905dc9ead7c85d",
       "date": "2026-05-06T17:00:38+02:00",
