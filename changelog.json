@@ -1,7 +1,12 @@
 {
-  "updated": "2026-05-17T13:25:14.913633Z",
-  "count": 13,
+  "updated": "2026-05-17T15:23:46.544919Z",
+  "count": 14,
   "commits": [
+    {
+      "sha": "88c8c89e9138362831df9554fb905b51ae55c041",
+      "date": "2026-05-17T17:23:18+02:00",
+      "msg": "build: fresh rebuild for local testing (anti-cheat safe game booster)"
+    },
     {
       "sha": "17c365c93918478d0cd833322abc1bcd1b57bbf1",
       "date": "2026-05-17T15:22:38+02:00",
