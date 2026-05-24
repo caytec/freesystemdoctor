@@ -1,7 +1,12 @@
 {
-  "updated": "2026-05-21T23:03:00.924227Z",
-  "count": 15,
+  "updated": "2026-05-24T16:26:23.853795Z",
+  "count": 16,
   "commits": [
+    {
+      "sha": "73236b5023e91e2d8fc0e02bd7debb2667b07887",
+      "date": "2026-05-24T18:26:00+02:00",
+      "msg": "feat: Deep Disk Cleaner — 22 categories of hidden file cleanup"
+    },
     {
       "sha": "58e2abbbf483f80f3858674be2f4e4bc2e879941",
       "date": "2026-05-22T01:02:53+02:00",
