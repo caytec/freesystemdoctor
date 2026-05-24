@@ -1,7 +1,12 @@
 {
-  "updated": "2026-05-24T16:26:23.853795Z",
-  "count": 16,
+  "updated": "2026-05-24T16:52:02.544407Z",
+  "count": 17,
   "commits": [
+    {
+      "sha": "7904bc5b8838a05a6eefac754fa436a4fac5c69e",
+      "date": "2026-05-24T18:51:40+02:00",
+      "msg": "fix(disk-analyzer): dropdown was empty because startup walked entire FS"
+    },
     {
       "sha": "73236b5023e91e2d8fc0e02bd7debb2667b07887",
       "date": "2026-05-24T18:26:00+02:00",
