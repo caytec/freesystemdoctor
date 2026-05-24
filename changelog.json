@@ -1,7 +1,12 @@
 {
-  "updated": "2026-05-24T19:57:33.809546Z",
-  "count": 19,
+  "updated": "2026-05-24T20:17:24.925776Z",
+  "count": 20,
   "commits": [
+    {
+      "sha": "035e522ff1f9796c6d67f0c85fe19f4604e8f90a",
+      "date": "2026-05-24T22:16:43+02:00",
+      "msg": "feat: monetization Option B — affiliate banners + Pro upsell"
+    },
     {
       "sha": "7f2ac501305a4983f8b8b4a8e6eb634ff05125ef",
       "date": "2026-05-24T21:56:56+02:00",
