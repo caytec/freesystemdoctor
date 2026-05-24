@@ -1,7 +1,12 @@
 {
-  "updated": "2026-05-24T16:52:02.544407Z",
-  "count": 17,
+  "updated": "2026-05-24T17:14:47.939604Z",
+  "count": 18,
   "commits": [
+    {
+      "sha": "348c504a32319504d458bd91c980b1ebeb439eef",
+      "date": "2026-05-24T19:13:18+02:00",
+      "msg": "fix(monitoring): Resource + HW Monitor now show real values"
+    },
     {
       "sha": "7904bc5b8838a05a6eefac754fa436a4fac5c69e",
       "date": "2026-05-24T18:51:40+02:00",
