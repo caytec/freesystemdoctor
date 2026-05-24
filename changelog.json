@@ -1,7 +1,12 @@
 {
-  "updated": "2026-05-24T17:14:47.939604Z",
-  "count": 18,
+  "updated": "2026-05-24T19:57:33.809546Z",
+  "count": 19,
   "commits": [
+    {
+      "sha": "7f2ac501305a4983f8b8b4a8e6eb634ff05125ef",
+      "date": "2026-05-24T21:56:56+02:00",
+      "msg": "feat: auto-install LibreHardwareMonitor on first run"
+    },
     {
       "sha": "348c504a32319504d458bd91c980b1ebeb439eef",
       "date": "2026-05-24T19:13:18+02:00",
