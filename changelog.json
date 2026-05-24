@@ -1,7 +1,12 @@
 {
-  "updated": "2026-05-17T15:23:46.544919Z",
-  "count": 14,
+  "updated": "2026-05-21T23:03:00.924227Z",
+  "count": 15,
   "commits": [
+    {
+      "sha": "58e2abbbf483f80f3858674be2f4e4bc2e879941",
+      "date": "2026-05-22T01:02:53+02:00",
+      "msg": "feat: custom domain CNAME for freesystemdoctor.pl"
+    },
     {
       "sha": "88c8c89e9138362831df9554fb905b51ae55c041",
       "date": "2026-05-17T17:23:18+02:00",
