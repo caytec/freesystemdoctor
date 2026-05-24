@@ -1,0 +1,6 @@
+psutil>=5.9.0
+wmi>=1.5.1; sys_platform == "win32"
+pywin32>=305; sys_platform == "win32"
+google-auth>=2.0.0
+google-auth-oauthlib>=0.7.0
+google-api-python-client>=2.80.0
