@@ -3,9 +3,10 @@ name: Android CI
 on:
   push:
     branches: [ "claude/android-cleaning-app-XK7qW", "main" ]
-    paths: [ "android/**" ]
+    paths: [ "android/**", ".github/workflows/android-ci.yml" ]
   pull_request:
-    paths: [ "android/**" ]
+    paths: [ "android/**", ".github/workflows/android-ci.yml" ]
+  workflow_dispatch:
 
 jobs:
   build:
