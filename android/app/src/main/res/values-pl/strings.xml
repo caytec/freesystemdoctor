@@ -1,0 +1,83 @@
+<resources>
+    <string name="app_name">FreeSystemDoctor</string>
+
+    <string name="nav_dashboard">Pulpit</string>
+    <string name="nav_cleaner">Czyszczenie</string>
+    <string name="nav_storage">Pamięć</string>
+    <string name="nav_apps">Aplikacje</string>
+    <string name="nav_assistant">Asystent</string>
+    <string name="nav_settings">Ustawienia</string>
+
+    <string name="dashboard_title">Stan urządzenia</string>
+    <string name="dashboard_storage">Pamięć</string>
+    <string name="dashboard_memory">Pamięć RAM</string>
+    <string name="dashboard_battery">Bateria</string>
+    <string name="dashboard_device">Urządzenie</string>
+    <string name="health_score">Wynik kondycji</string>
+    <string name="storage_used_of">Zajęte %1$s z %2$s</string>
+    <string name="ram_used_of">Zajęte %1$s z %2$s</string>
+    <string name="battery_level">%1$d%%</string>
+    <string name="battery_temp">Temperatura: %1$s</string>
+    <string name="refresh">Odśwież</string>
+
+    <string name="cleaner_title">Czyszczenie śmieci</string>
+    <string name="cleaner_scan">Skanuj</string>
+    <string name="cleaner_clean">Wyczyść</string>
+    <string name="cleaner_scanning">Skanowanie…</string>
+    <string name="cleaner_app_cache">Pamięć podręczna (ta aplikacja)</string>
+    <string name="cleaner_downloads">Pobrane</string>
+    <string name="cleaner_apk">Pozostałe pliki APK</string>
+    <string name="cleaner_temp">Pliki tymczasowe i logi</string>
+    <string name="cleaner_empty">Puste foldery</string>
+    <string name="cleaner_reclaimable">Do odzyskania: %1$s</string>
+    <string name="cleaner_freed">Zwolniono %1$s</string>
+    <string name="cleaner_grant_folder">Przyznaj dostęp do folderu, by skanować głębiej</string>
+    <string name="cleaner_note">Pamięci podręcznej innych aplikacji nie da się wyczyścić bez roota — otwórz ustawienia każdej z nich, aby zrobić to ręcznie.</string>
+
+    <string name="storage_title">Analiza pamięci</string>
+    <string name="storage_breakdown">Podział wg aplikacji</string>
+    <string name="storage_app_size">Aplikacja: %1$s · Dane: %2$s · Cache: %3$s</string>
+    <string name="storage_need_usage_access">Do odczytu rozmiarów aplikacji wymagany jest dostęp do statystyk użycia.</string>
+
+    <string name="apps_title">Menedżer aplikacji</string>
+    <string name="apps_uninstall">Odinstaluj</string>
+    <string name="apps_details">Ustawienia aplikacji</string>
+    <string name="apps_sort_size">Sortuj wg rozmiaru</string>
+    <string name="apps_sort_name">Sortuj wg nazwy</string>
+    <string name="apps_system">Pokaż aplikacje systemowe</string>
+
+    <string name="assistant_title">Asystent AI</string>
+    <string name="assistant_analyze">Przeanalizuj urządzenie</string>
+    <string name="assistant_analyzing">Analizowanie…</string>
+    <string name="assistant_no_key">Dodaj klucz API w Ustawieniach, aby włączyć asystenta AI.</string>
+    <string name="assistant_intro">Asystent odczytuje lokalny obraz kondycji urządzenia i proponuje usprawnienia. Nic nie jest wysyłane, dopóki nie naciśniesz Analizuj.</string>
+
+    <string name="settings_title">Ustawienia</string>
+    <string name="settings_language">Język</string>
+    <string name="settings_theme">Tryb ciemny</string>
+    <string name="settings_ai_provider">Dostawca AI</string>
+    <string name="settings_ai_key">Klucz API</string>
+    <string name="settings_ai_key_hint">Wklej swój klucz API</string>
+    <string name="settings_ai_save">Zapisz klucz</string>
+    <string name="settings_ai_clear">Usuń klucz</string>
+    <string name="settings_about">O aplikacji</string>
+    <string name="settings_about_body">Darmowy, otwartoźródłowy program do czyszczenia telefonu. Bez reklam i subskrypcji. Wszystkie operacje działają na urządzeniu; asystent AI wysyła dane tylko na Twoje żądanie.</string>
+
+    <string name="onboarding_title">Witaj</string>
+    <string name="onboarding_subtitle">FreeSystemDoctor czyści i dba o telefon bez roota. Część funkcji wymaga specjalnego dostępu.</string>
+    <string name="perm_usage_access">Dostęp do statystyk użycia</string>
+    <string name="perm_usage_access_desc">Odczyt rozmiarów aplikacji i czasu użycia.</string>
+    <string name="perm_media">Zdjęcia i multimedia</string>
+    <string name="perm_media_desc">Wyszukiwanie dużych plików, duplikatów i zrzutów ekranu.</string>
+    <string name="perm_notifications">Powiadomienia</string>
+    <string name="perm_notifications_desc">Wyświetlanie wyników czyszczenia i przypomnień.</string>
+    <string name="perm_grant">Przyznaj</string>
+    <string name="perm_granted">Przyznano</string>
+    <string name="perm_skip">Pomiń na razie</string>
+    <string name="perm_continue">Dalej</string>
+
+    <string name="select_all">Zaznacz wszystko</string>
+    <string name="cancel">Anuluj</string>
+    <string name="empty">Nic nie znaleziono</string>
+    <string name="loading">Ładowanie…</string>
+</resources>

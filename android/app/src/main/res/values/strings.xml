@@ -1,0 +1,92 @@
+<resources>
+    <string name="app_name">FreeSystemDoctor</string>
+
+    <!-- Navigation -->
+    <string name="nav_dashboard">Dashboard</string>
+    <string name="nav_cleaner">Cleaner</string>
+    <string name="nav_storage">Storage</string>
+    <string name="nav_apps">Apps</string>
+    <string name="nav_assistant">Assistant</string>
+    <string name="nav_settings">Settings</string>
+
+    <!-- Dashboard -->
+    <string name="dashboard_title">Device health</string>
+    <string name="dashboard_storage">Storage</string>
+    <string name="dashboard_memory">Memory (RAM)</string>
+    <string name="dashboard_battery">Battery</string>
+    <string name="dashboard_device">Device</string>
+    <string name="health_score">Health score</string>
+    <string name="storage_used_of">%1$s used of %2$s</string>
+    <string name="ram_used_of">%1$s used of %2$s</string>
+    <string name="battery_level">%1$d%%</string>
+    <string name="battery_temp">Temperature: %1$s</string>
+    <string name="refresh">Refresh</string>
+
+    <!-- Cleaner -->
+    <string name="cleaner_title">Junk cleaner</string>
+    <string name="cleaner_scan">Scan</string>
+    <string name="cleaner_clean">Clean</string>
+    <string name="cleaner_scanning">Scanning…</string>
+    <string name="cleaner_app_cache">App cache (this app)</string>
+    <string name="cleaner_downloads">Downloads</string>
+    <string name="cleaner_apk">Leftover APK files</string>
+    <string name="cleaner_temp">Temp &amp; log files</string>
+    <string name="cleaner_empty">Empty folders</string>
+    <string name="cleaner_reclaimable">Reclaimable: %1$s</string>
+    <string name="cleaner_freed">Freed %1$s</string>
+    <string name="cleaner_grant_folder">Grant folder access for deep junk scan</string>
+    <string name="cleaner_note">Other apps\' caches cannot be cleared without root — open each app\'s settings to clear them manually.</string>
+
+    <!-- Storage analyzer -->
+    <string name="storage_title">Storage analyzer</string>
+    <string name="storage_breakdown">Breakdown by app</string>
+    <string name="storage_app_size">App: %1$s · Data: %2$s · Cache: %3$s</string>
+    <string name="storage_need_usage_access">Usage access is required to read per-app storage sizes.</string>
+
+    <!-- Apps -->
+    <string name="apps_title">App manager</string>
+    <string name="apps_uninstall">Uninstall</string>
+    <string name="apps_details">App settings</string>
+    <string name="apps_sort_size">Sort by size</string>
+    <string name="apps_sort_name">Sort by name</string>
+    <string name="apps_system">Show system apps</string>
+
+    <!-- Assistant -->
+    <string name="assistant_title">AI assistant</string>
+    <string name="assistant_analyze">Analyze my device</string>
+    <string name="assistant_analyzing">Analyzing…</string>
+    <string name="assistant_no_key">Add an API key in Settings to enable the AI assistant.</string>
+    <string name="assistant_intro">The assistant reads your local device-health snapshot and suggests improvements. Nothing is sent until you tap Analyze.</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_language">Language</string>
+    <string name="settings_theme">Dark theme</string>
+    <string name="settings_ai_provider">AI provider</string>
+    <string name="settings_ai_key">API key</string>
+    <string name="settings_ai_key_hint">Paste your API key</string>
+    <string name="settings_ai_save">Save key</string>
+    <string name="settings_ai_clear">Clear key</string>
+    <string name="settings_about">About</string>
+    <string name="settings_about_body">Free, open-source phone cleaner. No ads, no subscriptions. All actions run on your device; the AI assistant only sends data when you ask it to.</string>
+
+    <!-- Permissions / onboarding -->
+    <string name="onboarding_title">Welcome</string>
+    <string name="onboarding_subtitle">FreeSystemDoctor cleans and maintains your phone without root. Some features need special access.</string>
+    <string name="perm_usage_access">Usage access</string>
+    <string name="perm_usage_access_desc">Read per-app storage sizes and app usage.</string>
+    <string name="perm_media">Photos &amp; media</string>
+    <string name="perm_media_desc">Find large files, duplicates and screenshots.</string>
+    <string name="perm_notifications">Notifications</string>
+    <string name="perm_notifications_desc">Show cleaning results and reminders.</string>
+    <string name="perm_grant">Grant</string>
+    <string name="perm_granted">Granted</string>
+    <string name="perm_skip">Skip for now</string>
+    <string name="perm_continue">Continue</string>
+
+    <!-- Common -->
+    <string name="select_all">Select all</string>
+    <string name="cancel">Cancel</string>
+    <string name="empty">Nothing found</string>
+    <string name="loading">Loading…</string>
+</resources>
