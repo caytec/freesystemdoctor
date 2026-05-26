@@ -4,8 +4,8 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -202,10 +202,10 @@ fun MainScaffold() {
             navController = navController,
             startDestination = FsdDestination.DASHBOARD.route,
             modifier = Modifier.fillMaxSize().padding(innerPadding),
-            enterTransition = { fadeIn(tween(300)) + slideInHorizontally(tween(320)) { it / 12 } },
-            exitTransition = { fadeOut(tween(200)) + slideOutHorizontally(tween(320)) { -it / 12 } },
-            popEnterTransition = { fadeIn(tween(300)) + slideInHorizontally(tween(320)) { -it / 12 } },
-            popExitTransition = { fadeOut(tween(200)) + slideOutHorizontally(tween(320)) { it / 12 } },
+            enterTransition = { fadeIn(tween(280)) + scaleIn(tween(320), initialScale = 0.92f) },
+            exitTransition = { fadeOut(tween(180)) + scaleOut(tween(320), targetScale = 1.05f) },
+            popEnterTransition = { fadeIn(tween(280)) + scaleIn(tween(320), initialScale = 1.05f) },
+            popExitTransition = { fadeOut(tween(180)) + scaleOut(tween(320), targetScale = 0.92f) },
         ) {
             composable(FsdDestination.DASHBOARD.route) { DashboardScreen() }
             composable(FsdDestination.CLEANER.route) { CleanerScreen() }

@@ -72,6 +72,7 @@ fun LargeFilesScreen(
                 CircularProgressIndicator(modifier = Modifier.size(22.dp).padding(end = 8.dp))
                 Text(stringResource(R.string.action_scanning))
             }
+            com.freesystemdoctor.android.ui.components.ShimmerList(rows = 5)
         }
 
         if (state.scanned && state.files.isEmpty() && !state.scanning) {

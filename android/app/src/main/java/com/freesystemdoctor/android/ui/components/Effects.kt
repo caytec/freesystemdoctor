@@ -13,9 +13,12 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -154,4 +157,14 @@ fun GradientButton(
 @Composable
 fun OnResume(onResume: () -> Unit) {
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { onResume() }
+}
+
+/** A column of shimmer placeholder rows for list scanning/loading states. */
+@Composable
+fun ShimmerList(rows: Int = 5, modifier: Modifier = Modifier) {
+    Column(modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        repeat(rows) {
+            ShimmerBox(Modifier.fillMaxWidth().height(64.dp))
+        }
+    }
 }

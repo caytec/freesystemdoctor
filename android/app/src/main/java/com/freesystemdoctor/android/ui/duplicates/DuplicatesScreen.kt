@@ -83,6 +83,7 @@ fun DuplicatesScreen(
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
+            com.freesystemdoctor.android.ui.components.ShimmerList(rows = 4)
         }
 
         InfoBanner(stringResource(R.string.duplicates_note))

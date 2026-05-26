@@ -151,12 +151,10 @@ fun ProScreen(
             }
 
             if (viewModel.rewardedReady() && activity != null) {
-                OutlinedButton(
-                    onClick = {
-                        viewModel.watchAdToUnlock(activity) { rewardGranted = true }
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                ) { Text(stringResource(R.string.pro_unlock_ad)) }
+                com.freesystemdoctor.android.ui.components.GradientButton(
+                    text = stringResource(R.string.pro_unlock_ad),
+                    onClick = { viewModel.watchAdToUnlock(activity) { rewardGranted = true } },
+                )
             }
             if (rewardGranted) {
                 Text(

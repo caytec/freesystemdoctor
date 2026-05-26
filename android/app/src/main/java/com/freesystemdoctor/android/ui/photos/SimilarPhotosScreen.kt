@@ -74,6 +74,7 @@ fun SimilarPhotosScreen(
                 modifier = Modifier.fillMaxWidth(),
             )
             Text(stringResource(R.string.action_scanning), style = MaterialTheme.typography.bodySmall)
+            com.freesystemdoctor.android.ui.components.ShimmerList(rows = 4)
         }
         if (state.scanned && state.groups.isEmpty() && !state.scanning) {
             Text(stringResource(R.string.similar_none))
