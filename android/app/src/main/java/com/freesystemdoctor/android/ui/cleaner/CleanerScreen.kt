@@ -104,7 +104,7 @@ fun CleanerScreen(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                itemsIndexed(it.mediaItems) { index, item ->
+                itemsIndexed(it.mediaItems, key = { _, item -> item.uri.toString() }) { index, item ->
                     Appear(index = index) {
                         Card(
                             modifier = Modifier.fillMaxWidth(),

@@ -47,6 +47,7 @@ fun NotificationCleanerScreen(modifier: Modifier = Modifier) {
         items = FsdNotificationListener.instance?.snapshot().orEmpty()
         refreshTick++
     }
+    com.freesystemdoctor.android.ui.components.OnResume { refresh() }
 
     Column(
         modifier = modifier.fillMaxSize().padding(16.dp),

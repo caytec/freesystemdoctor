@@ -7,6 +7,7 @@ import com.freesystemdoctor.android.core.result.ScanProgress
 import com.freesystemdoctor.android.core.util.Hashing
 import com.freesystemdoctor.android.core.util.ImageSampler
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
 
 data class PhotoItem(
@@ -35,6 +36,7 @@ class SimilarPhotoEngine(private val context: Context) {
         val photos = queryImages(limit)
         val hashed = ArrayList<Pair<PhotoItem, Long>>(photos.size)
         photos.forEachIndexed { index, photo ->
+            ensureActive()
             progress(ScanProgress(index + 1, photos.size, photo.displayName))
             val pixels = ImageSampler.grayscale8x8(context, photo.uri) ?: return@forEachIndexed
             hashed += photo to Hashing.averageHash(pixels)
@@ -43,6 +45,7 @@ class SimilarPhotoEngine(private val context: Context) {
         val used = BooleanArray(hashed.size)
         val groups = ArrayList<SimilarGroup>()
         for (i in hashed.indices) {
+            ensureActive()
             if (used[i]) continue
             val members = ArrayList<PhotoItem>()
             members += hashed[i].first

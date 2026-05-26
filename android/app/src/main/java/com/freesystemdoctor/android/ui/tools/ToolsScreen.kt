@@ -1,5 +1,6 @@
 package com.freesystemdoctor.android.ui.tools
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -50,11 +51,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.freesystemdoctor.android.R
 import com.freesystemdoctor.android.ui.components.SectionHeader
+import com.freesystemdoctor.android.ui.components.bounceClick
 import com.freesystemdoctor.android.ui.navigation.ToolRoutes
 
 private data class Tool(
@@ -148,28 +151,34 @@ fun ToolsScreen(
 @Composable
 private fun ToolCard(tool: Tool, onClick: () -> Unit) {
     Card(
-        modifier = Modifier.fillMaxWidth().height(120.dp).clickable(onClick = onClick),
+        modifier = Modifier.fillMaxWidth().height(120.dp).bounceClick(onClick = onClick),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
         shape = MaterialTheme.shapes.medium,
+        elevation = CardDefaults.cardElevation(defaultElevation = 3.dp),
     ) {
         Column(
             modifier = Modifier.fillMaxSize().padding(14.dp),
             verticalArrangement = Arrangement.SpaceBetween,
         ) {
             Box(
-                modifier = Modifier.size(44.dp).clip(RoundedCornerShape(14.dp)),
+                modifier = Modifier
+                    .size(44.dp)
+                    .clip(RoundedCornerShape(14.dp))
+                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.14f)),
                 contentAlignment = Alignment.Center,
             ) {
                 Icon(
                     tool.icon,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(28.dp),
+                    modifier = Modifier.size(26.dp),
                 )
             }
             Text(
                 stringResource(tool.labelRes),
                 style = MaterialTheme.typography.titleSmall,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
             )
         }
     }

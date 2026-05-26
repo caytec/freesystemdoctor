@@ -38,7 +38,7 @@ fun RarelyUsedScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val context = LocalContext.current
-    LaunchedEffect(Unit) { viewModel.load() }
+    com.freesystemdoctor.android.ui.components.OnResume { viewModel.load() }
 
     Column(
         modifier = modifier.fillMaxSize().padding(16.dp),

@@ -157,7 +157,7 @@ fun MainScaffold() {
         bottomBar = {
             Column {
                 if (currentRoute != ROUTE_PRO) BannerAd()
-                if (!isLeaf || currentRoute?.startsWith("tool/") == true) {
+                if (!isLeaf) {
                 NavigationBar(containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.92f)) {
                     val destination = backStackEntry?.destination
                     FsdDestination.entries.forEach { dest ->

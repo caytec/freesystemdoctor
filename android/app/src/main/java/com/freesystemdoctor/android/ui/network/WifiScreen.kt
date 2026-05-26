@@ -40,7 +40,7 @@ fun WifiScreen(
         ActivityResultContracts.RequestPermission(),
     ) { viewModel.refreshPermission() }
 
-    LaunchedEffect(Unit) { viewModel.refreshPermission() }
+    com.freesystemdoctor.android.ui.components.OnResume { viewModel.refreshPermission() }
 
     Column(
         modifier = modifier.fillMaxSize().padding(16.dp),

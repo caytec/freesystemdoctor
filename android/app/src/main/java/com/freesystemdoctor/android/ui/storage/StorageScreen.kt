@@ -39,7 +39,7 @@ fun StorageScreen(
     val context = LocalContext.current
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    LaunchedEffect(Unit) { viewModel.load() }
+    com.freesystemdoctor.android.ui.components.OnResume { viewModel.load() }
 
     Column(
         modifier = modifier

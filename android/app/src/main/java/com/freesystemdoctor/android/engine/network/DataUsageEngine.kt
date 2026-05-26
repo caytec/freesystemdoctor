@@ -59,12 +59,15 @@ class DataUsageEngine(
             @Suppress("DEPRECATION")
             nsm.querySummary(networkType, null, start, end)
         }.getOrNull() ?: return result
-        val bucket = NetworkStats.Bucket()
-        while (stats.hasNextBucket()) {
-            stats.getNextBucket(bucket)
-            result[bucket.uid] = (result[bucket.uid] ?: 0L) + bucket.rxBytes + bucket.txBytes
+        try {
+            val bucket = NetworkStats.Bucket()
+            while (stats.hasNextBucket()) {
+                stats.getNextBucket(bucket)
+                result[bucket.uid] = (result[bucket.uid] ?: 0L) + bucket.rxBytes + bucket.txBytes
+            }
+        } finally {
+            stats.close()
         }
-        stats.close()
         return result
     }
 

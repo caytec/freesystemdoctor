@@ -121,7 +121,9 @@ class AppOpenAdManager(private val application: Application) :
     }
 
     override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {}
-    override fun onActivityPaused(activity: Activity) {}
+    override fun onActivityPaused(activity: Activity) {
+        if (currentActivity === activity && !isShowingAd) currentActivity = null
+    }
     override fun onActivityStopped(activity: Activity) {}
     override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {}
 

@@ -1,5 +1,6 @@
 package com.freesystemdoctor.android.ui.dashboard
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -28,13 +30,25 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.freesystemdoctor.android.R
 import com.freesystemdoctor.android.core.util.ByteFormatter
 import com.freesystemdoctor.android.ui.components.Appear
+import com.freesystemdoctor.android.ui.components.GlassCard
 import com.freesystemdoctor.android.ui.components.HealthGauge
 import com.freesystemdoctor.android.ui.components.SectionHeader
 import com.freesystemdoctor.android.ui.components.StatCard
 import com.freesystemdoctor.android.ui.theme.GoodGreen
 import com.freesystemdoctor.android.ui.theme.SkyBlue
 import com.freesystemdoctor.android.ui.theme.Violet
+import com.freesystemdoctor.android.ui.theme.WarnAmber
+import com.freesystemdoctor.android.ui.theme.BadRed
+import com.freesystemdoctor.android.ui.theme.accentGlow
+import com.freesystemdoctor.android.ui.theme.heroGradient
+import androidx.compose.ui.graphics.Color
 import java.util.Locale
+
+private fun scoreGlow(score: Int): Color = when {
+    score >= 80 -> GoodGreen
+    score >= 50 -> WarnAmber
+    else -> BadRed
+}
 
 @Composable
 fun DashboardScreen(
@@ -113,21 +127,25 @@ fun DashboardScreen(
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             Appear {
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(
-                        containerColor = androidx.compose.material3.MaterialTheme.colorScheme.surfaceContainer,
-                    ),
-                    shape = androidx.compose.material3.MaterialTheme.shapes.large,
-                ) {
+                GlassCard(modifier = Modifier.fillMaxWidth()) {
                     Box(
-                        Modifier.fillMaxWidth().padding(vertical = 8.dp),
+                        Modifier
+                            .fillMaxWidth()
+                            .background(heroGradient())
+                            .padding(vertical = 16.dp),
                         contentAlignment = Alignment.Center,
                     ) {
-                        HealthGauge(
-                            score = state.healthScore,
-                            label = stringRes(R.string.health_score),
-                        )
+                        Box(
+                            Modifier
+                                .size(220.dp)
+                                .background(accentGlow(scoreGlow(state.healthScore))),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            HealthGauge(
+                                score = state.healthScore,
+                                label = stringRes(R.string.health_score),
+                            )
+                        }
                     }
                 }
             }

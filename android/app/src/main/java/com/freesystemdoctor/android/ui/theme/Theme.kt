@@ -67,6 +67,24 @@ fun appBackgroundBrush(darkTheme: Boolean): Brush =
         Brush.verticalGradient(listOf(LightBg, Color(0xFFEDF2FA)))
     }
 
+/** Brand accent gradient for primary CTAs and accent strips. */
+fun brandGradient(): Brush = Brush.linearGradient(listOf(Coral, Color(0xFFB86BFF)))
+
+/** Coral→sky gradient for the health hero. */
+fun heroGradient(): Brush =
+    Brush.linearGradient(listOf(Coral.copy(alpha = 0.30f), Violet.copy(alpha = 0.22f), SkyBlue.copy(alpha = 0.16f)))
+
+/** Translucent surface for glass / blurred cards. */
+fun glassBrush(darkTheme: Boolean): Brush = if (darkTheme) {
+    Brush.verticalGradient(listOf(Color(0x33FFFFFF), Color(0x14FFFFFF)))
+} else {
+    Brush.verticalGradient(listOf(Color(0xAAFFFFFF), Color(0x66FFFFFF)))
+}
+
+/** Soft radial glow used behind hero elements. */
+fun accentGlow(color: Color): Brush =
+    Brush.radialGradient(listOf(color.copy(alpha = 0.45f), Color.Transparent))
+
 @Composable
 fun FsdTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
