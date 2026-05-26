@@ -16,6 +16,7 @@
     <string name="dashboard_battery">Battery</string>
     <string name="dashboard_device">Device</string>
     <string name="health_score">Health score</string>
+    <string name="dashboard_overview">Overview</string>
     <string name="storage_used_of">%1$s used of %2$s</string>
     <string name="ram_used_of">%1$s used of %2$s</string>
     <string name="battery_level">%1$d%%</string>

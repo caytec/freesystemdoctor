@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FilterChip
@@ -28,6 +28,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.freesystemdoctor.android.R
 import com.freesystemdoctor.android.core.util.ByteFormatter
 import com.freesystemdoctor.android.engine.apps.AppSort
+import com.freesystemdoctor.android.ui.components.Appear
 
 @Composable
 fun AppsScreen(
@@ -63,15 +64,17 @@ fun AppsScreen(
             )
         }
 
-        LazyColumn(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-            items(state.apps) { app ->
+        LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            itemsIndexed(state.apps) { index, app ->
+                Appear(index = index) {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surface,
+                        containerColor = MaterialTheme.colorScheme.surfaceContainer,
                     ),
+                    shape = MaterialTheme.shapes.medium,
                 ) {
-                    Column(Modifier.padding(12.dp)) {
+                    Column(Modifier.padding(14.dp)) {
                         Text(app.label, style = MaterialTheme.typography.titleMedium)
                         Text(app.packageName, style = MaterialTheme.typography.bodyMedium)
                         if (app.totalBytes > 0) {
@@ -93,6 +96,7 @@ fun AppsScreen(
                             }) { Text(stringResource(R.string.apps_uninstall)) }
                         }
                     }
+                }
                 }
             }
         }

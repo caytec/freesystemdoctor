@@ -14,6 +14,7 @@
     <string name="dashboard_battery">Bateria</string>
     <string name="dashboard_device">Urządzenie</string>
     <string name="health_score">Wynik kondycji</string>
+    <string name="dashboard_overview">Przegląd</string>
     <string name="storage_used_of">Zajęte %1$s z %2$s</string>
     <string name="ram_used_of">Zajęte %1$s z %2$s</string>
     <string name="battery_level">%1$d%%</string>

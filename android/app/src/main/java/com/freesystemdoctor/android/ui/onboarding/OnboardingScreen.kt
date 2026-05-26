@@ -3,6 +3,7 @@ package com.freesystemdoctor.android.ui.onboarding
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -20,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -27,6 +29,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.freesystemdoctor.android.R
 import com.freesystemdoctor.android.core.di.ServiceLocator
+import com.freesystemdoctor.android.ui.components.Appear
+import com.freesystemdoctor.android.ui.theme.appBackgroundBrush
 
 @Composable
 fun OnboardingScreen(
@@ -47,40 +51,52 @@ fun OnboardingScreen(
         ActivityResultContracts.StartActivityForResult(),
     ) { viewModel.refresh() }
 
+    val dark = MaterialTheme.colorScheme.background.luminance() < 0.5f
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(appBackgroundBrush(dark))
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        Text(stringResource(R.string.onboarding_title), style = MaterialTheme.typography.headlineMedium)
-        Text(
-            stringResource(R.string.onboarding_subtitle),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-
-        PermissionRow(
-            title = stringResource(R.string.perm_media),
-            description = stringResource(R.string.perm_media_desc),
-            granted = state.media,
-            onGrant = { mediaLauncher.launch(permissions.requiredMediaPermissions()) },
-        )
-        PermissionRow(
-            title = stringResource(R.string.perm_usage_access),
-            description = stringResource(R.string.perm_usage_access_desc),
-            granted = state.usageAccess,
-            onGrant = { usageLauncher.launch(permissions.usageAccessSettingsIntent()) },
-        )
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            PermissionRow(
-                title = stringResource(R.string.perm_notifications),
-                description = stringResource(R.string.perm_notifications_desc),
-                granted = state.notifications,
-                onGrant = {
-                    notificationLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
-                },
+        Appear {
+            Text(stringResource(R.string.onboarding_title), style = MaterialTheme.typography.headlineMedium)
+        }
+        Appear(index = 1) {
+            Text(
+                stringResource(R.string.onboarding_subtitle),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
+        }
+
+        Appear(index = 2) {
+            PermissionRow(
+                title = stringResource(R.string.perm_media),
+                description = stringResource(R.string.perm_media_desc),
+                granted = state.media,
+                onGrant = { mediaLauncher.launch(permissions.requiredMediaPermissions()) },
+            )
+        }
+        Appear(index = 3) {
+            PermissionRow(
+                title = stringResource(R.string.perm_usage_access),
+                description = stringResource(R.string.perm_usage_access_desc),
+                granted = state.usageAccess,
+                onGrant = { usageLauncher.launch(permissions.usageAccessSettingsIntent()) },
+            )
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            Appear(index = 4) {
+                PermissionRow(
+                    title = stringResource(R.string.perm_notifications),
+                    description = stringResource(R.string.perm_notifications_desc),
+                    granted = state.notifications,
+                    onGrant = {
+                        notificationLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
+                    },
+                )
+            }
         }
 
         Row(

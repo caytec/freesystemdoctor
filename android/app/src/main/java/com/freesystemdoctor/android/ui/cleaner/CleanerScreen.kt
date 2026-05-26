@@ -10,9 +10,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CleaningServices
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,6 +29,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.freesystemdoctor.android.R
 import com.freesystemdoctor.android.core.util.ByteFormatter
+import com.freesystemdoctor.android.ui.components.Appear
 import com.freesystemdoctor.android.ui.components.InfoBanner
 import com.freesystemdoctor.android.ui.components.StatCard
 
@@ -48,17 +54,20 @@ fun CleanerScreen(
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         val report = state.report
-        StatCard(
-            title = stringResource(R.string.cleaner_title),
-            value = report?.let {
-                stringResource(R.string.cleaner_reclaimable, ByteFormatter.format(it.reclaimableBytes))
-            } ?: "—",
-            subtitle = if (state.lastFreedBytes > 0) {
-                stringResource(R.string.cleaner_freed, ByteFormatter.format(state.lastFreedBytes))
-            } else {
-                null
-            },
-        )
+        Appear {
+            StatCard(
+                title = stringResource(R.string.cleaner_title),
+                value = report?.let {
+                    stringResource(R.string.cleaner_reclaimable, ByteFormatter.format(it.reclaimableBytes))
+                } ?: "—",
+                subtitle = if (state.lastFreedBytes > 0) {
+                    stringResource(R.string.cleaner_freed, ByteFormatter.format(state.lastFreedBytes))
+                } else {
+                    null
+                },
+                icon = Icons.Filled.CleaningServices,
+            )
+        }
 
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Button(onClick = viewModel::scan, enabled = !state.scanning) {
@@ -90,17 +99,36 @@ fun CleanerScreen(
         report?.let {
             LazyColumn(
                 modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(6.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                items(it.mediaItems) { item ->
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 4.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                    ) {
-                        Text(item.displayName, modifier = Modifier.weight(1f))
-                        Text(ByteFormatter.format(item.sizeBytes))
+                itemsIndexed(it.mediaItems) { index, item ->
+                    Appear(index = index) {
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                            ),
+                            shape = MaterialTheme.shapes.small,
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 14.dp, vertical = 12.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
+                            ) {
+                                Text(
+                                    item.displayName,
+                                    modifier = Modifier.weight(1f),
+                                    maxLines = 1,
+                                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+                                )
+                                Text(
+                                    ByteFormatter.format(item.sizeBytes),
+                                    color = MaterialTheme.colorScheme.primary,
+                                )
+                            }
+                        }
                     }
                 }
             }
