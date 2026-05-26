@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -53,6 +54,12 @@ fun DuplicatesScreen(
                 subtitle = stringResource(R.string.duplicates_groups, state.groups.size),
             )
         }
+
+        FilterChip(
+            selected = state.audioOnly,
+            onClick = { viewModel.setAudioOnly(!state.audioOnly) },
+            label = { Text(stringResource(R.string.duplicates_audio_only)) },
+        )
 
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Button(onClick = viewModel::scan, enabled = !state.scanning) {

@@ -17,6 +17,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -55,6 +56,12 @@ fun LargeFilesScreen(
                 subtitle = stringResource(R.string.large_files_count, state.files.size),
             )
         }
+
+        FilterChip(
+            selected = state.videosOnly,
+            onClick = { viewModel.setVideosOnly(!state.videosOnly) },
+            label = { Text(stringResource(R.string.large_files_videos_only)) },
+        )
 
         Button(onClick = viewModel::scan, enabled = !state.scanning) {
             Text(stringResource(R.string.action_scan))

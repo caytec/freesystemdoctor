@@ -31,9 +31,10 @@ class DuplicateFinderEngine(private val context: Context) {
 
     suspend fun findDuplicates(
         minBytes: Long = 1L * 1024 * 1024,
+        mimePrefix: String? = null,
         progress: (ScanProgress) -> Unit = {},
     ): List<DuplicateGroup> = withContext(Dispatchers.IO) {
-        val candidates = queryFiles(minBytes)
+        val candidates = queryFiles(minBytes, mimePrefix)
         val bySize = candidates.groupBy { it.sizeBytes }.filter { it.value.size > 1 }
 
         val byHash = HashMap<String, MutableList<DuplicateFile>>()
@@ -51,15 +52,23 @@ class DuplicateFinderEngine(private val context: Context) {
             .sortedByDescending { it.reclaimableBytes }
     }
 
-    private fun queryFiles(minBytes: Long): List<DuplicateFile> {
+    private fun queryFiles(minBytes: Long, mimePrefix: String?): List<DuplicateFile> {
         val collection = MediaStore.Files.getContentUri(MediaStore.VOLUME_EXTERNAL)
         val projection = arrayOf(
             MediaStore.Files.FileColumns._ID,
             MediaStore.Files.FileColumns.DISPLAY_NAME,
             MediaStore.Files.FileColumns.SIZE,
         )
-        val selection = "${MediaStore.Files.FileColumns.SIZE} >= ?"
-        val args = arrayOf(minBytes.toString())
+        val selection: String
+        val args: Array<String>
+        if (mimePrefix != null) {
+            selection = "${MediaStore.Files.FileColumns.SIZE} >= ? AND " +
+                "${MediaStore.Files.FileColumns.MIME_TYPE} LIKE ?"
+            args = arrayOf(minBytes.toString(), "$mimePrefix%")
+        } else {
+            selection = "${MediaStore.Files.FileColumns.SIZE} >= ?"
+            args = arrayOf(minBytes.toString())
+        }
 
         val files = mutableListOf<DuplicateFile>()
         context.contentResolver.query(collection, projection, selection, args, null)?.use { c ->

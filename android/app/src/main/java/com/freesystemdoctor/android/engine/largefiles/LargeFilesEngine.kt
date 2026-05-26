@@ -19,6 +19,7 @@ class LargeFilesEngine(private val context: Context) {
     suspend fun findLargeFiles(
         minBytes: Long = 50L * 1024 * 1024,
         limit: Int = 200,
+        mimePrefix: String? = null,
     ): List<MediaFile> = withContext(Dispatchers.IO) {
         val collection = MediaStore.Files.getContentUri(MediaStore.VOLUME_EXTERNAL)
         val projection = arrayOf(
@@ -27,8 +28,16 @@ class LargeFilesEngine(private val context: Context) {
             MediaStore.Files.FileColumns.SIZE,
             MediaStore.Files.FileColumns.MIME_TYPE,
         )
-        val selection = "${MediaStore.Files.FileColumns.SIZE} >= ?"
-        val args = arrayOf(minBytes.toString())
+        val selection: String
+        val args: Array<String>
+        if (mimePrefix != null) {
+            selection = "${MediaStore.Files.FileColumns.SIZE} >= ? AND " +
+                "${MediaStore.Files.FileColumns.MIME_TYPE} LIKE ?"
+            args = arrayOf(minBytes.toString(), "$mimePrefix%")
+        } else {
+            selection = "${MediaStore.Files.FileColumns.SIZE} >= ?"
+            args = arrayOf(minBytes.toString())
+        }
         val sortOrder = "${MediaStore.Files.FileColumns.SIZE} DESC"
 
         val result = mutableListOf<MediaFile>()

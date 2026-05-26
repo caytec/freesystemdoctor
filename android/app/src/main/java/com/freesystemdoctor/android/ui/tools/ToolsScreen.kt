@@ -19,8 +19,11 @@ import androidx.compose.material.icons.filled.Analytics
 import androidx.compose.material.icons.filled.Apps
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Backup
+import androidx.compose.material.icons.filled.BatteryChargingFull
 import androidx.compose.material.icons.filled.BlurOn
 import androidx.compose.material.icons.filled.Compress
+import androidx.compose.material.icons.filled.Memory
+import androidx.compose.material.icons.filled.Speed
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.ContentPaste
 import androidx.compose.material.icons.filled.DeleteForever
@@ -93,6 +96,9 @@ private val toolGroups = listOf(
     ToolGroup(
         R.string.tools_group_system,
         listOf(
+            Tool(R.string.tool_memory, Icons.Filled.Memory, ToolRoutes.MEMORY),
+            Tool(R.string.tool_battery, Icons.Filled.BatteryChargingFull, ToolRoutes.BATTERY),
+            Tool(R.string.tool_speed, Icons.Filled.Speed, ToolRoutes.SPEED_TEST),
             Tool(R.string.tool_data_usage, Icons.Filled.NetworkCell, ToolRoutes.DATA_USAGE),
             Tool(R.string.tool_device_info, Icons.Filled.PhoneAndroid, ToolRoutes.DEVICE_INFO),
             Tool(R.string.tool_clipboard, Icons.Filled.ContentPaste, ToolRoutes.CLIPBOARD),

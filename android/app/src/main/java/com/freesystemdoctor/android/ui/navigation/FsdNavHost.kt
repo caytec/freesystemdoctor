@@ -43,7 +43,9 @@ import com.freesystemdoctor.android.ui.apps.AppsScreen
 import com.freesystemdoctor.android.ui.apps.PermissionAuditScreen
 import com.freesystemdoctor.android.ui.apps.RarelyUsedScreen
 import com.freesystemdoctor.android.ui.assistant.AssistantScreen
+import com.freesystemdoctor.android.ui.battery.BatteryScreen
 import com.freesystemdoctor.android.ui.cleaner.CleanerScreen
+import com.freesystemdoctor.android.ui.memory.MemoryScreen
 import com.freesystemdoctor.android.ui.dashboard.DashboardScreen
 import com.freesystemdoctor.android.ui.device.DeviceInfoScreen
 import com.freesystemdoctor.android.ui.duplicates.DuplicatesScreen
@@ -51,6 +53,7 @@ import com.freesystemdoctor.android.ui.files.FolderToolsScreen
 import com.freesystemdoctor.android.ui.files.ShredderScreen
 import com.freesystemdoctor.android.ui.largefiles.LargeFilesScreen
 import com.freesystemdoctor.android.ui.network.DataUsageScreen
+import com.freesystemdoctor.android.ui.network.SpeedTestScreen
 import com.freesystemdoctor.android.ui.network.WifiScreen
 import com.freesystemdoctor.android.ui.notifications.NotificationCleanerScreen
 import com.freesystemdoctor.android.ui.photos.CompressScreen
@@ -86,6 +89,9 @@ private val toolTitles: Map<String, Int> = mapOf(
     ToolRoutes.COMPRESS to R.string.tool_compress,
     ToolRoutes.WIFI to R.string.tool_wifi,
     ToolRoutes.NOTIFICATIONS to R.string.tool_notifications,
+    ToolRoutes.SPEED_TEST to R.string.tool_speed,
+    ToolRoutes.BATTERY to R.string.tool_battery,
+    ToolRoutes.MEMORY to R.string.tool_memory,
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -212,6 +218,9 @@ fun MainScaffold() {
             composable(ToolRoutes.COMPRESS) { CompressScreen() }
             composable(ToolRoutes.WIFI) { WifiScreen() }
             composable(ToolRoutes.NOTIFICATIONS) { NotificationCleanerScreen() }
+            composable(ToolRoutes.SPEED_TEST) { SpeedTestScreen() }
+            composable(ToolRoutes.BATTERY) { BatteryScreen() }
+            composable(ToolRoutes.MEMORY) { MemoryScreen() }
         }
     }
 }

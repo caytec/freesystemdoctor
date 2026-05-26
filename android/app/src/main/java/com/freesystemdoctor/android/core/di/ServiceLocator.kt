@@ -26,6 +26,7 @@ import com.freesystemdoctor.android.engine.media.ImageCompressionEngine
 import com.freesystemdoctor.android.engine.media.MediaStoreCategoryEngine
 import com.freesystemdoctor.android.engine.media.SimilarPhotoEngine
 import com.freesystemdoctor.android.engine.memory.MemoryEngine
+import com.freesystemdoctor.android.engine.network.SpeedTestEngine
 import com.freesystemdoctor.android.engine.network.WifiAnalyzerEngine
 import com.freesystemdoctor.android.engine.storage.StorageAnalyzerEngine
 import com.freesystemdoctor.android.engine.system.ClipboardCleanerEngine
@@ -76,4 +77,5 @@ object ServiceLocator {
     val blurScreenshotEngine: BlurScreenshotEngine by lazy { BlurScreenshotEngine(appContext) }
     val imageCompressionEngine: ImageCompressionEngine by lazy { ImageCompressionEngine(appContext) }
     val wifiAnalyzerEngine: WifiAnalyzerEngine by lazy { WifiAnalyzerEngine(appContext) }
+    val speedTestEngine: SpeedTestEngine by lazy { SpeedTestEngine() }
 }

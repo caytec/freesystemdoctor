@@ -227,4 +227,31 @@
     <string name="notif_clear_all">Wyczyść wszystkie</string>
     <string name="notif_count">Aktywne powiadomienia: %1$d</string>
     <string name="notif_dismiss">Odrzuć</string>
+
+    <string name="duplicates_audio_only">Tylko audio</string>
+    <string name="large_files_videos_only">Tylko wideo</string>
+    <string name="tool_speed">Test prędkości</string>
+    <string name="tool_battery">Bateria</string>
+    <string name="tool_memory">Pamięć RAM</string>
+
+    <string name="speed_note">Mierzy prędkość pobierania, ściągając plik testowy 10 MB.</string>
+    <string name="speed_run">Uruchom test prędkości</string>
+    <string name="speed_download">Prędkość pobierania</string>
+    <string name="speed_detail">%1$s w %2$d ms</string>
+    <string name="speed_error">Test prędkości nie powiódł się. Sprawdź połączenie.</string>
+
+    <string name="battery_level_label">Poziom naładowania</string>
+    <string name="battery_status">Status</string>
+    <string name="battery_charging">Ładowanie</string>
+    <string name="battery_discharging">Rozładowywanie</string>
+    <string name="battery_temp_label">Temperatura</string>
+    <string name="battery_voltage">Napięcie</string>
+    <string name="battery_technology">Technologia</string>
+    <string name="battery_charge_counter">Licznik ładunku</string>
+    <string name="battery_no_wear">Zużycie/kondycja baterii (projektowe vs bieżące mAh) nie jest wiarygodnie dostępne bez roota, więc tego nie zgadujemy.</string>
+    <string name="battery_opt_ignored">Optymalizacja baterii jest już wyłączona dla tej aplikacji.</string>
+
+    <string name="memory_note">Prosi system o zwolnienie aplikacji z cache w tle. Na nowoczesnym Androidzie efekt jest mały i tymczasowy — aplikacje wracają — więc pokazujemy realnie zwolnioną ilość, a nie zawyżoną liczbę.</string>
+    <string name="memory_free">Zwolnij aplikacje w tle</string>
+    <string name="memory_freed">Zwolniono %1$s (może wkrótce zostać ponownie zajęte).</string>
 </resources>

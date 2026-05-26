@@ -15,6 +15,7 @@ import kotlinx.coroutines.launch
 data class DuplicatesUiState(
     val scanning: Boolean = false,
     val scanned: Boolean = false,
+    val audioOnly: Boolean = false,
     val groups: List<DuplicateGroup> = emptyList(),
     val progress: ScanProgress? = null,
 ) {
@@ -29,11 +30,16 @@ class DuplicatesViewModel : ViewModel() {
     private val _state = MutableStateFlow(DuplicatesUiState())
     val state: StateFlow<DuplicatesUiState> = _state.asStateFlow()
 
+    fun setAudioOnly(value: Boolean) {
+        _state.update { it.copy(audioOnly = value) }
+    }
+
     fun scan() {
         if (_state.value.scanning) return
+        val mime = if (_state.value.audioOnly) "audio/" else null
         _state.update { it.copy(scanning = true, progress = null) }
         viewModelScope.launch {
-            val groups = engine.findDuplicates(progress = { p ->
+            val groups = engine.findDuplicates(mimePrefix = mime, progress = { p ->
                 _state.update { it.copy(progress = p) }
             })
             _state.update {

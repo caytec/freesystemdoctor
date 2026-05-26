@@ -46,4 +46,7 @@ object ToolRoutes {
     const val COMPRESS = "tool/compress"
     const val WIFI = "tool/wifi"
     const val NOTIFICATIONS = "tool/notifications"
+    const val SPEED_TEST = "tool/speed_test"
+    const val BATTERY = "tool/battery"
+    const val MEMORY = "tool/memory"
 }

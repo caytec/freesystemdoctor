@@ -76,8 +76,17 @@ w Ustawieniach (domyślnie wyłączony).
 Funkcje wymagające uprawnień wrażliwych będą ukryte za przełącznikiem **„Tryb zaawansowany"**
 (domyślnie wyłączony), z jasnym wyjaśnieniem.
 
-Wszystkie trzy fale zaimplementowane. Potencjalne kolejne rozszerzenia: duplikaty audio,
-duże wideo (filtr MIME na istniejącym silniku), dedup kontaktów (opcjonalny, `READ_CONTACTS`).
+## Dodatkowe narzędzia (Wave 4)
+
+| Narzędzie | Co robi | Uprawnienia |
+|-----------|---------|-------------|
+| **Pamięć RAM** | Realne zużycie + uczciwe „zwolnij aplikacje w tle" (bez zawyżania) | brak |
+| **Bateria** | Poziom, status, temperatura, napięcie, technologia, licznik ładunku + wyłączenie optymalizacji | brak |
+| **Test prędkości** | Pomiar prędkości pobierania (plik testowy 10 MB) | internet |
+| **Duplikaty audio** | Filtr „tylko audio" w ekranie duplikatów | media |
+| **Duże wideo** | Filtr „tylko wideo" w ekranie dużych plików | media |
+
+Potencjalne kolejne rozszerzenia: dedup kontaktów (opcjonalny, `READ_CONTACTS`), eksport SMS/kontaktów.
 
 ## Budowanie / Building
 

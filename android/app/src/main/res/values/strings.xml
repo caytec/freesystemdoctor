@@ -254,4 +254,32 @@
     <string name="notif_clear_all">Clear all</string>
     <string name="notif_count">%1$d active notifications</string>
     <string name="notif_dismiss">Dismiss</string>
+
+    <!-- Wave 4 -->
+    <string name="duplicates_audio_only">Audio only</string>
+    <string name="large_files_videos_only">Videos only</string>
+    <string name="tool_speed">Speed test</string>
+    <string name="tool_battery">Battery</string>
+    <string name="tool_memory">Memory</string>
+
+    <string name="speed_note">Measures download throughput by fetching a 10 MB test file.</string>
+    <string name="speed_run">Run speed test</string>
+    <string name="speed_download">Download speed</string>
+    <string name="speed_detail">%1$s in %2$d ms</string>
+    <string name="speed_error">Speed test failed. Check your connection.</string>
+
+    <string name="battery_level_label">Charge level</string>
+    <string name="battery_status">Status</string>
+    <string name="battery_charging">Charging</string>
+    <string name="battery_discharging">Discharging</string>
+    <string name="battery_temp_label">Temperature</string>
+    <string name="battery_voltage">Voltage</string>
+    <string name="battery_technology">Technology</string>
+    <string name="battery_charge_counter">Charge counter</string>
+    <string name="battery_no_wear">Battery wear/health (design vs current mAh) is not reliably exposed without root, so we don\'t guess it.</string>
+    <string name="battery_opt_ignored">Battery optimization already ignored for this app.</string>
+
+    <string name="memory_note">Asks the system to drop cached background apps. On modern Android the effect is small and temporary — apps reload — so we report the real amount freed, not an inflated number.</string>
+    <string name="memory_free">Free background apps</string>
+    <string name="memory_freed">Freed %1$s (may be reclaimed again shortly).</string>
 </resources>
