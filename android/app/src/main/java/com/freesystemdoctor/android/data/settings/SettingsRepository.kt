@@ -18,6 +18,8 @@ data class AppSettings(
     val darkTheme: Boolean = true,
     val aiProvider: AiProvider = AiProvider.GROQ,
     val scheduledCleaning: Boolean = false,
+    val advancedMode: Boolean = false,
+    val monitorEnabled: Boolean = false,
 )
 
 class SettingsRepository(private val context: Context) {
@@ -27,6 +29,8 @@ class SettingsRepository(private val context: Context) {
         val DARK_THEME = booleanPreferencesKey("dark_theme")
         val AI_PROVIDER = stringPreferencesKey("ai_provider")
         val SCHEDULED_CLEANING = booleanPreferencesKey("scheduled_cleaning")
+        val ADVANCED_MODE = booleanPreferencesKey("advanced_mode")
+        val MONITOR_ENABLED = booleanPreferencesKey("monitor_enabled")
     }
 
     val settings: Flow<AppSettings> = context.dataStore.data.map { prefs ->
@@ -37,6 +41,8 @@ class SettingsRepository(private val context: Context) {
                 ?.let { runCatching { AiProvider.valueOf(it) }.getOrNull() }
                 ?: AiProvider.GROQ,
             scheduledCleaning = prefs[Keys.SCHEDULED_CLEANING] ?: false,
+            advancedMode = prefs[Keys.ADVANCED_MODE] ?: false,
+            monitorEnabled = prefs[Keys.MONITOR_ENABLED] ?: false,
         )
     }
 
@@ -54,5 +60,13 @@ class SettingsRepository(private val context: Context) {
 
     suspend fun setScheduledCleaning(enabled: Boolean) {
         context.dataStore.edit { it[Keys.SCHEDULED_CLEANING] = enabled }
+    }
+
+    suspend fun setAdvancedMode(enabled: Boolean) {
+        context.dataStore.edit { it[Keys.ADVANCED_MODE] = enabled }
+    }
+
+    suspend fun setMonitorEnabled(enabled: Boolean) {
+        context.dataStore.edit { it[Keys.MONITOR_ENABLED] = enabled }
     }
 }

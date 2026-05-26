@@ -28,6 +28,7 @@ class SettingsViewModel : ViewModel() {
 
     fun setDarkTheme(enabled: Boolean) = viewModelScope.launch { repo.setDarkTheme(enabled) }
     fun setProvider(provider: AiProvider) = viewModelScope.launch { repo.setAiProvider(provider) }
+    fun setAdvancedMode(enabled: Boolean) = viewModelScope.launch { repo.setAdvancedMode(enabled) }
 
     fun saveKey(key: String) {
         keyStore.setApiKey(key)

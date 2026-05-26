@@ -5,7 +5,12 @@ import com.freesystemdoctor.android.ai.AiRepository
 import com.freesystemdoctor.android.core.media.MediaDeleteHelper
 import com.freesystemdoctor.android.core.permission.PermissionManager
 import com.freesystemdoctor.android.data.ai.AiKeyStore
+import com.freesystemdoctor.android.data.saf.SafTreeStore
 import com.freesystemdoctor.android.data.settings.SettingsRepository
+import com.freesystemdoctor.android.engine.files.FileShredderEngine
+import com.freesystemdoctor.android.engine.files.SafTreeEngine
+import com.freesystemdoctor.android.engine.network.DataUsageEngine
+import com.freesystemdoctor.android.engine.system.SystemTweaksEngine
 import com.freesystemdoctor.android.engine.apps.AppManagerEngine
 import com.freesystemdoctor.android.engine.apps.AppUsageEngine
 import com.freesystemdoctor.android.engine.apps.ApkExtractorEngine
@@ -57,4 +62,10 @@ object ServiceLocator {
     val clipboardEngine: ClipboardCleanerEngine by lazy { ClipboardCleanerEngine(appContext) }
     val mediaDeleteHelper: MediaDeleteHelper by lazy { MediaDeleteHelper(appContext) }
     val workScheduler: WorkScheduler by lazy { WorkScheduler(appContext) }
+
+    val safTreeStore: SafTreeStore by lazy { SafTreeStore(appContext) }
+    val safTreeEngine: SafTreeEngine by lazy { SafTreeEngine(appContext) }
+    val fileShredderEngine: FileShredderEngine by lazy { FileShredderEngine(appContext) }
+    val dataUsageEngine: DataUsageEngine by lazy { DataUsageEngine(appContext, permissionManager) }
+    val systemTweaksEngine: SystemTweaksEngine by lazy { SystemTweaksEngine(appContext) }
 }

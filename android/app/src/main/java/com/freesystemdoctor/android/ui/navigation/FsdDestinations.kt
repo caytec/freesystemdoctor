@@ -36,4 +36,9 @@ object ToolRoutes {
     const val CLIPBOARD = "tool/clipboard"
     const val SCHEDULE = "tool/schedule"
     const val ASSISTANT = "tool/assistant"
+    const val FILES = "tool/files"
+    const val DATA_USAGE = "tool/data_usage"
+    const val DEVICE_INFO = "tool/device"
+    const val SHREDDER = "tool/shredder"
+    const val TWEAKS = "tool/tweaks"
 }

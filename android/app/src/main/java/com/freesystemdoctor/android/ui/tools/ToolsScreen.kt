@@ -21,28 +21,40 @@ import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Backup
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.ContentPaste
+import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.Folder
+import androidx.compose.material.icons.filled.NetworkCell
+import androidx.compose.material.icons.filled.PhoneAndroid
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.Timelapse
+import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.freesystemdoctor.android.R
 import com.freesystemdoctor.android.ui.components.SectionHeader
 import com.freesystemdoctor.android.ui.navigation.ToolRoutes
 
-private data class Tool(val labelRes: Int, val icon: ImageVector, val route: String)
+private data class Tool(
+    val labelRes: Int,
+    val icon: ImageVector,
+    val route: String,
+    val advanced: Boolean = false,
+)
+
 private data class ToolGroup(val titleRes: Int, val tools: List<Tool>)
 
 private val toolGroups = listOf(
@@ -52,6 +64,8 @@ private val toolGroups = listOf(
             Tool(R.string.tool_duplicates, Icons.Filled.ContentCopy, ToolRoutes.DUPLICATES),
             Tool(R.string.tool_large_files, Icons.Filled.Folder, ToolRoutes.LARGE_FILES),
             Tool(R.string.tool_storage_types, Icons.Filled.Analytics, ToolRoutes.STORAGE_TYPES),
+            Tool(R.string.tool_files, Icons.Filled.Folder, ToolRoutes.FILES),
+            Tool(R.string.tool_shredder, Icons.Filled.DeleteForever, ToolRoutes.SHREDDER, advanced = true),
         ),
     ),
     ToolGroup(
@@ -66,8 +80,11 @@ private val toolGroups = listOf(
     ToolGroup(
         R.string.tools_group_system,
         listOf(
+            Tool(R.string.tool_data_usage, Icons.Filled.NetworkCell, ToolRoutes.DATA_USAGE),
+            Tool(R.string.tool_device_info, Icons.Filled.PhoneAndroid, ToolRoutes.DEVICE_INFO),
             Tool(R.string.tool_clipboard, Icons.Filled.ContentPaste, ToolRoutes.CLIPBOARD),
             Tool(R.string.tool_schedule, Icons.Filled.Schedule, ToolRoutes.SCHEDULE),
+            Tool(R.string.tool_tweaks, Icons.Filled.Tune, ToolRoutes.TWEAKS, advanced = true),
             Tool(R.string.nav_assistant, Icons.Filled.AutoAwesome, ToolRoutes.ASSISTANT),
         ),
     ),
@@ -77,7 +94,10 @@ private val toolGroups = listOf(
 fun ToolsScreen(
     onOpen: (String) -> Unit,
     modifier: Modifier = Modifier,
+    viewModel: ToolsViewModel = viewModel(),
 ) {
+    val advanced by viewModel.advancedMode.collectAsStateWithLifecycle()
+
     LazyVerticalGrid(
         columns = GridCells.Adaptive(minSize = 150.dp),
         modifier = modifier.fillMaxSize().padding(horizontal = 16.dp),
@@ -86,10 +106,12 @@ fun ToolsScreen(
         contentPadding = androidx.compose.foundation.layout.PaddingValues(vertical = 16.dp),
     ) {
         toolGroups.forEach { group ->
+            val visible = group.tools.filter { advanced || !it.advanced }
+            if (visible.isEmpty()) return@forEach
             item(span = { GridItemSpan(maxLineSpan) }) {
                 SectionHeader(stringResource(group.titleRes))
             }
-            items(group.tools, key = { it.route }) { tool ->
+            items(visible, key = { it.route }) { tool ->
                 ToolCard(tool = tool, onClick = { onOpen(tool.route) })
             }
         }
@@ -108,9 +130,7 @@ private fun ToolCard(tool: Tool, onClick: () -> Unit) {
             verticalArrangement = Arrangement.SpaceBetween,
         ) {
             Box(
-                modifier = Modifier
-                    .size(44.dp)
-                    .clip(RoundedCornerShape(14.dp)),
+                modifier = Modifier.size(44.dp).clip(RoundedCornerShape(14.dp)),
                 contentAlignment = Alignment.Center,
             ) {
                 Icon(
@@ -123,7 +143,6 @@ private fun ToolCard(tool: Tool, onClick: () -> Unit) {
             Text(
                 stringResource(tool.labelRes),
                 style = MaterialTheme.typography.titleSmall,
-                textAlign = TextAlign.Start,
             )
         }
     }

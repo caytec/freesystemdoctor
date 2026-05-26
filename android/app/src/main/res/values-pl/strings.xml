@@ -145,4 +145,53 @@
     <string name="work_clean_title">Konserwacja zakończona</string>
     <string name="work_clean_done">Zwolniono %1$s cache · znaleziono %2$s śmieci do usunięcia</string>
     <string name="work_channel_name">Konserwacja</string>
+
+    <string name="settings_advanced">Tryb zaawansowany</string>
+    <string name="settings_advanced_desc">Odblokowuje narzędzia wymagające uprawnień wrażliwych (shredder, dostrojenia systemu, monitor).</string>
+
+    <string name="tool_files">Analiza folderów</string>
+    <string name="tool_data_usage">Zużycie danych</string>
+    <string name="tool_device_info">Info o urządzeniu</string>
+    <string name="tool_shredder">Niszczarka plików</string>
+    <string name="tool_tweaks">Dostrojenia systemu</string>
+
+    <string name="files_note">Przyznaj dostęp do folderu, aby zmierzyć jego rozmiar, przeglądać go i usuwać puste foldery.</string>
+    <string name="files_pick_folder">Wybierz folder</string>
+    <string name="files_find_empty">Znajdź puste foldery</string>
+    <string name="files_total">Rozmiar folderu</string>
+    <string name="files_items">Elementów: %1$d</string>
+    <string name="files_empty_found">Puste foldery: %1$d</string>
+
+    <string name="shredder_note">Nadpisuje plik losowymi danymi przed usunięciem. Uwaga: na pamięci flash mechanizm wear-leveling sprawia, że nadpisanie nie gwarantuje fizycznego wymazania. Działa dla plików, które wybierzesz i do których przyznasz dostęp.</string>
+    <string name="shredder_pick">Wybierz plik do zniszczenia</string>
+    <string name="shredder_done">Zniszczono: %1$s</string>
+    <string name="shredder_error">Nie udało się zniszczyć pliku.</string>
+
+    <string name="data_usage_need_access">Dostęp do użycia jest wymagany, aby odczytać zużycie danych per aplikacja.</string>
+    <string name="data_usage_subtitle">Komórkowe + Wi-Fi z ostatnich 30 dni.</string>
+    <string name="data_usage_breakdown">Komórkowe %1$s · Wi-Fi %2$s</string>
+
+    <string name="device_manufacturer">Urządzenie</string>
+    <string name="device_codename">Nazwa kodowa / płyta</string>
+    <string name="device_hardware">Sprzęt</string>
+    <string name="device_android">Android</string>
+    <string name="device_patch">Poprawka zabezpieczeń</string>
+    <string name="device_kernel">Jądro</string>
+    <string name="device_cpu">CPU</string>
+    <string name="device_abis">ABI</string>
+    <string name="device_sensors">Czujniki (%1$d)</string>
+
+    <string name="tweaks_note">Te opcje otwierają ekrany systemowe — Android nie pozwala zmieniać ich bezpośrednio bez roota. Zmianę wykonujesz Ty, my tylko Cię tam kierujemy.</string>
+    <string name="monitor_toggle">Monitor na pasku stanu</string>
+    <string name="monitor_desc">Trwałe powiadomienie z bieżącym RAM i wolnym miejscem.</string>
+    <string name="tweak_battery">Ignoruj optymalizację baterii</string>
+    <string name="tweak_battery_desc">Utrzymuje niezawodność harmonogramu i monitora.</string>
+    <string name="tweak_data">Ustawienia zużycia danych</string>
+    <string name="tweak_data_desc">Otwórz systemowy ekran zużycia danych / oszczędzania danych.</string>
+    <string name="tweak_autostart">Menedżer autostartu</string>
+    <string name="tweak_autostart_desc">Otwiera ekran autostartu Twojego urządzenia (zależny od producenta).</string>
+    <string name="tweak_open">Otwórz</string>
+    <string name="monitor_title">FreeSystemDoctor</string>
+    <string name="monitor_text">RAM %1$s · wolne %2$s · pamięć %3$s wolne</string>
+    <string name="monitor_channel_name">Monitor na żywo</string>
 </resources>

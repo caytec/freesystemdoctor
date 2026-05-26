@@ -45,13 +45,18 @@ import com.freesystemdoctor.android.ui.apps.RarelyUsedScreen
 import com.freesystemdoctor.android.ui.assistant.AssistantScreen
 import com.freesystemdoctor.android.ui.cleaner.CleanerScreen
 import com.freesystemdoctor.android.ui.dashboard.DashboardScreen
+import com.freesystemdoctor.android.ui.device.DeviceInfoScreen
 import com.freesystemdoctor.android.ui.duplicates.DuplicatesScreen
+import com.freesystemdoctor.android.ui.files.FolderToolsScreen
+import com.freesystemdoctor.android.ui.files.ShredderScreen
 import com.freesystemdoctor.android.ui.largefiles.LargeFilesScreen
+import com.freesystemdoctor.android.ui.network.DataUsageScreen
 import com.freesystemdoctor.android.ui.settings.SettingsScreen
 import com.freesystemdoctor.android.ui.storage.StorageByTypeScreen
 import com.freesystemdoctor.android.ui.storage.StorageScreen
 import com.freesystemdoctor.android.ui.system.ClipboardScreen
 import com.freesystemdoctor.android.ui.tools.ScheduleScreen
+import com.freesystemdoctor.android.ui.tools.SystemTweaksScreen
 import com.freesystemdoctor.android.ui.tools.ToolsScreen
 import com.freesystemdoctor.android.ui.theme.appBackgroundBrush
 
@@ -66,6 +71,11 @@ private val toolTitles: Map<String, Int> = mapOf(
     ToolRoutes.CLIPBOARD to R.string.tool_clipboard,
     ToolRoutes.SCHEDULE to R.string.tool_schedule,
     ToolRoutes.ASSISTANT to R.string.nav_assistant,
+    ToolRoutes.FILES to R.string.tool_files,
+    ToolRoutes.DATA_USAGE to R.string.tool_data_usage,
+    ToolRoutes.DEVICE_INFO to R.string.tool_device_info,
+    ToolRoutes.SHREDDER to R.string.tool_shredder,
+    ToolRoutes.TWEAKS to R.string.tool_tweaks,
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -182,6 +192,11 @@ fun MainScaffold() {
             composable(ToolRoutes.CLIPBOARD) { ClipboardScreen() }
             composable(ToolRoutes.SCHEDULE) { ScheduleScreen() }
             composable(ToolRoutes.ASSISTANT) { AssistantScreen() }
+            composable(ToolRoutes.FILES) { FolderToolsScreen() }
+            composable(ToolRoutes.DATA_USAGE) { DataUsageScreen() }
+            composable(ToolRoutes.DEVICE_INFO) { DeviceInfoScreen() }
+            composable(ToolRoutes.SHREDDER) { ShredderScreen() }
+            composable(ToolRoutes.TWEAKS) { SystemTweaksScreen() }
         }
     }
 }

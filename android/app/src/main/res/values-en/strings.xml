@@ -145,4 +145,53 @@
     <string name="work_clean_title">Maintenance done</string>
     <string name="work_clean_done">Freed %1$s of cache · %2$s reclaimable junk found</string>
     <string name="work_channel_name">Maintenance</string>
+
+    <string name="settings_advanced">Advanced mode</string>
+    <string name="settings_advanced_desc">Unlocks tools that need sensitive permissions (file shredder, system tweaks, monitor).</string>
+
+    <string name="tool_files">Folder analysis</string>
+    <string name="tool_data_usage">Data usage</string>
+    <string name="tool_device_info">Device info</string>
+    <string name="tool_shredder">File shredder</string>
+    <string name="tool_tweaks">System tweaks</string>
+
+    <string name="files_note">Grant access to a folder to measure its size, browse it and remove empty folders.</string>
+    <string name="files_pick_folder">Choose folder</string>
+    <string name="files_find_empty">Find empty folders</string>
+    <string name="files_total">Folder size</string>
+    <string name="files_items">%1$d items</string>
+    <string name="files_empty_found">Empty folders: %1$d</string>
+
+    <string name="shredder_note">Overwrites a file with random data before deleting it. Note: on flash storage, wear levelling means overwriting cannot guarantee physical erasure. Works for files you select and grant access to.</string>
+    <string name="shredder_pick">Choose file to shred</string>
+    <string name="shredder_done">Shredded: %1$s</string>
+    <string name="shredder_error">Could not shred this file.</string>
+
+    <string name="data_usage_need_access">Usage access is required to read per-app data usage.</string>
+    <string name="data_usage_subtitle">Mobile + Wi-Fi over the last 30 days.</string>
+    <string name="data_usage_breakdown">Mobile %1$s · Wi-Fi %2$s</string>
+
+    <string name="device_manufacturer">Device</string>
+    <string name="device_codename">Codename / board</string>
+    <string name="device_hardware">Hardware</string>
+    <string name="device_android">Android</string>
+    <string name="device_patch">Security patch</string>
+    <string name="device_kernel">Kernel</string>
+    <string name="device_cpu">CPU</string>
+    <string name="device_abis">ABIs</string>
+    <string name="device_sensors">Sensors (%1$d)</string>
+
+    <string name="tweaks_note">These open system screens — Android does not allow changing them directly without root. You make the change; we just take you there.</string>
+    <string name="monitor_toggle">Status bar monitor</string>
+    <string name="monitor_desc">Persistent notification showing live RAM and free storage.</string>
+    <string name="tweak_battery">Ignore battery optimization</string>
+    <string name="tweak_battery_desc">Keeps scheduled cleaning and the monitor reliable.</string>
+    <string name="tweak_data">Data usage settings</string>
+    <string name="tweak_data_desc">Open the system data usage / data saver screen.</string>
+    <string name="tweak_autostart">Autostart manager</string>
+    <string name="tweak_autostart_desc">Opens your device\'s autostart screen (OEM-specific).</string>
+    <string name="tweak_open">Open</string>
+    <string name="monitor_title">FreeSystemDoctor</string>
+    <string name="monitor_text">RAM %1$s · free %2$s · storage %3$s free</string>
+    <string name="monitor_channel_name">Live monitor</string>
 </resources>

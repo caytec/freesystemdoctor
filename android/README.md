@@ -34,6 +34,20 @@ FreeSystemDoctor. Kotlin + Jetpack Compose (Material 3), Polish & English.
 Dodatkowo: **kafelek Szybkich ustawień** (szybkie czyszczenie cache) i **widżet ekranu głównego**
 (wolne miejsce + przycisk czyszczenia).
 
+## Narzędzia zaawansowane (Wave 2)
+
+Część funkcji wymaga uprawnień wrażliwych i jest ukryta za przełącznikiem **„Tryb zaawansowany"**
+w Ustawieniach (domyślnie wyłączony).
+
+| Narzędzie | Co robi | Uprawnienia |
+|-----------|---------|-------------|
+| **Analiza folderów** | SAF: rozmiar folderu, przeglądanie, usuwanie pustych folderów | dostęp do folderu (SAF) |
+| **Zużycie danych** | Dane komórkowe + Wi-Fi per aplikacja (`NetworkStatsManager`) | dostęp do statystyk użycia |
+| **Info o urządzeniu** | Model, jądro, patch, CPU (taktowanie), ABI, lista czujników | brak |
+| **Niszczarka plików** *(zaawansowane)* | Nadpisanie losowymi danymi + usunięcie (best-effort) | dostęp do pliku (SAF) |
+| **Dostrojenia systemu** *(zaawansowane)* | Deep-linki: optymalizacja baterii, zużycie danych, autostart OEM | — |
+| **Monitor na pasku stanu** *(zaawansowane)* | Trwałe powiadomienie z RAM i wolnym miejscem | usługa pierwszoplanowa, powiadomienia |
+
 ## Czego NIE da się zrobić bez roota (świadome ograniczenia)
 
 - **Czyszczenie cache innych aplikacji jednym kliknięciem** — niemożliwe od API 24. Aplikacja kieruje
@@ -52,9 +66,6 @@ Dodatkowo: **kafelek Szybkich ustawień** (szybkie czyszczenie cache) i **widże
 Funkcje wymagające uprawnień wrażliwych będą ukryte za przełącznikiem **„Tryb zaawansowany"**
 (domyślnie wyłączony), z jasnym wyjaśnieniem.
 
-- **Wave 2:** przeglądarka plików i puste foldery (SAF), shredder plików (best-effort),
-  zużycie danych per-app (`NetworkStatsManager`), rozszerzone info o urządzeniu (CPU/sensory),
-  trwałe powiadomienie-monitor, whitelist optymalizacji baterii, deep-linki autostartu OEM.
 - **Wave 3:** podobne/rozmyte zdjęcia (hash percepcyjny), kompresja zdjęć, duplikaty audio,
   duże wideo, analizator WiFi (lokalizacja), menedżer powiadomień (NotificationListener),
   opcjonalny dedup kontaktów.
