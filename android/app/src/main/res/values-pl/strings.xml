@@ -266,4 +266,21 @@
     <string name="backup_duplicates">Możliwe duplikaty kontaktów: %1$d</string>
     <string name="backup_saved">Zapisano w Pobranych: %1$s</string>
     <string name="backup_error">Eksport nie powiódł się.</string>
+
+    <string name="nav_pro">Kup Pro</string>
+    <string name="pro_title">FreeSystemDoctor Pro</string>
+    <string name="pro_active">Masz wersję Pro</string>
+    <string name="pro_subtitle">Odblokuj wszystko i usuń reklamy.</string>
+    <string name="pro_benefit_ads">Usuń wszystkie reklamy</string>
+    <string name="pro_benefit_advanced">Odblokuj wszystkie narzędzia zaawansowane</string>
+    <string name="pro_benefit_schedule">Automatyczne zaplanowane czyszczenie</string>
+    <string name="pro_benefit_monitor">Monitor na żywo na pasku stanu</string>
+    <string name="pro_benefit_support">Wsparcie rozwoju</string>
+    <string name="pro_buy">Subskrybuj</string>
+    <string name="pro_restore">Przywróć zakupy</string>
+    <string name="pro_thanks">Dziękujemy za wsparcie FreeSystemDoctor!</string>
+    <string name="pro_unavailable">Plany się ładują lub są niedostępne. Upewnij się, że jesteś zalogowany w Google Play.</string>
+    <string name="pro_unlock_ad">Obejrzyj reklamę, aby odblokować narzędzia zaawansowane na 24h</string>
+    <string name="pro_unlock_ad_done">Narzędzia zaawansowane odblokowane na 24 godziny.</string>
+    <string name="advanced_locked">Narzędzia zaawansowane to funkcja Pro. Kup Pro lub obejrzyj reklamę, aby je odblokować.</string>
 </resources>

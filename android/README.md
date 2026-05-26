@@ -94,6 +94,37 @@ Funkcje wymagające uprawnień wrażliwych będą ukryte za przełącznikiem **�
 
 Tylko odczyt — nic nie jest zmieniane, usuwane ani wysyłane. Funkcja za „Trybem zaawansowanym".
 
+## Monetyzacja / Monetization
+
+Model freemium zgodny z zasadami Google Play:
+
+- **Reklamy AdMob** (tylko dla użytkowników bez Pro, po zgodzie UMP):
+  - Baner adaptacyjny na dole ekranów głównych
+  - Reklama pełnoekranowa po zakończonym czyszczeniu (limit: maks. 1 na 3 min)
+  - Reklama nagradzana: odblokowanie narzędzi zaawansowanych na 24h
+- **Google Play Billing** — „Pro":
+  - Subskrypcja miesięczna (`fsd_pro_monthly`) i roczna (`fsd_pro_yearly`)
+  - Zakup dożywotni (`fsd_pro_lifetime`)
+  - Pro = brak reklam + wszystkie narzędzia zaawansowane + harmonogram + monitor
+- **Zgoda UMP** (User Messaging Platform) uruchamiana przed reklamami (wymóg EOG/UK).
+
+Tryb zaawansowany jest teraz odblokowywany przez Pro **lub** reklamę nagradzaną (24h), zamiast
+zwykłego przełącznika.
+
+### Konfiguracja przed publikacją (Play Console / AdMob)
+
+Kod używa **testowych** ID AdMob (bezpieczne w developmencie). Przed wydaniem produkcyjnym:
+
+1. **AdMob:** utwórz konto, aplikację i jednostki reklamowe; podmień:
+   - `res/values/strings.xml` → `admob_app_id` (App ID)
+   - `ads/AdUnits.kt` → `BANNER`, `INTERSTITIAL`, `REWARDED`
+   ⚠️ Klikanie własnych żywych reklam = strike. Nie używaj prawdziwych ID w testach.
+2. **Play Console → Monetyzacja:** utwórz produkty o ID `fsd_pro_monthly`, `fsd_pro_yearly`
+   (subskrypcje) i `fsd_pro_lifetime` (produkt jednorazowy), ustaw ceny.
+3. **Polityka prywatności** (wymagana przy reklamach) + formularz **Bezpieczeństwo danych**
+   (Data safety) w Play Console (zbierany Advertising ID).
+4. Reklamy serwowane są dopiero po zgodzie UMP — skonfiguruj komunikat o prywatności w AdMob.
+
 ## Budowanie / Building
 
 ```bash

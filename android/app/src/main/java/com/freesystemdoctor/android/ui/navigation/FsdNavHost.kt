@@ -7,11 +7,13 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.WorkspacePremium
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -60,6 +62,8 @@ import com.freesystemdoctor.android.ui.notifications.NotificationCleanerScreen
 import com.freesystemdoctor.android.ui.photos.CompressScreen
 import com.freesystemdoctor.android.ui.photos.PhotoReviewScreen
 import com.freesystemdoctor.android.ui.photos.SimilarPhotosScreen
+import com.freesystemdoctor.android.ui.components.BannerAd
+import com.freesystemdoctor.android.ui.pro.ProScreen
 import com.freesystemdoctor.android.ui.settings.SettingsScreen
 import com.freesystemdoctor.android.ui.storage.StorageByTypeScreen
 import com.freesystemdoctor.android.ui.storage.StorageScreen
@@ -103,10 +107,12 @@ fun MainScaffold() {
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = backStackEntry?.destination?.route
     val dark = MaterialTheme.colorScheme.background.luminance() < 0.5f
-    val isLeaf = currentRoute == ROUTE_SETTINGS || currentRoute?.startsWith("tool/") == true
+    val isLeaf = currentRoute == ROUTE_SETTINGS || currentRoute == ROUTE_PRO ||
+        currentRoute?.startsWith("tool/") == true
 
     val title = when {
         currentRoute == ROUTE_SETTINGS -> stringResource(R.string.settings_title)
+        currentRoute == ROUTE_PRO -> stringResource(R.string.pro_title)
         currentRoute != null && toolTitles.containsKey(currentRoute) ->
             stringResource(toolTitles.getValue(currentRoute))
         else -> FsdDestination.entries.firstOrNull { it.route == currentRoute }
@@ -135,6 +141,13 @@ fun MainScaffold() {
                     }
                 },
                 actions = {
+                    IconButton(onClick = { navController.navigate(ROUTE_PRO) }) {
+                        Icon(
+                            Icons.Filled.WorkspacePremium,
+                            contentDescription = stringResource(R.string.nav_pro),
+                            tint = MaterialTheme.colorScheme.primary,
+                        )
+                    }
                     IconButton(onClick = { navController.navigate(ROUTE_SETTINGS) }) {
                         Icon(Icons.Filled.Settings, contentDescription = stringResource(R.string.nav_settings))
                     }
@@ -142,7 +155,9 @@ fun MainScaffold() {
             )
         },
         bottomBar = {
-            if (!isLeaf || currentRoute?.startsWith("tool/") == true) {
+            Column {
+                if (currentRoute != ROUTE_PRO) BannerAd()
+                if (!isLeaf || currentRoute?.startsWith("tool/") == true) {
                 NavigationBar(containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.92f)) {
                     val destination = backStackEntry?.destination
                     FsdDestination.entries.forEach { dest ->
@@ -179,6 +194,7 @@ fun MainScaffold() {
                         )
                     }
                 }
+                }
             }
         },
     ) { innerPadding ->
@@ -199,6 +215,7 @@ fun MainScaffold() {
                 ToolsScreen(onOpen = { navController.navigate(it) })
             }
             composable(ROUTE_SETTINGS) { SettingsScreen() }
+            composable(ROUTE_PRO) { ProScreen() }
 
             composable(ToolRoutes.DUPLICATES) { DuplicatesScreen() }
             composable(ToolRoutes.LARGE_FILES) { LargeFilesScreen() }

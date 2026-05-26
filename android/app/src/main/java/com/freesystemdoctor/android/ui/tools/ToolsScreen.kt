@@ -104,7 +104,7 @@ private val toolGroups = listOf(
             Tool(R.string.tool_data_usage, Icons.Filled.NetworkCell, ToolRoutes.DATA_USAGE),
             Tool(R.string.tool_device_info, Icons.Filled.PhoneAndroid, ToolRoutes.DEVICE_INFO),
             Tool(R.string.tool_clipboard, Icons.Filled.ContentPaste, ToolRoutes.CLIPBOARD),
-            Tool(R.string.tool_schedule, Icons.Filled.Schedule, ToolRoutes.SCHEDULE),
+            Tool(R.string.tool_schedule, Icons.Filled.Schedule, ToolRoutes.SCHEDULE, advanced = true),
             Tool(R.string.nav_assistant, Icons.Filled.AutoAwesome, ToolRoutes.ASSISTANT),
             Tool(R.string.tool_wifi, Icons.Filled.Wifi, ToolRoutes.WIFI, advanced = true),
             Tool(R.string.tool_notifications, Icons.Filled.Notifications, ToolRoutes.NOTIFICATIONS, advanced = true),
@@ -119,7 +119,7 @@ fun ToolsScreen(
     modifier: Modifier = Modifier,
     viewModel: ToolsViewModel = viewModel(),
 ) {
-    val advanced by viewModel.advancedMode.collectAsStateWithLifecycle()
+    val advanced by viewModel.advancedUnlocked.collectAsStateWithLifecycle()
 
     LazyVerticalGrid(
         columns = GridCells.Adaptive(minSize = 150.dp),

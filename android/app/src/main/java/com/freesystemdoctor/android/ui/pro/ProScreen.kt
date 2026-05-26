@@ -1,0 +1,179 @@
+package com.freesystemdoctor.android.ui.pro
+
+import android.app.Activity
+import android.content.Context
+import android.content.ContextWrapper
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.WorkspacePremium
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.freesystemdoctor.android.R
+import com.freesystemdoctor.android.ui.components.Appear
+
+@Composable
+fun ProScreen(
+    modifier: Modifier = Modifier,
+    viewModel: ProViewModel = viewModel(),
+) {
+    val products by viewModel.products.collectAsStateWithLifecycle()
+    val isPro by viewModel.isPro.collectAsStateWithLifecycle()
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val activity = context.findActivity()
+    var rewardGranted by remember { mutableStateOf(false) }
+
+    Column(
+        modifier = modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        Appear {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+                shape = MaterialTheme.shapes.large,
+            ) {
+                Column(Modifier.padding(20.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                    Icon(
+                        Icons.Filled.WorkspacePremium,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(48.dp),
+                    )
+                    Text(
+                        stringResource(if (isPro) R.string.pro_active else R.string.pro_title),
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(top = 8.dp),
+                    )
+                    Text(
+                        stringResource(R.string.pro_subtitle),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(top = 4.dp),
+                    )
+                }
+            }
+        }
+
+        listOf(
+            R.string.pro_benefit_ads,
+            R.string.pro_benefit_advanced,
+            R.string.pro_benefit_schedule,
+            R.string.pro_benefit_monitor,
+            R.string.pro_benefit_support,
+        ).forEach { benefit ->
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    Icons.Filled.Check,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.secondary,
+                    modifier = Modifier.size(20.dp).padding(end = 8.dp),
+                )
+                Text(stringResource(benefit), style = MaterialTheme.typography.bodyMedium)
+            }
+        }
+
+        if (isPro) {
+            Text(
+                stringResource(R.string.pro_thanks),
+                color = MaterialTheme.colorScheme.secondary,
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.padding(top = 8.dp),
+            )
+        } else {
+            products.forEach { product ->
+                Appear {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                        ),
+                        shape = MaterialTheme.shapes.medium,
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth().padding(16.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Column(Modifier.weight(1f)) {
+                                Text(product.title, style = MaterialTheme.typography.titleMedium)
+                                Text(
+                                    product.price,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.primary,
+                                )
+                            }
+                            Button(
+                                onClick = { activity?.let { viewModel.purchase(it, product) } },
+                                enabled = activity != null,
+                            ) { Text(stringResource(R.string.pro_buy)) }
+                        }
+                    }
+                }
+            }
+
+            if (products.isEmpty()) {
+                Text(
+                    stringResource(R.string.pro_unavailable),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+
+            OutlinedButton(onClick = viewModel::restore, modifier = Modifier.fillMaxWidth()) {
+                Text(stringResource(R.string.pro_restore))
+            }
+
+            if (viewModel.rewardedReady() && activity != null) {
+                OutlinedButton(
+                    onClick = {
+                        viewModel.watchAdToUnlock(activity) { rewardGranted = true }
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                ) { Text(stringResource(R.string.pro_unlock_ad)) }
+            }
+            if (rewardGranted) {
+                Text(
+                    stringResource(R.string.pro_unlock_ad_done),
+                    color = MaterialTheme.colorScheme.secondary,
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            }
+        }
+    }
+}
+
+private fun Context.findActivity(): Activity? {
+    var ctx = this
+    while (ctx is ContextWrapper) {
+        if (ctx is Activity) return ctx
+        ctx = ctx.baseContext
+    }
+    return null
+}

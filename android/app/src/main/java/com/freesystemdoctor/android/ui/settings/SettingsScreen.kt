@@ -57,22 +57,6 @@ fun SettingsScreen(
             Switch(checked = settings.darkTheme, onCheckedChange = viewModel::setDarkTheme)
         }
 
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Column(Modifier.weight(1f).padding(end = 12.dp)) {
-                Text(stringResource(R.string.settings_advanced), style = MaterialTheme.typography.titleMedium)
-                Text(
-                    stringResource(R.string.settings_advanced_desc),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
-            Switch(checked = settings.advancedMode, onCheckedChange = viewModel::setAdvancedMode)
-        }
-
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Text(stringResource(R.string.settings_ai_provider), style = MaterialTheme.typography.titleMedium)
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {

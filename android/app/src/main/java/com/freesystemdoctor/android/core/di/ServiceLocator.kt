@@ -1,10 +1,13 @@
 package com.freesystemdoctor.android.core.di
 
 import android.content.Context
+import com.freesystemdoctor.android.ads.AdsController
 import com.freesystemdoctor.android.ai.AiRepository
+import com.freesystemdoctor.android.billing.BillingManager
 import com.freesystemdoctor.android.core.media.MediaDeleteHelper
 import com.freesystemdoctor.android.core.permission.PermissionManager
 import com.freesystemdoctor.android.data.ai.AiKeyStore
+import com.freesystemdoctor.android.data.billing.ProStore
 import com.freesystemdoctor.android.data.saf.SafTreeStore
 import com.freesystemdoctor.android.data.settings.SettingsRepository
 import com.freesystemdoctor.android.engine.files.FileShredderEngine
@@ -82,4 +85,10 @@ object ServiceLocator {
     val speedTestEngine: SpeedTestEngine by lazy { SpeedTestEngine() }
     val contactsEngine: ContactsEngine by lazy { ContactsEngine(appContext) }
     val smsBackupEngine: SmsBackupEngine by lazy { SmsBackupEngine(appContext) }
+
+    val proStore: ProStore by lazy { ProStore(appContext) }
+    val billingManager: BillingManager by lazy { BillingManager(appContext, proStore) }
+    val adsController: AdsController by lazy {
+        AdsController(appContext).also { it.proProvider = { billingManager.isPro.value } }
+    }
 }

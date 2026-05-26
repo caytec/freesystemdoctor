@@ -266,4 +266,21 @@
     <string name="backup_duplicates">Possible duplicate contacts: %1$d</string>
     <string name="backup_saved">Saved to Downloads: %1$s</string>
     <string name="backup_error">Export failed.</string>
+
+    <string name="nav_pro">Go Pro</string>
+    <string name="pro_title">FreeSystemDoctor Pro</string>
+    <string name="pro_active">You\'re Pro</string>
+    <string name="pro_subtitle">Unlock everything and remove ads.</string>
+    <string name="pro_benefit_ads">Remove all ads</string>
+    <string name="pro_benefit_advanced">Unlock all advanced tools</string>
+    <string name="pro_benefit_schedule">Automatic scheduled cleaning</string>
+    <string name="pro_benefit_monitor">Live status-bar monitor</string>
+    <string name="pro_benefit_support">Support development</string>
+    <string name="pro_buy">Subscribe</string>
+    <string name="pro_restore">Restore purchases</string>
+    <string name="pro_thanks">Thank you for supporting FreeSystemDoctor!</string>
+    <string name="pro_unavailable">Plans are loading or unavailable. Make sure you\'re signed in to Google Play.</string>
+    <string name="pro_unlock_ad">Watch an ad to unlock advanced tools for 24h</string>
+    <string name="pro_unlock_ad_done">Advanced tools unlocked for 24 hours.</string>
+    <string name="advanced_locked">Advanced tools are a Pro feature. Upgrade or watch an ad to unlock them.</string>
 </resources>

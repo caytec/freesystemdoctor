@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.freesystemdoctor.android.R
+import com.freesystemdoctor.android.core.di.ServiceLocator
 import com.freesystemdoctor.android.core.util.ByteFormatter
 import com.freesystemdoctor.android.ui.components.Appear
 import com.freesystemdoctor.android.ui.components.InfoBanner
@@ -39,11 +40,13 @@ fun CleanerScreen(
     viewModel: CleanerViewModel = viewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val activity = androidx.compose.ui.platform.LocalContext.current as? android.app.Activity
     val deleteLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.StartIntentSenderForResult(),
     ) { result ->
         if (result.resultCode == android.app.Activity.RESULT_OK) {
             viewModel.onMediaDeleted()
+            activity?.let { ServiceLocator.adsController.maybeShowInterstitial(it) }
         }
     }
 

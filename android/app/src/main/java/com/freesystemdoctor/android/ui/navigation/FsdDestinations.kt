@@ -23,6 +23,7 @@ enum class FsdDestination(
 
 const val ROUTE_SETTINGS = "settings"
 const val ROUTE_ONBOARDING = "onboarding"
+const val ROUTE_PRO = "pro"
 
 /** Leaf routes opened from the Tools hub (not shown in the bottom bar). */
 object ToolRoutes {

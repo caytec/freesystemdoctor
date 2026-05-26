@@ -12,6 +12,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import com.freesystemdoctor.android.ads.ConsentManager
 import com.freesystemdoctor.android.core.di.ServiceLocator
 import com.freesystemdoctor.android.data.settings.AppSettings
 import com.freesystemdoctor.android.ui.navigation.MainScaffold
@@ -22,6 +23,13 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        // Verify Pro entitlement with Google Play, then resolve ad consent before any ads.
+        ServiceLocator.billingManager.connect()
+        ConsentManager(this).gather(this) { canRequestAds ->
+            ServiceLocator.adsController.initialize(canRequestAds)
+        }
+
         setContent {
             val settings by ServiceLocator.settingsRepository.settings
                 .collectAsState(initial = AppSettings())
