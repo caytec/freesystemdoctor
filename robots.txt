@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+
+# Block scraping of internal/build artifacts
+Disallow: /build/
+Disallow: /dist/
+Disallow: /__pycache__/
+Disallow: /releases/
+
+Sitemap: https://freesystemdoctor.com.pl/sitemap.xml

@@ -9,28 +9,41 @@
 </head>
 <body>
 
-<nav class="topnav">
-  <div class="container nav-inner">
+<nav class="topnav" id="topnav">
+  <div class="nav-inner">
     <a href="index.html" class="logo">
       <span class="logo-icon">⚕</span>
       <span class="logo-text">FreeSystemDoctor</span>
     </a>
     <div class="nav-links">
       <a href="index.html#features">Funkcje</a>
-      <a href="index.html#compare">Porównanie</a>
-      <a href="index.html#download">Pobierz</a>
+      <a href="index.html#pricing">Cennik</a>
+      <a href="index.html#faq">FAQ</a>
       <a href="aktualizacje.html">Aktualizacje</a>
       <a href="changelog.html">Changelog</a>
-      <a href="https://github.com/caytec/freesystemdoctor" target="_blank">GitHub</a>
+      <a href="index.html#download" class="btn btn-primary btn-sm">⬇ Pobierz</a>
     </div>
+    <button class="burger" id="burger" aria-label="Menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+      </svg>
+    </button>
+  </div>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="index.html#features">Funkcje</a>
+    <a href="index.html#pricing">Cennik</a>
+    <a href="index.html#faq">FAQ</a>
+    <a href="aktualizacje.html">Aktualizacje</a>
+    <a href="changelog.html">Changelog</a>
+    <a href="index.html#download">⬇ Pobierz</a>
   </div>
 </nav>
 
-<header class="changelog-hero">
+<header class="page-hero">
   <div class="container">
     <div class="badge" id="latest-badge">Ładowanie najnowszego buildu...</div>
     <h1>Aktualizacje</h1>
-    <p>Każdy build .EXE. Automatycznie z każdym pushem.</p>
+    <p>Każdy build EXE. Automatycznie z każdym pushem na GitHubie.</p>
   </div>
 </header>
 
@@ -58,13 +71,14 @@
     <div class="footer-brand">
       <span class="logo-icon">⚕</span>
       <strong>FreeSystemDoctor</strong>
-      <span class="footer-meta">© 2024 · MIT License · Open Source</span>
+      <span class="footer-meta">© 2026 · MIT License · Made in Poland</span>
     </div>
     <div class="footer-links">
-      <a href="https://github.com/caytec/freesystemdoctor" target="_blank">GitHub</a>
-      <a href="https://github.com/caytec/freesystemdoctor/issues" target="_blank">Zgłoś błąd</a>
-      <a href="aktualizacje.html">Aktualizacje</a>
-      <a href="changelog.html">Changelog</a>
+      <a href="index.html">Strona główna</a>
+      <a href="privacy.html">Prywatność</a>
+      <a href="terms.html">Regulamin</a>
+      <a href="affiliate-disclosure.html">Afiliacja</a>
+      <a href="https://github.com/caytec/freesystemdoctor" target="_blank" rel="noopener">GitHub</a>
     </div>
   </div>
 </footer>
@@ -258,6 +272,14 @@ async function init() {
 }
 
 init();
+
+// Mobile menu + nav scroll
+const burger = document.getElementById('burger');
+const mm = document.getElementById('mobileMenu');
+if(burger){ burger.addEventListener('click', () => mm.classList.toggle('open')); }
+const nav = document.getElementById('topnav');
+const onScroll = () => nav.classList.toggle('scrolled', window.scrollY > 20);
+window.addEventListener('scroll', onScroll, {passive:true}); onScroll();
 </script>
 
 <script src='https://storage.ko-fi.com/cdn/scripts/overlay-widget.js'></script>

@@ -2,6 +2,9 @@
 build/
 *.manifest
 *.log
+__pycache__/
+*.pyc
+*.pyo
 
 # OS
 Thumbs.db
@@ -11,3 +14,21 @@ desktop.ini
 # IDE
 .vscode/
 .idea/
+.claude/
+
+# Local-only dev artifacts
+_test_*.py
+*.exe.old
+apprelease/
+releases/
+
+# Server-deploy scratch files (kept in docs/ if needed)
+nginx-freesystemdoctor.conf
+hayven-override.conf
+cloudflared-fsd.service
+
+# Secrets — NEVER commit
+.env
+.env.*
+*.pem
+*.key

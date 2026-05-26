@@ -1,0 +1,79 @@
+name: Release & Publish
+
+# Triggered when a version tag is pushed (e.g. v2.3.0)
+# Automatically builds the EXE, creates a GitHub Release, and publishes
+# manifests for winget / chocolatey / scoop.
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release (e.g. 2.3.0)'
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyinstaller psutil
+          if (Test-Path requirements.txt) { pip install -r requirements.txt }
+
+      - name: Determine version
+        id: version
+        shell: pwsh
+        run: |
+          if ($env:GITHUB_REF -like 'refs/tags/v*') {
+            $v = $env:GITHUB_REF -replace 'refs/tags/v',''
+          } else {
+            $v = '${{ github.event.inputs.version }}'
+          }
+          echo "version=$v" >> $env:GITHUB_OUTPUT
+
+      - name: Build release artifacts
+        run: |
+          python -m publisher.cli build --version ${{ steps.version.outputs.version }}
+
+      - name: Publish to GitHub Releases
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python -m publisher.cli release --skip-build --version ${{ steps.version.outputs.version }}
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: FreeSystemDoctor-${{ steps.version.outputs.version }}
+          path: releases/v${{ steps.version.outputs.version }}/*
+
+      - name: Submit to winget (optional)
+        if: env.WINGET_TOKEN != ''
+        env:
+          WINGET_TOKEN: ${{ secrets.WINGET_TOKEN }}
+        run: |
+          dotnet tool install --global wingetcreate || true
+          # The winget publisher in CLI will use wingetcreate if available
+          python -c "from publisher.api_publishers.winget import publish; from publisher.release_builder import build_release_artifacts; m = build_release_artifacts(skip_build=True); print(publish(m))"
+
+      - name: Submit to Chocolatey (optional)
+        if: env.CHOCO_API_KEY != ''
+        env:
+          CHOCO_API_KEY: ${{ secrets.CHOCO_API_KEY }}
+        run: |
+          python -c "from publisher.api_publishers.chocolatey import publish; from publisher.release_builder import build_release_artifacts; m = build_release_artifacts(skip_build=True); print(publish(m))"
