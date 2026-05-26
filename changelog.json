@@ -1,7 +1,12 @@
 {
-  "updated": "2026-05-25T20:37:21.302013Z",
-  "count": 21,
+  "updated": "2026-05-26T16:55:31.601044Z",
+  "count": 22,
   "commits": [
+    {
+      "sha": "0a2b6e4b928423066fa98796c8ccad3aedbec385",
+      "date": "2026-05-26T18:54:09+02:00",
+      "msg": "v2.1.0 — Option D monetization + landing page + site"
+    },
     {
       "sha": "f2545f0881b6fe17ea7f01d053d4af9b7c0f0dc6",
       "date": "2026-05-25T22:37:12+02:00",
