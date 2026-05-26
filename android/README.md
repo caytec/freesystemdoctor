@@ -6,7 +6,7 @@ FreeSystemDoctor. **Nie wymaga roota.** Kotlin + Jetpack Compose (Material 3), p
 A free, no-root phone cleaning & maintenance app — the Android counterpart of the Windows
 FreeSystemDoctor. Kotlin + Jetpack Compose (Material 3), Polish & English.
 
-## Funkcje MVP / MVP features
+## Funkcje główne / Core features
 
 | Ekran | Co robi | Wymagane uprawnienia |
 |-------|---------|----------------------|
@@ -14,7 +14,25 @@ FreeSystemDoctor. Kotlin + Jetpack Compose (Material 3), Polish & English.
 | **Cleaner / Czyszczenie** | Czyszczenie własnego cache + pliki APK/.tmp/.log (MediaStore, z potwierdzeniem) | media (do mediów) |
 | **Storage / Pamięć** | Podział wolumenu + rozmiary app/data/cache per aplikacja | dostęp do statystyk użycia |
 | **Apps / Aplikacje** | Lista aplikacji wg rozmiaru/nazwy, odinstalowanie, deep-link do ustawień (force-stop/clear cache) | dostęp do statystyk użycia |
-| **Assistant / Asystent** | Analiza lokalnego obrazu kondycji urządzenia przez LLM (klucz API użytkownika) | internet (tylko przy analizie) |
+| **Tools / Narzędzia** | Hub z dodatkowymi narzędziami (poniżej) | zależnie od narzędzia |
+
+## Narzędzia (hub Tools)
+
+| Narzędzie | Co robi | Uprawnienia |
+|-----------|---------|-------------|
+| **Duplikaty plików** | Wykrywa identyczne pliki (rozmiar → SHA-256), usuwa nadmiarowe z potwierdzeniem | media |
+| **Duże pliki** | Lista największych plików multimedialnych, kasowanie pojedynczo | media |
+| **Pamięć wg typu** | Zużycie wg obrazów/wideo/audio/dokumentów/archiwów | media |
+| **Czas ekranowy** | Czas użycia aplikacji na pierwszym planie (7 dni) | dostęp do statystyk użycia |
+| **Rzadko używane** | Aplikacje nieuruchamiane od 30 dni + szybkie odinstalowanie | dostęp do statystyk użycia |
+| **Audyt uprawnień** | Aplikacje z przyznanymi uprawnieniami wrażliwymi | brak |
+| **Backup APK** | Eksport APK zainstalowanej aplikacji do Pobranych | brak |
+| **Czyszczenie schowka** | Czyści schowek systemowy | brak |
+| **Harmonogram** | Automatyczne czyszczenie cache + powiadomienie (WorkManager) | powiadomienia |
+| **Asystent AI** | Analiza kondycji urządzenia przez LLM (klucz API użytkownika) | internet |
+
+Dodatkowo: **kafelek Szybkich ustawień** (szybkie czyszczenie cache) i **widżet ekranu głównego**
+(wolne miejsce + przycisk czyszczenia).
 
 ## Czego NIE da się zrobić bez roota (świadome ograniczenia)
 
@@ -29,11 +47,17 @@ FreeSystemDoctor. Kotlin + Jetpack Compose (Material 3), Polish & English.
 - **Dostęp do plików** — używamy uprawnień do mediów + SAF, a nie `MANAGE_EXTERNAL_STORAGE`
   (zgodność z Google Play).
 
-## Roadmap (kolejne wydania)
+## Roadmap (kolejne fale)
 
-Auto/zaplanowane czyszczenie (WorkManager), wyszukiwarka dużych plików i duplikatów w UI,
-shredder plików (best-effort), menedżer powiadomień, zużycie danych per-app, czas ekranowy,
-whitelist optymalizacji baterii, deep-linki autostartu OEM.
+Funkcje wymagające uprawnień wrażliwych będą ukryte za przełącznikiem **„Tryb zaawansowany"**
+(domyślnie wyłączony), z jasnym wyjaśnieniem.
+
+- **Wave 2:** przeglądarka plików i puste foldery (SAF), shredder plików (best-effort),
+  zużycie danych per-app (`NetworkStatsManager`), rozszerzone info o urządzeniu (CPU/sensory),
+  trwałe powiadomienie-monitor, whitelist optymalizacji baterii, deep-linki autostartu OEM.
+- **Wave 3:** podobne/rozmyte zdjęcia (hash percepcyjny), kompresja zdjęć, duplikaty audio,
+  duże wideo, analizator WiFi (lokalizacja), menedżer powiadomień (NotificationListener),
+  opcjonalny dedup kontaktów.
 
 ## Budowanie / Building
 

@@ -17,6 +17,7 @@ data class AppSettings(
     val onboardingDone: Boolean = false,
     val darkTheme: Boolean = true,
     val aiProvider: AiProvider = AiProvider.GROQ,
+    val scheduledCleaning: Boolean = false,
 )
 
 class SettingsRepository(private val context: Context) {
@@ -25,6 +26,7 @@ class SettingsRepository(private val context: Context) {
         val ONBOARDING_DONE = booleanPreferencesKey("onboarding_done")
         val DARK_THEME = booleanPreferencesKey("dark_theme")
         val AI_PROVIDER = stringPreferencesKey("ai_provider")
+        val SCHEDULED_CLEANING = booleanPreferencesKey("scheduled_cleaning")
     }
 
     val settings: Flow<AppSettings> = context.dataStore.data.map { prefs ->
@@ -34,6 +36,7 @@ class SettingsRepository(private val context: Context) {
             aiProvider = prefs[Keys.AI_PROVIDER]
                 ?.let { runCatching { AiProvider.valueOf(it) }.getOrNull() }
                 ?: AiProvider.GROQ,
+            scheduledCleaning = prefs[Keys.SCHEDULED_CLEANING] ?: false,
         )
     }
 
@@ -47,5 +50,9 @@ class SettingsRepository(private val context: Context) {
 
     suspend fun setAiProvider(provider: AiProvider) {
         context.dataStore.edit { it[Keys.AI_PROVIDER] = provider.name }
+    }
+
+    suspend fun setScheduledCleaning(enabled: Boolean) {
+        context.dataStore.edit { it[Keys.SCHEDULED_CLEANING] = enabled }
     }
 }

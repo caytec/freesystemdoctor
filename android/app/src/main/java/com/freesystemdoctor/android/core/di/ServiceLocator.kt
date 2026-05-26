@@ -2,17 +2,25 @@ package com.freesystemdoctor.android.core.di
 
 import android.content.Context
 import com.freesystemdoctor.android.ai.AiRepository
+import com.freesystemdoctor.android.core.media.MediaDeleteHelper
 import com.freesystemdoctor.android.core.permission.PermissionManager
 import com.freesystemdoctor.android.data.ai.AiKeyStore
 import com.freesystemdoctor.android.data.settings.SettingsRepository
 import com.freesystemdoctor.android.engine.apps.AppManagerEngine
+import com.freesystemdoctor.android.engine.apps.AppUsageEngine
+import com.freesystemdoctor.android.engine.apps.ApkExtractorEngine
+import com.freesystemdoctor.android.engine.apps.PermissionAuditEngine
+import com.freesystemdoctor.android.engine.apps.RarelyUsedEngine
 import com.freesystemdoctor.android.engine.battery.BatteryEngine
 import com.freesystemdoctor.android.engine.cache.JunkScannerEngine
 import com.freesystemdoctor.android.engine.device.DeviceInfoEngine
 import com.freesystemdoctor.android.engine.duplicates.DuplicateFinderEngine
 import com.freesystemdoctor.android.engine.largefiles.LargeFilesEngine
+import com.freesystemdoctor.android.engine.media.MediaStoreCategoryEngine
 import com.freesystemdoctor.android.engine.memory.MemoryEngine
 import com.freesystemdoctor.android.engine.storage.StorageAnalyzerEngine
+import com.freesystemdoctor.android.engine.system.ClipboardCleanerEngine
+import com.freesystemdoctor.android.work.WorkScheduler
 
 /** Minimal manual dependency container; initialized once from the Application. */
 object ServiceLocator {
@@ -41,4 +49,12 @@ object ServiceLocator {
     val junkEngine: JunkScannerEngine by lazy { JunkScannerEngine(appContext) }
     val largeFilesEngine: LargeFilesEngine by lazy { LargeFilesEngine(appContext) }
     val duplicateEngine: DuplicateFinderEngine by lazy { DuplicateFinderEngine(appContext) }
+    val mediaCategoryEngine: MediaStoreCategoryEngine by lazy { MediaStoreCategoryEngine(appContext) }
+    val appUsageEngine: AppUsageEngine by lazy { AppUsageEngine(appContext, permissionManager) }
+    val rarelyUsedEngine: RarelyUsedEngine by lazy { RarelyUsedEngine(appContext, permissionManager) }
+    val permissionAuditEngine: PermissionAuditEngine by lazy { PermissionAuditEngine(appContext) }
+    val apkExtractorEngine: ApkExtractorEngine by lazy { ApkExtractorEngine(appContext) }
+    val clipboardEngine: ClipboardCleanerEngine by lazy { ClipboardCleanerEngine(appContext) }
+    val mediaDeleteHelper: MediaDeleteHelper by lazy { MediaDeleteHelper(appContext) }
+    val workScheduler: WorkScheduler by lazy { WorkScheduler(appContext) }
 }

@@ -90,4 +90,78 @@
     <string name="cancel">Cancel</string>
     <string name="empty">Nothing found</string>
     <string name="loading">Loading…</string>
+    <string name="action_back">Back</string>
+    <string name="action_scan">Scan</string>
+    <string name="action_scanning">Scanning…</string>
+    <string name="action_delete">Delete</string>
+
+    <!-- Tools hub -->
+    <string name="nav_tools">Tools</string>
+    <string name="tools_group_files">Files &amp; storage</string>
+    <string name="tools_group_apps">Apps</string>
+    <string name="tools_group_system">System</string>
+    <string name="tool_duplicates">Duplicate files</string>
+    <string name="tool_large_files">Large files</string>
+    <string name="tool_storage_types">Storage by type</string>
+    <string name="tool_app_usage">Screen time</string>
+    <string name="tool_rarely_used">Rarely used apps</string>
+    <string name="tool_permissions">Permission audit</string>
+    <string name="tool_apk">APK backup</string>
+    <string name="tool_clipboard">Clipboard cleaner</string>
+    <string name="tool_schedule">Scheduled cleaning</string>
+
+    <!-- Duplicates -->
+    <string name="duplicates_groups">%1$d duplicate groups</string>
+    <string name="duplicates_clean">Delete extras</string>
+    <string name="duplicates_group_size">%1$d identical files</string>
+    <string name="duplicates_none">No duplicate files found.</string>
+    <string name="duplicates_note">The largest copy in each group is kept; the rest are removed via the system delete dialog.</string>
+
+    <!-- Large files -->
+    <string name="large_files_count">%1$d files</string>
+    <string name="large_files_none">No large files found.</string>
+
+    <!-- Storage by type -->
+    <string name="storage_type_count">%1$d files</string>
+    <string name="type_images">Images</string>
+    <string name="type_video">Video</string>
+    <string name="type_audio">Audio</string>
+    <string name="type_documents">Documents</string>
+    <string name="type_archives">Archives &amp; APKs</string>
+    <string name="type_other">Other</string>
+
+    <!-- App usage / rarely used -->
+    <string name="app_usage_need_access">Usage access is required to read screen time.</string>
+    <string name="app_usage_subtitle">Foreground time over the last 7 days.</string>
+    <string name="rarely_used_subtitle">User apps not opened in the last 30 days.</string>
+    <string name="rarely_used_never">Never used</string>
+    <string name="rarely_used_last">Last used: %1$s</string>
+
+    <!-- Permission audit -->
+    <string name="permissions_note">Apps with granted sensitive permissions. Tap an app to review or revoke in system settings.</string>
+    <string name="permissions_count">%1$d sensitive permissions</string>
+
+    <!-- APK backup -->
+    <string name="apk_note">Export an installed app\'s APK to your Downloads folder.</string>
+    <string name="apk_extract">Backup</string>
+    <string name="apk_saved">Saved to Downloads: %1$s</string>
+    <string name="apk_error">Could not export this APK.</string>
+
+    <!-- Clipboard -->
+    <string name="clipboard_note">Clears text currently stored in the system clipboard.</string>
+    <string name="clipboard_clear">Clear clipboard</string>
+    <string name="clipboard_done">Clipboard cleared.</string>
+
+    <!-- Schedule -->
+    <string name="schedule_note">Automatic maintenance clears this app\'s cache and notifies you about reclaimable junk. Shared files are never deleted without your confirmation.</string>
+    <string name="schedule_toggle">Automatic cleaning</string>
+    <string name="schedule_daily">Runs about once a day</string>
+
+    <!-- Tile / widget / worker -->
+    <string name="tile_clean_label">Quick clean</string>
+    <string name="tile_clean_freed">Freed %1$s</string>
+    <string name="widget_free_of">%1$s free of %2$s</string>
+    <string name="work_clean_title">Maintenance done</string>
+    <string name="work_clean_done">Freed %1$s of cache · %2$s reclaimable junk found</string>
+    <string name="work_channel_name">Maintenance</string>
 </resources>

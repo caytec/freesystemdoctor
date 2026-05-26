@@ -81,4 +81,68 @@
     <string name="cancel">Anuluj</string>
     <string name="empty">Nic nie znaleziono</string>
     <string name="loading">Ładowanie…</string>
+    <string name="action_back">Wstecz</string>
+    <string name="action_scan">Skanuj</string>
+    <string name="action_scanning">Skanowanie…</string>
+    <string name="action_delete">Usuń</string>
+
+    <string name="nav_tools">Narzędzia</string>
+    <string name="tools_group_files">Pliki i pamięć</string>
+    <string name="tools_group_apps">Aplikacje</string>
+    <string name="tools_group_system">System</string>
+    <string name="tool_duplicates">Duplikaty plików</string>
+    <string name="tool_large_files">Duże pliki</string>
+    <string name="tool_storage_types">Pamięć wg typu</string>
+    <string name="tool_app_usage">Czas ekranowy</string>
+    <string name="tool_rarely_used">Rzadko używane</string>
+    <string name="tool_permissions">Audyt uprawnień</string>
+    <string name="tool_apk">Backup APK</string>
+    <string name="tool_clipboard">Czyszczenie schowka</string>
+    <string name="tool_schedule">Harmonogram czyszczenia</string>
+
+    <string name="duplicates_groups">Grupy duplikatów: %1$d</string>
+    <string name="duplicates_clean">Usuń nadmiarowe</string>
+    <string name="duplicates_group_size">Identyczne pliki: %1$d</string>
+    <string name="duplicates_none">Nie znaleziono duplikatów.</string>
+    <string name="duplicates_note">Największa kopia w każdej grupie jest zachowywana, reszta usuwana przez systemowe okno potwierdzenia.</string>
+
+    <string name="large_files_count">Plików: %1$d</string>
+    <string name="large_files_none">Nie znaleziono dużych plików.</string>
+
+    <string name="storage_type_count">Plików: %1$d</string>
+    <string name="type_images">Obrazy</string>
+    <string name="type_video">Wideo</string>
+    <string name="type_audio">Audio</string>
+    <string name="type_documents">Dokumenty</string>
+    <string name="type_archives">Archiwa i APK</string>
+    <string name="type_other">Inne</string>
+
+    <string name="app_usage_need_access">Dostęp do użycia jest wymagany, aby odczytać czas ekranowy.</string>
+    <string name="app_usage_subtitle">Czas na pierwszym planie z ostatnich 7 dni.</string>
+    <string name="rarely_used_subtitle">Aplikacje nieuruchamiane od 30 dni.</string>
+    <string name="rarely_used_never">Nigdy nieużywana</string>
+    <string name="rarely_used_last">Ostatnio użyta: %1$s</string>
+
+    <string name="permissions_note">Aplikacje z przyznanymi uprawnieniami wrażliwymi. Dotknij, aby sprawdzić lub cofnąć w ustawieniach systemu.</string>
+    <string name="permissions_count">Uprawnień wrażliwych: %1$d</string>
+
+    <string name="apk_note">Wyeksportuj plik APK zainstalowanej aplikacji do folderu Pobrane.</string>
+    <string name="apk_extract">Backup</string>
+    <string name="apk_saved">Zapisano w Pobranych: %1$s</string>
+    <string name="apk_error">Nie udało się wyeksportować APK.</string>
+
+    <string name="clipboard_note">Czyści tekst aktualnie zapisany w schowku systemowym.</string>
+    <string name="clipboard_clear">Wyczyść schowek</string>
+    <string name="clipboard_done">Schowek wyczyszczony.</string>
+
+    <string name="schedule_note">Automatyczna konserwacja czyści cache tej aplikacji i powiadamia o możliwych do odzyskania śmieciach. Pliki współdzielone nigdy nie są usuwane bez Twojego potwierdzenia.</string>
+    <string name="schedule_toggle">Automatyczne czyszczenie</string>
+    <string name="schedule_daily">Uruchamia się mniej więcej raz dziennie</string>
+
+    <string name="tile_clean_label">Szybkie czyszczenie</string>
+    <string name="tile_clean_freed">Zwolniono %1$s</string>
+    <string name="widget_free_of">Wolne %1$s z %2$s</string>
+    <string name="work_clean_title">Konserwacja zakończona</string>
+    <string name="work_clean_done">Zwolniono %1$s cache · znaleziono %2$s śmieci do usunięcia</string>
+    <string name="work_channel_name">Konserwacja</string>
 </resources>
