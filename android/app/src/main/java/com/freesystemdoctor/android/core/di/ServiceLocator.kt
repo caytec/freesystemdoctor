@@ -21,8 +21,12 @@ import com.freesystemdoctor.android.engine.cache.JunkScannerEngine
 import com.freesystemdoctor.android.engine.device.DeviceInfoEngine
 import com.freesystemdoctor.android.engine.duplicates.DuplicateFinderEngine
 import com.freesystemdoctor.android.engine.largefiles.LargeFilesEngine
+import com.freesystemdoctor.android.engine.media.BlurScreenshotEngine
+import com.freesystemdoctor.android.engine.media.ImageCompressionEngine
 import com.freesystemdoctor.android.engine.media.MediaStoreCategoryEngine
+import com.freesystemdoctor.android.engine.media.SimilarPhotoEngine
 import com.freesystemdoctor.android.engine.memory.MemoryEngine
+import com.freesystemdoctor.android.engine.network.WifiAnalyzerEngine
 import com.freesystemdoctor.android.engine.storage.StorageAnalyzerEngine
 import com.freesystemdoctor.android.engine.system.ClipboardCleanerEngine
 import com.freesystemdoctor.android.work.WorkScheduler
@@ -68,4 +72,8 @@ object ServiceLocator {
     val fileShredderEngine: FileShredderEngine by lazy { FileShredderEngine(appContext) }
     val dataUsageEngine: DataUsageEngine by lazy { DataUsageEngine(appContext, permissionManager) }
     val systemTweaksEngine: SystemTweaksEngine by lazy { SystemTweaksEngine(appContext) }
+    val similarPhotoEngine: SimilarPhotoEngine by lazy { SimilarPhotoEngine(appContext) }
+    val blurScreenshotEngine: BlurScreenshotEngine by lazy { BlurScreenshotEngine(appContext) }
+    val imageCompressionEngine: ImageCompressionEngine by lazy { ImageCompressionEngine(appContext) }
+    val wifiAnalyzerEngine: WifiAnalyzerEngine by lazy { WifiAnalyzerEngine(appContext) }
 }

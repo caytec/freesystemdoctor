@@ -194,4 +194,37 @@
     <string name="monitor_title">FreeSystemDoctor</string>
     <string name="monitor_text">RAM %1$s · free %2$s · storage %3$s free</string>
     <string name="monitor_channel_name">Live monitor</string>
+
+    <string name="tools_group_photos">Photos</string>
+    <string name="tool_similar">Similar photos</string>
+    <string name="tool_photo_review">Screenshots &amp; blurry</string>
+    <string name="tool_compress">Compress photos</string>
+    <string name="tool_wifi">Wi-Fi analyzer</string>
+    <string name="tool_notifications">Notification cleaner</string>
+
+    <string name="similar_title">Similar photos</string>
+    <string name="similar_groups">%1$d similar groups</string>
+    <string name="similar_group_size">%1$d similar photos</string>
+    <string name="similar_none">No similar photos found.</string>
+    <string name="similar_note">Groups visually-similar photos. The largest in each group is kept; the rest are removed via the system delete dialog.</string>
+
+    <string name="photoreview_note">Screenshots are matched by name/path; blurry photos by low sharpness. Review before deleting.</string>
+    <string name="photoreview_screenshots">Screenshots</string>
+    <string name="photoreview_blurry">Blurry photos</string>
+    <string name="photoreview_delete_screenshots">Delete screenshots</string>
+    <string name="photoreview_delete_blurry">Delete blurry</string>
+
+    <string name="compress_note">Creates a smaller JPEG copy in Pictures/FreeSystemDoctor. The original is kept so you can delete it yourself.</string>
+    <string name="compress_saved">Saved so far: %1$s</string>
+    <string name="compress_action">Compress</string>
+
+    <string name="wifi_need_location">Wi-Fi scan results require location permission (Android requirement).</string>
+    <string name="wifi_scan">Scan networks</string>
+    <string name="wifi_detail">%1$s · ch %2$d · %3$s</string>
+
+    <string name="notif_need_access">Grant notification access to review and dismiss notifications.</string>
+    <string name="notif_refresh">Refresh</string>
+    <string name="notif_clear_all">Clear all</string>
+    <string name="notif_count">%1$d active notifications</string>
+    <string name="notif_dismiss">Dismiss</string>
 </resources>

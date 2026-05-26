@@ -41,4 +41,9 @@ object ToolRoutes {
     const val DEVICE_INFO = "tool/device"
     const val SHREDDER = "tool/shredder"
     const val TWEAKS = "tool/tweaks"
+    const val SIMILAR_PHOTOS = "tool/similar_photos"
+    const val PHOTO_REVIEW = "tool/photo_review"
+    const val COMPRESS = "tool/compress"
+    const val WIFI = "tool/wifi"
+    const val NOTIFICATIONS = "tool/notifications"
 }

@@ -51,6 +51,11 @@ import com.freesystemdoctor.android.ui.files.FolderToolsScreen
 import com.freesystemdoctor.android.ui.files.ShredderScreen
 import com.freesystemdoctor.android.ui.largefiles.LargeFilesScreen
 import com.freesystemdoctor.android.ui.network.DataUsageScreen
+import com.freesystemdoctor.android.ui.network.WifiScreen
+import com.freesystemdoctor.android.ui.notifications.NotificationCleanerScreen
+import com.freesystemdoctor.android.ui.photos.CompressScreen
+import com.freesystemdoctor.android.ui.photos.PhotoReviewScreen
+import com.freesystemdoctor.android.ui.photos.SimilarPhotosScreen
 import com.freesystemdoctor.android.ui.settings.SettingsScreen
 import com.freesystemdoctor.android.ui.storage.StorageByTypeScreen
 import com.freesystemdoctor.android.ui.storage.StorageScreen
@@ -76,6 +81,11 @@ private val toolTitles: Map<String, Int> = mapOf(
     ToolRoutes.DEVICE_INFO to R.string.tool_device_info,
     ToolRoutes.SHREDDER to R.string.tool_shredder,
     ToolRoutes.TWEAKS to R.string.tool_tweaks,
+    ToolRoutes.SIMILAR_PHOTOS to R.string.tool_similar,
+    ToolRoutes.PHOTO_REVIEW to R.string.tool_photo_review,
+    ToolRoutes.COMPRESS to R.string.tool_compress,
+    ToolRoutes.WIFI to R.string.tool_wifi,
+    ToolRoutes.NOTIFICATIONS to R.string.tool_notifications,
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -197,6 +207,11 @@ fun MainScaffold() {
             composable(ToolRoutes.DEVICE_INFO) { DeviceInfoScreen() }
             composable(ToolRoutes.SHREDDER) { ShredderScreen() }
             composable(ToolRoutes.TWEAKS) { SystemTweaksScreen() }
+            composable(ToolRoutes.SIMILAR_PHOTOS) { SimilarPhotosScreen() }
+            composable(ToolRoutes.PHOTO_REVIEW) { PhotoReviewScreen() }
+            composable(ToolRoutes.COMPRESS) { CompressScreen() }
+            composable(ToolRoutes.WIFI) { WifiScreen() }
+            composable(ToolRoutes.NOTIFICATIONS) { NotificationCleanerScreen() }
         }
     }
 }

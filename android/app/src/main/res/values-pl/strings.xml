@@ -194,4 +194,37 @@
     <string name="monitor_title">FreeSystemDoctor</string>
     <string name="monitor_text">RAM %1$s · wolne %2$s · pamięć %3$s wolne</string>
     <string name="monitor_channel_name">Monitor na żywo</string>
+
+    <string name="tools_group_photos">Zdjęcia</string>
+    <string name="tool_similar">Podobne zdjęcia</string>
+    <string name="tool_photo_review">Zrzuty i rozmyte</string>
+    <string name="tool_compress">Kompresja zdjęć</string>
+    <string name="tool_wifi">Analizator WiFi</string>
+    <string name="tool_notifications">Menedżer powiadomień</string>
+
+    <string name="similar_title">Podobne zdjęcia</string>
+    <string name="similar_groups">Grupy podobnych: %1$d</string>
+    <string name="similar_group_size">Podobne zdjęcia: %1$d</string>
+    <string name="similar_none">Nie znaleziono podobnych zdjęć.</string>
+    <string name="similar_note">Grupuje wizualnie podobne zdjęcia. Największe w grupie jest zachowywane, reszta usuwana przez systemowe okno potwierdzenia.</string>
+
+    <string name="photoreview_note">Zrzuty ekranu rozpoznawane po nazwie/ścieżce; rozmyte zdjęcia po niskiej ostrości. Sprawdź przed usunięciem.</string>
+    <string name="photoreview_screenshots">Zrzuty ekranu</string>
+    <string name="photoreview_blurry">Rozmyte zdjęcia</string>
+    <string name="photoreview_delete_screenshots">Usuń zrzuty</string>
+    <string name="photoreview_delete_blurry">Usuń rozmyte</string>
+
+    <string name="compress_note">Tworzy mniejszą kopię JPEG w Pictures/FreeSystemDoctor. Oryginał pozostaje, możesz go usunąć samodzielnie.</string>
+    <string name="compress_saved">Zaoszczędzono dotąd: %1$s</string>
+    <string name="compress_action">Kompresuj</string>
+
+    <string name="wifi_need_location">Wyniki skanowania WiFi wymagają uprawnienia do lokalizacji (wymóg Androida).</string>
+    <string name="wifi_scan">Skanuj sieci</string>
+    <string name="wifi_detail">%1$s · kan. %2$d · %3$s</string>
+
+    <string name="notif_need_access">Przyznaj dostęp do powiadomień, aby je przeglądać i odrzucać.</string>
+    <string name="notif_refresh">Odśwież</string>
+    <string name="notif_clear_all">Wyczyść wszystkie</string>
+    <string name="notif_count">Aktywne powiadomienia: %1$d</string>
+    <string name="notif_dismiss">Odrzuć</string>
 </resources>

@@ -48,6 +48,16 @@ w Ustawieniach (domyślnie wyłączony).
 | **Dostrojenia systemu** *(zaawansowane)* | Deep-linki: optymalizacja baterii, zużycie danych, autostart OEM | — |
 | **Monitor na pasku stanu** *(zaawansowane)* | Trwałe powiadomienie z RAM i wolnym miejscem | usługa pierwszoplanowa, powiadomienia |
 
+## Narzędzia do zdjęć i sieci (Wave 3)
+
+| Narzędzie | Co robi | Uprawnienia |
+|-----------|---------|-------------|
+| **Podobne zdjęcia** | Grupuje wizualnie podobne zdjęcia (hash percepcyjny aHash + Hamming), usuwa nadmiarowe | media |
+| **Zrzuty i rozmyte** | Wykrywa zrzuty ekranu (ścieżka/nazwa) i rozmyte zdjęcia (wariancja Laplace'a) | media |
+| **Kompresja zdjęć** | Tworzy mniejsze kopie JPEG w Pictures/FreeSystemDoctor (oryginał zostaje) | media |
+| **Analizator WiFi** *(zaawansowane)* | Sieci w pobliżu: pasmo, kanał, siła, zabezpieczenie | lokalizacja, stan WiFi |
+| **Menedżer powiadomień** *(zaawansowane)* | Przegląd i odrzucanie aktywnych powiadomień | dostęp do powiadomień |
+
 ## Czego NIE da się zrobić bez roota (świadome ograniczenia)
 
 - **Czyszczenie cache innych aplikacji jednym kliknięciem** — niemożliwe od API 24. Aplikacja kieruje
@@ -66,9 +76,8 @@ w Ustawieniach (domyślnie wyłączony).
 Funkcje wymagające uprawnień wrażliwych będą ukryte za przełącznikiem **„Tryb zaawansowany"**
 (domyślnie wyłączony), z jasnym wyjaśnieniem.
 
-- **Wave 3:** podobne/rozmyte zdjęcia (hash percepcyjny), kompresja zdjęć, duplikaty audio,
-  duże wideo, analizator WiFi (lokalizacja), menedżer powiadomień (NotificationListener),
-  opcjonalny dedup kontaktów.
+Wszystkie trzy fale zaimplementowane. Potencjalne kolejne rozszerzenia: duplikaty audio,
+duże wideo (filtr MIME na istniejącym silniku), dedup kontaktów (opcjonalny, `READ_CONTACTS`).
 
 ## Budowanie / Building
 

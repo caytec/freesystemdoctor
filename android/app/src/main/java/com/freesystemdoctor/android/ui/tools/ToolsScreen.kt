@@ -19,16 +19,21 @@ import androidx.compose.material.icons.filled.Analytics
 import androidx.compose.material.icons.filled.Apps
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Backup
+import androidx.compose.material.icons.filled.BlurOn
+import androidx.compose.material.icons.filled.Compress
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.ContentPaste
 import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.NetworkCell
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.PhoneAndroid
+import androidx.compose.material.icons.filled.PhotoLibrary
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.Timelapse
 import androidx.compose.material.icons.filled.Tune
+import androidx.compose.material.icons.filled.Wifi
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -69,6 +74,14 @@ private val toolGroups = listOf(
         ),
     ),
     ToolGroup(
+        R.string.tools_group_photos,
+        listOf(
+            Tool(R.string.tool_similar, Icons.Filled.PhotoLibrary, ToolRoutes.SIMILAR_PHOTOS),
+            Tool(R.string.tool_photo_review, Icons.Filled.BlurOn, ToolRoutes.PHOTO_REVIEW),
+            Tool(R.string.tool_compress, Icons.Filled.Compress, ToolRoutes.COMPRESS),
+        ),
+    ),
+    ToolGroup(
         R.string.tools_group_apps,
         listOf(
             Tool(R.string.tool_app_usage, Icons.Filled.Timelapse, ToolRoutes.APP_USAGE),
@@ -84,8 +97,10 @@ private val toolGroups = listOf(
             Tool(R.string.tool_device_info, Icons.Filled.PhoneAndroid, ToolRoutes.DEVICE_INFO),
             Tool(R.string.tool_clipboard, Icons.Filled.ContentPaste, ToolRoutes.CLIPBOARD),
             Tool(R.string.tool_schedule, Icons.Filled.Schedule, ToolRoutes.SCHEDULE),
-            Tool(R.string.tool_tweaks, Icons.Filled.Tune, ToolRoutes.TWEAKS, advanced = true),
             Tool(R.string.nav_assistant, Icons.Filled.AutoAwesome, ToolRoutes.ASSISTANT),
+            Tool(R.string.tool_wifi, Icons.Filled.Wifi, ToolRoutes.WIFI, advanced = true),
+            Tool(R.string.tool_notifications, Icons.Filled.Notifications, ToolRoutes.NOTIFICATIONS, advanced = true),
+            Tool(R.string.tool_tweaks, Icons.Filled.Tune, ToolRoutes.TWEAKS, advanced = true),
         ),
     ),
 )
