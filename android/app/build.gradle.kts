@@ -1,9 +1,22 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
 }
+
+// Release signing is read from android/keystore.properties (git-ignored) or, in CI,
+// from environment variables. If neither is present the release build is left unsigned
+// (still useful for Play, which re-signs via Play App Signing).
+val keystorePropsFile = rootProject.file("keystore.properties")
+val keystoreProps = Properties().apply {
+    if (keystorePropsFile.exists()) FileInputStream(keystorePropsFile).use { load(it) }
+}
+val releaseStorePath: String? =
+    keystoreProps.getProperty("storeFile") ?: System.getenv("KEYSTORE_FILE")
 
 android {
     namespace = "com.freesystemdoctor.android"
@@ -20,6 +33,19 @@ android {
         resourceConfigurations += listOf("en", "pl")
     }
 
+    signingConfigs {
+        create("release") {
+            if (releaseStorePath != null) {
+                storeFile = rootProject.file(releaseStorePath)
+                storePassword = keystoreProps.getProperty("storePassword")
+                    ?: System.getenv("KEYSTORE_PASSWORD")
+                keyAlias = keystoreProps.getProperty("keyAlias") ?: System.getenv("KEY_ALIAS")
+                keyPassword = keystoreProps.getProperty("keyPassword")
+                    ?: System.getenv("KEY_PASSWORD")
+            }
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = true
@@ -28,6 +54,11 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
             )
+            signingConfig = if (releaseStorePath != null) {
+                signingConfigs.getByName("release")
+            } else {
+                null
+            }
         }
         debug {
             applicationIdSuffix = ".debug"

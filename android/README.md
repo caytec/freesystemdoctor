@@ -172,6 +172,39 @@ Wymagania: JDK 17, Android SDK (compileSdk 35). CI (`.github/workflows/android-c
 i uruchamia testy na każdym push/PR. Pełne testy UI oraz API systemowych (MediaStore,
 StorageStatsManager, uprawnienia) wymagają fizycznego urządzenia / emulatora.
 
+## Build release (podpisany AAB + APK)
+
+Podpisywanie czytane jest z `android/keystore.properties` (w `.gitignore`) lub ze zmiennych
+środowiskowych w CI. **Nigdy nie commituj keystore ani haseł.**
+
+1. Wygeneruj klucz (raz, trzymaj bezpiecznie — bez niego nie zaktualizujesz apki w Play):
+   ```bash
+   keytool -genkeypair -v -keystore android/release.jks -alias fsd \
+     -keyalg RSA -keysize 2048 -validity 10000
+   ```
+2. Utwórz `android/keystore.properties`:
+   ```properties
+   storeFile=release.jks
+   storePassword=TWOJE_HASŁO
+   keyAlias=fsd
+   keyPassword=TWOJE_HASŁO
+   ```
+3. Zbuduj:
+   ```bash
+   cd android
+   ./gradlew bundleRelease     # AAB → app/build/outputs/bundle/release/  (do Google Play)
+   ./gradlew assembleRelease   # APK → app/build/outputs/apk/release/     (sideload)
+   ```
+   R8/minify i shrinkResources włączone (podpisany APK ~3–4 MB).
+
+**CI:** workflow `.github/workflows/android-release.yml` buduje podpisany AAB+APK na tag `v*`
+lub ręcznie (Run workflow). Wymaga sekretów: `KEYSTORE_BASE64` (`base64 -w0 release.jks`),
+`KEYSTORE_PASSWORD`, `KEY_ALIAS`, `KEY_PASSWORD`.
+
+**Publikacja w Google Play:** włącz **Play App Signing**, prześlij **AAB** (nie APK), wypełnij
+Data safety + politykę prywatności, podmień testowe ID AdMob na prawdziwe i utwórz produkty
+Billing (`fsd_pro_monthly`, `fsd_pro_yearly`, `fsd_pro_lifetime`).
+
 ## Stack
 
 Kotlin 2.1 (K2) · AGP 8.7.3 · Gradle 8.11.1 · Compose BOM 2024.12 · Material 3 ·
