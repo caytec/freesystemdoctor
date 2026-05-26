@@ -43,6 +43,7 @@ import com.freesystemdoctor.android.ui.apps.AppsScreen
 import com.freesystemdoctor.android.ui.apps.PermissionAuditScreen
 import com.freesystemdoctor.android.ui.apps.RarelyUsedScreen
 import com.freesystemdoctor.android.ui.assistant.AssistantScreen
+import com.freesystemdoctor.android.ui.backup.BackupScreen
 import com.freesystemdoctor.android.ui.battery.BatteryScreen
 import com.freesystemdoctor.android.ui.cleaner.CleanerScreen
 import com.freesystemdoctor.android.ui.memory.MemoryScreen
@@ -92,6 +93,7 @@ private val toolTitles: Map<String, Int> = mapOf(
     ToolRoutes.SPEED_TEST to R.string.tool_speed,
     ToolRoutes.BATTERY to R.string.tool_battery,
     ToolRoutes.MEMORY to R.string.tool_memory,
+    ToolRoutes.BACKUP to R.string.tool_backup,
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -221,6 +223,7 @@ fun MainScaffold() {
             composable(ToolRoutes.SPEED_TEST) { SpeedTestScreen() }
             composable(ToolRoutes.BATTERY) { BatteryScreen() }
             composable(ToolRoutes.MEMORY) { MemoryScreen() }
+            composable(ToolRoutes.BACKUP) { BackupScreen() }
         }
     }
 }

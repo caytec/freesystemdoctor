@@ -17,6 +17,8 @@ import com.freesystemdoctor.android.engine.apps.ApkExtractorEngine
 import com.freesystemdoctor.android.engine.apps.PermissionAuditEngine
 import com.freesystemdoctor.android.engine.apps.RarelyUsedEngine
 import com.freesystemdoctor.android.engine.battery.BatteryEngine
+import com.freesystemdoctor.android.engine.contacts.ContactsEngine
+import com.freesystemdoctor.android.engine.contacts.SmsBackupEngine
 import com.freesystemdoctor.android.engine.cache.JunkScannerEngine
 import com.freesystemdoctor.android.engine.device.DeviceInfoEngine
 import com.freesystemdoctor.android.engine.duplicates.DuplicateFinderEngine
@@ -78,4 +80,6 @@ object ServiceLocator {
     val imageCompressionEngine: ImageCompressionEngine by lazy { ImageCompressionEngine(appContext) }
     val wifiAnalyzerEngine: WifiAnalyzerEngine by lazy { WifiAnalyzerEngine(appContext) }
     val speedTestEngine: SpeedTestEngine by lazy { SpeedTestEngine() }
+    val contactsEngine: ContactsEngine by lazy { ContactsEngine(appContext) }
+    val smsBackupEngine: SmsBackupEngine by lazy { SmsBackupEngine(appContext) }
 }

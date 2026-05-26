@@ -49,4 +49,5 @@ object ToolRoutes {
     const val SPEED_TEST = "tool/speed_test"
     const val BATTERY = "tool/battery"
     const val MEMORY = "tool/memory"
+    const val BACKUP = "tool/backup"
 }

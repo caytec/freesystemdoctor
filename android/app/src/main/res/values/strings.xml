@@ -282,4 +282,17 @@
     <string name="memory_note">Asks the system to drop cached background apps. On modern Android the effect is small and temporary — apps reload — so we report the real amount freed, not an inflated number.</string>
     <string name="memory_free">Free background apps</string>
     <string name="memory_freed">Freed %1$s (may be reclaimed again shortly).</string>
+
+    <!-- Wave 5: backup -->
+    <string name="tool_backup">Contacts &amp; SMS backup</string>
+    <string name="backup_note">Exports your data to Downloads. Read-only — nothing is changed, deleted or uploaded.</string>
+    <string name="backup_contacts">Contacts</string>
+    <string name="backup_sms">SMS messages</string>
+    <string name="backup_contacts_need">Grant contacts access to find duplicates and export a vCard.</string>
+    <string name="backup_sms_need">Grant SMS access to export your messages.</string>
+    <string name="backup_export_contacts">Export contacts (.vcf)</string>
+    <string name="backup_export_sms">Export SMS (.json)</string>
+    <string name="backup_duplicates">Possible duplicate contacts: %1$d</string>
+    <string name="backup_saved">Saved to Downloads: %1$s</string>
+    <string name="backup_error">Export failed.</string>
 </resources>

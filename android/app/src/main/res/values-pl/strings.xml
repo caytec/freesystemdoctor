@@ -254,4 +254,16 @@
     <string name="memory_note">Prosi system o zwolnienie aplikacji z cache w tle. Na nowoczesnym Androidzie efekt jest mały i tymczasowy — aplikacje wracają — więc pokazujemy realnie zwolnioną ilość, a nie zawyżoną liczbę.</string>
     <string name="memory_free">Zwolnij aplikacje w tle</string>
     <string name="memory_freed">Zwolniono %1$s (może wkrótce zostać ponownie zajęte).</string>
+
+    <string name="tool_backup">Kopia kontaktów i SMS</string>
+    <string name="backup_note">Eksportuje dane do folderu Pobrane. Tylko odczyt — nic nie jest zmieniane, usuwane ani wysyłane.</string>
+    <string name="backup_contacts">Kontakty</string>
+    <string name="backup_sms">Wiadomości SMS</string>
+    <string name="backup_contacts_need">Przyznaj dostęp do kontaktów, aby znaleźć duplikaty i wyeksportować vCard.</string>
+    <string name="backup_sms_need">Przyznaj dostęp do SMS, aby wyeksportować wiadomości.</string>
+    <string name="backup_export_contacts">Eksportuj kontakty (.vcf)</string>
+    <string name="backup_export_sms">Eksportuj SMS (.json)</string>
+    <string name="backup_duplicates">Możliwe duplikaty kontaktów: %1$d</string>
+    <string name="backup_saved">Zapisano w Pobranych: %1$s</string>
+    <string name="backup_error">Eksport nie powiódł się.</string>
 </resources>

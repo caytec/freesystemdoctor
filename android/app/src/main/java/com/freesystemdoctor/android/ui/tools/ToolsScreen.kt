@@ -21,6 +21,7 @@ import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Backup
 import androidx.compose.material.icons.filled.BatteryChargingFull
 import androidx.compose.material.icons.filled.BlurOn
+import androidx.compose.material.icons.filled.CloudUpload
 import androidx.compose.material.icons.filled.Compress
 import androidx.compose.material.icons.filled.Memory
 import androidx.compose.material.icons.filled.Speed
@@ -91,6 +92,7 @@ private val toolGroups = listOf(
             Tool(R.string.tool_rarely_used, Icons.Filled.Apps, ToolRoutes.RARELY_USED),
             Tool(R.string.tool_permissions, Icons.Filled.Security, ToolRoutes.PERMISSIONS),
             Tool(R.string.tool_apk, Icons.Filled.Backup, ToolRoutes.APK_EXTRACTOR),
+            Tool(R.string.tool_backup, Icons.Filled.CloudUpload, ToolRoutes.BACKUP, advanced = true),
         ),
     ),
     ToolGroup(
