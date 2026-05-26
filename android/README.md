@@ -99,8 +99,9 @@ Tylko odczyt — nic nie jest zmieniane, usuwane ani wysyłane. Funkcja za „Tr
 Model freemium zgodny z zasadami Google Play:
 
 - **Reklamy AdMob** (tylko dla użytkowników bez Pro, po zgodzie UMP):
-  - Baner adaptacyjny na dole ekranów głównych
-  - Reklama pełnoekranowa po zakończonym czyszczeniu (limit: maks. 1 na 3 min)
+  - Baner adaptacyjny na dole wszystkich ekranów
+  - Reklama pełnoekranowa po zakończonym czyszczeniu i przy wchodzeniu w narzędzia (limit 1/45 s)
+  - **Reklama app-open** przy powrocie do aplikacji (limit 1/4 min, nigdy przy starcie ani nad oknami systemu)
   - Reklama nagradzana: odblokowanie narzędzi zaawansowanych na 24h
 - **Google Play Billing** — „Pro":
   - Subskrypcja miesięczna (`fsd_pro_monthly`) i roczna (`fsd_pro_yearly`)
@@ -110,6 +111,39 @@ Model freemium zgodny z zasadami Google Play:
 
 Tryb zaawansowany jest teraz odblokowywany przez Pro **lub** reklamę nagradzaną (24h), zamiast
 zwykłego przełącznika.
+
+### Bezpieczeństwo dla Play (agresywne, ale w granicach polityki)
+
+Reklamy są agresywne, ale każda z nich respektuje zasady Google Play:
+- pełnoekranowe i app-open **tylko w naturalnych punktach przejścia** (nigdy podczas ładowania,
+  podczas akcji, ani przy zamykaniu aplikacji),
+- **limity częstotliwości** (pełnoekranowa 1/45 s, app-open 1/4 min),
+- app-open **nie pojawia się przy pierwszym uruchomieniu** ani gdy wracasz z okien wywołanych przez
+  apkę (płatność, dialog usuwania) — mechanizm `suppressNextShow`,
+- nigdy nie nakładają się dwie reklamy naraz,
+- brak reklam dla użytkowników Pro i przed uzyskaniem zgody UMP.
+
+### Jak zarejestrować się w sieciach reklamowych
+
+Najłatwiejsza i najbezpieczniejsza dla Play jest **Google AdMob** (już zintegrowana):
+1. Wejdź na **admob.google.com**, zaloguj kontem Google, „Zarejestruj się" → zaakceptuj warunki.
+2. **Apps → Add app** → Android → wpisz nazwę (apkę możesz dodać przed publikacją w Play).
+3. **Ad units → Create** dla każdego formatu: Banner, Interstitial, Rewarded, App open.
+4. Skopiuj **App ID** i 4 **Ad unit ID** do `strings.xml` (`admob_app_id`) i `ads/AdUnits.kt`.
+5. W **Privacy & messaging** skonfiguruj komunikat zgody (UMP) — kod już go wywołuje.
+6. Podłącz konto **AdSense/płatności** (wypłaty po progu 100 USD/EUR).
+
+Aby zwiększyć wypełnienie i przychód, włącz **AdMob Mediation** (bez dodatkowego kodu poza
+adapterami) — najłatwiejsze do dołączenia sieci z niskim progiem wejścia:
+- **AppLovin (MAX/AppLovin)** — szybka akceptacja, wysokie wypełnienie.
+- **Unity Ads** — łatwa rejestracja (unity.com), dobre dla nagradzanych.
+- **Liftoff/Vungle**, **Mintegral**, **Pangle (TikTok)** — łatwe, wysokie eCPM na reklamy wideo.
+- **Start.io (dawniej StartApp)** — bardzo niski próg wejścia, akceptuje małe aplikacje.
+- **Meta Audience Network** — wyższe stawki, ale trudniejsza/wolniejsza weryfikacja.
+
+W AdMob: **Mediation → Create mediation group** dla każdego formatu, dodaj powyższe sieci,
+wklej ich identyfikatory i (w razie potrzeby) pobierz adaptery przez Gradle. Sam kod apki
+się nie zmienia — AdMob pełni rolę pośrednika.
 
 ### Konfiguracja przed publikacją (Play Console / AdMob)
 

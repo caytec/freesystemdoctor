@@ -28,6 +28,7 @@ class MainActivity : ComponentActivity() {
         ServiceLocator.billingManager.connect()
         ConsentManager(this).gather(this) { canRequestAds ->
             ServiceLocator.adsController.initialize(canRequestAds)
+            ServiceLocator.appOpenAdManager.onAdsEnabled()
         }
 
         setContent {

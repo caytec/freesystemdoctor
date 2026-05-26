@@ -1,7 +1,9 @@
 package com.freesystemdoctor.android.core.di
 
+import android.app.Application
 import android.content.Context
 import com.freesystemdoctor.android.ads.AdsController
+import com.freesystemdoctor.android.ads.AppOpenAdManager
 import com.freesystemdoctor.android.ai.AiRepository
 import com.freesystemdoctor.android.billing.BillingManager
 import com.freesystemdoctor.android.core.media.MediaDeleteHelper
@@ -90,5 +92,8 @@ object ServiceLocator {
     val billingManager: BillingManager by lazy { BillingManager(appContext, proStore) }
     val adsController: AdsController by lazy {
         AdsController(appContext).also { it.proProvider = { billingManager.isPro.value } }
+    }
+    val appOpenAdManager: AppOpenAdManager by lazy {
+        AppOpenAdManager(appContext as Application)
     }
 }

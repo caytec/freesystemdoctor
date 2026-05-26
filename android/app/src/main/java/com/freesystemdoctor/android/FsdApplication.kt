@@ -7,5 +7,6 @@ class FsdApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         ServiceLocator.init(this)
+        ServiceLocator.appOpenAdManager.register()
     }
 }

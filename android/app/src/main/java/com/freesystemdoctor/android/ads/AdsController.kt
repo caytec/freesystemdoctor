@@ -2,6 +2,7 @@ package com.freesystemdoctor.android.ads
 
 import android.app.Activity
 import android.content.Context
+import com.freesystemdoctor.android.core.di.ServiceLocator
 import com.google.android.gms.ads.AdError
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.FullScreenContentCallback
@@ -77,6 +78,7 @@ class AdsController(private val appContext: Context) {
             }
         }
         lastInterstitialAt = System.currentTimeMillis()
+        ServiceLocator.appOpenAdManager.suppressNextShow()
         ad.show(activity)
     }
 
@@ -114,10 +116,11 @@ class AdsController(private val appContext: Context) {
                 preloadRewarded()
             }
         }
+        ServiceLocator.appOpenAdManager.suppressNextShow()
         ad.show(activity) { onReward() }
     }
 
     private companion object {
-        const val MIN_INTERVAL_MS = 3 * 60 * 1000L
+        const val MIN_INTERVAL_MS = 45 * 1000L
     }
 }

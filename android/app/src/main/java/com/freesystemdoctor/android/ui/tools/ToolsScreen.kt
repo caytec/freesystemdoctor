@@ -120,6 +120,7 @@ fun ToolsScreen(
     viewModel: ToolsViewModel = viewModel(),
 ) {
     val advanced by viewModel.advancedUnlocked.collectAsStateWithLifecycle()
+    val activity = androidx.compose.ui.platform.LocalContext.current as? android.app.Activity
 
     LazyVerticalGrid(
         columns = GridCells.Adaptive(minSize = 150.dp),
@@ -135,7 +136,10 @@ fun ToolsScreen(
                 SectionHeader(stringResource(group.titleRes))
             }
             items(visible, key = { it.route }) { tool ->
-                ToolCard(tool = tool, onClick = { onOpen(tool.route) })
+                ToolCard(tool = tool, onClick = {
+                    activity?.let { com.freesystemdoctor.android.core.di.ServiceLocator.adsController.maybeShowInterstitial(it) }
+                    onOpen(tool.route)
+                })
             }
         }
     }

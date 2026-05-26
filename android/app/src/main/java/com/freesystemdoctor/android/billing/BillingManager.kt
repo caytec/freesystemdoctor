@@ -158,6 +158,7 @@ class BillingManager(
     }
 
     fun purchase(activity: Activity, product: ProProduct) {
+        com.freesystemdoctor.android.core.di.ServiceLocator.appOpenAdManager.suppressNextShow()
         val paramsBuilder = BillingFlowParams.ProductDetailsParams.newBuilder()
             .setProductDetails(product.details)
         product.offerToken?.let { paramsBuilder.setOfferToken(it) }
