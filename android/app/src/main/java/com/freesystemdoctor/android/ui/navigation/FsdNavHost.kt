@@ -62,6 +62,7 @@ import com.freesystemdoctor.android.ui.notifications.NotificationCleanerScreen
 import com.freesystemdoctor.android.ui.photos.CompressScreen
 import com.freesystemdoctor.android.ui.photos.PhotoReviewScreen
 import com.freesystemdoctor.android.ui.photos.SimilarPhotosScreen
+import com.freesystemdoctor.android.ui.components.AnimatedBackdrop
 import com.freesystemdoctor.android.ui.components.BannerAd
 import com.freesystemdoctor.android.ui.pro.ProScreen
 import com.freesystemdoctor.android.ui.settings.SettingsScreen
@@ -198,6 +199,7 @@ fun MainScaffold() {
             }
         },
     ) { innerPadding ->
+        AnimatedBackdrop()
         NavHost(
             navController = navController,
             startDestination = FsdDestination.DASHBOARD.route,

@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -31,6 +32,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
@@ -44,6 +46,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
+import com.freesystemdoctor.android.ui.theme.Coral
+import com.freesystemdoctor.android.ui.theme.Violet
 import com.freesystemdoctor.android.ui.theme.brandGradient
 import com.freesystemdoctor.android.ui.theme.glassBrush
 
@@ -167,4 +171,40 @@ fun ShimmerList(rows: Int = 5, modifier: Modifier = Modifier) {
             ShimmerBox(Modifier.fillMaxWidth().height(64.dp))
         }
     }
+}
+
+/** Two soft, slowly drifting accent glows behind the whole app for an alive, immersive feel. */
+@Composable
+fun AnimatedBackdrop(modifier: Modifier = Modifier) {
+    val transition = rememberInfiniteTransition(label = "backdrop")
+    val drift by transition.animateFloat(
+        initialValue = 0f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(tween(9000, easing = LinearEasing), RepeatMode.Reverse),
+        label = "drift",
+    )
+    Box(
+        modifier.fillMaxSize().drawBehind {
+            val w = size.width
+            val h = size.height
+            val c1 = Offset(w * 0.18f, h * (0.12f + 0.10f * drift))
+            val r1 = h * 0.42f
+            drawCircle(
+                brush = Brush.radialGradient(
+                    listOf(Coral.copy(alpha = 0.10f), Color.Transparent),
+                    center = c1, radius = r1,
+                ),
+                radius = r1, center = c1,
+            )
+            val c2 = Offset(w * 0.85f, h * (0.9f - 0.10f * drift))
+            val r2 = h * 0.4f
+            drawCircle(
+                brush = Brush.radialGradient(
+                    listOf(Violet.copy(alpha = 0.10f), Color.Transparent),
+                    center = c2, radius = r2,
+                ),
+                radius = r2, center = c2,
+            )
+        },
+    )
 }
