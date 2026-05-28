@@ -33,6 +33,7 @@ class SettingsPage(tk.Frame):
         body.pack(fill="both", expand=True, padx=16, pady=12)
 
         self._build_appearance_card(body)
+        self._build_autorun_card(body)
         self._build_tray_card(body)
         self._build_language_card(body)
         self._build_report_card(body)
@@ -195,6 +196,53 @@ class SettingsPage(tk.Frame):
             bg=T.PANEL, fg=T.FG2, font=T.FONT_SMALL)
         self._theme_note.pack(anchor="w", padx=10, pady=(0, 8))
 
+    def _build_autorun_card(self, parent):
+        from engine import startup_manager
+        card = Card(parent)
+        card.pack(fill="x", pady=(0, 12))
+        SectionLabel(card, "🚀 Uruchamiaj z Windowsem").pack(anchor="w", padx=10, pady=8)
+
+        tk.Label(card,
+            text=(
+                "Uruchamia FreeSystemDoctor automatycznie przy każdym logowaniu.\n"
+                "Używa Harmonogramu zadań Windows z uprawnieniami administratora "
+                "— brak okna UAC przy starcie systemu."
+            ),
+            bg=T.PANEL, fg=T.FG2, font=T.FONT_SMALL,
+            justify="left", anchor="w", wraplength=560,
+        ).pack(anchor="w", padx=10, pady=(0, 8))
+
+        self._autorun_var = tk.BooleanVar(value=startup_manager.is_autorun_enabled())
+        row = tk.Frame(card, bg=T.PANEL)
+        row.pack(fill="x", padx=10, pady=(0, 4))
+        tk.Label(row, text="Autostart przy logowaniu:",
+                 bg=T.PANEL, fg=T.FG, font=T.FONT_BODY).pack(side="left")
+        ToggleSwitch(row, variable=self._autorun_var,
+                     command=self._on_autorun_toggle).pack(side="left", padx=12)
+
+        self._autorun_status = tk.Label(card, text="", bg=T.PANEL, fg=T.FG2, font=T.FONT_SMALL)
+        self._autorun_status.pack(anchor="w", padx=10, pady=(0, 8))
+
+    def _on_autorun_toggle(self):
+        from engine import startup_manager
+        enabled = self._autorun_var.get()
+        if enabled:
+            ok = startup_manager.register_autorun()
+            if ok:
+                self._autorun_status.config(
+                    text="✓ Zadanie harmonogramu utworzone — autostart aktywny", fg=T.SUCCESS)
+            else:
+                self._autorun_var.set(False)
+                self._autorun_status.config(
+                    text="✗ Nie udało się utworzyć zadania — uruchom jako administrator", fg=T.DANGER)
+        else:
+            ok = startup_manager.unregister_autorun()
+            if ok:
+                self._autorun_status.config(text="Autostart wyłączony", fg=T.FG2)
+            else:
+                self._autorun_status.config(
+                    text="✗ Nie udało się usunąć zadania", fg=T.DANGER)
+
     def _build_tray_card(self, parent):
         card = Card(parent)
         card.pack(fill="x", pady=(0, 12))
@@ -270,10 +318,10 @@ class SettingsPage(tk.Frame):
         SectionLabel(card, "About FreeSystemDoctor").pack(anchor="w", padx=10, pady=8)
 
         info = [
-            ("Version", "2.1"),
-            ("Python", "3.11+"),
+            ("Version", "2.2.0"),
+            ("Python", "3.12+"),
             ("Platform", "Windows 10/11"),
-            ("License", "Free & Open Source"),
+            ("License", "Free & Open Source (MIT)"),
         ]
         for label, value in info:
             row = tk.Frame(card, bg=T.PANEL)

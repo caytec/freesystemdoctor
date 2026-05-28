@@ -1,9 +1,118 @@
-"""Startup manager — reads, disables and enables startup entries."""
+"""Startup manager — reads, disables and enables startup entries.
+
+Also provides autorun-at-logon registration for FreeSystemDoctor itself
+via a Scheduled Task (ONLOGON, highest privileges — no UAC popup each boot).
+"""
 
 import os
+import sys
+import json
+import subprocess
 import winreg
 from pathlib import Path
 from dataclasses import dataclass, field
+
+# ── Autorun (self-register) ────────────────────────────────────────────────────
+
+_TASK_NAME = "FreeSystemDoctor_Autostart"
+_APPDATA    = Path(os.environ.get("APPDATA", Path.home())) / "FreeSystemDoctor"
+_STATE_FILE = _APPDATA / "autorun_state.json"
+_CREATE_NO_WINDOW = 0x08000000
+
+
+def _run_schtasks(*args) -> tuple[bool, str]:
+    """Run schtasks.exe with the given args; return (success, output)."""
+    try:
+        r = subprocess.run(
+            ["schtasks", *args],
+            capture_output=True, text=True,
+            creationflags=_CREATE_NO_WINDOW,
+        )
+        return r.returncode == 0, (r.stdout + r.stderr).strip()
+    except Exception as e:
+        return False, str(e)
+
+
+def is_autorun_enabled() -> bool:
+    """Return True if the scheduled task exists and is enabled."""
+    ok, out = _run_schtasks("/Query", "/TN", _TASK_NAME, "/FO", "CSV")
+    if not ok:
+        return False
+    return "Disabled" not in out
+
+
+def register_autorun(exe_path: str | None = None) -> bool:
+    """
+    Register FreeSystemDoctor to run at logon via Task Scheduler.
+    Uses 'Run with highest privileges' so no UAC prompt appears on boot.
+
+    exe_path: path to the EXE. Defaults to sys.executable (frozen) or main.py.
+    """
+    if exe_path is None:
+        if getattr(sys, "frozen", False):
+            exe_path = sys.executable
+        else:
+            exe_path = str(Path(__file__).parent.parent / "main.py")
+
+    # Delete existing task first (ignore errors)
+    _run_schtasks("/Delete", "/TN", _TASK_NAME, "/F")
+
+    ok, out = _run_schtasks(
+        "/Create", "/F",
+        "/TN", _TASK_NAME,
+        "/TR", f'"{exe_path}"',
+        "/SC", "ONLOGON",
+        "/RL", "HIGHEST",
+        "/IT",          # interactive — only when logged-on user present
+        "/DELAY", "0001:00",   # 1-minute delay after logon (avoids slow-boot race)
+    )
+    if ok:
+        _save_autorun_state(True)
+    return ok
+
+
+def unregister_autorun() -> bool:
+    """Remove the FreeSystemDoctor scheduled task."""
+    ok, _ = _run_schtasks("/Delete", "/TN", _TASK_NAME, "/F")
+    if ok:
+        _save_autorun_state(False)
+    return ok
+
+
+def _save_autorun_state(enabled: bool):
+    try:
+        _APPDATA.mkdir(parents=True, exist_ok=True)
+        with open(_STATE_FILE, "w") as f:
+            json.dump({"autorun": enabled}, f)
+    except Exception:
+        pass
+
+
+def _load_autorun_state() -> bool | None:
+    """Return stored preference (True/False) or None if not yet set."""
+    try:
+        with open(_STATE_FILE) as f:
+            return json.load(f).get("autorun")
+    except Exception:
+        return None
+
+
+def register_autorun_on_first_run() -> bool:
+    """
+    Called once at startup. If user has never set a preference, register
+    autorun by default (True). Returns True if registration happened.
+    """
+    state = _load_autorun_state()
+    if state is not None:
+        # Already decided — honour it (re-register if enabled but task vanished)
+        if state and not is_autorun_enabled():
+            register_autorun()
+        return False
+    # First run: register by default
+    return register_autorun()
+
+
+
 
 
 _RUN_KEYS = [

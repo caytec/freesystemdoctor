@@ -68,6 +68,16 @@ def main():
     except Exception:
         pass
 
+    # Auto-register startup task on first run (background — don't block UI)
+    import threading as _threading
+    def _setup_autorun():
+        try:
+            from engine import startup_manager
+            startup_manager.register_autorun_on_first_run()
+        except Exception:
+            pass
+    _threading.Thread(target=_setup_autorun, daemon=True).start()
+
     # Mark app launch for monetization gating (Pro upsells respect 30 min
     # warm-up before triggering) and retry any pending newsletter submit.
     try:
