@@ -51,4 +51,9 @@ object ToolRoutes {
     const val BATTERY = "tool/battery"
     const val MEMORY = "tool/memory"
     const val BACKUP = "tool/backup"
+    const val RECYCLE_BIN = "tool/recycle_bin"
+    const val HIDDEN_CACHE = "tool/hidden_cache"
+    const val APP_VAULT = "tool/app_vault"
+    const val BATTERY_ALARMS = "tool/battery_alarms"
+    const val APP_INSIGHTS = "tool/app_insights"
 }

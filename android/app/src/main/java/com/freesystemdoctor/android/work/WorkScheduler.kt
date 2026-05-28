@@ -24,7 +24,25 @@ class WorkScheduler(private val context: Context) {
         }
     }
 
+    fun setBatteryAlarms(enabled: Boolean) {
+        val wm = WorkManager.getInstance(context)
+        if (enabled) {
+            val request = PeriodicWorkRequestBuilder<BatteryAlarmWorker>(
+                15, TimeUnit.MINUTES,
+            ).build()
+            wm.enqueueUniquePeriodicWork(
+                BATTERY_ALARM_NAME,
+                ExistingPeriodicWorkPolicy.UPDATE,
+                request,
+            )
+            BatteryAlarmWorker.ensureChannel(context)
+        } else {
+            wm.cancelUniqueWork(BATTERY_ALARM_NAME)
+        }
+    }
+
     private companion object {
         const val UNIQUE_NAME = "fsd_scheduled_clean"
+        const val BATTERY_ALARM_NAME = "fsd_battery_alarms"
     }
 }

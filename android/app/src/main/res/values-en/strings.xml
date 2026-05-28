@@ -283,4 +283,47 @@
     <string name="pro_unlock_ad">Watch an ad to unlock advanced tools for 24h</string>
     <string name="pro_unlock_ad_done">Advanced tools unlocked for 24 hours.</string>
     <string name="advanced_locked">Advanced tools are a Pro feature. Upgrade or watch an ad to unlock them.</string>
+
+    <string name="tool_recycle_bin">Recycle bin</string>
+    <string name="tool_hidden_cache">Hidden caches</string>
+    <string name="tool_app_vault">App vault</string>
+    <string name="tool_battery_alarms">Battery alarms</string>
+    <string name="tool_app_insights">App insights</string>
+
+    <string name="recycle_bin_note">Items the system moved to trash (Android 11+). Pick what to bring back or empty for good.</string>
+    <string name="recycle_bin_restore">Restore</string>
+    <string name="recycle_bin_delete">Delete permanently</string>
+    <string name="recycle_bin_empty">Nothing in the trash.</string>
+
+    <string name="hidden_cache_note">Reads hidden cache folders that popular apps keep under Android/media. Pick the Android/media folder once to grant access.</string>
+    <string name="hidden_cache_pick">Pick Android/media folder</string>
+    <string name="hidden_cache_grant">Grant the Android/media folder to start scanning.</string>
+
+    <string name="app_vault_note">A biometric-locked, encrypted sandbox for sensitive files. Files are encrypted with a device-bound key and never leave this app.</string>
+    <string name="app_vault_unlock">Unlock vault</string>
+    <string name="app_vault_no_biometric">Biometric authentication (fingerprint, face or device PIN) must be set up first.</string>
+    <string name="app_vault_add">Add file</string>
+    <string name="app_vault_export">Export</string>
+    <string name="app_vault_count">In vault: %1$d</string>
+
+    <string name="battery_alarms_note">Get a notification when your battery hits the thresholds — useful for stopping charging early to preserve battery health.</string>
+    <string name="battery_alarms_toggle">Battery alarms</string>
+    <string name="battery_alarms_subtitle">Checked every 15 minutes by the system.</string>
+    <string name="battery_alarm_low_threshold">Notify when below %1$d%%</string>
+    <string name="battery_alarm_full_threshold">Notify when charging above %1$d%%</string>
+    <string name="battery_alarm_low_title">Battery low</string>
+    <string name="battery_alarm_low_text">Battery at %1$d%% — consider charging.</string>
+    <string name="battery_alarm_full_title">Battery charged</string>
+    <string name="battery_alarm_full_text">Battery at %1$d%% — unplug to extend its lifespan.</string>
+    <string name="battery_alarm_channel">Battery alarms</string>
+
+    <string name="battery_current_now">Current draw</string>
+    <string name="battery_current_avg">Average draw</string>
+
+    <string name="app_insights_note">A weekly look at how you use your phone — total screen time, recent installs and apps without a launcher icon.</string>
+    <string name="app_insights_weekly_total">Screen time (7 days)</string>
+    <string name="app_insights_recent">Recently installed or updated</string>
+    <string name="app_insights_hidden">Apps without a launcher</string>
+    <string name="app_insights_installed">Installed</string>
+    <string name="app_insights_updated">Updated</string>
 </resources>

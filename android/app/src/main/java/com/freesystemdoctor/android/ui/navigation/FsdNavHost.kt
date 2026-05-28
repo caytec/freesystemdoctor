@@ -47,7 +47,12 @@ import com.freesystemdoctor.android.ui.apps.RarelyUsedScreen
 import com.freesystemdoctor.android.ui.assistant.AssistantScreen
 import com.freesystemdoctor.android.ui.backup.BackupScreen
 import com.freesystemdoctor.android.ui.battery.BatteryScreen
+import com.freesystemdoctor.android.ui.cache.HiddenCacheScreen
 import com.freesystemdoctor.android.ui.cleaner.CleanerScreen
+import com.freesystemdoctor.android.ui.insights.AppInsightsScreen
+import com.freesystemdoctor.android.ui.tools.BatteryAlarmsScreen
+import com.freesystemdoctor.android.ui.trash.TrashScreen
+import com.freesystemdoctor.android.ui.vault.VaultScreen
 import com.freesystemdoctor.android.ui.memory.MemoryScreen
 import com.freesystemdoctor.android.ui.dashboard.DashboardScreen
 import com.freesystemdoctor.android.ui.device.DeviceInfoScreen
@@ -99,6 +104,11 @@ private val toolTitles: Map<String, Int> = mapOf(
     ToolRoutes.BATTERY to R.string.tool_battery,
     ToolRoutes.MEMORY to R.string.tool_memory,
     ToolRoutes.BACKUP to R.string.tool_backup,
+    ToolRoutes.RECYCLE_BIN to R.string.tool_recycle_bin,
+    ToolRoutes.HIDDEN_CACHE to R.string.tool_hidden_cache,
+    ToolRoutes.APP_VAULT to R.string.tool_app_vault,
+    ToolRoutes.BATTERY_ALARMS to R.string.tool_battery_alarms,
+    ToolRoutes.APP_INSIGHTS to R.string.tool_app_insights,
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -243,6 +253,11 @@ fun MainScaffold() {
             composable(ToolRoutes.BATTERY) { BatteryScreen() }
             composable(ToolRoutes.MEMORY) { MemoryScreen() }
             composable(ToolRoutes.BACKUP) { BackupScreen() }
+            composable(ToolRoutes.RECYCLE_BIN) { TrashScreen() }
+            composable(ToolRoutes.HIDDEN_CACHE) { HiddenCacheScreen() }
+            composable(ToolRoutes.APP_VAULT) { VaultScreen() }
+            composable(ToolRoutes.BATTERY_ALARMS) { BatteryAlarmsScreen() }
+            composable(ToolRoutes.APP_INSIGHTS) { AppInsightsScreen() }
         }
     }
 }

@@ -22,6 +22,9 @@ data class AppSettings(
     val advancedMode: Boolean = false,
     val monitorEnabled: Boolean = false,
     val lastSeenVersionCode: Int = 0,
+    val batteryAlarmsEnabled: Boolean = false,
+    val batteryAlarmLow: Int = 15,
+    val batteryAlarmFull: Int = 80,
 )
 
 class SettingsRepository(private val context: Context) {
@@ -34,6 +37,9 @@ class SettingsRepository(private val context: Context) {
         val ADVANCED_MODE = booleanPreferencesKey("advanced_mode")
         val MONITOR_ENABLED = booleanPreferencesKey("monitor_enabled")
         val LAST_SEEN_VERSION = intPreferencesKey("last_seen_version_code")
+        val BATTERY_ALARMS = booleanPreferencesKey("battery_alarms_enabled")
+        val BATTERY_ALARM_LOW = intPreferencesKey("battery_alarm_low")
+        val BATTERY_ALARM_FULL = intPreferencesKey("battery_alarm_full")
     }
 
     val settings: Flow<AppSettings> = context.dataStore.data.map { prefs ->
@@ -47,6 +53,9 @@ class SettingsRepository(private val context: Context) {
             advancedMode = prefs[Keys.ADVANCED_MODE] ?: false,
             monitorEnabled = prefs[Keys.MONITOR_ENABLED] ?: false,
             lastSeenVersionCode = prefs[Keys.LAST_SEEN_VERSION] ?: 0,
+            batteryAlarmsEnabled = prefs[Keys.BATTERY_ALARMS] ?: false,
+            batteryAlarmLow = prefs[Keys.BATTERY_ALARM_LOW] ?: 15,
+            batteryAlarmFull = prefs[Keys.BATTERY_ALARM_FULL] ?: 80,
         )
     }
 
@@ -76,5 +85,16 @@ class SettingsRepository(private val context: Context) {
 
     suspend fun setLastSeenVersionCode(code: Int) {
         context.dataStore.edit { it[Keys.LAST_SEEN_VERSION] = code }
+    }
+
+    suspend fun setBatteryAlarms(enabled: Boolean) {
+        context.dataStore.edit { it[Keys.BATTERY_ALARMS] = enabled }
+    }
+
+    suspend fun setBatteryAlarmThresholds(low: Int, full: Int) {
+        context.dataStore.edit {
+            it[Keys.BATTERY_ALARM_LOW] = low.coerceIn(5, 50)
+            it[Keys.BATTERY_ALARM_FULL] = full.coerceIn(50, 100)
+        }
     }
 }

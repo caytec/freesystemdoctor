@@ -18,20 +18,34 @@ private val Context.safDataStore: DataStore<Preferences> by preferencesDataStore
 class SafTreeStore(private val context: Context) {
 
     private val key = stringPreferencesKey("tree_uri")
+    private val androidMediaKey = stringPreferencesKey("android_media_tree_uri")
 
     val treeUri: Flow<Uri?> = context.safDataStore.data.map { prefs ->
         prefs[key]?.let { Uri.parse(it) }
     }
 
+    val androidMediaTreeUri: Flow<Uri?> = context.safDataStore.data.map { prefs ->
+        prefs[androidMediaKey]?.let { Uri.parse(it) }
+    }
+
     suspend fun current(): Uri? = treeUri.first()
 
     suspend fun persist(uri: Uri) {
+        takePersistable(uri)
+        context.safDataStore.edit { it[key] = uri.toString() }
+    }
+
+    suspend fun persistAndroidMedia(uri: Uri) {
+        takePersistable(uri)
+        context.safDataStore.edit { it[androidMediaKey] = uri.toString() }
+    }
+
+    private fun takePersistable(uri: Uri) {
         runCatching {
             context.contentResolver.takePersistableUriPermission(
                 uri,
                 Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION,
             )
         }
-        context.safDataStore.edit { it[key] = uri.toString() }
     }
 }

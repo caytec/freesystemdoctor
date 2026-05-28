@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="whats_new_title">Co nowego w 1.1</string>
+    <string name="whats_new_title">Co nowego w 1.2</string>
     <string name="whats_new_dismiss">Rozumiem</string>
     <string-array name="whats_new_items">
-        <item>Immersyjny UI: animowane tło, szklane karty, parallax na hero</item>
-        <item>Brandowy ekran powitalny z nową ikoną</item>
-        <item>Animowana wizualizacja baterii i słupki sygnału WiFi</item>
-        <item>Pull-to-refresh na ekranach z listami</item>
-        <item>Szybsze wrażenie ładowania dzięki szkieletom shimmer</item>
-        <item>Ekrany uprawnień odświeżają się po powrocie z Ustawień</item>
-        <item>Poprawki: kursor zużycia danych, anulowanie podobnych zdjęć, cykl reklam app-open</item>
+        <item>Kosz: przeglądaj i przywracaj pliki przeniesione przez system do kosza</item>
+        <item>Ukryte cache: wyczyść foldery, które popularne aplikacje trzymają w Android/media</item>
+        <item>Sejf: zaszyfrowany schowek na pliki chroniony biometrią (Pro)</item>
+        <item>Alarmy baterii: powiadomienia przy ustawionych progach naładowania (Pro)</item>
+        <item>Wgląd w aplikacje: tygodniowy czas ekranowy, ostatnie instalacje, apki bez launchera (Pro)</item>
+        <item>Ekran baterii pokazuje teraz bieżący pobór prądu (mA), jeśli urządzenie to udostępnia</item>
     </string-array>
 </resources>

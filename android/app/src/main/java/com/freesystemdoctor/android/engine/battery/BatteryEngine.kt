@@ -12,6 +12,8 @@ data class BatteryInfo(
     val voltageVolts: Float,
     val technology: String,
     val chargeCounterMah: Int?,
+    val currentNowMa: Int?,
+    val currentAverageMa: Int?,
 )
 
 /**
@@ -38,6 +40,10 @@ class BatteryEngine(private val context: Context) {
         val bm = context.getSystemService(Context.BATTERY_SERVICE) as? BatteryManager
         val counter = bm?.getIntProperty(BatteryManager.BATTERY_PROPERTY_CHARGE_COUNTER)
         val counterMah = counter?.takeIf { it > 0 }?.let { it / 1000 }
+        val currentNow = bm?.getIntProperty(BatteryManager.BATTERY_PROPERTY_CURRENT_NOW)
+            ?.takeIf { it != Int.MIN_VALUE && it != 0 }?.let { it / 1000 }
+        val currentAvg = bm?.getIntProperty(BatteryManager.BATTERY_PROPERTY_CURRENT_AVERAGE)
+            ?.takeIf { it != Int.MIN_VALUE && it != 0 }?.let { it / 1000 }
 
         return BatteryInfo(
             levelPercent = percent,
@@ -46,6 +52,21 @@ class BatteryEngine(private val context: Context) {
             voltageVolts = voltageMv / 1000f,
             technology = tech,
             chargeCounterMah = counterMah,
+            currentNowMa = currentNow,
+            currentAverageMa = currentAvg,
         )
+    }
+
+    /** Lightweight level + charging snapshot for the alarm worker. */
+    fun snapshot(): Pair<Int, Boolean> {
+        val intent = context.registerReceiver(null, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
+            ?: return 0 to false
+        val level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1)
+        val scale = intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1)
+        val pct = if (level >= 0 && scale > 0) (level * 100) / scale else 0
+        val status = intent.getIntExtra(BatteryManager.EXTRA_STATUS, -1)
+        val charging = status == BatteryManager.BATTERY_STATUS_CHARGING ||
+            status == BatteryManager.BATTERY_STATUS_FULL
+        return pct to charging
     }
 }

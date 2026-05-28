@@ -20,6 +20,7 @@ import androidx.compose.material.icons.filled.Analytics
 import androidx.compose.material.icons.filled.Apps
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Backup
+import androidx.compose.material.icons.filled.BatteryAlert
 import androidx.compose.material.icons.filled.BatteryChargingFull
 import androidx.compose.material.icons.filled.BlurOn
 import androidx.compose.material.icons.filled.CloudUpload
@@ -29,7 +30,10 @@ import androidx.compose.material.icons.filled.Speed
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.ContentPaste
 import androidx.compose.material.icons.filled.DeleteForever
+import androidx.compose.material.icons.filled.DeleteSweep
 import androidx.compose.material.icons.filled.Folder
+import androidx.compose.material.icons.filled.Insights
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.NetworkCell
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.PhoneAndroid
@@ -77,6 +81,8 @@ private val toolGroups = listOf(
             Tool(R.string.tool_large_files, Icons.Filled.Folder, ToolRoutes.LARGE_FILES),
             Tool(R.string.tool_storage_types, Icons.Filled.Analytics, ToolRoutes.STORAGE_TYPES),
             Tool(R.string.tool_files, Icons.Filled.Folder, ToolRoutes.FILES),
+            Tool(R.string.tool_recycle_bin, Icons.Filled.DeleteSweep, ToolRoutes.RECYCLE_BIN),
+            Tool(R.string.tool_hidden_cache, Icons.Filled.Folder, ToolRoutes.HIDDEN_CACHE),
             Tool(R.string.tool_shredder, Icons.Filled.DeleteForever, ToolRoutes.SHREDDER, advanced = true),
         ),
     ),
@@ -96,6 +102,8 @@ private val toolGroups = listOf(
             Tool(R.string.tool_permissions, Icons.Filled.Security, ToolRoutes.PERMISSIONS),
             Tool(R.string.tool_apk, Icons.Filled.Backup, ToolRoutes.APK_EXTRACTOR),
             Tool(R.string.tool_backup, Icons.Filled.CloudUpload, ToolRoutes.BACKUP, advanced = true),
+            Tool(R.string.tool_app_insights, Icons.Filled.Insights, ToolRoutes.APP_INSIGHTS, advanced = true),
+            Tool(R.string.tool_app_vault, Icons.Filled.Lock, ToolRoutes.APP_VAULT, advanced = true),
         ),
     ),
     ToolGroup(
@@ -103,6 +111,7 @@ private val toolGroups = listOf(
         listOf(
             Tool(R.string.tool_memory, Icons.Filled.Memory, ToolRoutes.MEMORY),
             Tool(R.string.tool_battery, Icons.Filled.BatteryChargingFull, ToolRoutes.BATTERY),
+            Tool(R.string.tool_battery_alarms, Icons.Filled.BatteryAlert, ToolRoutes.BATTERY_ALARMS, advanced = true),
             Tool(R.string.tool_speed, Icons.Filled.Speed, ToolRoutes.SPEED_TEST),
             Tool(R.string.tool_data_usage, Icons.Filled.NetworkCell, ToolRoutes.DATA_USAGE),
             Tool(R.string.tool_device_info, Icons.Filled.PhoneAndroid, ToolRoutes.DEVICE_INFO),

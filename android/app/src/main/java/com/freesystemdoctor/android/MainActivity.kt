@@ -1,9 +1,9 @@
 package com.freesystemdoctor.android
 
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.fragment.app.FragmentActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
@@ -21,7 +21,7 @@ import com.freesystemdoctor.android.ui.onboarding.OnboardingScreen
 import com.freesystemdoctor.android.ui.theme.FsdTheme
 import com.freesystemdoctor.android.ui.whatsnew.WhatsNewHost
 
-class MainActivity : ComponentActivity() {
+class MainActivity : FragmentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         super.onCreate(savedInstanceState)

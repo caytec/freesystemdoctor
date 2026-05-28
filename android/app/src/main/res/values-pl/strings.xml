@@ -283,4 +283,47 @@
     <string name="pro_unlock_ad">Obejrzyj reklamę, aby odblokować narzędzia zaawansowane na 24h</string>
     <string name="pro_unlock_ad_done">Narzędzia zaawansowane odblokowane na 24 godziny.</string>
     <string name="advanced_locked">Narzędzia zaawansowane to funkcja Pro. Kup Pro lub obejrzyj reklamę, aby je odblokować.</string>
+
+    <string name="tool_recycle_bin">Kosz</string>
+    <string name="tool_hidden_cache">Ukryta pamięć podręczna</string>
+    <string name="tool_app_vault">Sejf na pliki</string>
+    <string name="tool_battery_alarms">Alarmy baterii</string>
+    <string name="tool_app_insights">Wgląd w aplikacje</string>
+
+    <string name="recycle_bin_note">Pliki przeniesione przez system do kosza (Android 11+). Zaznacz, co przywrócić lub usunąć trwale.</string>
+    <string name="recycle_bin_restore">Przywróć</string>
+    <string name="recycle_bin_delete">Usuń trwale</string>
+    <string name="recycle_bin_empty">Kosz jest pusty.</string>
+
+    <string name="hidden_cache_note">Odczytuje ukryte foldery pamięci podręcznej popularnych aplikacji w Android/media. Wskaż raz folder Android/media, aby przyznać dostęp.</string>
+    <string name="hidden_cache_pick">Wybierz folder Android/media</string>
+    <string name="hidden_cache_grant">Przyznaj dostęp do folderu Android/media, aby rozpocząć skanowanie.</string>
+
+    <string name="app_vault_note">Zaszyfrowany sejf chroniony biometrią. Pliki są szyfrowane kluczem zapiętym w urządzeniu i nigdy nie opuszczają aplikacji.</string>
+    <string name="app_vault_unlock">Odblokuj sejf</string>
+    <string name="app_vault_no_biometric">Najpierw skonfiguruj biometrię (odcisk, twarz lub PIN urządzenia).</string>
+    <string name="app_vault_add">Dodaj plik</string>
+    <string name="app_vault_export">Eksportuj</string>
+    <string name="app_vault_count">W sejfie: %1$d</string>
+
+    <string name="battery_alarms_note">Powiadomienie, gdy bateria osiągnie zadany próg — przydatne, aby kończyć ładowanie wcześniej i chronić jej żywotność.</string>
+    <string name="battery_alarms_toggle">Alarmy baterii</string>
+    <string name="battery_alarms_subtitle">Sprawdzane przez system co 15 minut.</string>
+    <string name="battery_alarm_low_threshold">Powiadom poniżej %1$d%%</string>
+    <string name="battery_alarm_full_threshold">Powiadom przy ładowaniu powyżej %1$d%%</string>
+    <string name="battery_alarm_low_title">Niski poziom baterii</string>
+    <string name="battery_alarm_low_text">Bateria na poziomie %1$d%% — rozważ ładowanie.</string>
+    <string name="battery_alarm_full_title">Bateria naładowana</string>
+    <string name="battery_alarm_full_text">Bateria na poziomie %1$d%% — odłącz ładowarkę, aby przedłużyć jej żywotność.</string>
+    <string name="battery_alarm_channel">Alarmy baterii</string>
+
+    <string name="battery_current_now">Pobór prądu</string>
+    <string name="battery_current_avg">Średni pobór</string>
+
+    <string name="app_insights_note">Tygodniowy wgląd w to, jak używasz telefonu — sumaryczny czas ekranowy, ostatnie instalacje i aplikacje bez ikony w launcherze.</string>
+    <string name="app_insights_weekly_total">Czas ekranowy (7 dni)</string>
+    <string name="app_insights_recent">Ostatnio zainstalowane lub zaktualizowane</string>
+    <string name="app_insights_hidden">Aplikacje bez launchera</string>
+    <string name="app_insights_installed">Zainstalowano</string>
+    <string name="app_insights_updated">Zaktualizowano</string>
 </resources>

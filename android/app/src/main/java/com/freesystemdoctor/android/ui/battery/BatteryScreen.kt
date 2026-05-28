@@ -62,6 +62,12 @@ fun BatteryScreen(
             info.chargeCounterMah?.let {
                 add(stringResource(R.string.battery_charge_counter) to "$it mAh")
             }
+            info.currentNowMa?.let {
+                add(stringResource(R.string.battery_current_now) to "${it} mA")
+            }
+            info.currentAverageMa?.let {
+                add(stringResource(R.string.battery_current_avg) to "${it} mA")
+            }
         }
 
         Appear {

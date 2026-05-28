@@ -16,6 +16,7 @@ import com.freesystemdoctor.android.engine.files.FileShredderEngine
 import com.freesystemdoctor.android.engine.files.SafTreeEngine
 import com.freesystemdoctor.android.engine.network.DataUsageEngine
 import com.freesystemdoctor.android.engine.system.SystemTweaksEngine
+import com.freesystemdoctor.android.engine.apps.AppInsightsEngine
 import com.freesystemdoctor.android.engine.apps.AppManagerEngine
 import com.freesystemdoctor.android.engine.apps.AppUsageEngine
 import com.freesystemdoctor.android.engine.apps.ApkExtractorEngine
@@ -24,7 +25,10 @@ import com.freesystemdoctor.android.engine.apps.RarelyUsedEngine
 import com.freesystemdoctor.android.engine.battery.BatteryEngine
 import com.freesystemdoctor.android.engine.contacts.ContactsEngine
 import com.freesystemdoctor.android.engine.contacts.SmsBackupEngine
+import com.freesystemdoctor.android.engine.cache.HiddenCacheEngine
 import com.freesystemdoctor.android.engine.cache.JunkScannerEngine
+import com.freesystemdoctor.android.engine.trash.TrashEngine
+import com.freesystemdoctor.android.engine.vault.AppVaultEngine
 import com.freesystemdoctor.android.engine.device.DeviceInfoEngine
 import com.freesystemdoctor.android.engine.duplicates.DuplicateFinderEngine
 import com.freesystemdoctor.android.engine.largefiles.LargeFilesEngine
@@ -64,6 +68,12 @@ object ServiceLocator {
         AppManagerEngine(appContext, permissionManager)
     }
     val junkEngine: JunkScannerEngine by lazy { JunkScannerEngine(appContext) }
+    val trashEngine: TrashEngine by lazy { TrashEngine(appContext) }
+    val hiddenCacheEngine: HiddenCacheEngine by lazy { HiddenCacheEngine(appContext) }
+    val appVaultEngine: AppVaultEngine by lazy { AppVaultEngine(appContext) }
+    val appInsightsEngine: AppInsightsEngine by lazy {
+        AppInsightsEngine(appContext, permissionManager)
+    }
     val largeFilesEngine: LargeFilesEngine by lazy { LargeFilesEngine(appContext) }
     val duplicateEngine: DuplicateFinderEngine by lazy { DuplicateFinderEngine(appContext) }
     val mediaCategoryEngine: MediaStoreCategoryEngine by lazy { MediaStoreCategoryEngine(appContext) }

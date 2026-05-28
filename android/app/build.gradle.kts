@@ -26,8 +26,8 @@ android {
         applicationId = "com.freesystemdoctor.android"
         minSdk = 26
         targetSdk = 35
-        versionCode = 2
-        versionName = "1.1.0"
+        versionCode = 3
+        versionName = "1.2.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         resourceConfigurations += listOf("en", "pl")
@@ -114,6 +114,7 @@ dependencies {
     implementation(libs.androidx.documentfile)
     implementation(libs.androidx.work.runtime.ktx)
     implementation(libs.androidx.security.crypto)
+    implementation(libs.androidx.biometric)
     implementation(libs.coil.compose)
 
     implementation(libs.okhttp)
