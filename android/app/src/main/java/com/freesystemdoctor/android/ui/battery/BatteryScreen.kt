@@ -38,7 +38,9 @@ fun BatteryScreen(
     Column(
         modifier = modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
+        horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally,
     ) {
+        Appear { BatteryWaveViz(levelPercent = info.levelPercent) }
         val rows = buildList {
             add(stringResource(R.string.battery_level_label) to "${info.levelPercent}%")
             add(

@@ -76,6 +76,10 @@ fun StorageScreen(
             if (state.apps.isEmpty()) {
                 com.freesystemdoctor.android.ui.components.ShimmerList(rows = 6)
             }
+            com.freesystemdoctor.android.ui.components.Refreshable(
+                isRefreshing = false,
+                onRefresh = { viewModel.load() },
+            ) {
             LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 itemsIndexed(state.apps) { index, app ->
                     Appear(index = index) {
@@ -106,6 +110,7 @@ fun StorageScreen(
                     }
                     }
                 }
+            }
             }
         }
     }

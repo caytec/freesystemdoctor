@@ -60,6 +60,10 @@ fun AppUsageScreen(
             com.freesystemdoctor.android.ui.components.ShimmerList(rows = 6)
         }
 
+        com.freesystemdoctor.android.ui.components.Refreshable(
+            isRefreshing = state.loading,
+            onRefresh = { viewModel.load() },
+        ) {
         LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             itemsIndexed(state.items) { index, item ->
                 Appear(index = index) {
@@ -90,6 +94,7 @@ fun AppUsageScreen(
                     }
                 }
             }
+        }
         }
     }
 }

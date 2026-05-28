@@ -5,6 +5,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.freesystemdoctor.android.ai.AiProvider
@@ -20,6 +21,7 @@ data class AppSettings(
     val scheduledCleaning: Boolean = false,
     val advancedMode: Boolean = false,
     val monitorEnabled: Boolean = false,
+    val lastSeenVersionCode: Int = 0,
 )
 
 class SettingsRepository(private val context: Context) {
@@ -31,6 +33,7 @@ class SettingsRepository(private val context: Context) {
         val SCHEDULED_CLEANING = booleanPreferencesKey("scheduled_cleaning")
         val ADVANCED_MODE = booleanPreferencesKey("advanced_mode")
         val MONITOR_ENABLED = booleanPreferencesKey("monitor_enabled")
+        val LAST_SEEN_VERSION = intPreferencesKey("last_seen_version_code")
     }
 
     val settings: Flow<AppSettings> = context.dataStore.data.map { prefs ->
@@ -43,6 +46,7 @@ class SettingsRepository(private val context: Context) {
             scheduledCleaning = prefs[Keys.SCHEDULED_CLEANING] ?: false,
             advancedMode = prefs[Keys.ADVANCED_MODE] ?: false,
             monitorEnabled = prefs[Keys.MONITOR_ENABLED] ?: false,
+            lastSeenVersionCode = prefs[Keys.LAST_SEEN_VERSION] ?: 0,
         )
     }
 
@@ -68,5 +72,9 @@ class SettingsRepository(private val context: Context) {
 
     suspend fun setMonitorEnabled(enabled: Boolean) {
         context.dataStore.edit { it[Keys.MONITOR_ENABLED] = enabled }
+    }
+
+    suspend fun setLastSeenVersionCode(code: Int) {
+        context.dataStore.edit { it[Keys.LAST_SEEN_VERSION] = code }
     }
 }

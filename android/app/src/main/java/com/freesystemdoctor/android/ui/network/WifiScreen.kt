@@ -91,11 +91,7 @@ fun WifiScreen(
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 )
                             }
-                            Text(
-                                "${net.signalLevel}/4",
-                                color = MaterialTheme.colorScheme.primary,
-                                style = MaterialTheme.typography.titleSmall,
-                            )
+                            SignalBars(level = net.signalLevel, animated = index == 0)
                         }
                     }
                 }

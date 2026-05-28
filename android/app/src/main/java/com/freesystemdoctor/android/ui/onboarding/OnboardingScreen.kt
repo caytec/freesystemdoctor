@@ -58,19 +58,31 @@ fun OnboardingScreen(
             .background(appBackgroundBrush(dark))
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Appear {
-            Text(stringResource(R.string.onboarding_title), style = MaterialTheme.typography.headlineMedium)
+            com.freesystemdoctor.android.ui.components.HealthGauge(
+                score = 100,
+                label = stringResource(R.string.app_name),
+            )
         }
         Appear(index = 1) {
+            Text(
+                stringResource(R.string.onboarding_title),
+                style = MaterialTheme.typography.headlineMedium,
+                textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+            )
+        }
+        Appear(index = 2) {
             Text(
                 stringResource(R.string.onboarding_subtitle),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = androidx.compose.ui.text.style.TextAlign.Center,
             )
         }
 
-        Appear(index = 2) {
+        Appear(index = 3) {
             PermissionRow(
                 title = stringResource(R.string.perm_media),
                 description = stringResource(R.string.perm_media_desc),
@@ -78,7 +90,7 @@ fun OnboardingScreen(
                 onGrant = { mediaLauncher.launch(permissions.requiredMediaPermissions()) },
             )
         }
-        Appear(index = 3) {
+        Appear(index = 4) {
             PermissionRow(
                 title = stringResource(R.string.perm_usage_access),
                 description = stringResource(R.string.perm_usage_access_desc),
@@ -87,7 +99,7 @@ fun OnboardingScreen(
             )
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            Appear(index = 4) {
+            Appear(index = 5) {
                 PermissionRow(
                     title = stringResource(R.string.perm_notifications),
                     description = stringResource(R.string.perm_notifications_desc),

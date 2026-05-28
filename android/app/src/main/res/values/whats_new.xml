@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_title">What\'s new in 1.1</string>
+    <string name="whats_new_dismiss">Got it</string>
+    <string-array name="whats_new_items">
+        <item>Immersive UI: animated background, glass cards, parallax hero</item>
+        <item>Brand splash screen with the new gauge icon</item>
+        <item>Animated battery visualization and Wi-Fi signal bars</item>
+        <item>Pull-to-refresh on list screens</item>
+        <item>Faster perceived loading with shimmer skeletons</item>
+        <item>Permission screens now refresh after returning from system Settings</item>
+        <item>Bug fixes: data-usage cursor, similar-photo cancellation, app-open ad lifecycle</item>
+    </string-array>
+</resources>

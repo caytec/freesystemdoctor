@@ -81,6 +81,10 @@ fun NotificationCleanerScreen(modifier: Modifier = Modifier) {
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
 
+        com.freesystemdoctor.android.ui.components.Refreshable(
+            isRefreshing = false,
+            onRefresh = { refresh() },
+        ) {
         LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             items(items, key = { it.key }) { n ->
                 Appear {
@@ -118,6 +122,7 @@ fun NotificationCleanerScreen(modifier: Modifier = Modifier) {
                     }
                 }
             }
+        }
         }
     }
 }

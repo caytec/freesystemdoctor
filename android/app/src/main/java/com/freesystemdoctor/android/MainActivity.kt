@@ -19,6 +19,7 @@ import com.freesystemdoctor.android.data.settings.AppSettings
 import com.freesystemdoctor.android.ui.navigation.MainScaffold
 import com.freesystemdoctor.android.ui.onboarding.OnboardingScreen
 import com.freesystemdoctor.android.ui.theme.FsdTheme
+import com.freesystemdoctor.android.ui.whatsnew.WhatsNewHost
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,6 +43,7 @@ class MainActivity : ComponentActivity() {
                 Surface(modifier = Modifier.fillMaxSize()) {
                     if (settings.onboardingDone || onboardingComplete) {
                         MainScaffold()
+                        WhatsNewHost()
                     } else {
                         OnboardingScreen(onContinue = { onboardingComplete = true })
                     }

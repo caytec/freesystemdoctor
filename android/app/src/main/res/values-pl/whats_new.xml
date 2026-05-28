@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_title">Co nowego w 1.1</string>
+    <string name="whats_new_dismiss">Rozumiem</string>
+    <string-array name="whats_new_items">
+        <item>Immersyjny UI: animowane tło, szklane karty, parallax na hero</item>
+        <item>Brandowy ekran powitalny z nową ikoną</item>
+        <item>Animowana wizualizacja baterii i słupki sygnału WiFi</item>
+        <item>Pull-to-refresh na ekranach z listami</item>
+        <item>Szybsze wrażenie ładowania dzięki szkieletom shimmer</item>
+        <item>Ekrany uprawnień odświeżają się po powrocie z Ustawień</item>
+        <item>Poprawki: kursor zużycia danych, anulowanie podobnych zdjęć, cykl reklam app-open</item>
+    </string-array>
+</resources>
