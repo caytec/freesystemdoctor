@@ -21,6 +21,14 @@ _APIS = [
      "meta-llama/llama-3.2-3b-instruct:free", "https://openrouter.ai"),
 ]
 
+# Recommended sub-1 GB models for Ollama
+_OLLAMA_MODELS = [
+    ("qwen2.5:0.5b",  "~394 MB — polecany (najlepszy poniżej 1 GB)"),
+    ("tinyllama",     "~638 MB — alternatywa"),
+    ("smollm2:1.7b",  "~990 MB — większy, dokładniejszy"),
+    ("qwen2:0.5b",    "~352 MB — starszy Qwen2"),
+]
+
 _MODE_ICONS = {
     "full":     "🖥",
     "hardware": "🔩",
@@ -103,19 +111,50 @@ class AIAgentPage(tk.Frame):
     def _build_api_card(self, parent):
         card = Card(parent)
         card.pack(side="left", fill="y", padx=(0, 10))
-        SectionLabel(card, "🔑 API Keys").pack(anchor="w", padx=10, pady=(8, 4))
+        SectionLabel(card, "🔑 API / Local LLM").pack(anchor="w", padx=10, pady=(8, 4))
+
+        # Ollama status row
+        ollama_row = tk.Frame(card, bg=T.PANEL)
+        ollama_row.pack(fill="x", padx=10, pady=(0, 2))
+        self._ollama_dot = tk.Label(ollama_row, text="⬤", bg=T.PANEL,
+                                    fg=T.FG2, font=T.FONT_SMALL)
+        self._ollama_dot.pack(side="left")
+        self._ollama_lbl = tk.Label(ollama_row, text="Ollama: sprawdzanie…",
+                                    bg=T.PANEL, fg=T.FG2, font=T.FONT_SMALL)
+        self._ollama_lbl.pack(side="left", padx=4)
+
+        # Ollama model selector
+        model_row = tk.Frame(card, bg=T.PANEL)
+        model_row.pack(fill="x", padx=10, pady=(0, 4))
+        tk.Label(model_row, text="Model:", bg=T.PANEL, fg=T.FG2,
+                 font=T.FONT_SMALL).pack(side="left")
+        self._ollama_model_var = tk.StringVar(value=ai_agent.OLLAMA_DEFAULT_MODEL)
+        self._ollama_model_combo = ttk.Combobox(
+            model_row, textvariable=self._ollama_model_var,
+            values=[m for m, _ in _OLLAMA_MODELS],
+            state="normal", width=16, font=T.FONT_SMALL,
+        )
+        self._ollama_model_combo.pack(side="left", padx=(4, 4))
+        self._ollama_model_combo.bind("<<ComboboxSelected>>", self._on_ollama_model_changed)
+        self._ollama_model_combo.bind("<Return>", self._on_ollama_model_changed)
+        ActionButton(model_row, "⬇ Pobierz",
+                     command=self._pull_ollama_model).pack(side="left")
+
+        # Cloud API status
         self._config_status_lbl = tk.Label(card, text="", bg=T.PANEL,
                                             fg=T.FG2, font=T.FONT_SMALL, justify="left")
-        self._config_status_lbl.pack(anchor="w", padx=10, pady=(0, 4))
+        self._config_status_lbl.pack(anchor="w", padx=10, pady=(4, 0))
 
         sel_row = tk.Frame(card, bg=T.PANEL)
         sel_row.pack(fill="x", padx=10, pady=(4, 10))
         tk.Label(sel_row, text="Preferred:", bg=T.PANEL, fg=T.FG2,
                  font=T.FONT_SMALL).pack(side="left")
         self._pref_var = tk.StringVar(value="auto")
-        self._pref_combo = ttk.Combobox(sel_row, textvariable=self._pref_var,
-                                         values=["auto"] + [n for n, *_ in _APIS],
-                                         state="readonly", width=14, font=T.FONT_SMALL)
+        self._pref_combo = ttk.Combobox(
+            sel_row, textvariable=self._pref_var,
+            values=["auto", "Ollama"] + [n for n, *_ in _APIS],
+            state="readonly", width=14, font=T.FONT_SMALL,
+        )
         self._pref_combo.pack(side="left", padx=(6, 0))
         self._pref_combo.bind("<<ComboboxSelected>>", self._on_pref_changed)
 
@@ -230,11 +269,107 @@ class AIAgentPage(tk.Frame):
         self._mode_desc.config(text=descs.get(mode, ""))
 
     def _refresh_api_status(self):
+        # Cloud API keys
         lines = []
         for name, env_key, *_ in _APIS:
             key = os.getenv(env_key, "")
             lines.append(f"{'✅' if key else '❌'} {name}: {key[:16]}…" if key else f"❌ {name}")
         self._config_status_lbl.config(text="\n".join(lines))
+        # Ollama — check in background so UI doesn't freeze
+        threading.Thread(target=self._check_ollama_bg, daemon=True).start()
+
+    def _check_ollama_bg(self):
+        running = ai_agent.ollama_is_running()
+        models  = ai_agent.ollama_list_models() if running else []
+        def _upd():
+            try:
+                if running:
+                    model_txt = models[0] if models else "no model"
+                    self._ollama_dot.config(fg=T.SUCCESS)
+                    self._ollama_lbl.config(
+                        text=f"Ollama: aktywny  [{len(models)} modeli]", fg=T.SUCCESS)
+                    # Update combo with actual installed models + recommended
+                    all_mdl = list(dict.fromkeys(
+                        models + [m for m, _ in _OLLAMA_MODELS]))
+                    self._ollama_model_combo.config(values=all_mdl)
+                else:
+                    self._ollama_dot.config(fg=T.DANGER)
+                    self._ollama_lbl.config(
+                        text="Ollama: brak — pobierz: ollama.com/download", fg=T.DANGER)
+            except Exception:
+                pass
+        try:
+            self.after(0, _upd)
+        except Exception:
+            pass
+
+    def _on_ollama_model_changed(self, e=None):
+        model = self._ollama_model_var.get().strip()
+        if model:
+            ai_agent.set_ollama_model(model)
+
+    def _pull_ollama_model(self):
+        """Download selected Ollama model in background with progress dialog."""
+        model = self._ollama_model_var.get().strip()
+        if not model:
+            messagebox.showwarning("Model", "Wpisz lub wybierz nazwę modelu.")
+            return
+        if not ai_agent.ollama_is_running():
+            messagebox.showerror(
+                "Ollama nie działa",
+                "Uruchom Ollama przed pobraniem modelu.\n"
+                "Pobierz ze: https://ollama.com/download\n"
+                "Następnie uruchom: ollama serve")
+            return
+
+        # Simple progress window
+        win = tk.Toplevel(self)
+        win.title(f"Pobieranie {model}")
+        win.geometry("420x160")
+        win.configure(bg=T.BG)
+        win.resizable(False, False)
+        win.grab_set()
+
+        tk.Label(win, text=f"⬇ Pobieranie modelu: {model}",
+                 bg=T.BG, fg=T.FG, font=T.FONT_BOLD).pack(pady=(16, 4))
+        # Find size description if known
+        size_note = next((desc for m, desc in _OLLAMA_MODELS if m == model), "")
+        if size_note:
+            tk.Label(win, text=size_note, bg=T.BG, fg=T.FG2,
+                     font=T.FONT_SMALL).pack(pady=(0, 8))
+        prog = ProgressBar(win, bg=T.BG)
+        prog.pack(fill="x", padx=20, pady=4)
+        status_lbl = tk.Label(win, text="Inicjalizacja…", bg=T.BG,
+                              fg=T.FG2, font=T.FONT_SMALL)
+        status_lbl.pack()
+
+        def on_progress(pct, msg):
+            try:
+                win.after(0, lambda: (prog.set(pct), status_lbl.config(text=msg or "…")))
+            except Exception:
+                pass
+
+        def worker():
+            ok, msg = ai_agent.ollama_pull_model(model, progress_cb=on_progress)
+            def done():
+                try:
+                    if ok:
+                        prog.set(100)
+                        status_lbl.config(text=f"✓ {msg}", fg=T.SUCCESS)
+                        ai_agent.set_ollama_model(model)
+                        self._ollama_model_var.set(model)
+                        self._check_ollama_bg()
+                        win.after(2000, win.destroy)
+                    else:
+                        status_lbl.config(text=f"✗ {msg}", fg=T.DANGER)
+                except Exception:
+                    pass
+            try:
+                win.after(0, done)
+            except Exception:
+                pass
+
+        threading.Thread(target=worker, daemon=True).start()
 
     def _on_pref_changed(self, e=None):
         ai_agent.set_preferred_api(self._pref_var.get())
@@ -251,8 +386,51 @@ class AIAgentPage(tk.Frame):
 
         tk.Label(win, text="🔑  AI API Configuration", bg=T.BG, fg=T.FG,
                  font=(T.FONT_FAMILY, 12, "bold")).pack(pady=(14, 2))
-        tk.Label(win, text="Configure one or more APIs — agent tries them in order.",
-                 bg=T.BG, fg=T.FG2, font=T.FONT_SMALL).pack(pady=(0, 10))
+        tk.Label(win,
+                 text="Lokalne (Ollama) są używane bez klucza API — prywatnie, offline.\n"
+                      "Chmurowe API jako zapasowy łańcuch gdy Ollama niedostępna.",
+                 bg=T.BG, fg=T.FG2, font=T.FONT_SMALL).pack(pady=(0, 6))
+
+        # ── Ollama section ────────────────────────────────────────────────────
+        ollama_grp = tk.Frame(win, bg=T.PANEL)
+        ollama_grp.pack(fill="x", padx=16, pady=(0, 6))
+        hdr_ol = tk.Frame(ollama_grp, bg="#1a6b3c")
+        hdr_ol.pack(fill="x")
+        tk.Label(hdr_ol, text="  🦙 Ollama — lokalny LLM (zalecany, bez klucza API)",
+                 bg="#1a6b3c", fg="#ffffff",
+                 font=(T.FONT_FAMILY, 10, "bold")).pack(side="left", pady=6)
+        tk.Label(hdr_ol, text="ollama.com/download",
+                 bg="#1a6b3c", fg="#aaffcc", font=T.FONT_SMALL).pack(side="right", padx=10)
+
+        ol_body = tk.Frame(ollama_grp, bg=T.PANEL)
+        ol_body.pack(fill="x", padx=10, pady=8)
+
+        running = ai_agent.ollama_is_running()
+        models  = ai_agent.ollama_list_models() if running else []
+        status_txt = (f"✅ Serwer aktywny | modele: {', '.join(models) or 'brak'}"
+                      if running else
+                      "❌ Ollama nie działa — pobierz ze: https://ollama.com/download")
+        tk.Label(ol_body, text=status_txt,
+                 bg=T.PANEL, fg=T.SUCCESS if running else T.DANGER,
+                 font=T.FONT_SMALL, wraplength=560, justify="left").pack(anchor="w")
+
+        ol_model_row = tk.Frame(ol_body, bg=T.PANEL)
+        ol_model_row.pack(fill="x", pady=(6, 2))
+        tk.Label(ol_model_row, text="Aktywny model (<1 GB):",
+                 bg=T.PANEL, fg=T.FG2, font=T.FONT_SMALL).pack(side="left")
+        ol_model_var = tk.StringVar(value=ai_agent.OLLAMA_DEFAULT_MODEL)
+        ol_model_cb  = ttk.Combobox(
+            ol_model_row, textvariable=ol_model_var,
+            values=list(dict.fromkeys(models + [m for m, _ in _OLLAMA_MODELS])),
+            state="normal", width=20, font=T.FONT_SMALL,
+        )
+        ol_model_cb.pack(side="left", padx=(6, 0))
+        for m, desc in _OLLAMA_MODELS:
+            tk.Label(ol_body, text=f"  • {m} — {desc}",
+                     bg=T.PANEL, fg=T.FG2, font=T.FONT_SMALL).pack(anchor="w")
+        tk.Label(ol_body,
+                 text="Instalacja: ollama pull qwen2.5:0.5b",
+                 bg=T.PANEL, fg=T.HIGHLIGHT, font=T.FONT_SMALL).pack(anchor="w", pady=(4, 0))
 
         outer = tk.Frame(win, bg=T.BG)
         outer.pack(fill="both", expand=True, padx=16)
@@ -297,6 +475,12 @@ class AIAgentPage(tk.Frame):
         btn_row.pack(fill="x", padx=16, pady=12)
 
         def save():
+            # Save Ollama model
+            chosen_model = ol_model_var.get().strip()
+            if chosen_model:
+                ai_agent.set_ollama_model(chosen_model)
+                self._ollama_model_var.set(chosen_model)
+            # Save cloud API keys
             for env_key, (entry, env_model, default_model) in entries.items():
                 val = entry.get().strip()
                 if val:
@@ -306,7 +490,9 @@ class AIAgentPage(tk.Frame):
                     os.environ.pop(env_key, None)
             self._refresh_api_status()
             win.destroy()
-            messagebox.showinfo("Saved", "✅ API keys saved. Click ▶ Analyze to start.")
+            messagebox.showinfo("Zapisano",
+                                "✅ Ustawienia zapisane.\n"
+                                "Kliknij ▶ Analizuj aby uruchomić AI agenta.")
 
         ActionButton(btn_row, "Save & Close", command=save).pack(side="left", padx=(0, 8))
         tk.Button(btn_row, text="Cancel", command=win.destroy,
@@ -321,11 +507,20 @@ class AIAgentPage(tk.Frame):
             return
 
         ai_agent.set_preferred_api(self._pref_var.get())
+        ai_agent.set_ollama_model(self._ollama_model_var.get().strip())
 
-        if not any(os.getenv(env_key) for _, env_key, *_ in _APIS):
+        # Check: at least one source available (Ollama or any cloud API key)
+        has_cloud = any(os.getenv(env_key) for _, env_key, *_ in _APIS)
+        has_ollama = ai_agent.ollama_is_running() and bool(ai_agent.ollama_list_models())
+        if not has_cloud and not has_ollama:
             messagebox.showwarning(
-                "No API Keys",
-                "❌ No API keys configured.\n\nClick 'Configure APIs' to add them.")
+                "Brak LLM",
+                "❌ Brak dostępnego modelu AI.\n\n"
+                "Opcja 1 (lokalna, bezpłatna):\n"
+                "  1. Pobierz Ollama: https://ollama.com/download\n"
+                "  2. Uruchom: ollama serve\n"
+                "  3. Kliknij ⬇ Pobierz przy modelu qwen2.5:0.5b\n\n"
+                "Opcja 2 (chmura): Kliknij 'Configure APIs' i dodaj klucz API.")
             return
 
         mode = self._mode_var.get()
@@ -335,7 +530,7 @@ class AIAgentPage(tk.Frame):
         self._analyzing = True
         self._progress.indeterminate(True)
         pref = self._pref_var.get()
-        chain_desc = pref if pref != "auto" else "Anthropic → Cerebras → Groq → OpenRouter"
+        chain_desc = pref if pref != "auto" else "Ollama → Anthropic → Cerebras → Groq → OpenRouter"
         self._status_lbl.config(
             text=f"🔄 {icon} {mode_label} in progress… ({chain_desc})", fg=T.FG2)
         self._api_lbl.config(text="")

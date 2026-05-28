@@ -1,4 +1,4 @@
-"""AI system health analyzer — multi-provider LLM chain including Anthropic."""
+"""AI system health analyzer — multi-provider LLM chain including Anthropic and local Ollama."""
 
 import os
 import json
@@ -79,10 +79,82 @@ API_REGISTRY = [
 # Preferred API — can be changed at runtime by GUI
 PREFERRED_API: str = "auto"   # "auto" = try all in order; or display_name e.g. "Anthropic"
 
+# ── Ollama (local LLM — no API key, offline) ──────────────────────────────────
+# Recommended: qwen2.5:0.5b (~394 MB) or tinyllama (~638 MB)
+OLLAMA_BASE_URL: str = "http://localhost:11434"
+OLLAMA_DEFAULT_MODEL: str = "qwen2.5:0.5b"   # <1 GB, very capable for its size
+
+
+def ollama_is_running() -> bool:
+    """Return True if local Ollama server is reachable."""
+    if not requests:
+        return False
+    try:
+        r = requests.get(f"{OLLAMA_BASE_URL}/api/tags", timeout=2)
+        return r.status_code == 200
+    except Exception:
+        return False
+
+
+def ollama_list_models() -> list[str]:
+    """Return list of model names available in the local Ollama install."""
+    if not requests:
+        return []
+    try:
+        r = requests.get(f"{OLLAMA_BASE_URL}/api/tags", timeout=3)
+        if r.status_code == 200:
+            return [m["name"] for m in r.json().get("models", [])]
+    except Exception:
+        pass
+    return []
+
+
+def ollama_pull_model(model: str, progress_cb: Callable = None) -> tuple[bool, str]:
+    """
+    Pull (download) a model from Ollama registry.
+    Streams progress lines; calls progress_cb(pct, status_str) if provided.
+    Returns (success, message).
+    """
+    if not requests:
+        return False, "requests not installed"
+    try:
+        with requests.post(
+            f"{OLLAMA_BASE_URL}/api/pull",
+            json={"name": model, "stream": True},
+            stream=True, timeout=600,
+        ) as resp:
+            if resp.status_code != 200:
+                return False, f"HTTP {resp.status_code}"
+            for line in resp.iter_lines():
+                if not line:
+                    continue
+                try:
+                    data = json.loads(line)
+                    status = data.get("status", "")
+                    total  = data.get("total", 0)
+                    compl  = data.get("completed", 0)
+                    pct    = int(compl * 100 / total) if total else 0
+                    if progress_cb:
+                        progress_cb(pct, status)
+                    if data.get("status") == "success":
+                        return True, f"Model '{model}' ready"
+                except Exception:
+                    pass
+        return True, f"Model '{model}' downloaded"
+    except Exception as e:
+        return False, str(e)
+
+
+def set_ollama_model(model: str):
+    """Change the active Ollama model at runtime."""
+    global OLLAMA_DEFAULT_MODEL
+    OLLAMA_DEFAULT_MODEL = model
+    _logger.info(f"Ollama model set to: {model}")
+
 
 def get_api_names() -> list[str]:
     """Return list of API display names for the GUI dropdown."""
-    return ["auto"] + [name for name, *_ in API_REGISTRY]
+    return ["auto"] + [name for name, *_ in API_REGISTRY] + ["Ollama"]
 
 
 def set_preferred_api(name: str):
@@ -233,6 +305,76 @@ def collect_system_data() -> dict:
 
 
 # ── Prompt templates per analysis mode ────────────────────────────────────────
+
+def _build_compact_prompt(data: dict, mode: str = "full") -> str:
+    """
+    Short, highly-structured prompt for small (<1 GB) local models.
+    Avoids long context; demands strict section headers so the parser works.
+    """
+    hw  = data.get("hardware", {})
+    cpu = hw.get("cpu", {}).get("name", "?")
+    ram = hw.get("ram_total_gb", "?")
+    gpu = (hw.get("gpus") or [{}])[0].get("name", "?")
+    cpu_use = hw.get("cpu_usage_pct", "?")
+    ram_use = hw.get("ram_used_pct", "?")
+    score   = data.get("health_score", 0)
+    issues  = ", ".join(data.get("detected_issues", [])[:3]) or "none"
+
+    base = (
+        f"CPU:{cpu} RAM:{ram}GB GPU:{gpu} "
+        f"Load:CPU{cpu_use}%,RAM{ram_use}% Score:{score}/100 Issues:{issues}"
+    )
+
+    if mode == "hardware":
+        return (
+            f"You are a PC hardware expert. System: {base}\n"
+            "Reply ONLY using these exact headers (no extra text):\n"
+            "## Hardware Score: [0-100]\n"
+            "## Bottleneck Analysis\n[one sentence]\n"
+            "## Upgrade Priority\n1. [upgrade]\n2. [upgrade]\n3. [upgrade]\n"
+            "Max 200 words."
+        )
+    elif mode == "optimize":
+        return (
+            f"You are a Windows optimization expert. System: {base}\n"
+            "Reply ONLY using these exact headers:\n"
+            "## Optimization Score: [0-100]\n"
+            "## Critical Tweaks (apply immediately)\n- [tweak]\n- [tweak]\n- [tweak]\n"
+            "## Performance Recommendations\n1. [rec]\n2. [rec]\n3. [rec]\n"
+            "Max 200 words."
+        )
+    elif mode == "gaming":
+        return (
+            f"You are a gaming PC expert. System: {base}\n"
+            "Reply ONLY using these exact headers:\n"
+            "## Gaming Performance Score: [0-100]\n"
+            "## Gaming Bottleneck\n[one sentence]\n"
+            "## System Tweaks for Gaming\n1. [tweak]\n2. [tweak]\n3. [tweak]\n"
+            "Max 200 words."
+        )
+    elif mode == "security":
+        return (
+            f"You are a Windows security expert. System: {base} "
+            f"Defender:{data.get('defender',{})} Firewall:{data.get('firewall',{})}\n"
+            "Reply ONLY using these exact headers:\n"
+            "## Security Score: [0-100]\n"
+            "## Critical Vulnerabilities\n- [vuln]\n- [vuln]\n"
+            "## Security Recommendations\n1. [action]\n2. [action]\n3. [action]\n"
+            "Max 200 words."
+        )
+    else:  # full
+        return (
+            f"You are a PC expert. System: {base}\n"
+            "Reply ONLY using these exact headers:\n"
+            "## Overall Score: [0-100]\n"
+            "## Hardware Score: [0-100]\n"
+            "## Optimization Score: [0-100]\n"
+            "## Security Score: [0-100]\n"
+            "## Critical Issues\n- [issue]\n- [issue]\n"
+            "## Top Recommendations\n1. [rec]\n2. [rec]\n3. [rec]\n4. [rec]\n"
+            "Max 250 words."
+        )
+
 
 def _build_prompt(data: dict, mode: str = "full") -> str:
     """Build mode-specific analysis prompt."""
@@ -573,16 +715,92 @@ def _call_openrouter(data: dict, stream_cb=None, mode: str = "full"):
     )
 
 
+# ── Ollama caller ─────────────────────────────────────────────────────────────
+
+def _call_ollama(data: dict, stream_cb=None, mode: str = "full"):
+    """
+    Call local Ollama server (http://localhost:11434).
+    Uses the compact prompt optimised for small (<1 GB) models.
+    Falls back to the full prompt if the model name suggests a larger model.
+    """
+    if not requests:
+        return None, "Ollama: requests library not installed"
+    if not ollama_is_running():
+        return None, "Ollama: server not running (start with 'ollama serve')"
+
+    model = OLLAMA_DEFAULT_MODEL
+    models_available = ollama_list_models()
+
+    # If no model installed at all, tell the user
+    if not models_available:
+        return None, (
+            f"Ollama: no models installed. "
+            f"Run: ollama pull {OLLAMA_DEFAULT_MODEL}  (~394 MB)"
+        )
+
+    # If configured model not present, use first available
+    if model not in models_available:
+        model = models_available[0]
+        _logger.info(f"Ollama: model '{OLLAMA_DEFAULT_MODEL}' not found, using '{model}'")
+
+    # Choose compact prompt for sub-1 GB models (heuristic: 0.5b / 1b / tinyllama tags)
+    small_tags = ("0.5b", "1b", "1.1b", "135m", "360m", "1.7b", "tinyllama", "smollm")
+    is_small   = any(t in model.lower() for t in small_tags)
+    prompt     = _build_compact_prompt(data, mode) if is_small else _build_prompt(data, mode)
+
+    _logger.info(f"Calling Ollama (model={model}, compact={is_small}, mode={mode})")
+
+    # Use Ollama native /api/chat (more reliable than /v1 compat)
+    try:
+        resp = requests.post(
+            f"{OLLAMA_BASE_URL}/api/chat",
+            json={
+                "model":    model,
+                "messages": [{"role": "user", "content": prompt}],
+                "stream":   False,
+                "options":  {
+                    "temperature": 0.7,
+                    "num_predict": 512,   # max tokens — enough for structured output
+                },
+            },
+            timeout=120,    # small models are fast; give 2 min for slow CPUs
+        )
+    except Exception as e:
+        return None, f"Ollama: connection error — {e}"
+
+    if resp.status_code == 404:
+        return None, f"Ollama: model '{model}' not found — run: ollama pull {model}"
+    if resp.status_code != 200:
+        return None, f"Ollama: HTTP {resp.status_code}"
+
+    try:
+        content = resp.json()["message"]["content"].strip()
+    except (KeyError, ValueError):
+        return None, "Ollama: unexpected response format"
+
+    if not content:
+        return None, "Ollama: empty response"
+
+    _logger.info(f"Ollama success ({len(content)} chars, model={model})")
+    if stream_cb:
+        try:
+            stream_cb(content)
+        except Exception:
+            pass
+    return content, None
+
+
 # Map display name → caller function
 _CALLERS = {
     "Anthropic":  call_anthropic,
     "Cerebras":   _call_cerebras,
     "Groq":       _call_groq,
     "OpenRouter": _call_openrouter,
+    "Ollama":     _call_ollama,
 }
 
-# Default chain order
-_DEFAULT_CHAIN = ["Anthropic", "Cerebras", "Groq", "OpenRouter"]
+# Default chain order — Ollama first (free, local, private); cloud APIs as fallback
+_DEFAULT_CHAIN = ["Ollama", "Anthropic", "Cerebras", "Groq", "OpenRouter"]
 
 
 # ── structured output parser ──────────────────────────────────────────────────
