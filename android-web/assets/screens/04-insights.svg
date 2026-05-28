@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 740" role="img" aria-label="App insights mockup">
+  <defs>
+    <linearGradient id="bg4" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%"  stop-color="#0F1B2D"/>
+      <stop offset="100%" stop-color="#0A1320"/>
+    </linearGradient>
+    <linearGradient id="bar" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"  stop-color="#FF6F61"/>
+      <stop offset="100%" stop-color="#9C7BFF"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="360" height="740" rx="36" fill="url(#bg4)"/>
+  <rect x="160" y="14" width="40" height="6" rx="3" fill="#0A1320"/>
+
+  <text x="24" y="64" font-family="sans-serif" font-size="20" font-weight="700" fill="#ECEFF4" data-i18n="insights.title">App insights</text>
+  <text x="336" y="64" font-family="sans-serif" font-size="14" fill="#FF6F61" text-anchor="end">PRO</text>
+
+  <!-- Big card with weekly total + chart -->
+  <rect x="20" y="92" width="320" height="220" rx="18" fill="#16263D"/>
+  <text x="40" y="120" font-family="sans-serif" font-size="11" fill="#A7B4C7" letter-spacing="1.5" data-i18n="insights.weekly_total">SCREEN TIME (7 DAYS)</text>
+  <text x="40" y="158" font-family="sans-serif" font-size="34" font-weight="800" fill="#ECEFF4">28h 42m</text>
+
+  <!-- Bar chart -->
+  <g>
+    <rect x="40"  y="200" width="24" height="60"  rx="3" fill="url(#bar)" opacity="0.85"/>
+    <rect x="84"  y="180" width="24" height="80"  rx="3" fill="url(#bar)" opacity="0.85"/>
+    <rect x="128" y="220" width="24" height="40"  rx="3" fill="url(#bar)" opacity="0.85"/>
+    <rect x="172" y="160" width="24" height="100" rx="3" fill="url(#bar)" opacity="0.85"/>
+    <rect x="216" y="140" width="24" height="120" rx="3" fill="url(#bar)" opacity="0.85"/>
+    <rect x="260" y="170" width="24" height="90"  rx="3" fill="url(#bar)" opacity="0.85"/>
+    <rect x="304" y="190" width="24" height="70"  rx="3" fill="url(#bar)" opacity="0.85"/>
+  </g>
+  <g font-family="sans-serif" font-size="9" fill="#A7B4C7" text-anchor="middle">
+    <text x="52" y="278" data-i18n="day.mon">Mon</text>
+    <text x="96" y="278" data-i18n="day.tue">Tue</text>
+    <text x="140" y="278" data-i18n="day.wed">Wed</text>
+    <text x="184" y="278" data-i18n="day.thu">Thu</text>
+    <text x="228" y="278" data-i18n="day.fri">Fri</text>
+    <text x="272" y="278" data-i18n="day.sat">Sat</text>
+    <text x="316" y="278" data-i18n="day.sun">Sun</text>
+  </g>
+
+  <!-- Section header -->
+  <text x="24" y="346" font-family="sans-serif" font-size="13" font-weight="600" fill="#A7B4C7" letter-spacing="1" data-i18n="insights.recent">RECENTLY INSTALLED</text>
+
+  <!-- List -->
+  <g font-family="sans-serif">
+    <rect x="20" y="362" width="320" height="44" rx="10" fill="#16263D"/>
+    <text x="36" y="382" font-size="12" fill="#ECEFF4">Strava</text>
+    <text x="36" y="397" font-size="9"  fill="#A7B4C7" data-i18n="insights.installed">Installed</text>
+    <text x="324" y="382" font-size="10" fill="#A7B4C7" text-anchor="end">2d ago</text>
+
+    <rect x="20" y="412" width="320" height="44" rx="10" fill="#16263D"/>
+    <text x="36" y="432" font-size="12" fill="#ECEFF4">Spotify</text>
+    <text x="36" y="447" font-size="9"  fill="#A7B4C7" data-i18n="insights.updated">Updated</text>
+    <text x="324" y="432" font-size="10" fill="#A7B4C7" text-anchor="end">4d ago</text>
+
+    <rect x="20" y="462" width="320" height="44" rx="10" fill="#16263D"/>
+    <text x="36" y="482" font-size="12" fill="#ECEFF4">Signal</text>
+    <text x="36" y="497" font-size="9"  fill="#A7B4C7" data-i18n="insights.updated">Updated</text>
+    <text x="324" y="482" font-size="10" fill="#A7B4C7" text-anchor="end">5d ago</text>
+  </g>
+
+  <!-- Hidden apps section -->
+  <text x="24" y="540" font-family="sans-serif" font-size="13" font-weight="600" fill="#A7B4C7" letter-spacing="1" data-i18n="insights.hidden">APPS WITHOUT A LAUNCHER</text>
+  <g font-family="sans-serif">
+    <rect x="20" y="556" width="320" height="44" rx="10" fill="#16263D"/>
+    <text x="36" y="576" font-size="12" fill="#ECEFF4">com.oem.bloat.weather</text>
+    <text x="36" y="591" font-size="9"  fill="#A7B4C7">12.4 MB · pre-installed</text>
+
+    <rect x="20" y="606" width="320" height="44" rx="10" fill="#16263D"/>
+    <text x="36" y="626" font-size="12" fill="#ECEFF4">com.carrier.helper</text>
+    <text x="36" y="641" font-size="9"  fill="#A7B4C7">8.2 MB · pre-installed</text>
+  </g>
+
+  <rect x="20" y="664" width="320" height="56" rx="20" fill="#16263D"/>
+  <g font-family="sans-serif" font-size="10" fill="#A7B4C7" text-anchor="middle">
+    <text x="60" y="710" data-i18n="nav.dashboard">Dashboard</text>
+    <text x="124" y="710" data-i18n="nav.cleaner">Clean</text>
+    <text x="188" y="710" data-i18n="nav.storage">Storage</text>
+    <text x="252" y="710" data-i18n="nav.apps">Apps</text>
+    <circle cx="316" cy="688" r="4" fill="#FF6F61"/>
+    <text x="316" y="710" fill="#FF6F61" data-i18n="nav.tools">Tools</text>
+  </g>
+</svg>

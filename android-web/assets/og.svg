@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="og-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%"  stop-color="#0F1B2D"/>
+      <stop offset="100%" stop-color="#1E3350"/>
+    </linearGradient>
+    <radialGradient id="og-glow" cx="0.85" cy="0.2" r="0.6">
+      <stop offset="0%"  stop-color="#FF6F61" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#FF6F61" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="og-ring" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%"  stop-color="#FF6F61"/>
+      <stop offset="100%" stop-color="#9C7BFF"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#og-bg)"/>
+  <circle cx="1000" cy="120" r="380" fill="url(#og-glow)"/>
+
+  <g transform="translate(80 140)">
+    <g transform="rotate(135 90 90)">
+      <circle cx="90" cy="90" r="68"
+              fill="none" stroke="#1E3350" stroke-width="13"
+              stroke-linecap="round" stroke-dasharray="321 427"/>
+      <circle cx="90" cy="90" r="68"
+              fill="none" stroke="url(#og-ring)" stroke-width="13"
+              stroke-linecap="round" stroke-dasharray="288 427"/>
+    </g>
+    <circle cx="90" cy="90" r="50" fill="#0A1320"/>
+    <rect x="80" y="54" width="20" height="72" rx="6" fill="#ECEFF4"/>
+    <rect x="54" y="80" width="72" height="20" rx="6" fill="#ECEFF4"/>
+    <circle cx="90" cy="90" r="6" fill="#FF6F61"/>
+  </g>
+
+  <g font-family="-apple-system, Segoe UI, Roboto, sans-serif" fill="#ECEFF4">
+    <text x="300" y="220" font-size="78" font-weight="800">FreeSystemDoctor</text>
+    <text x="300" y="280" font-size="36" font-weight="500" fill="#FFB6AB">for Android</text>
+    <text x="300" y="380" font-size="28" fill="#A7B4C7">Honest phone cleaner. No fake</text>
+    <text x="300" y="416" font-size="28" fill="#A7B4C7">boosters. No data harvesting. FOSS.</text>
+  </g>
+
+  <g font-family="-apple-system, Segoe UI, Roboto, sans-serif" font-size="22" font-weight="600">
+    <rect x="300" y="470" width="140" height="48" rx="24" fill="#FF6F61"/>
+    <text x="370" y="500" fill="#0A1320" text-anchor="middle">FOSS</text>
+    <rect x="460" y="470" width="170" height="48" rx="24" fill="none" stroke="#9C7BFF" stroke-width="2"/>
+    <text x="545" y="500" fill="#9C7BFF" text-anchor="middle">No root</text>
+    <rect x="650" y="470" width="180" height="48" rx="24" fill="none" stroke="#35D0BA" stroke-width="2"/>
+    <text x="740" y="500" fill="#35D0BA" text-anchor="middle">PL · EN</text>
+  </g>
+
+  <text x="80" y="600" font-family="-apple-system, Segoe UI, Roboto, sans-serif" font-size="20" fill="#5B6B82">freesystemdoctor.pl/android</text>
+</svg>

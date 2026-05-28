@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 500" role="img" aria-label="FreeSystemDoctor Android — feature graphic">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%"  stop-color="#0F1B2D"/>
+      <stop offset="60%" stop-color="#16263D"/>
+      <stop offset="100%" stop-color="#1E3350"/>
+    </linearGradient>
+    <radialGradient id="glow1" cx="0.15" cy="0.4" r="0.55">
+      <stop offset="0%"  stop-color="#FF6F61" stop-opacity="0.45"/>
+      <stop offset="100%" stop-color="#FF6F61" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glow2" cx="0.85" cy="0.7" r="0.45">
+      <stop offset="0%"  stop-color="#9C7BFF" stop-opacity="0.45"/>
+      <stop offset="100%" stop-color="#9C7BFF" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="ring" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%"  stop-color="#FF6F61"/>
+      <stop offset="100%" stop-color="#9C7BFF"/>
+    </linearGradient>
+    <linearGradient id="text" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%"  stop-color="#ECEFF4"/>
+      <stop offset="100%" stop-color="#FFD9D2"/>
+    </linearGradient>
+    <linearGradient id="phone" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"  stop-color="#16263D"/>
+      <stop offset="100%" stop-color="#0A1320"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1024" height="500" fill="url(#bg)"/>
+  <circle cx="150"  cy="200" r="280" fill="url(#glow1)"/>
+  <circle cx="870"  cy="350" r="220" fill="url(#glow2)"/>
+
+  <!-- subtle grid pattern -->
+  <g stroke="#223A5C" stroke-width="0.5" opacity="0.4">
+    <path d="M0 100 H1024 M0 200 H1024 M0 300 H1024 M0 400 H1024"/>
+    <path d="M100 0 V500 M250 0 V500 M400 0 V500 M550 0 V500 M700 0 V500 M850 0 V500"/>
+  </g>
+
+  <!-- Logo mark, left side -->
+  <g transform="translate(80 120)">
+    <g transform="rotate(135 75 75)">
+      <circle cx="75" cy="75" r="58"
+              fill="none" stroke="#1E3350" stroke-width="11"
+              stroke-linecap="round" stroke-dasharray="273 365"/>
+      <circle cx="75" cy="75" r="58"
+              fill="none" stroke="url(#ring)" stroke-width="11"
+              stroke-linecap="round" stroke-dasharray="246 365"/>
+    </g>
+    <circle cx="75" cy="75" r="42" fill="#0A1320"/>
+    <circle cx="75" cy="75" r="42" fill="none" stroke="#223A5C" stroke-width="1.2"/>
+    <rect x="67" y="44" width="16" height="62" rx="5" fill="#ECEFF4"/>
+    <rect x="44" y="67" width="62" height="16" rx="5" fill="#ECEFF4"/>
+    <circle cx="75" cy="75" r="5" fill="#FF6F61"/>
+  </g>
+
+  <!-- Wordmark + tagline -->
+  <g font-family="-apple-system, Segoe UI, Roboto, sans-serif">
+    <text x="260" y="170" font-size="58" font-weight="800" fill="url(#text)">FreeSystemDoctor</text>
+    <text x="260" y="220" font-size="26" font-weight="500" fill="#FFB6AB">for Android · no root, no lies</text>
+    <text x="260" y="290" font-size="22" font-weight="400" fill="#A7B4C7">Honest cleaner · battery · vault</text>
+    <text x="260" y="322" font-size="22" font-weight="400" fill="#A7B4C7">App insights · recycle bin · 25+ tools</text>
+  </g>
+
+  <!-- Decorative pills -->
+  <g font-family="-apple-system, Segoe UI, Roboto, sans-serif" font-size="14" font-weight="600">
+    <rect x="260" y="365" width="92"  height="32" rx="16" fill="#1E3350" stroke="#FF6F61" stroke-width="1"/>
+    <text x="306" y="386" fill="#FF6F61" text-anchor="middle">FOSS</text>
+    <rect x="362" y="365" width="98"  height="32" rx="16" fill="#1E3350" stroke="#9C7BFF" stroke-width="1"/>
+    <text x="411" y="386" fill="#9C7BFF" text-anchor="middle">No root</text>
+    <rect x="470" y="365" width="118" height="32" rx="16" fill="#1E3350" stroke="#35D0BA" stroke-width="1"/>
+    <text x="529" y="386" fill="#35D0BA" text-anchor="middle">PL · EN</text>
+  </g>
+
+  <!-- Phone mockup, right side -->
+  <g transform="translate(760 60)">
+    <!-- frame -->
+    <rect x="0" y="0" width="180" height="380" rx="28" fill="#0A1320" stroke="#FF6F61" stroke-width="2"/>
+    <rect x="6" y="6" width="168" height="368" rx="22" fill="url(#phone)"/>
+    <!-- notch -->
+    <rect x="74" y="14" width="32" height="6" rx="3" fill="#0A1320"/>
+    <!-- status bar -->
+    <text x="90" y="42" font-family="sans-serif" font-size="10" fill="#A7B4C7" text-anchor="middle">9:41</text>
+    <!-- gauge -->
+    <circle cx="90" cy="120" r="42" fill="none" stroke="#1E3350" stroke-width="6"/>
+    <circle cx="90" cy="120" r="42" fill="none" stroke="url(#ring)" stroke-width="6"
+            stroke-dasharray="200 264" transform="rotate(-90 90 120)"/>
+    <text x="90" y="116" font-family="sans-serif" font-size="22" font-weight="700" fill="#ECEFF4" text-anchor="middle">87</text>
+    <text x="90" y="132" font-family="sans-serif" font-size="8" fill="#A7B4C7" text-anchor="middle">HEALTH</text>
+    <!-- mini cards -->
+    <rect x="20" y="190" width="64" height="40" rx="8" fill="#16263D"/>
+    <text x="28" y="208" font-family="sans-serif" font-size="8" fill="#A7B4C7">RAM</text>
+    <text x="28" y="222" font-family="sans-serif" font-size="13" font-weight="700" fill="#FF6F61">3.2G</text>
+    <rect x="96" y="190" width="64" height="40" rx="8" fill="#16263D"/>
+    <text x="104" y="208" font-family="sans-serif" font-size="8" fill="#A7B4C7">FREE</text>
+    <text x="104" y="222" font-family="sans-serif" font-size="13" font-weight="700" fill="#35D0BA">12G</text>
+    <rect x="20" y="240" width="140" height="40" rx="8" fill="#16263D"/>
+    <text x="28" y="258" font-family="sans-serif" font-size="8" fill="#A7B4C7">BATTERY</text>
+    <text x="28" y="272" font-family="sans-serif" font-size="13" font-weight="700" fill="#9C7BFF">82% · 28°C</text>
+    <!-- CTA -->
+    <rect x="20" y="300" width="140" height="32" rx="16" fill="url(#ring)"/>
+    <text x="90" y="320" font-family="sans-serif" font-size="11" font-weight="700" fill="#0A1320" text-anchor="middle">CLEAN NOW</text>
+  </g>
+</svg>

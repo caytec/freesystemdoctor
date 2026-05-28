@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>FreeSystemDoctor for Android — uczciwy cleaner bez roota</title>
+<meta name="description" content="Darmowa, open-source aplikacja do czyszczenia Androida. Bez fake-boostów, bez sprzedaży danych. 25+ narzędzi: cleaner, kosz, sejf, alarmy baterii, wgląd w aplikacje. PL + EN.">
+<meta name="keywords" content="cleaner android, darmowy cleaner, ccleaner alternatywa, sd maid alternatywa, foss android, czyszczenie telefonu, optymalizator android, bez roota, open source">
+<meta name="author" content="FreeSystemDoctor">
+<meta name="theme-color" content="#0F1B2D">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="FreeSystemDoctor for Android — uczciwy cleaner bez roota">
+<meta property="og:description" content="Darmowa, open-source aplikacja do czyszczenia Androida. 25+ narzędzi. Bez fake-boostów. Bez sprzedaży danych.">
+<meta property="og:image" content="assets/og.svg">
+<meta property="og:url" content="https://freesystemdoctor.pl/android/">
+<meta property="og:locale" content="pl_PL">
+<meta property="og:locale:alternate" content="en_US">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="FreeSystemDoctor for Android">
+<meta name="twitter:description" content="Honest phone cleaner. No fake boosters. No data harvesting. FOSS.">
+<meta name="twitter:image" content="assets/og.svg">
+
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/icon-512.svg">
+
+<link rel="canonical" href="https://freesystemdoctor.pl/android/">
+<link rel="alternate" hreflang="pl" href="https://freesystemdoctor.pl/android/">
+<link rel="alternate" hreflang="en" href="https://freesystemdoctor.pl/android/?lang=en">
+
+<link rel="preconnect" href="https://github.com">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "MobileApplication",
+  "name": "FreeSystemDoctor for Android",
+  "operatingSystem": "Android 8.0+",
+  "applicationCategory": "UtilitiesApplication",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "aggregateRating": { "@type": "AggregateRating", "ratingValue": "0", "ratingCount": "0" },
+  "downloadUrl": "https://github.com/caytec/freesystemdoctor/releases/latest"
+}
+</script>
+
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- Animated cursor (hidden on touch via CSS) -->
+<div class="cursor-dot"  aria-hidden="true"></div>
+<div class="cursor-ring" aria-hidden="true"></div>
+
+<!-- Decorative animated background blobs -->
+<div class="blob blob-1" aria-hidden="true"></div>
+<div class="blob blob-2" aria-hidden="true"></div>
+<div class="blob blob-3" aria-hidden="true"></div>
+
+<!-- Top nav -->
+<nav class="nav">
+  <div class="wrap nav-inner">
+    <a href="#top" class="brand" aria-label="FreeSystemDoctor">
+      <img src="assets/logo.svg" alt="" width="36" height="36">
+      <span class="brand-text">FreeSystemDoctor</span>
+      <span class="brand-pill">Android</span>
+    </a>
+    <div class="nav-links">
+      <a href="#features"  data-i18n="nav.features">Funkcje</a>
+      <a href="#screens"   data-i18n="nav.screens">Zrzuty</a>
+      <a href="#download"  data-i18n="nav.download">Pobierz</a>
+      <a href="#faq"       data-i18n="nav.faq">FAQ</a>
+      <a href="https://github.com/caytec/freesystemdoctor" target="_blank" rel="noopener">GitHub</a>
+      <button class="lang-toggle" id="lang-toggle" aria-label="Toggle language">EN</button>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header id="top" class="hero">
+  <div class="wrap hero-grid">
+    <div class="hero-copy parallax" data-depth="0.10">
+      <div class="hero-badge" data-i18n="hero.badge">⚡ Wersja 1.2 · FOSS · MIT License</div>
+      <h1 class="hero-title">
+        <span data-i18n="hero.title1">Twój telefon</span><br>
+        <span class="grad" data-i18n="hero.title2">zasługuje na uczciwy cleaner.</span>
+      </h1>
+      <p class="hero-sub" data-i18n="hero.sub">
+        Bez fake RAM-boostów. Bez sprzedaży danych. Bez subskrypcji.
+        25+ narzędzi, które działają tyle samo dobrze co ich „premium" odpowiedniki.
+      </p>
+      <div class="hero-cta">
+        <a href="https://github.com/caytec/freesystemdoctor/releases/latest"
+           class="btn btn-primary" id="download-btn">
+          <span data-i18n="hero.cta_download">⬇ Pobierz najnowsze APK</span>
+        </a>
+        <a href="#features" class="btn btn-ghost" data-i18n="hero.cta_more">Zobacz funkcje</a>
+      </div>
+      <div class="hero-meta">
+        <span><strong>~12 MB</strong> · APK</span>
+        <span data-i18n="hero.meta_android">Android 8.0+ · arm64 / arm32 / x86_64</span>
+        <span data-i18n="hero.meta_lang">🇵🇱 PL · 🇬🇧 EN</span>
+      </div>
+    </div>
+
+    <div class="hero-visual parallax" data-depth="-0.20">
+      <div class="phone-frame" aria-hidden="true">
+        <img src="assets/screens/01-dashboard.svg" alt="" loading="eager">
+      </div>
+      <div class="phone-frame phone-frame-small" aria-hidden="true">
+        <img src="assets/screens/03-tools.svg" alt="" loading="eager">
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-stats wrap">
+    <div class="stat"><div class="stat-num">25+</div><div class="stat-lbl" data-i18n="stats.tools">narzędzi</div></div>
+    <div class="stat"><div class="stat-num">0</div><div class="stat-lbl" data-i18n="stats.trackers">trackerów</div></div>
+    <div class="stat"><div class="stat-num">0 zł</div><div class="stat-lbl" data-i18n="stats.price">na zawsze</div></div>
+    <div class="stat"><div class="stat-num">100%</div><div class="stat-lbl" data-i18n="stats.foss">open source</div></div>
+  </div>
+</header>
+
+<!-- WHY -->
+<section class="section reveal" id="why">
+  <div class="wrap">
+    <h2 class="section-title">
+      <span data-i18n="why.title1">Dlaczego nie</span>
+      <span class="grad-coral" data-i18n="why.title2">"phone booster z reklamy"?</span>
+    </h2>
+    <p class="section-lead" data-i18n="why.lead">
+      99% darmowych cleanerów na Play Store sprzedaje Twoje dane, pokazuje fałszywe „1.5 GB wyczyszczono!"
+      i męczy reklamami pełnego ekranu. My nie. Sprawdź kod.
+    </p>
+
+    <div class="why-grid">
+      <div class="card">
+        <div class="card-icon">🛡️</div>
+        <h3 data-i18n="why.c1.t">Zero sprzedaży danych</h3>
+        <p data-i18n="why.c1.b">Reklamy są (AdMob, opcjonalnie wyłączane w Pro), ale nigdy nie dotykamy Twoich plików, kontaktów ani SMS-ów poza tym, co świadomie eksportujesz.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">📐</div>
+        <h3 data-i18n="why.c2.t">Bez fake-gigabajtów</h3>
+        <p data-i18n="why.c2.b">Pokazujemy realnie zwolnione MB, nie zawyżone marketingowe liczby. Bez „RAM boostera", bo na nowoczesnym Androidzie nie działa.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🔓</div>
+        <h3 data-i18n="why.c3.t">Każda linijka publiczna</h3>
+        <p data-i18n="why.c3.b">Cały kod na GitHubie, licencja MIT. Możesz zbudować APK sam, audytować, fork-ować. Zero binarnych „magicznych" silników.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">📵</div>
+        <h3 data-i18n="why.c4.t">Bez roota</h3>
+        <p data-i18n="why.c4.b">Wszystko bez modyfikacji systemu, oficjalnymi API Androida. Bezpiecznie, bez utraty gwarancji, działa na stockowym ROM-ie.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🌍</div>
+        <h3 data-i18n="why.c5.t">Pełne PL + EN</h3>
+        <p data-i18n="why.c5.b">Nie jest to jedna z tych apek z PL „przez Translate". Polska wersja jest natywna i pierwszorzędna.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">⚡</div>
+        <h3 data-i18n="why.c6.t">Nowoczesna technologia</h3>
+        <p data-i18n="why.c6.b">Kotlin + Jetpack Compose + Material 3. Animowany interfejs, splash brandowy, gładkie 60+ FPS na dowolnym sensownym telefonie z ostatnich 5 lat.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="section reveal" id="features">
+  <div class="wrap">
+    <h2 class="section-title">
+      <span data-i18n="feat.title1">Co dostajesz</span>
+      <span class="grad" data-i18n="feat.title2">w jednej apce.</span>
+    </h2>
+
+    <div class="feat-groups">
+      <div class="feat-group">
+        <h3 class="feat-group-title" data-i18n="feat.g_files">📁 Pliki i pamięć</h3>
+        <ul class="feat-list">
+          <li><strong data-i18n="feat.f1.t">Cleaner</strong> — <span data-i18n="feat.f1.b">cache własne + leftover APK + temp/log przez MediaStore</span></li>
+          <li><strong data-i18n="feat.f2.t">Duplikaty</strong> — <span data-i18n="feat.f2.b">SHA-256, grupowanie po hashu</span></li>
+          <li><strong data-i18n="feat.f3.t">Duże pliki</strong> — <span data-i18n="feat.f3.b">filtr po typie i rozmiarze</span></li>
+          <li><strong data-i18n="feat.f4.t">Storage by type</strong> — <span data-i18n="feat.f4.b">obrazy, wideo, audio, dokumenty, archiwa</span></li>
+          <li><strong data-i18n="feat.f5.t">Folder analyzer</strong> — <span data-i18n="feat.f5.b">SAF, puste foldery, drzewo rozmiarów</span></li>
+          <li><strong data-i18n="feat.f6.t">Kosz / Recycle bin</strong> — <span data-i18n="feat.f6.b">Android 11+ MediaStore trash, restore i trwałe usuwanie</span></li>
+          <li><strong data-i18n="feat.f7.t">Ukryte cache</strong> — <span data-i18n="feat.f7.b">presety dla WhatsApp, Telegram, Spotify, Discord, IG, TikTok…</span></li>
+          <li><strong data-i18n="feat.f8.t">Shredder</strong> <span class="pro-tag">PRO</span> — <span data-i18n="feat.f8.b">DoD 5220.22-M, wielokrotne nadpisanie</span></li>
+        </ul>
+      </div>
+
+      <div class="feat-group">
+        <h3 class="feat-group-title" data-i18n="feat.g_apps">📦 Aplikacje</h3>
+        <ul class="feat-list">
+          <li><strong data-i18n="feat.a1.t">App manager</strong> — <span data-i18n="feat.a1.b">sortowanie wg rozmiaru, filtr systemowych</span></li>
+          <li><strong data-i18n="feat.a2.t">Screen time</strong> — <span data-i18n="feat.a2.b">7 dni, per aplikacja</span></li>
+          <li><strong data-i18n="feat.a3.t">Rzadko używane</strong> — <span data-i18n="feat.a3.b">apki nieotwierane od 30 dni</span></li>
+          <li><strong data-i18n="feat.a4.t">Audyt uprawnień</strong> — <span data-i18n="feat.a4.b">apki z dostępem do mikrofonu, kamery, lokalizacji…</span></li>
+          <li><strong data-i18n="feat.a5.t">APK backup</strong> — <span data-i18n="feat.a5.b">eksport zainstalowanej apki do .apk</span></li>
+          <li><strong data-i18n="feat.a6.t">Backup kontaktów + SMS</strong> <span class="pro-tag">PRO</span> — <span data-i18n="feat.a6.b">.vcf + .json do folderu Pobrane</span></li>
+          <li><strong data-i18n="feat.a7.t">App vault</strong> <span class="pro-tag">PRO</span> — <span data-i18n="feat.a7.b">AES/GCM + AndroidKeystore + BiometricPrompt</span></li>
+          <li><strong data-i18n="feat.a8.t">App insights</strong> <span class="pro-tag">PRO</span> — <span data-i18n="feat.a8.b">wykres 7-dni, ostatnie instalacje, apki bez launchera</span></li>
+        </ul>
+      </div>
+
+      <div class="feat-group">
+        <h3 class="feat-group-title" data-i18n="feat.g_sys">⚙️ System i sieć</h3>
+        <ul class="feat-list">
+          <li><strong data-i18n="feat.s1.t">Memory</strong> — <span data-i18n="feat.s1.b">realne free RAM, bez wymuszania kill</span></li>
+          <li><strong data-i18n="feat.s2.t">Battery</strong> — <span data-i18n="feat.s2.b">poziom, temperatura, napięcie, prąd ładowania (mA)</span></li>
+          <li><strong data-i18n="feat.s3.t">Alarmy baterii</strong> <span class="pro-tag">PRO</span> — <span data-i18n="feat.s3.b">progi low/full, powiadomienia co 15 min</span></li>
+          <li><strong data-i18n="feat.s4.t">Speed test</strong> — <span data-i18n="feat.s4.b">10 MB próbka, prawdziwe Mb/s</span></li>
+          <li><strong data-i18n="feat.s5.t">Wi-Fi analyzer</strong> <span class="pro-tag">PRO</span> — <span data-i18n="feat.s5.b">SSID, kanał, RSSI</span></li>
+          <li><strong data-i18n="feat.s6.t">Data usage</strong> — <span data-i18n="feat.s6.b">mobilne + Wi-Fi z ostatnich 30 dni</span></li>
+          <li><strong data-i18n="feat.s7.t">Device info</strong> — <span data-i18n="feat.s7.b">SoC, ABI, czujniki, security patch</span></li>
+          <li><strong data-i18n="feat.s8.t">Asystent AI</strong> — <span data-i18n="feat.s8.b">Twój klucz API (Groq/OpenRouter/Cerebras), nic nie wysyłamy bez Twojej zgody</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SCREENS -->
+<section class="section reveal" id="screens">
+  <div class="wrap">
+    <h2 class="section-title">
+      <span data-i18n="scr.title1">Tak</span>
+      <span class="grad-coral" data-i18n="scr.title2">to wygląda.</span>
+    </h2>
+    <p class="section-lead" data-i18n="scr.lead">
+      Material 3, animowane tło, „glass cards", pull-to-refresh, shimmer skeletony.
+    </p>
+
+    <div class="screens">
+      <div class="phone-frame"><img src="assets/screens/01-dashboard.svg" alt="Dashboard" loading="lazy"></div>
+      <div class="phone-frame"><img src="assets/screens/02-cleaner.svg"   alt="Cleaner"   loading="lazy"></div>
+      <div class="phone-frame"><img src="assets/screens/03-tools.svg"     alt="Tools"     loading="lazy"></div>
+      <div class="phone-frame"><img src="assets/screens/04-insights.svg"  alt="Insights"  loading="lazy"></div>
+      <div class="phone-frame"><img src="assets/screens/05-vault.svg"     alt="Vault"     loading="lazy"></div>
+    </div>
+  </div>
+</section>
+
+<!-- COMPARE -->
+<section class="section reveal" id="compare">
+  <div class="wrap">
+    <h2 class="section-title">
+      <span data-i18n="cmp.title1">Uczciwe</span>
+      <span class="grad" data-i18n="cmp.title2">porównanie.</span>
+    </h2>
+
+    <div class="compare-table">
+      <div class="cmp-row cmp-head">
+        <div data-i18n="cmp.feature">Funkcja</div>
+        <div>FSD</div>
+        <div>CCleaner</div>
+        <div>SD Maid SE</div>
+        <div>Norton</div>
+      </div>
+      <div class="cmp-row">
+        <div data-i18n="cmp.r1">Darmowe wszystko</div><div>✅</div><div>⚠️ Pro 199 zł/rok</div><div>⚠️ Pro 25 zł</div><div>❌</div>
+      </div>
+      <div class="cmp-row">
+        <div data-i18n="cmp.r2">Open source</div><div>✅</div><div>❌</div><div>❌</div><div>❌</div>
+      </div>
+      <div class="cmp-row">
+        <div data-i18n="cmp.r3">Bez telemetrii</div><div>✅</div><div>❌</div><div>✅</div><div>❌</div>
+      </div>
+      <div class="cmp-row">
+        <div data-i18n="cmp.r4">Bez fake RAM-boost</div><div>✅</div><div>❌</div><div>✅</div><div>❌</div>
+      </div>
+      <div class="cmp-row">
+        <div data-i18n="cmp.r5">Kosz / recycle bin</div><div>✅</div><div>❌</div><div>⚠️ Pro</div><div>❌</div>
+      </div>
+      <div class="cmp-row">
+        <div data-i18n="cmp.r6">Sejf biometryczny</div><div>✅</div><div>❌</div><div>❌</div><div>⚠️ App Lock</div>
+      </div>
+      <div class="cmp-row">
+        <div data-i18n="cmp.r7">Asystent AI</div><div>✅</div><div>❌</div><div>❌</div><div>❌</div>
+      </div>
+      <div class="cmp-row">
+        <div data-i18n="cmp.r8">Polski język</div><div>✅</div><div>✅</div><div>⚠️ częściowy</div><div>✅</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DOWNLOAD -->
+<section class="section section-cta reveal" id="download">
+  <div class="wrap">
+    <div class="cta-card">
+      <h2 class="section-title">
+        <span data-i18n="dl.title1">Pobierz</span>
+        <span class="grad-coral" data-i18n="dl.title2">i sprawdź sam.</span>
+      </h2>
+      <p class="section-lead" data-i18n="dl.lead">
+        Najnowsze APK z GitHub Releases. Bez rejestracji, bez sklepu, bez konta Google.
+        Po prostu pobierz i zainstaluj (pamiętaj o włączeniu „instalacja z nieznanych źródeł").
+      </p>
+      <div class="cta-buttons">
+        <a href="https://github.com/caytec/freesystemdoctor/releases/latest"
+           class="btn btn-primary btn-lg" rel="noopener">
+          <span data-i18n="dl.btn_apk">⬇ Najnowsze APK</span>
+        </a>
+        <a href="https://github.com/caytec/freesystemdoctor"
+           class="btn btn-ghost btn-lg" target="_blank" rel="noopener">
+          <span data-i18n="dl.btn_source">★ Kod źródłowy</span>
+        </a>
+      </div>
+      <div class="cta-notes">
+        <div class="note">
+          <strong data-i18n="dl.n1.t">Wymagania:</strong>
+          <span data-i18n="dl.n1.b">Android 8.0 (API 26) lub nowszy, ~50 MB miejsca</span>
+        </div>
+        <div class="note">
+          <strong data-i18n="dl.n2.t">Weryfikacja:</strong>
+          <span data-i18n="dl.n2.b">Po pobraniu sprawdź SHA-256 (lista hashów w opisie release na GitHubie)</span>
+        </div>
+        <div class="note">
+          <strong data-i18n="dl.n3.t">Wkrótce:</strong>
+          <span data-i18n="dl.n3.b">Google Play, Samsung Galaxy Store, Amazon Appstore, F-Droid</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="section reveal" id="faq">
+  <div class="wrap">
+    <h2 class="section-title">
+      <span data-i18n="faq.title1">Często zadawane</span>
+      <span class="grad" data-i18n="faq.title2">pytania.</span>
+    </h2>
+
+    <div class="faq">
+      <details open>
+        <summary data-i18n="faq.q1">Czy to naprawdę jest za darmo?</summary>
+        <p data-i18n="faq.a1">Tak, w pełni. Mamy reklamy (AdMob) i opcjonalne Pro za jednorazowe wsparcie — Pro wyłącza reklamy i odblokowuje 4 narzędzia (Sejf, Alarmy baterii, App Insights, Shredder). Wszystkie inne funkcje są darmowe bez ograniczeń.</p>
+      </details>
+      <details>
+        <summary data-i18n="faq.q2">Czy aplikacja sprzedaje moje dane?</summary>
+        <p data-i18n="faq.a2">Nie. Reklamy AdMob to standardowy SDK Google'a (pokazuje on personalizowane reklamy na podstawie ID reklamowego — możesz to wyłączyć w ustawieniach Androida). Sama aplikacja nie loguje niczego do żadnego serwera, nie ma telemetrii, nie ma kont użytkowników.</p>
+      </details>
+      <details>
+        <summary data-i18n="faq.q3">Dlaczego nie ma „RAM Boost"?</summary>
+        <p data-i18n="faq.a3">Bo na nowoczesnym Androidzie (od ~7.0) zwalnianie RAM-u przez „force stop" działa odwrotnie — system zaraz załaduje te apki z powrotem, marnując baterię. Wszystkie znane „boostery" to placebo lub szkodliwe. Pokazujemy realne free RAM bez kłamstw.</p>
+      </details>
+      <details>
+        <summary data-i18n="faq.q4">Czy trzeba mieć roota?</summary>
+        <p data-i18n="faq.a4">Nie. Wszystko działa na stockowym Androidzie 8.0+ przez oficjalne API. Niektóre funkcje (czyszczenie cache innych apek) są ograniczone przez system — to ograniczenie Androida od 7.0, nie nasze.</p>
+      </details>
+      <details>
+        <summary data-i18n="faq.q5">Czemu nie ma jeszcze na Google Play?</summary>
+        <p data-i18n="faq.a5">Pracujemy nad publikacją w Google Play, Samsung Galaxy Store i innych marketach. Na razie APK dostępne bezpośrednio z GitHub Releases — to ten sam plik, tylko bez pośrednika.</p>
+      </details>
+      <details>
+        <summary data-i18n="faq.q6">Bezpieczeństwo? Mogę zaufać?</summary>
+        <p data-i18n="faq.a6">Cały kod jest publiczny na GitHubie. Możesz przeczytać każdą linijkę, zbudować APK samemu (instrukcja w README) i porównać hash. Zaszyfrowany sejf używa AES/GCM z kluczem w Android Keystore (TEE/StrongBox) — czyli klucz nie opuszcza chipa bezpieczeństwa.</p>
+      </details>
+      <details>
+        <summary data-i18n="faq.q7">Jak pomóc projektowi?</summary>
+        <p data-i18n="faq.a7">Cztery sposoby: ⭐ gwiazdka na GitHubie, ✍️ zgłaszaj bugi/sugestie w Issues, 🌍 popraw lub dodaj tłumaczenie, 💖 kup Pro w apce.</p>
+      </details>
+      <details>
+        <summary data-i18n="faq.q8">A wersja na Windows?</summary>
+        <p data-i18n="faq.a8">Istnieje — bardziej rozbudowana, 62 moduły. Zobacz <a href="https://freesystemdoctor.pl">freesystemdoctor.pl</a>.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="wrap footer-inner">
+    <div class="footer-brand">
+      <img src="assets/logo.svg" alt="" width="40" height="40">
+      <div>
+        <div class="footer-name">FreeSystemDoctor</div>
+        <div class="footer-tag" data-i18n="footer.tag">FOSS · MIT License · 2026</div>
+      </div>
+    </div>
+    <div class="footer-links">
+      <a href="privacy.html" data-i18n="footer.privacy">Polityka prywatności</a>
+      <a href="https://github.com/caytec/freesystemdoctor" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://github.com/caytec/freesystemdoctor/issues" target="_blank" rel="noopener" data-i18n="footer.bugs">Zgłoś błąd</a>
+      <a href="https://freesystemdoctor.pl" data-i18n="footer.windows">Wersja Windows</a>
+    </div>
+  </div>
+</footer>
+
+<script src="script.js" defer></script>
+</body>
+</html>

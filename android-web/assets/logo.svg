@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-label="FreeSystemDoctor">
+  <defs>
+    <linearGradient id="ring" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%"  stop-color="#FF6F61"/>
+      <stop offset="55%" stop-color="#FF8B7A"/>
+      <stop offset="100%" stop-color="#9C7BFF"/>
+    </linearGradient>
+    <linearGradient id="cross" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"  stop-color="#ECEFF4"/>
+      <stop offset="100%" stop-color="#A7B4C7"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0%"  stop-color="#FF6F61" stop-opacity="0.35"/>
+      <stop offset="80%" stop-color="#FF6F61" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="soft" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="2"/>
+    </filter>
+  </defs>
+
+  <!-- ambient glow -->
+  <circle cx="100" cy="100" r="95" fill="url(#glow)"/>
+
+  <!-- outer gauge ring (270° arc, matches in-app HealthGauge) -->
+  <g transform="rotate(135 100 100)">
+    <circle cx="100" cy="100" r="78"
+            fill="none" stroke="#1E3350" stroke-width="14"
+            stroke-linecap="round" stroke-dasharray="367 490"/>
+    <circle cx="100" cy="100" r="78"
+            fill="none" stroke="url(#ring)" stroke-width="14"
+            stroke-linecap="round" stroke-dasharray="330 490"/>
+  </g>
+
+  <!-- inner plate -->
+  <circle cx="100" cy="100" r="58" fill="#0A1320"/>
+  <circle cx="100" cy="100" r="58" fill="none" stroke="#223A5C" stroke-width="1.5"/>
+
+  <!-- medical cross / plus -->
+  <g fill="url(#cross)">
+    <rect x="90" y="62"  width="20" height="76" rx="6"/>
+    <rect x="62" y="90"  width="76" height="20" rx="6"/>
+  </g>
+
+  <!-- pulse highlight dot -->
+  <circle cx="100" cy="100" r="6" fill="#FF6F61"/>
+</svg>

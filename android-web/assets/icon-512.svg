@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="FreeSystemDoctor app icon">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%"  stop-color="#0F1B2D"/>
+      <stop offset="100%" stop-color="#0A1320"/>
+    </linearGradient>
+    <linearGradient id="ring" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%"  stop-color="#FF6F61"/>
+      <stop offset="50%" stop-color="#FF8B7A"/>
+      <stop offset="100%" stop-color="#9C7BFF"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.5" r="0.55">
+      <stop offset="0%"  stop-color="#FF6F61" stop-opacity="0.30"/>
+      <stop offset="80%" stop-color="#FF6F61" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Play Store icons should be full-bleed; system masks corners automatically.
+       We still round them so the SVG previews nicely on the website. -->
+  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+
+  <!-- ambient brand glow -->
+  <circle cx="256" cy="256" r="220" fill="url(#glow)"/>
+
+  <!-- gauge ring (270° arc) -->
+  <g transform="rotate(135 256 256)">
+    <circle cx="256" cy="256" r="178"
+            fill="none" stroke="#1E3350" stroke-width="32"
+            stroke-linecap="round" stroke-dasharray="838 1118"/>
+    <circle cx="256" cy="256" r="178"
+            fill="none" stroke="url(#ring)" stroke-width="32"
+            stroke-linecap="round" stroke-dasharray="755 1118"/>
+  </g>
+
+  <!-- inner disc -->
+  <circle cx="256" cy="256" r="128" fill="#0A1320"/>
+  <circle cx="256" cy="256" r="128" fill="none" stroke="#223A5C" stroke-width="3"/>
+
+  <!-- plus / medical cross -->
+  <rect x="232" y="162" width="48" height="188" rx="14" fill="#ECEFF4"/>
+  <rect x="162" y="232" width="188" height="48" rx="14" fill="#ECEFF4"/>
+
+  <!-- pulse dot -->
+  <circle cx="256" cy="256" r="14" fill="#FF6F61"/>
+</svg>
