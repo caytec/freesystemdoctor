@@ -3,4 +3,10 @@
     <style name="Theme.FreeSystemDoctor" parent="android:Theme.Material.NoActionBar">
         <item name="android:windowBackground">@android:color/black</item>
     </style>
+
+    <style name="Theme.FreeSystemDoctor.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/ic_launcher_background</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
+        <item name="postSplashScreenTheme">@style/Theme.FreeSystemDoctor</item>
+    </style>
 </resources>

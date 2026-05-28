@@ -100,7 +100,7 @@ fun SettingsScreen(
             }
         }
 
-        Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)) {
+        com.freesystemdoctor.android.ui.components.GlassCard {
             Column(Modifier.padding(16.dp)) {
                 Text(stringResource(R.string.settings_about), style = MaterialTheme.typography.titleMedium)
                 Text(

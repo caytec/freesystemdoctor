@@ -24,6 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -119,15 +120,18 @@ fun DashboardScreen(
 
     BoxWithConstraints(modifier = modifier.fillMaxSize()) {
         val columns = if (maxWidth >= 600.dp) 2 else 1
+        val scroll = rememberScrollState()
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState())
+                .verticalScroll(scroll)
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             Appear {
-                GlassCard(modifier = Modifier.fillMaxWidth()) {
+                GlassCard(modifier = Modifier
+                    .fillMaxWidth()
+                    .graphicsLayer { translationY = scroll.value * 0.3f }) {
                     Box(
                         Modifier
                             .fillMaxWidth()

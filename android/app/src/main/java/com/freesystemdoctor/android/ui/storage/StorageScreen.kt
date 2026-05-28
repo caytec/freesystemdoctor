@@ -73,6 +73,9 @@ fun StorageScreen(
             }
         } else {
             SectionHeader(stringResource(R.string.storage_breakdown))
+            if (state.apps.isEmpty()) {
+                com.freesystemdoctor.android.ui.components.ShimmerList(rows = 6)
+            }
             LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 itemsIndexed(state.apps) { index, app ->
                     Appear(index = index) {

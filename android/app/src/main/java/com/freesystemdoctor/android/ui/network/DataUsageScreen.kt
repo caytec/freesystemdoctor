@@ -56,6 +56,10 @@ fun DataUsageScreen(
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
 
+        if (state.loading && state.items.isEmpty()) {
+            com.freesystemdoctor.android.ui.components.ShimmerList(rows = 6)
+        }
+
         LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             itemsIndexed(state.items) { index, item ->
                 Appear(index = index) {

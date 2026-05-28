@@ -53,11 +53,7 @@ fun ProScreen(
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Appear {
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
-                shape = MaterialTheme.shapes.large,
-            ) {
+            com.freesystemdoctor.android.ui.components.GlassCard(modifier = Modifier.fillMaxWidth()) {
                 Column(Modifier.padding(20.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                     Icon(
                         Icons.Filled.WorkspacePremium,
