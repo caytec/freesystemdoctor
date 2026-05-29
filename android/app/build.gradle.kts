@@ -113,6 +113,24 @@ android {
         jvmTarget = "17"
     }
 
+    flavorDimensions += "version"
+    productFlavors {
+        create("free") {
+            dimension = "version"
+            applicationIdSuffix = ".free"
+            versionNameSuffix = "-free"
+            resValue("string", "app_name", "FreeSystemDoctor (Free)")
+            buildConfigField("Boolean", "IS_FREE_VERSION", "true")
+        }
+        create("pro") {
+            dimension = "version"
+            applicationIdSuffix = ".pro"
+            versionNameSuffix = "-pro"
+            resValue("string", "app_name", "FreeSystemDoctor")
+            buildConfigField("Boolean", "IS_FREE_VERSION", "false")
+        }
+    }
+
     buildFeatures {
         compose = true
         buildConfig = true
