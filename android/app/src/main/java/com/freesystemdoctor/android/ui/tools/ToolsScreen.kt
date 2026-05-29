@@ -74,7 +74,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.freesystemdoctor.android.BuildConfig
 import com.freesystemdoctor.android.R
 import com.freesystemdoctor.android.ui.components.Appear
 import com.freesystemdoctor.android.ui.components.LocalUnlockController
@@ -250,12 +249,7 @@ fun ToolsScreen(
                     items(group.tools, key = { it.route }) { tool ->
                         val now = System.currentTimeMillis()
                         val perToolUnlocked = (unlocks[tool.route] ?: 0L) > now
-                        val isFreeVersion = BuildConfig.IS_FREE_VERSION
-                        val unlocked = if (isFreeVersion && tool.advanced) {
-                            perToolUnlocked
-                        } else {
-                            !tool.advanced || advanced || perToolUnlocked
-                        }
+                        val unlocked = !tool.advanced || advanced || perToolUnlocked
                         ToolCard(tool = tool, locked = !unlocked, modifier = Modifier.animateItem(), onClick = {
                             if (!unlocked) {
                                 unlockController.request(tool.route, tool.labelRes)

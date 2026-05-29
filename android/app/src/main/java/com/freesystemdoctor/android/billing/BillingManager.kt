@@ -16,6 +16,7 @@ import com.android.billingclient.api.QueryPurchasesParams
 import com.android.billingclient.api.acknowledgePurchase
 import com.android.billingclient.api.queryProductDetails
 import com.android.billingclient.api.queryPurchasesAsync
+import com.freesystemdoctor.android.BuildConfig
 import com.freesystemdoctor.android.data.billing.ProStore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -52,7 +53,10 @@ class BillingManager(
     private val _products = MutableStateFlow<List<ProProduct>>(emptyList())
     val products: StateFlow<List<ProProduct>> = _products.asStateFlow()
 
-    private val _isPro = MutableStateFlow(false)
+    // Pro flavor APK is "Pro by definition" — the user already received the paid build,
+    // so we entitle them up-front without waiting for a Play Billing handshake. Free flavor
+    // still seeds from DataStore and reconciles against Play below.
+    private val _isPro = MutableStateFlow(!BuildConfig.IS_FREE_VERSION)
     val isPro: StateFlow<Boolean> = _isPro.asStateFlow()
 
     private val client: BillingClient = BillingClient.newBuilder(appContext)
@@ -63,10 +67,14 @@ class BillingManager(
         .build()
 
     init {
-        scope.launch { _isPro.value = proStore.isPro.first() }
+        if (BuildConfig.IS_FREE_VERSION) {
+            scope.launch { _isPro.value = proStore.isPro.first() }
+        }
     }
 
     fun connect() {
+        // Pro flavor is entitled by construction — no need to query Play.
+        if (!BuildConfig.IS_FREE_VERSION) return
         if (client.isReady) {
             refresh()
             return
