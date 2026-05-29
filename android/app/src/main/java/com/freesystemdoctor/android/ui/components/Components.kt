@@ -1,5 +1,6 @@
 package com.freesystemdoctor.android.ui.components
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -10,8 +11,11 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -228,12 +232,22 @@ fun StatCard(
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
-                Text(
-                    value,
-                    style = MaterialTheme.typography.headlineSmall,
-                    color = accentColor,
-                    fontWeight = FontWeight.Bold,
-                )
+                AnimatedContent(
+                    targetState = value,
+                    transitionSpec = {
+                        slideInVertically { -it } + fadeIn(tween(220)) togetherWith
+                            slideOutVertically { it } + fadeOut(tween(180))
+                    },
+                    contentAlignment = Alignment.CenterStart,
+                    label = "statValue",
+                ) { v ->
+                    Text(
+                        v,
+                        style = MaterialTheme.typography.headlineSmall,
+                        color = accentColor,
+                        fontWeight = FontWeight.Bold,
+                    )
+                }
                 if (progress != null) {
                     ThinProgress(progress, Modifier.padding(top = 10.dp), accentColor)
                 }

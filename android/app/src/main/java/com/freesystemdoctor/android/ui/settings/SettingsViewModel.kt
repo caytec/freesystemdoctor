@@ -27,8 +27,11 @@ class SettingsViewModel : ViewModel() {
     val hasKey: StateFlow<Boolean> = _hasKey.asStateFlow()
 
     fun setDarkTheme(enabled: Boolean) = viewModelScope.launch { repo.setDarkTheme(enabled) }
+    fun setFollowSystem(enabled: Boolean) = viewModelScope.launch { repo.setFollowSystem(enabled) }
     fun setProvider(provider: AiProvider) = viewModelScope.launch { repo.setAiProvider(provider) }
     fun setAdvancedMode(enabled: Boolean) = viewModelScope.launch { repo.setAdvancedMode(enabled) }
+    fun setScheduledCleaning(enabled: Boolean) = viewModelScope.launch { repo.setScheduledCleaning(enabled) }
+    fun setMonitorEnabled(enabled: Boolean) = viewModelScope.launch { repo.setMonitorEnabled(enabled) }
 
     fun saveKey(key: String) {
         keyStore.setApiKey(key)

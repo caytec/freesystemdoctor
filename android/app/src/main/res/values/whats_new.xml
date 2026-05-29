@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="whats_new_title">What\'s new in 1.3</string>
+    <string name="whats_new_title">What\'s new in 1.4</string>
     <string name="whats_new_dismiss">Got it</string>
     <string-array name="whats_new_items">
-        <item>Per-tool ad unlocks (24h) — fairer than all-or-nothing</item>
-        <item>One-time 3-day Pro trial via a single ad</item>
-        <item>App Resource Report — one honest score per app, find the hogs</item>
-        <item>Storage Forecast — predicts when your storage will run out</item>
-        <item>Focus / Game Boost — DND-managed focus sessions</item>
-        <item>App Lock (Pro) and encrypted Cloud Backup (Pro)</item>
+        <item>Search and filter tools — find any feature instantly</item>
+        <item>Dashboard quick-actions — Clean, Duplicates, Battery in one tap</item>
+        <item>Smoother animations — items animate in/out across all lists</item>
+        <item>Settings redesigned — cleaner sections, follow-system theme toggle</item>
+        <item>Tab bar reordered — Apps and Tools promoted for daily use</item>
+        <item>Less intrusive ads — interstitials capped at 90s, fewer triggers</item>
     </string-array>
 </resources>

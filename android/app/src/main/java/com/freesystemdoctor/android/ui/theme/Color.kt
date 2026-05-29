@@ -28,7 +28,7 @@ val TextSecondary = Color(0xFFA7B4C7)
 
 // Light scheme accents
 val LightBg = Color(0xFFF6F8FC)
-val LightSurface = Color(0xFFFFFFFF)
-val LightSurfaceVariant = Color(0xFFE9EEF6)
+val LightSurface = Color(0xFFF0F4FB)
+val LightSurfaceVariant = Color(0xFFE2EAF6)
 val LightText = Color(0xFF14202F)
 val LightTextSecondary = Color(0xFF5B6B82)

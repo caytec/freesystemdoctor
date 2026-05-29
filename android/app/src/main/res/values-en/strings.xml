@@ -61,8 +61,16 @@
     <string name="settings_ai_key_hint">Paste your API key</string>
     <string name="settings_ai_save">Save key</string>
     <string name="settings_ai_clear">Clear key</string>
-    <string name="settings_about">About</string>
+    <string name="settings_about">About &amp; Legal</string>
     <string name="settings_about_body">Free, open-source phone cleaner. No ads, no subscriptions. All actions run on your device; the AI assistant only sends data when you ask it to.</string>
+    <string name="settings_appearance">Appearance</string>
+    <string name="settings_follow_system">Follow system theme</string>
+    <string name="settings_follow_system_desc">Automatically switch dark/light with system setting</string>
+    <string name="settings_cleaning">Cleaning</string>
+    <string name="settings_schedule_configure">Configure schedule</string>
+    <string name="settings_monitoring">Monitoring</string>
+    <string name="settings_privacy_policy">Privacy policy</string>
+    <string name="settings_version">Version</string>
 
     <string name="onboarding_title">Welcome</string>
     <string name="onboarding_subtitle">FreeSystemDoctor cleans and maintains your phone without root. Some features need special access.</string>
@@ -430,6 +438,14 @@
     <string name="cloud_backup_open_restore">Restore from file</string>
     <string name="cloud_backup_channel">Cloud backup</string>
     <string name="cloud_backup_disclaimer">All encryption happens on this device. The cloud only sees an encrypted blob.</string>
+
+    <!-- Tools search / filter -->
+    <string name="tools_search_hint">Search tools…</string>
+    <string name="tools_filter_all">All</string>
+    <string name="tools_search_results">Results</string>
+
+    <!-- Dashboard quick actions -->
+    <string name="dashboard_quick_actions">Quick actions</string>
 
     <string name="restore_title">Restore from backup</string>
     <string name="restore_pick">Pick backup file</string>

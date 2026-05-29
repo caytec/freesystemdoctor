@@ -180,7 +180,7 @@ fun MainScaffold() {
         },
         bottomBar = {
             Column {
-                if (currentRoute != ROUTE_PRO) BannerAd()
+                if (currentRoute != ROUTE_PRO && currentRoute != ROUTE_SETTINGS) BannerAd()
                 if (!isLeaf) {
                 NavigationBar(containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.92f)) {
                     val destination = backStackEntry?.destination
@@ -233,14 +233,16 @@ fun MainScaffold() {
             popEnterTransition = { fadeIn(tween(280)) + scaleIn(tween(320), initialScale = 1.05f) },
             popExitTransition = { fadeOut(tween(180)) + scaleOut(tween(320), targetScale = 0.92f) },
         ) {
-            composable(FsdDestination.DASHBOARD.route) { DashboardScreen() }
+            composable(FsdDestination.DASHBOARD.route) {
+                DashboardScreen(onNavigate = { navController.navigate(it) })
+            }
             composable(FsdDestination.CLEANER.route) { CleanerScreen() }
             composable(FsdDestination.STORAGE.route) { StorageScreen() }
             composable(FsdDestination.APPS.route) { AppsScreen() }
             composable(FsdDestination.TOOLS.route) {
                 ToolsScreen(onOpen = { navController.navigate(it) })
             }
-            composable(ROUTE_SETTINGS) { SettingsScreen() }
+            composable(ROUTE_SETTINGS) { SettingsScreen(onNavigate = { navController.navigate(it) }) }
             composable(ROUTE_PRO) { ProScreen() }
 
             composable(ToolRoutes.DUPLICATES) { DuplicatesScreen() }

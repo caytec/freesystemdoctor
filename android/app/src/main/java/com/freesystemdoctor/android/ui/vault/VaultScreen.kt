@@ -100,7 +100,7 @@ fun VaultScreen(
         LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             items(state.entries, key = { it.id }) { entry ->
                 Card(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().animateItem(),
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.surfaceContainer,
                     ),

@@ -99,7 +99,7 @@ fun AppInsightsScreen(
                 ) {
                     items(report.recentlyInstalled, key = { it.packageName + it.timestamp }) { ev ->
                         Card(
-                            modifier = Modifier.fillMaxWidth(),
+                            modifier = Modifier.fillMaxWidth().animateItem(),
                             colors = CardDefaults.cardColors(
                                 containerColor = MaterialTheme.colorScheme.surfaceContainer,
                             ),
@@ -147,7 +147,7 @@ fun AppInsightsScreen(
                     ) {
                         items(report.hiddenApps, key = { it.packageName }) { hidden ->
                             Card(
-                                modifier = Modifier.fillMaxWidth(),
+                                modifier = Modifier.fillMaxWidth().animateItem(),
                                 colors = CardDefaults.cardColors(
                                     containerColor = MaterialTheme.colorScheme.surfaceContainer,
                                 ),

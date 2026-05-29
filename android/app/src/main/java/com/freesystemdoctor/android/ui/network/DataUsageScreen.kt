@@ -25,7 +25,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.freesystemdoctor.android.R
 import com.freesystemdoctor.android.core.util.ByteFormatter
-import com.freesystemdoctor.android.ui.components.Appear
+
 import com.freesystemdoctor.android.ui.components.PermissionGate
 
 @Composable
@@ -65,42 +65,40 @@ fun DataUsageScreen(
             onRefresh = { viewModel.load() },
         ) {
         LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            itemsIndexed(state.items) { index, item ->
-                Appear(index = index) {
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceContainer,
-                        ),
-                        shape = MaterialTheme.shapes.small,
+            itemsIndexed(state.items, key = { _, item -> item.packageName ?: item.label }) { _, item ->
+                Card(
+                    modifier = Modifier.fillMaxWidth().animateItem(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                    ),
+                    shape = MaterialTheme.shapes.small,
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = 14.dp, vertical = 12.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth().padding(horizontal = 14.dp, vertical = 12.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            Column(Modifier.weight(1f)) {
-                                Text(
-                                    item.label,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                )
-                                Text(
-                                    stringResource(
-                                        R.string.data_usage_breakdown,
-                                        ByteFormatter.format(item.mobileBytes),
-                                        ByteFormatter.format(item.wifiBytes),
-                                    ),
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                )
-                            }
+                        Column(Modifier.weight(1f)) {
                             Text(
-                                ByteFormatter.format(item.totalBytes),
-                                color = MaterialTheme.colorScheme.primary,
-                                style = MaterialTheme.typography.titleSmall,
+                                item.label,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                            )
+                            Text(
+                                stringResource(
+                                    R.string.data_usage_breakdown,
+                                    ByteFormatter.format(item.mobileBytes),
+                                    ByteFormatter.format(item.wifiBytes),
+                                ),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
                         }
+                        Text(
+                            ByteFormatter.format(item.totalBytes),
+                            color = MaterialTheme.colorScheme.primary,
+                            style = MaterialTheme.typography.titleSmall,
+                        )
                     }
                 }
             }

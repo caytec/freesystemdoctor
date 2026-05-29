@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.freesystemdoctor.android.R
+import com.freesystemdoctor.android.core.di.ServiceLocator
 import com.freesystemdoctor.android.core.util.ByteFormatter
 import com.freesystemdoctor.android.ui.components.Appear
 import com.freesystemdoctor.android.ui.components.InfoBanner
@@ -55,6 +56,7 @@ fun TrashScreen(
             Button(
                 enabled = state.selected.isNotEmpty(),
                 onClick = {
+                    ServiceLocator.appOpenAdManager.suppressForMillis(30_000L)
                     viewModel.restoreRequest()?.let {
                         launcher.launch(IntentSenderRequest.Builder(it).build())
                     }
@@ -63,6 +65,7 @@ fun TrashScreen(
             OutlinedButton(
                 enabled = state.selected.isNotEmpty(),
                 onClick = {
+                    ServiceLocator.appOpenAdManager.suppressForMillis(30_000L)
                     viewModel.deleteRequest()?.let {
                         launcher.launch(IntentSenderRequest.Builder(it).build())
                     }
@@ -83,7 +86,7 @@ fun TrashScreen(
             else -> LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 items(state.items, key = { it.uri }) { item ->
                     Card(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth().animateItem(),
                         colors = CardDefaults.cardColors(
                             containerColor = MaterialTheme.colorScheme.surfaceContainer,
                         ),

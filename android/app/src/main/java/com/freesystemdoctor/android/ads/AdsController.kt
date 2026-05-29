@@ -121,6 +121,6 @@ class AdsController(private val appContext: Context) {
     }
 
     private companion object {
-        const val MIN_INTERVAL_MS = 45 * 1000L
+        const val MIN_INTERVAL_MS = 90 * 1000L
     }
 }

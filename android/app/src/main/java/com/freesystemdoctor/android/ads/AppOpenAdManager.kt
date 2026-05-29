@@ -29,6 +29,7 @@ class AppOpenAdManager(private val application: Application) :
     private var currentActivity: Activity? = null
     private var firstStartHandled = false
     private var suppressOnce = false
+    private var suppressUntil = 0L
     private var lastShownAt = 0L
 
     fun register() {
@@ -38,6 +39,11 @@ class AppOpenAdManager(private val application: Application) :
 
     fun suppressNextShow() {
         suppressOnce = true
+    }
+
+    /** Suppresses any app-open ad for [ms] milliseconds — use before launching external activities. */
+    fun suppressForMillis(ms: Long) {
+        suppressUntil = System.currentTimeMillis() + ms
     }
 
     fun onAdsEnabled() = loadAd()
@@ -77,6 +83,10 @@ class AppOpenAdManager(private val application: Application) :
     private fun showIfAvailable() {
         if (suppressOnce) {
             suppressOnce = false
+            loadAd()
+            return
+        }
+        if (System.currentTimeMillis() < suppressUntil) {
             loadAd()
             return
         }

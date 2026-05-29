@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.freesystemdoctor.android.R
-import com.freesystemdoctor.android.ui.components.Appear
+
 import com.freesystemdoctor.android.ui.components.PermissionGate
 import java.text.DateFormat
 import java.util.Date
@@ -60,46 +60,44 @@ fun RarelyUsedScreen(
         )
 
         LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            itemsIndexed(state.apps) { index, app ->
-                Appear(index = index) {
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceContainer,
-                        ),
-                        shape = MaterialTheme.shapes.small,
-                    ) {
-                        Column(Modifier.padding(12.dp)) {
-                            Text(
-                                app.label,
-                                style = MaterialTheme.typography.titleSmall,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                            )
-                            Text(
-                                if (app.neverUsed) {
-                                    stringResource(R.string.rarely_used_never)
-                                } else {
-                                    stringResource(
-                                        R.string.rarely_used_last,
-                                        DateFormat.getDateInstance().format(Date(app.lastUsed)),
-                                    )
-                                },
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            )
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.End,
-                                verticalAlignment = Alignment.CenterVertically,
-                            ) {
-                                TextButton(onClick = {
-                                    context.startActivity(viewModel.appDetailsIntent(app.packageName))
-                                }) { Text(stringResource(R.string.apps_details)) }
-                                OutlinedButton(onClick = {
-                                    context.startActivity(viewModel.uninstallIntent(app.packageName))
-                                }) { Text(stringResource(R.string.apps_uninstall)) }
-                            }
+            itemsIndexed(state.apps, key = { _, app -> app.packageName }) { _, app ->
+                Card(
+                    modifier = Modifier.fillMaxWidth().animateItem(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                    ),
+                    shape = MaterialTheme.shapes.small,
+                ) {
+                    Column(Modifier.padding(12.dp)) {
+                        Text(
+                            app.label,
+                            style = MaterialTheme.typography.titleSmall,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                        Text(
+                            if (app.neverUsed) {
+                                stringResource(R.string.rarely_used_never)
+                            } else {
+                                stringResource(
+                                    R.string.rarely_used_last,
+                                    DateFormat.getDateInstance().format(Date(app.lastUsed)),
+                                )
+                            },
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.End,
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            TextButton(onClick = {
+                                context.startActivity(viewModel.appDetailsIntent(app.packageName))
+                            }) { Text(stringResource(R.string.apps_details)) }
+                            OutlinedButton(onClick = {
+                                context.startActivity(viewModel.uninstallIntent(app.packageName))
+                            }) { Text(stringResource(R.string.apps_uninstall)) }
                         }
                     }
                 }

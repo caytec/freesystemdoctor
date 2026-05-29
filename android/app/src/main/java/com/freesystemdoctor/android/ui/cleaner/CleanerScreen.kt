@@ -3,7 +3,10 @@ package com.freesystemdoctor.android.ui.cleaner
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -73,7 +76,10 @@ fun CleanerScreen(
         }
 
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Button(onClick = viewModel::scan, enabled = !state.scanning) {
+            Button(onClick = {
+                ServiceLocator.appOpenAdManager.suppressForMillis(60_000L)
+                viewModel.scan()
+            }, enabled = !state.scanning) {
                 Text(stringResource(R.string.cleaner_scan))
             }
             OutlinedButton(onClick = viewModel::cleanAppCache, enabled = !state.scanning) {
@@ -81,6 +87,7 @@ fun CleanerScreen(
             }
             if (report != null && report.mediaItems.isNotEmpty()) {
                 Button(onClick = {
+                    ServiceLocator.appOpenAdManager.suppressForMillis(30_000L)
                     viewModel.buildDeleteRequest()?.let { pi ->
                         deleteLauncher.launch(IntentSenderRequest.Builder(pi.intentSender).build())
                     }
@@ -99,37 +106,39 @@ fun CleanerScreen(
 
         InfoBanner(stringResource(R.string.cleaner_note))
 
-        report?.let {
-            LazyColumn(
-                modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                itemsIndexed(it.mediaItems, key = { _, item -> item.uri.toString() }) { index, item ->
-                    Appear(index = index) {
-                        Card(
-                            modifier = Modifier.fillMaxWidth(),
-                            colors = CardDefaults.cardColors(
-                                containerColor = MaterialTheme.colorScheme.surfaceContainer,
-                            ),
-                            shape = MaterialTheme.shapes.small,
-                        ) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 14.dp, vertical = 12.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
+        Box(Modifier.fillMaxWidth().animateContentSize(spring(dampingRatio = 0.8f))) {
+            report?.let {
+                Appear {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        itemsIndexed(it.mediaItems, key = { _, item -> item.uri.toString() }) { _, item ->
+                            Card(
+                                modifier = Modifier.fillMaxWidth().animateItem(),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                                ),
+                                shape = MaterialTheme.shapes.small,
                             ) {
-                                Text(
-                                    item.displayName,
-                                    modifier = Modifier.weight(1f),
-                                    maxLines = 1,
-                                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
-                                )
-                                Text(
-                                    ByteFormatter.format(item.sizeBytes),
-                                    color = MaterialTheme.colorScheme.primary,
-                                )
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 14.dp, vertical = 12.dp),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
+                                ) {
+                                    Text(
+                                        item.displayName,
+                                        modifier = Modifier.weight(1f),
+                                        maxLines = 1,
+                                        overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+                                    )
+                                    Text(
+                                        ByteFormatter.format(item.sizeBytes),
+                                        color = MaterialTheme.colorScheme.primary,
+                                    )
+                                }
                             }
                         }
                     }

@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.freesystemdoctor.android.R
+import com.freesystemdoctor.android.core.di.ServiceLocator
 import com.freesystemdoctor.android.core.util.ByteFormatter
 import com.freesystemdoctor.android.ui.components.Appear
 import com.freesystemdoctor.android.ui.components.StatCard
@@ -80,15 +81,14 @@ fun LargeFilesScreen(
         }
 
         LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            itemsIndexed(state.files) { index, file ->
-                Appear(index = index) {
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceContainer,
-                        ),
-                        shape = MaterialTheme.shapes.small,
-                    ) {
+            itemsIndexed(state.files, key = { _, f -> f.uri.toString() }) { _, file ->
+                Card(
+                    modifier = Modifier.fillMaxWidth().animateItem(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                    ),
+                    shape = MaterialTheme.shapes.small,
+                ) {
                         Row(
                             modifier = Modifier.fillMaxWidth().padding(horizontal = 14.dp, vertical = 10.dp),
                             horizontalArrangement = Arrangement.SpaceBetween,
@@ -108,6 +108,7 @@ fun LargeFilesScreen(
                                 )
                             }
                             TextButton(onClick = {
+                                ServiceLocator.appOpenAdManager.suppressForMillis(30_000L)
                                 viewModel.buildDeleteRequest(listOf(file.uri))?.let { pi ->
                                     deleteLauncher.launch(
                                         IntentSenderRequest.Builder(pi.intentSender).build(),
@@ -116,7 +117,6 @@ fun LargeFilesScreen(
                             }) { Text(stringResource(R.string.action_delete)) }
                         }
                     }
-                }
             }
         }
     }

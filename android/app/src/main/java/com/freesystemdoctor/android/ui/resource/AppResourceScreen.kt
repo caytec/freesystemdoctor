@@ -99,6 +99,7 @@ fun AppResourceScreen(
                     items(report.rows, key = { it.packageName }) { row ->
                         ResourceRow(
                             row = row,
+                            modifier = Modifier.animateItem(),
                             onSettings = {
                                 runCatching { context.startActivity(viewModel.openAppSettings(row.packageName)) }
                             },
@@ -117,12 +118,13 @@ fun AppResourceScreen(
 @Composable
 private fun ResourceRow(
     row: AppResourceRow,
+    modifier: Modifier = Modifier,
     onSettings: () -> Unit,
     onUninstall: () -> Unit,
     onStop: () -> Unit,
 ) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
         shape = MaterialTheme.shapes.medium,
     ) {

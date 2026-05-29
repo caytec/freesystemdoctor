@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="whats_new_title">Co nowego w 1.3</string>
+    <string name="whats_new_title">Co nowego w 1.4</string>
     <string name="whats_new_dismiss">Rozumiem</string>
     <string-array name="whats_new_items">
-        <item>Odblokowania per narzędzie (24h) — uczciwsze niż „wszystko albo nic"</item>
-        <item>Jednorazowy 3-dniowy Pro trial za jedną reklamę</item>
-        <item>Raport zasobów aplikacji — jeden uczciwy wynik per apka</item>
-        <item>Prognoza pamięci — przewiduje, kiedy braknie miejsca</item>
-        <item>Tryb skupienia / Game Boost — sesje z DND</item>
-        <item>Blokada aplikacji (Pro) i zaszyfrowany backup do chmury (Pro)</item>
+        <item>Wyszukiwarka i filtry narzędzi — znajdź każdą funkcję natychmiast</item>
+        <item>Szybkie akcje na pulpicie — Czyszczenie, Duplikaty, Bateria w jednym tapnięciu</item>
+        <item>Płynniejsze animacje — elementy list pojawiają się i znikają animowanie</item>
+        <item>Nowe Ustawienia — czytelne sekcje, przełącznik motywu systemowego</item>
+        <item>Nowa kolejność zakładek — Aplikacje i Narzędzia bliżej codziennego użytku</item>
+        <item>Mniej inwazyjne reklamy — przerywniki ograniczone do 90s, rzadsze wyzwalacze</item>
     </string-array>
 </resources>

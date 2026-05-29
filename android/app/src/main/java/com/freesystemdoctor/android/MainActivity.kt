@@ -5,6 +5,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.fragment.app.FragmentActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.collectAsState
@@ -39,7 +40,9 @@ class MainActivity : FragmentActivity() {
                 .collectAsState(initial = AppSettings())
             var onboardingComplete by remember { mutableStateOf(false) }
 
-            FsdTheme(darkTheme = settings.darkTheme) {
+            val systemDark = isSystemInDarkTheme()
+            val useDark = if (settings.followSystem) systemDark else settings.darkTheme
+            FsdTheme(darkTheme = useDark) {
                 Surface(modifier = Modifier.fillMaxSize()) {
                     if (settings.onboardingDone || onboardingComplete) {
                         MainScaffold()

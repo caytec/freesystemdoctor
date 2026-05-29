@@ -27,7 +27,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.freesystemdoctor.android.R
 import com.freesystemdoctor.android.core.util.ByteFormatter
-import com.freesystemdoctor.android.ui.components.Appear
+
 import com.freesystemdoctor.android.ui.components.InfoBanner
 
 @Composable
@@ -52,39 +52,37 @@ fun CompressScreen(
         }
 
         LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            itemsIndexed(state.photos) { index, photo ->
-                Appear(index = index) {
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceContainer,
-                        ),
-                        shape = MaterialTheme.shapes.small,
+            itemsIndexed(state.photos, key = { _, photo -> photo.uri.toString() }) { _, photo ->
+                Card(
+                    modifier = Modifier.fillMaxWidth().animateItem(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                    ),
+                    shape = MaterialTheme.shapes.small,
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = 14.dp, vertical = 10.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth().padding(horizontal = 14.dp, vertical = 10.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            Column(Modifier.weight(1f)) {
-                                Text(
-                                    photo.displayName,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                    style = MaterialTheme.typography.bodyMedium,
-                                )
-                                Text(
-                                    ByteFormatter.format(photo.sizeBytes),
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.primary,
-                                )
-                            }
-                            if (state.busyUri == photo.uri.toString()) {
-                                CircularProgressIndicator(modifier = Modifier.size(22.dp))
-                            } else {
-                                OutlinedButton(onClick = { viewModel.compress(photo) }) {
-                                    Text(stringResource(R.string.compress_action))
-                                }
+                        Column(Modifier.weight(1f)) {
+                            Text(
+                                photo.displayName,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                                style = MaterialTheme.typography.bodyMedium,
+                            )
+                            Text(
+                                ByteFormatter.format(photo.sizeBytes),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.primary,
+                            )
+                        }
+                        if (state.busyUri == photo.uri.toString()) {
+                            CircularProgressIndicator(modifier = Modifier.size(22.dp))
+                        } else {
+                            OutlinedButton(onClick = { viewModel.compress(photo) }) {
+                                Text(stringResource(R.string.compress_action))
                             }
                         }
                     }

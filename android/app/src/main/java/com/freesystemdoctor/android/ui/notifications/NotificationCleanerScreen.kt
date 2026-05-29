@@ -32,7 +32,7 @@ import androidx.core.app.NotificationManagerCompat
 import com.freesystemdoctor.android.R
 import com.freesystemdoctor.android.service.ActiveNotification
 import com.freesystemdoctor.android.service.FsdNotificationListener
-import com.freesystemdoctor.android.ui.components.Appear
+
 import com.freesystemdoctor.android.ui.components.PermissionGate
 
 @Composable
@@ -87,38 +87,36 @@ fun NotificationCleanerScreen(modifier: Modifier = Modifier) {
         ) {
         LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             items(items, key = { it.key }) { n ->
-                Appear {
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceContainer,
-                        ),
-                        shape = MaterialTheme.shapes.small,
+                Card(
+                    modifier = Modifier.fillMaxWidth().animateItem(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                    ),
+                    shape = MaterialTheme.shapes.small,
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = 14.dp, vertical = 10.dp),
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth().padding(horizontal = 14.dp, vertical = 10.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            Column(Modifier.weight(1f)) {
-                                Text(
-                                    n.title,
-                                    style = MaterialTheme.typography.titleSmall,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                )
-                                Text(
-                                    n.text,
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    maxLines = 2,
-                                    overflow = TextOverflow.Ellipsis,
-                                )
-                            }
-                            TextButton(onClick = {
-                                FsdNotificationListener.instance?.dismiss(n.key)
-                                refresh()
-                            }) { Text(stringResource(R.string.notif_dismiss)) }
+                        Column(Modifier.weight(1f)) {
+                            Text(
+                                n.title,
+                                style = MaterialTheme.typography.titleSmall,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                            )
+                            Text(
+                                n.text,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                maxLines = 2,
+                                overflow = TextOverflow.Ellipsis,
+                            )
                         }
+                        TextButton(onClick = {
+                            FsdNotificationListener.instance?.dismiss(n.key)
+                            refresh()
+                        }) { Text(stringResource(R.string.notif_dismiss)) }
                     }
                 }
             }

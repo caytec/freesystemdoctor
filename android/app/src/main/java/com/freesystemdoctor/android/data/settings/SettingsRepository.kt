@@ -17,6 +17,7 @@ private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(na
 data class AppSettings(
     val onboardingDone: Boolean = false,
     val darkTheme: Boolean = true,
+    val followSystem: Boolean = false,
     val aiProvider: AiProvider = AiProvider.GROQ,
     val scheduledCleaning: Boolean = false,
     val advancedMode: Boolean = false,
@@ -32,6 +33,7 @@ class SettingsRepository(private val context: Context) {
     private object Keys {
         val ONBOARDING_DONE = booleanPreferencesKey("onboarding_done")
         val DARK_THEME = booleanPreferencesKey("dark_theme")
+        val FOLLOW_SYSTEM = booleanPreferencesKey("follow_system")
         val AI_PROVIDER = stringPreferencesKey("ai_provider")
         val SCHEDULED_CLEANING = booleanPreferencesKey("scheduled_cleaning")
         val ADVANCED_MODE = booleanPreferencesKey("advanced_mode")
@@ -46,6 +48,7 @@ class SettingsRepository(private val context: Context) {
         AppSettings(
             onboardingDone = prefs[Keys.ONBOARDING_DONE] ?: false,
             darkTheme = prefs[Keys.DARK_THEME] ?: true,
+            followSystem = prefs[Keys.FOLLOW_SYSTEM] ?: false,
             aiProvider = prefs[Keys.AI_PROVIDER]
                 ?.let { runCatching { AiProvider.valueOf(it) }.getOrNull() }
                 ?: AiProvider.GROQ,
@@ -65,6 +68,10 @@ class SettingsRepository(private val context: Context) {
 
     suspend fun setDarkTheme(enabled: Boolean) {
         context.dataStore.edit { it[Keys.DARK_THEME] = enabled }
+    }
+
+    suspend fun setFollowSystem(enabled: Boolean) {
+        context.dataStore.edit { it[Keys.FOLLOW_SYSTEM] = enabled }
     }
 
     suspend fun setAiProvider(provider: AiProvider) {

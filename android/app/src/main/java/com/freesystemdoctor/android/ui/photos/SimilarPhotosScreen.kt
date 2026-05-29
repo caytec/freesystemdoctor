@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.freesystemdoctor.android.R
+import com.freesystemdoctor.android.core.di.ServiceLocator
 import com.freesystemdoctor.android.core.util.ByteFormatter
 import com.freesystemdoctor.android.ui.components.Appear
 import com.freesystemdoctor.android.ui.components.InfoBanner
@@ -61,6 +62,7 @@ fun SimilarPhotosScreen(
             }
             if (state.groups.isNotEmpty()) {
                 Button(onClick = {
+                    ServiceLocator.appOpenAdManager.suppressForMillis(30_000L)
                     viewModel.buildDeleteRequest()?.let { pi ->
                         deleteLauncher.launch(IntentSenderRequest.Builder(pi.intentSender).build())
                     }
@@ -81,15 +83,14 @@ fun SimilarPhotosScreen(
         }
 
         LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            itemsIndexed(state.groups) { index, group ->
-                Appear(index = index) {
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceContainer,
-                        ),
-                        shape = MaterialTheme.shapes.small,
-                    ) {
+            itemsIndexed(state.groups, key = { _, g -> g.items.firstOrNull()?.uri?.toString() ?: g.hashCode().toString() }) { _, group ->
+                Card(
+                    modifier = Modifier.fillMaxWidth().animateItem(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                    ),
+                    shape = MaterialTheme.shapes.small,
+                ) {
                         Column(Modifier.padding(12.dp)) {
                             Text(
                                 stringResource(R.string.similar_group_size, group.items.size),
@@ -107,8 +108,9 @@ fun SimilarPhotosScreen(
                             }
                         }
                     }
-                }
             }
         }
     }
 }
+
+

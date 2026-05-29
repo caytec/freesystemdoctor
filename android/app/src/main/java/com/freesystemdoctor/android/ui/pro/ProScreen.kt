@@ -3,11 +3,14 @@ package com.freesystemdoctor.android.ui.pro
 import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -15,8 +18,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.WorkspacePremium
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -36,6 +37,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.freesystemdoctor.android.R
 import com.freesystemdoctor.android.ui.components.Appear
+import com.freesystemdoctor.android.ui.components.bounceClick
+import com.freesystemdoctor.android.ui.theme.brandGradient
 
 @Composable
 fun ProScreen(
@@ -58,44 +61,58 @@ fun ProScreen(
     ) {
         Appear {
             com.freesystemdoctor.android.ui.components.GlassCard(modifier = Modifier.fillMaxWidth()) {
-                Column(Modifier.padding(20.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                    Icon(
-                        Icons.Filled.WorkspacePremium,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(48.dp),
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(6.dp)
+                            .background(brandGradient()),
                     )
-                    Text(
-                        stringResource(if (isPro) R.string.pro_active else R.string.pro_title),
-                        style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(top = 8.dp),
-                    )
-                    Text(
-                        stringResource(R.string.pro_subtitle),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(top = 4.dp),
-                    )
+                    Column(
+                        modifier = Modifier.padding(20.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        Icon(
+                            Icons.Filled.WorkspacePremium,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(48.dp),
+                        )
+                        Text(
+                            stringResource(if (isPro) R.string.pro_active else R.string.pro_title),
+                            style = MaterialTheme.typography.headlineSmall,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(top = 8.dp),
+                        )
+                        Text(
+                            stringResource(R.string.pro_subtitle),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(top = 4.dp),
+                        )
+                    }
                 }
             }
         }
 
-        listOf(
+        val benefits = listOf(
             R.string.pro_benefit_ads,
             R.string.pro_benefit_advanced,
             R.string.pro_benefit_schedule,
             R.string.pro_benefit_monitor,
             R.string.pro_benefit_support,
-        ).forEach { benefit ->
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    Icons.Filled.Check,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.secondary,
-                    modifier = Modifier.size(20.dp).padding(end = 8.dp),
-                )
-                Text(stringResource(benefit), style = MaterialTheme.typography.bodyMedium)
+        )
+        benefits.forEachIndexed { i, benefit ->
+            Appear(index = i) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        Icons.Filled.Check,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.secondary,
+                        modifier = Modifier.size(20.dp).padding(end = 8.dp),
+                    )
+                    Text(stringResource(benefit), style = MaterialTheme.typography.bodyMedium)
+                }
             }
         }
 
@@ -109,8 +126,12 @@ fun ProScreen(
         } else {
             products.forEach { product ->
                 Appear {
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
+                    androidx.compose.material3.Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .bounceClick(enabled = activity != null) {
+                                activity?.let { viewModel.purchase(it, product) }
+                            },
                         colors = CardDefaults.cardColors(
                             containerColor = MaterialTheme.colorScheme.surfaceContainer,
                         ),
@@ -129,10 +150,11 @@ fun ProScreen(
                                     color = MaterialTheme.colorScheme.primary,
                                 )
                             }
-                            Button(
-                                onClick = { activity?.let { viewModel.purchase(it, product) } },
-                                enabled = activity != null,
-                            ) { Text(stringResource(R.string.pro_buy)) }
+                            Text(
+                                stringResource(R.string.pro_buy),
+                                style = MaterialTheme.typography.labelLarge,
+                                color = MaterialTheme.colorScheme.primary,
+                            )
                         }
                     }
                 }

@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.freesystemdoctor.android.R
-import com.freesystemdoctor.android.ui.components.Appear
+
 import com.freesystemdoctor.android.ui.components.InfoBanner
 
 @Composable
@@ -42,36 +42,35 @@ fun PermissionAuditScreen(
         InfoBanner(stringResource(R.string.permissions_note))
 
         LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            itemsIndexed(state.apps) { index, app ->
-                Appear(index = index) {
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { context.startActivity(viewModel.appDetailsIntent(app.packageName)) },
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceContainer,
-                        ),
-                        shape = MaterialTheme.shapes.small,
-                    ) {
-                        Column(Modifier.padding(12.dp)) {
-                            Text(
-                                app.label,
-                                style = MaterialTheme.typography.titleSmall,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                            )
-                            Text(
-                                stringResource(R.string.permissions_count, app.grantedDangerous.size),
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.primary,
-                            )
-                            Text(
-                                app.grantedDangerous.joinToString(", "),
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.padding(top = 2.dp),
-                            )
-                        }
+            itemsIndexed(state.apps, key = { _, app -> app.packageName }) { _, app ->
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .animateItem()
+                        .clickable { context.startActivity(viewModel.appDetailsIntent(app.packageName)) },
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                    ),
+                    shape = MaterialTheme.shapes.small,
+                ) {
+                    Column(Modifier.padding(12.dp)) {
+                        Text(
+                            app.label,
+                            style = MaterialTheme.typography.titleSmall,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                        Text(
+                            stringResource(R.string.permissions_count, app.grantedDangerous.size),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.primary,
+                        )
+                        Text(
+                            app.grantedDangerous.joinToString(", "),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(top = 2.dp),
+                        )
                     }
                 }
             }

@@ -1,15 +1,16 @@
 package com.freesystemdoctor.android.ui.tools
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -30,7 +31,6 @@ import androidx.compose.material.icons.filled.Speed
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.ContentPaste
 import androidx.compose.material.icons.filled.Assessment
-import androidx.compose.material.icons.filled.CloudUpload
 import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.DeleteSweep
 import androidx.compose.material.icons.filled.DoNotDisturbOn
@@ -38,6 +38,8 @@ import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.Insights
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.NetworkCell
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.ShieldMoon
 import androidx.compose.material.icons.filled.TrendingDown
 import androidx.compose.material.icons.filled.Notifications
@@ -50,14 +52,22 @@ import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material.icons.filled.Wifi
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -65,6 +75,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.freesystemdoctor.android.R
+import com.freesystemdoctor.android.ui.components.Appear
 import com.freesystemdoctor.android.ui.components.LocalUnlockController
 import com.freesystemdoctor.android.ui.components.SectionHeader
 import com.freesystemdoctor.android.ui.components.bounceClick
@@ -136,6 +147,8 @@ private val toolGroups = listOf(
     ),
 )
 
+private const val GROUP_ALL = -1
+
 @Composable
 fun ToolsScreen(
     onOpen: (String) -> Unit,
@@ -147,42 +160,122 @@ fun ToolsScreen(
     val activity = androidx.compose.ui.platform.LocalContext.current as? android.app.Activity
     val unlockController = LocalUnlockController.current
 
-    LazyVerticalGrid(
-        columns = GridCells.Adaptive(minSize = 150.dp),
-        modifier = modifier.fillMaxSize().padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-        contentPadding = androidx.compose.foundation.layout.PaddingValues(vertical = 16.dp),
-    ) {
-        toolGroups.forEach { group ->
-            item(span = { GridItemSpan(maxLineSpan) }) {
-                SectionHeader(stringResource(group.titleRes))
-            }
-            items(group.tools, key = { it.route }) { tool ->
-                val now = System.currentTimeMillis()
-                val perToolUnlocked = (unlocks[tool.route] ?: 0L) > now
-                val unlocked = !tool.advanced || advanced || perToolUnlocked
-                ToolCard(tool = tool, locked = !unlocked, onClick = {
-                    if (!unlocked) {
-                        unlockController.request(tool.route, tool.labelRes)
-                    } else {
-                        activity?.let {
-                            com.freesystemdoctor.android.core.di.ServiceLocator.adsController.maybeShowInterstitial(it)
+    var query by remember { mutableStateOf("") }
+    var selectedGroup by remember { mutableIntStateOf(GROUP_ALL) }
+    val context = androidx.compose.ui.platform.LocalContext.current
+
+    val filteredGroups = remember(query, selectedGroup) {
+        val groupsToSearch = if (selectedGroup == GROUP_ALL) toolGroups
+        else listOf(toolGroups.getOrNull(selectedGroup) ?: return@remember emptyList())
+        if (query.isBlank()) {
+            groupsToSearch
+        } else {
+            val q = query.trim().lowercase()
+            listOf(
+                ToolGroup(
+                    R.string.tools_search_results,
+                    groupsToSearch.flatMap { it.tools }
+                        .filter { tool ->
+                            context.getString(tool.labelRes).lowercase().contains(q)
+                        },
+                ),
+            ).filter { it.tools.isNotEmpty() }
+        }
+    }
+
+    Column(modifier = modifier.fillMaxSize()) {
+        // Search + filter bar
+        Column(
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            OutlinedTextField(
+                value = query,
+                onValueChange = { query = it },
+                placeholder = { Text(stringResource(R.string.tools_search_hint)) },
+                leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
+                trailingIcon = if (query.isNotEmpty()) {
+                    {
+                        androidx.compose.material3.IconButton(onClick = { query = "" }) {
+                            Icon(Icons.Filled.Close, contentDescription = null)
                         }
-                        onOpen(tool.route)
                     }
-                })
+                } else null,
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth(),
+                shape = MaterialTheme.shapes.large,
+                colors = OutlinedTextFieldDefaults.colors(
+                    unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.4f),
+                ),
+            )
+            LazyRow(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                contentPadding = PaddingValues(horizontal = 0.dp),
+            ) {
+                item {
+                    FilterChip(
+                        selected = selectedGroup == GROUP_ALL,
+                        onClick = { selectedGroup = GROUP_ALL },
+                        label = { Text(stringResource(R.string.tools_filter_all)) },
+                    )
+                }
+                toolGroups.forEachIndexed { idx, group ->
+                    item {
+                        FilterChip(
+                            selected = selectedGroup == idx,
+                            onClick = { selectedGroup = if (selectedGroup == idx) GROUP_ALL else idx },
+                            label = { Text(stringResource(group.titleRes)) },
+                        )
+                    }
+                }
+            }
+        }
+
+        // Tool grid
+        Appear {
+            LazyVerticalGrid(
+                columns = GridCells.Adaptive(minSize = 150.dp),
+                modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                contentPadding = PaddingValues(vertical = 8.dp),
+            ) {
+                filteredGroups.forEachIndexed { groupIndex, group ->
+                    item(span = { GridItemSpan(maxLineSpan) }, key = "header_${group.titleRes}") {
+                        Appear(index = groupIndex * 2) {
+                            SectionHeader(stringResource(group.titleRes))
+                        }
+                    }
+                    items(group.tools, key = { it.route }) { tool ->
+                        val now = System.currentTimeMillis()
+                        val perToolUnlocked = (unlocks[tool.route] ?: 0L) > now
+                        val unlocked = !tool.advanced || advanced || perToolUnlocked
+                        ToolCard(tool = tool, locked = !unlocked, modifier = Modifier.animateItem(), onClick = {
+                            if (!unlocked) {
+                                unlockController.request(tool.route, tool.labelRes)
+                            } else {
+                                val isPerToolRewarded = (unlocks[tool.route] ?: 0L) > System.currentTimeMillis()
+                                if (tool.advanced && !isPerToolRewarded) {
+                                    activity?.let {
+                                        com.freesystemdoctor.android.core.di.ServiceLocator.adsController.maybeShowInterstitial(it)
+                                    }
+                                }
+                                onOpen(tool.route)
+                            }
+                        })
+                    }
+                }
             }
         }
     }
 }
 
 @Composable
-private fun ToolCard(tool: Tool, locked: Boolean, onClick: () -> Unit) {
+private fun ToolCard(tool: Tool, locked: Boolean, modifier: Modifier = Modifier, onClick: () -> Unit) {
     val tint = if (locked) MaterialTheme.colorScheme.onSurfaceVariant
     else MaterialTheme.colorScheme.primary
     Card(
-        modifier = Modifier.fillMaxWidth().height(120.dp).bounceClick(onClick = onClick),
+        modifier = modifier.fillMaxWidth().height(120.dp).bounceClick(onClick = onClick),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
         shape = MaterialTheme.shapes.medium,
         elevation = CardDefaults.cardElevation(defaultElevation = 3.dp),
@@ -224,7 +317,7 @@ private fun ToolCard(tool: Tool, locked: Boolean, onClick: () -> Unit) {
                     contentAlignment = Alignment.Center,
                 ) {
                     Icon(
-                        androidx.compose.material.icons.Icons.Filled.Lock,
+                        Icons.Filled.Lock,
                         contentDescription = stringResource(R.string.unlock_locked_cd),
                         tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(14.dp),

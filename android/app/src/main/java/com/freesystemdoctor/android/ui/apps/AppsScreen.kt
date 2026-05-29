@@ -28,7 +28,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.freesystemdoctor.android.R
 import com.freesystemdoctor.android.core.util.ByteFormatter
 import com.freesystemdoctor.android.engine.apps.AppSort
-import com.freesystemdoctor.android.ui.components.Appear
+
 
 @Composable
 fun AppsScreen(
@@ -65,10 +65,9 @@ fun AppsScreen(
         }
 
         LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            itemsIndexed(state.apps) { index, app ->
-                Appear(index = index) {
+            itemsIndexed(state.apps, key = { _, app -> app.packageName }) { _, app ->
                 Card(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().animateItem(),
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.surfaceContainer,
                     ),
@@ -96,7 +95,6 @@ fun AppsScreen(
                             }) { Text(stringResource(R.string.apps_uninstall)) }
                         }
                     }
-                }
                 }
             }
         }

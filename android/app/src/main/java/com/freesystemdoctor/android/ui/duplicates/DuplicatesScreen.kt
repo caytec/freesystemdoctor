@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.freesystemdoctor.android.R
+import com.freesystemdoctor.android.core.di.ServiceLocator
 import com.freesystemdoctor.android.core.util.ByteFormatter
 import com.freesystemdoctor.android.ui.components.Appear
 import com.freesystemdoctor.android.ui.components.InfoBanner
@@ -68,6 +69,7 @@ fun DuplicatesScreen(
             if (state.groups.isNotEmpty()) {
                 Button(onClick = {
                     viewModel.buildDeleteRequest()?.let { pi ->
+                        ServiceLocator.appOpenAdManager.suppressForMillis(30_000L)
                         deleteLauncher.launch(IntentSenderRequest.Builder(pi.intentSender).build())
                     }
                 }) { Text(stringResource(R.string.duplicates_clean)) }
@@ -93,31 +95,29 @@ fun DuplicatesScreen(
         }
 
         LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            itemsIndexed(state.groups) { index, group ->
-                Appear(index = index) {
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceContainer,
-                        ),
-                        shape = MaterialTheme.shapes.small,
-                    ) {
-                        Column(Modifier.padding(12.dp)) {
+            itemsIndexed(state.groups, key = { _, group -> group.hash }) { _, group ->
+                Card(
+                    modifier = Modifier.fillMaxWidth().animateItem(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                    ),
+                    shape = MaterialTheme.shapes.small,
+                ) {
+                    Column(Modifier.padding(12.dp)) {
+                        Text(
+                            stringResource(R.string.duplicates_group_size, group.files.size),
+                            style = MaterialTheme.typography.titleSmall,
+                            color = MaterialTheme.colorScheme.primary,
+                        )
+                        group.files.forEach { f ->
                             Text(
-                                stringResource(R.string.duplicates_group_size, group.files.size),
-                                style = MaterialTheme.typography.titleSmall,
-                                color = MaterialTheme.colorScheme.primary,
+                                "${f.displayName}  ·  ${ByteFormatter.format(f.sizeBytes)}",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = Modifier.padding(top = 2.dp),
                             )
-                            group.files.forEach { f ->
-                                Text(
-                                    "${f.displayName}  ·  ${ByteFormatter.format(f.sizeBytes)}",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                    modifier = Modifier.padding(top = 2.dp),
-                                )
-                            }
                         }
                     }
                 }

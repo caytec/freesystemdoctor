@@ -81,10 +81,9 @@ fun StorageScreen(
                 onRefresh = { viewModel.load() },
             ) {
             LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                itemsIndexed(state.apps) { index, app ->
-                    Appear(index = index) {
+                itemsIndexed(state.apps, key = { _, app -> app.packageName }) { _, app ->
                     Card(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth().animateItem(),
                         colors = CardDefaults.cardColors(
                             containerColor = MaterialTheme.colorScheme.surfaceContainer,
                         ),
@@ -107,7 +106,6 @@ fun StorageScreen(
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
                         }
-                    }
                     }
                 }
             }

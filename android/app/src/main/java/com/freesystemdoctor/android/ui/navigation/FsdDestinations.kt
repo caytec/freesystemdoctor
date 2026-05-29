@@ -16,9 +16,9 @@ enum class FsdDestination(
 ) {
     DASHBOARD("dashboard", R.string.nav_dashboard, Icons.Filled.Dashboard),
     CLEANER("cleaner", R.string.nav_cleaner, Icons.Filled.CleaningServices),
-    STORAGE("storage", R.string.nav_storage, Icons.Filled.PieChart),
     APPS("apps", R.string.nav_apps, Icons.Filled.Apps),
     TOOLS("tools", R.string.nav_tools, Icons.Filled.GridView),
+    STORAGE("storage", R.string.nav_storage, Icons.Filled.PieChart),
 }
 
 const val ROUTE_SETTINGS = "settings"
