@@ -1,0 +1,8 @@
+# AdMob unit IDs — copy this file to `admob.properties` and replace with your real IDs.
+# `admob.properties` is git-ignored to avoid leaking credentials.
+# Default values below are Google's official TEST IDs (always serve test ads, safe to ship).
+admob.app.id=ca-app-pub-3940256099942544~3347511713
+admob.banner.id=ca-app-pub-3940256099942544/9214589741
+admob.interstitial.id=ca-app-pub-3940256099942544/1033173712
+admob.rewarded.id=ca-app-pub-3940256099942544/5224354917
+admob.appopen.id=ca-app-pub-3940256099942544/9257395921

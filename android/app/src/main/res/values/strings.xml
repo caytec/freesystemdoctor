@@ -1,7 +1,6 @@
 <resources>
     <string name="app_name">FreeSystemDoctor</string>
-    <!-- AdMob TEST app id — replace with your real app id before release. -->
-    <string name="admob_app_id" translatable="false">ca-app-pub-3940256099942544~3347511713</string>
+    <!-- admob_app_id is injected via Gradle resValue from android/admob.properties -->
 
     <!-- Navigation -->
     <string name="nav_dashboard">Dashboard</string>

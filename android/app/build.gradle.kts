@@ -18,6 +18,18 @@ val keystoreProps = Properties().apply {
 val releaseStorePath: String? =
     keystoreProps.getProperty("storeFile") ?: System.getenv("KEYSTORE_FILE")
 
+// AdMob unit IDs — read from android/admob.properties (git-ignored). Falls back to
+// admob.properties.template (committed, holds Google's official TEST IDs) so a fresh
+// clone still builds and serves test ads.
+val admobPropsFile = rootProject.file("admob.properties")
+val admobTemplate = rootProject.file("admob.properties.template")
+val admobProps = Properties().apply {
+    val src = if (admobPropsFile.exists()) admobPropsFile else admobTemplate
+    if (src.exists()) FileInputStream(src).use { load(it) }
+}
+fun admob(key: String, default: String): String =
+    (admobProps.getProperty(key) ?: System.getenv(key.uppercase().replace('.', '_')) ?: default)
+
 android {
     namespace = "com.freesystemdoctor.android"
     compileSdk = 35
@@ -31,6 +43,33 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         resourceConfigurations += listOf("en", "pl")
+
+        // AdMob — values come from android/admob.properties (git-ignored).
+        resValue(
+            "string",
+            "admob_app_id",
+            admob("admob.app.id", "ca-app-pub-3940256099942544~3347511713"),
+        )
+        buildConfigField(
+            "String",
+            "ADMOB_BANNER_ID",
+            "\"${admob("admob.banner.id", "ca-app-pub-3940256099942544/9214589741")}\"",
+        )
+        buildConfigField(
+            "String",
+            "ADMOB_INTERSTITIAL_ID",
+            "\"${admob("admob.interstitial.id", "ca-app-pub-3940256099942544/1033173712")}\"",
+        )
+        buildConfigField(
+            "String",
+            "ADMOB_REWARDED_ID",
+            "\"${admob("admob.rewarded.id", "ca-app-pub-3940256099942544/5224354917")}\"",
+        )
+        buildConfigField(
+            "String",
+            "ADMOB_APPOPEN_ID",
+            "\"${admob("admob.appopen.id", "ca-app-pub-3940256099942544/9257395921")}\"",
+        )
     }
 
     signingConfigs {

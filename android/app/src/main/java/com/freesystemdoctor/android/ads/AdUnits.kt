@@ -1,14 +1,15 @@
 package com.freesystemdoctor.android.ads
 
+import com.freesystemdoctor.android.BuildConfig
+
 /**
- * AdMob unit IDs. These are Google's official TEST IDs — they always serve test ads and
- * are safe to ship in development. Replace each value with your real AdMob unit IDs (and
- * the app id in strings.xml: admob_app_id) before a production release, or you risk a
- * policy strike for clicking your own live ads.
+ * AdMob unit IDs — values come from android/admob.properties (git-ignored) via Gradle
+ * buildConfigField. The committed default is Google's official TEST IDs, which always
+ * serve test ads and are safe to ship in development.
  */
 object AdUnits {
-    const val BANNER = "ca-app-pub-3940256099942544/9214589741"
-    const val INTERSTITIAL = "ca-app-pub-3940256099942544/1033173712"
-    const val REWARDED = "ca-app-pub-3940256099942544/5224354917"
-    const val APP_OPEN = "ca-app-pub-3940256099942544/9257395921"
+    val BANNER: String = BuildConfig.ADMOB_BANNER_ID
+    val INTERSTITIAL: String = BuildConfig.ADMOB_INTERSTITIAL_ID
+    val REWARDED: String = BuildConfig.ADMOB_REWARDED_ID
+    val APP_OPEN: String = BuildConfig.ADMOB_APPOPEN_ID
 }
