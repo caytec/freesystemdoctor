@@ -533,61 +533,99 @@ class _SidebarPanel(tk.Frame):
             else:
                 self._add_expand_item(key, icon, label, cat["color"])
 
+        # ── stagger-reveal items ──────────────────────────────────────────────
+        # Skip header row (index 0); stagger the rest
+        all_children = self._expand_inner.winfo_children()
+        item_rows = all_children[1:] if len(all_children) > 1 else []
+        for w in item_rows:
+            w.pack_forget()
+        slide_done = 120 if not self._expanded else 0  # wait for slide anim
+        for i, w in enumerate(item_rows):
+            delay = slide_done + i * T.STAGGER_MS
+            self.after(delay, lambda ww=w: _safe_pack(ww))
+
         # Slide in
         if not self._expanded:
             self._expand(self.EXPAND_W)
 
     def _add_expand_item(self, key: str, icon: str, label: str,
                           color: str, special: bool = False):
-        bg = T.lerp_color(T.SIDEBAR, T.ACCENT, 0.3)
+        bg       = T.lerp_color(T.SIDEBAR, T.ACCENT, 0.3)
         is_active = key == self._active_key
+        active_bg = T.lerp_color(bg, color, 0.22)   # stronger tint than before
 
-        row = tk.Frame(self._expand_inner, bg=bg, cursor="hand2")
+        row = tk.Frame(self._expand_inner, bg=active_bg if is_active else bg,
+                       cursor="hand2")
         row.pack(fill="x")
 
-        # Left accent bar
-        bar = tk.Frame(row, bg=color if is_active else bg, width=3)
+        # ── Left accent bar (4 px when active, 2 px subtle when inactive) ────
+        bar_w  = 4 if is_active else 2
+        bar_bg = color if is_active else T.lerp_color(bg, color, 0.15)
+        bar    = tk.Frame(row, bg=bar_bg, width=bar_w)
         bar.pack(side="left", fill="y")
 
-        icon_lbl = tk.Label(row, text=icon, bg=bg,
+        row_bg = active_bg if is_active else bg
+
+        icon_lbl = tk.Label(row, text=icon,
+                             bg=row_bg,
                              fg=color if is_active else T.FG2,
                              font=(T.FONT_FAMILY, 12), padx=8, pady=10)
         icon_lbl.pack(side="left")
 
-        text_lbl = tk.Label(row, text=label, bg=bg,
+        text_lbl = tk.Label(row, text=label,
+                             bg=row_bg,
                              fg=T.FG if is_active else T.FG2,
-                             font=T.FONT_SMALL if not special else T.FONT_SMALL,
+                             font=T.FONT_SMALL,
                              anchor="w", pady=10)
         text_lbl.pack(side="left", fill="x", expand=True)
 
+        # ── Right glow dot when active ─────────────────────────────────────
         if is_active:
-            row.config(bg=T.lerp_color(bg, color, 0.12))
-            icon_lbl.config(bg=T.lerp_color(bg, color, 0.12))
-            text_lbl.config(bg=T.lerp_color(bg, color, 0.12))
+            dot = tk.Canvas(row, width=8, height=8,
+                            bg=row_bg, highlightthickness=0)
+            dot.pack(side="right", padx=(0, 8))
+            dot.create_oval(0, 0, 8, 8, fill=T.ACTIVE_GLOW, outline=color)
+            self._animate_glow_dot(dot, color, row_bg)
+
+        # ── Hover animation helper ─────────────────────────────────────────
+        _hover_data = {"phase": 0, "active_hover": False}
+
+        def _hover_step():
+            max_p = 6
+            if _hover_data["active_hover"]:
+                _hover_data["phase"] = min(_hover_data["phase"] + 2, max_p)
+            else:
+                _hover_data["phase"] = max(_hover_data["phase"] - 2, 0)
+            p = _hover_data["phase"]
+            if p <= 0 and not _hover_data["active_hover"]:
+                return
+            t = p / max_p
+            hbg = T.lerp_color(bg, color, t * 0.1)
+            ic  = T.lerp_color(T.FG2, color, t * 0.7)
+            tc  = T.lerp_color(T.FG2, T.FG,  t * 0.8)
+            bc  = T.lerp_color(T.lerp_color(bg, color, 0.15), color, t * 0.6)
+            try:
+                row.config(bg=hbg)
+                icon_lbl.config(bg=hbg, fg=ic)
+                text_lbl.config(bg=hbg, fg=tc)
+                bar.config(bg=bc)
+            except tk.TclError:
+                return
+            row.after(30, _hover_step)
 
         def on_enter(e):
             if key != self._active_key:
-                hbg = T.lerp_color(bg, color, 0.08)
-                row.config(bg=hbg)
-                icon_lbl.config(bg=hbg, fg=T.lerp_color(T.FG2, color, 0.6))
-                text_lbl.config(bg=hbg, fg=T.lerp_color(T.FG2, T.FG, 0.7))
-                bar.config(bg=T.lerp_color(bg, color, 0.4))
+                _hover_data["active_hover"] = True
+                _hover_step()
 
         def on_leave(e):
             if key != self._active_key:
-                row.config(bg=bg)
-                icon_lbl.config(bg=bg, fg=T.FG2)
-                text_lbl.config(bg=bg, fg=T.FG2)
-                bar.config(bg=bg)
+                _hover_data["active_hover"] = False
+                _hover_step()
 
         def on_click(e):
             if special:
-                if key in ("memory", "clean_tools"):
-                    self._switch("tools")
-                elif key == "toolbox":
-                    self._switch("tools")
-                else:
-                    self._switch(key)
+                self._switch("tools")
             else:
                 self._switch(key)
 
@@ -595,6 +633,20 @@ class _SidebarPanel(tk.Frame):
             w.bind("<Enter>", on_enter)
             w.bind("<Leave>", on_leave)
             w.bind("<Button-1>", on_click)
+
+    def _animate_glow_dot(self, canvas: tk.Canvas, color: str,
+                           bg: str, phase: int = 0):
+        """Pulse the active glow dot on the right of an active sidebar item."""
+        import math
+        t = (math.sin(phase * 0.12) + 1) / 2
+        c = T.lerp_color(T.ACTIVE_GLOW, color, t * 0.5)
+        try:
+            canvas.delete("all")
+            canvas.create_oval(0, 0, 8, 8, fill=c, outline=color)
+            canvas.after(60, lambda: self._animate_glow_dot(
+                canvas, color, bg, phase + 1))
+        except tk.TclError:
+            pass  # widget destroyed
 
     def _expand(self, target_w: int):
         self._expanded = True
@@ -632,6 +684,14 @@ class _SidebarPanel(tk.Frame):
 def import_math_sin(x):
     import math
     return math.sin(x)
+
+
+def _safe_pack(widget, **kw):
+    """Pack a widget only if it still exists (guards stagger callbacks)."""
+    try:
+        widget.pack(fill="x", **kw)
+    except tk.TclError:
+        pass
 
 
 # ── Animated titlebar particles ────────────────────────────────────────────────
@@ -883,18 +943,74 @@ class App(tk.Tk):
     def _switch_page(self, name: str):
         if name == self._active_page:
             return
-        # Hide current
-        if self._active_page and self._active_page in self._pages:
-            self._pages[self._active_page].pack_forget()
-        # Show new (with brief fade)
-        if name in self._pages:
+        if name not in self._pages:
+            return
+        # Guard: don't start a new transition if one is already running
+        if getattr(self, "_transitioning", False):
+            # Just do instant swap if spammed
+            if self._active_page and self._active_page in self._pages:
+                self._pages[self._active_page].pack_forget()
             page = self._pages[name]
             page.pack(fill="both", expand=True)
             self._active_page = name
             self._sidebar.set_active(name)
             if hasattr(page, "on_activate"):
                 page.on_activate()
-            self._status.set(f"Navigated to: {name.replace('_', ' ').title()}")
+            self._update_breadcrumb(name)
+            return
+        self._do_crossfade(name)
+
+    def _do_crossfade(self, name: str, step: int = 0, steps: int = 8):
+        """Two-phase crossfade: darken overlay → swap page → lift overlay."""
+        HALF = steps // 2
+        interval = max(1, T.TRANSITION_MS // steps)
+
+        if step == 0:
+            self._transitioning = True
+
+        if step <= HALF:
+            # Phase 1: overlay fades in over current content
+            t = step / HALF
+            overlay_bg = T.lerp_color(T.BG, T.SIDEBAR, t * 0.7)
+            self._fade_overlay.config(bg=overlay_bg)
+            self._fade_overlay.place(relx=0, rely=0, relwidth=1, relheight=1)
+            self._fade_overlay.lift()
+
+            if step == HALF:
+                # ── swap at midpoint ──────────────────────────────────────────
+                if self._active_page and self._active_page in self._pages:
+                    self._pages[self._active_page].pack_forget()
+                page = self._pages[name]
+                page.pack(fill="both", expand=True)
+                self._active_page = name
+                self._sidebar.set_active(name)
+                if hasattr(page, "on_activate"):
+                    page.on_activate()
+                self._update_breadcrumb(name)
+        else:
+            # Phase 2: overlay lifts to reveal new page
+            t = (step - HALF) / HALF
+            overlay_bg = T.lerp_color(T.SIDEBAR, T.BG, t * 0.7)
+            self._fade_overlay.config(bg=overlay_bg)
+            if step == steps:
+                self._fade_overlay.place_forget()
+                self._transitioning = False
+                return
+
+        self.after(interval,
+                   lambda: self._do_crossfade(name, step + 1, steps))
+
+    def _update_breadcrumb(self, name: str):
+        """Show 'CATEGORY  ›  Page Label' in the status bar."""
+        for cat in _NAV_CATEGORIES:
+            for key, icon, label, _ in cat["items"]:
+                if key == name:
+                    self._status.set(
+                        f"{cat['label']}  ›  {label}"
+                    )
+                    return
+        # Fallback for special pages (tools, etc.)
+        self._status.set(name.replace("_", " ").title())
 
     # ── run ────────────────────────────────────────────────────────────────────
 

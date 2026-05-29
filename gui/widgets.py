@@ -9,23 +9,120 @@ from . import theme as T
 # ── Card (glass panel) ────────────────────────────────────────────────────────
 
 class Card(tk.Frame):
-    """Glass-style card with optional animated border glow."""
-    def __init__(self, parent, glow: bool = False, **kw):
+    """Glass-style card with optional animated border glow.
+
+    Parameters
+    ----------
+    glow       : always-on pulsing border glow (original behaviour)
+    hover_glow : glow activates only while the mouse is over the card,
+                 then smoothly decays when the mouse leaves
+    """
+
+    def __init__(self, parent, glow: bool = False,
+                 hover_glow: bool = False, **kw):
         kw.setdefault("bg", T.PANEL)
         kw.setdefault("relief", "flat")
         kw.setdefault("bd", 0)
         super().__init__(parent, **kw)
-        self._glow = glow
+        self._glow       = glow
+        self._hover_glow = hover_glow
         self._glow_phase = 0
+        self._hg_active  = False   # True while mouse is inside
+        self._hg_phase   = 0       # 0-30 → ramp up, then decay
+
         if glow:
             self._start_glow()
+        if hover_glow:
+            self.bind("<Enter>", self._hg_enter, add="+")
+            self.bind("<Leave>", self._hg_leave, add="+")
 
+    # ── always-on glow (original) ─────────────────────────────────────────────
     def _start_glow(self):
         self._glow_phase = (self._glow_phase + 1) % 60
         t = (math.sin(self._glow_phase * math.pi / 30) + 1) / 2
         color = T.lerp_color(T.BORDER, T.HIGHLIGHT, t * 0.5)
         self.config(highlightbackground=color, highlightthickness=1)
         self.after(50, self._start_glow)
+
+    # ── hover glow ────────────────────────────────────────────────────────────
+    def _hg_enter(self, _=None):
+        self._hg_active = True
+        self._hg_phase  = 0
+        self._hg_step()
+
+    def _hg_leave(self, _=None):
+        self._hg_active = False
+        # decay continues in _hg_step
+
+    def _hg_step(self):
+        max_phase = 30
+        if self._hg_active:
+            self._hg_phase = min(self._hg_phase + 2, max_phase)
+        else:
+            self._hg_phase = max(self._hg_phase - 2, 0)
+
+        if self._hg_phase <= 0:
+            try:
+                self.config(highlightthickness=0)
+            except tk.TclError:
+                pass
+            return
+
+        t = self._hg_phase / max_phase
+        color = T.lerp_color(T.BORDER, T.HIGHLIGHT, t * 0.65)
+        try:
+            self.config(highlightbackground=color, highlightthickness=1)
+        except tk.TclError:
+            return
+        self.after(30, self._hg_step)
+
+
+# ── Page header ───────────────────────────────────────────────────────────────
+
+class PageHeader(tk.Frame):
+    """Standardised 52 px page header bar — consistent across all pages.
+
+    Layout (left→right):
+        4 px colour accent strip | 10 px gap | icon (optional, 22 px emoji) |
+        8 px gap | title (FONT_TITLE) | 12 px gap | subtitle (FONT_SMALL, FG2)
+
+    Usage::
+        PageHeader(page, title="Health Check", subtitle="Full system scan",
+                   icon="❤", color=T.DANGER).pack(fill="x")
+    """
+
+    HEIGHT = 52
+
+    def __init__(self, parent, title: str, subtitle: str = "",
+                 icon: str = "", color: str = None, **kw):
+        if color is None:
+            color = T.HIGHLIGHT
+        bg = T.lerp_color(T.ACCENT, color, 0.06)
+        kw.setdefault("bg", bg)
+        kw.setdefault("height", self.HEIGHT)
+        super().__init__(parent, **kw)
+        self.pack_propagate(False)
+
+        # Left accent strip
+        tk.Frame(self, bg=color, width=4).pack(side="left", fill="y")
+
+        # Optional icon
+        if icon:
+            tk.Label(self, text=icon, bg=bg, fg=color,
+                     font=(T.FONT_FAMILY, 18), padx=8).pack(side="left")
+
+        # Title
+        tk.Label(self, text=title, bg=bg, fg=T.FG,
+                 font=T.FONT_TITLE).pack(side="left", padx=(8 if not icon else 0, 0))
+
+        # Subtitle
+        if subtitle:
+            tk.Label(self, text=subtitle, bg=bg, fg=T.FG2,
+                     font=T.FONT_SMALL).pack(side="left", padx=(10, 0))
+
+        # Thin bottom border
+        tk.Frame(self, bg=T.lerp_color(T.BORDER, color, 0.25),
+                 height=1).place(relx=0, rely=1.0, relwidth=1, anchor="sw")
 
 
 # ── Section label ─────────────────────────────────────────────────────────────
@@ -46,7 +143,7 @@ class ActionButton(tk.Canvas):
     HEIGHT = 36
 
     def __init__(self, parent, text: str, command=None, danger: bool = False,
-                 secondary: bool = False, width: int = 160, **kw):
+                 secondary: bool = False, width: int = 0, **kw):
         try:
             parent_bg = parent.cget("bg") if hasattr(parent, "cget") else T.PANEL
             if not parent_bg or not parent_bg.startswith("#"):
@@ -55,6 +152,7 @@ class ActionButton(tk.Canvas):
             parent_bg = T.PANEL
         kw.setdefault("bg", parent_bg)
         kw.setdefault("highlightthickness", 0)
+        self._auto_width = (width == 0)
         super().__init__(parent, width=width, height=self.HEIGHT, **kw)
 
         self._text = text
@@ -81,6 +179,18 @@ class ActionButton(tk.Canvas):
 
     def _draw(self):
         self.delete("all")
+        # Auto-size: measure text width and expand canvas if needed
+        if self._auto_width:
+            try:
+                import tkinter.font as tkfont
+                f = tkfont.Font(family=T.FONT_FAMILY, size=10, weight="bold")
+                tw = f.measure(self._text)
+            except Exception:
+                tw = len(self._text) * 8
+            needed = tw + 32
+            cur = int(self.cget("width"))
+            if cur != needed:
+                self.config(width=needed)
         w = int(self.cget("width"))
         h = self.HEIGHT
         r = 6  # corner radius

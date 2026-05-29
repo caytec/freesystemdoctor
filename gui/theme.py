@@ -57,6 +57,11 @@ FONT_LARGE  = (FONT_FAMILY, 15, "bold")
 
 # ── Utilities ─────────────────────────────────────────────────────────────────
 
+# ── Animation timing ──────────────────────────────────────────────────────────
+TRANSITION_MS = 120   # page crossfade total duration (ms)
+STAGGER_MS    = 45    # per-item stagger delay in sidebar reveal (ms)
+
+
 def score_color(score: int) -> str:
     if score >= 80:
         return SUCCESS
@@ -81,3 +86,7 @@ def lighten(color: str, amount: float = 0.12) -> str:
 
 def darken(color: str, amount: float = 0.15) -> str:
     return lerp_color(color, "#000000", amount)
+
+
+# ── Active indicator colour (defined after lerp_color) ────────────────────────
+ACTIVE_GLOW = lerp_color(HIGHLIGHT, SIDEBAR, 0.55)   # sidebar active dot glow
