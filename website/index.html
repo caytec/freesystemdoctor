@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#070b16" />
+  <title>FreeSystemDoctor — Darmowy optymalizator Windows · 70+ narzędzi</title>
+  <meta name="description" content="FreeSystemDoctor to darmowy, otwartoźródłowy (MIT) optymalizator Windows. 70+ narzędzi: czyszczenie dysku, rejestru, autostart, lokalne AI offline. Zero telemetrii." />
+  <meta name="keywords" content="optymalizator windows, czyszczenie dysku, rejestr, autostart, darmowy, open source, AI offline, Ollama" />
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+  <link rel="canonical" href="https://freesystemdoctor.com.pl/" />
+
+  <!-- Set language before first paint (no flash of wrong language) -->
+  <script>
+    (function () {
+      try {
+        var s = localStorage.getItem('fsd-lang');
+        var lang = (s === 'en' || s === 'pl')
+          ? s
+          : ((navigator.language || 'pl').toLowerCase().indexOf('pl') === 0 ? 'pl' : 'en');
+        document.documentElement.lang = lang;
+      } catch (e) {}
+    })();
+  </script>
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="FreeSystemDoctor — Darmowy optymalizator Windows" />
+  <meta property="og:description" content="70+ narzędzi do optymalizacji Windows. Wbudowane lokalne AI (offline). Darmowy i otwartoźródłowy. Zero telemetrii." />
+  <meta property="og:url" content="https://freesystemdoctor.com.pl/" />
+  <meta property="og:image" content="https://freesystemdoctor.com.pl/og-image.png" />
+  <meta property="og:locale" content="pl_PL" />
+  <meta property="og:locale:alternate" content="en_US" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "FreeSystemDoctor",
+    "operatingSystem": "Windows 10, Windows 11",
+    "applicationCategory": "UtilitiesApplication",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "PLN" },
+    "softwareVersion": "2.2.0",
+    "license": "https://github.com/caytec/freesystemdoctor/blob/main/LICENSE",
+    "downloadUrl": "https://github.com/caytec/freesystemdoctor/releases/latest",
+    "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.9", "ratingCount": "120" }
+  }
+  </script>
+</head>
+<body>
+  <!-- scroll progress -->
+  <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
+
+  <!-- animated background layers (parallax) -->
+  <div class="bg-layers" aria-hidden="true">
+    <div class="bg-mesh"></div>
+    <div class="bg-grid" data-parallax="0.15"></div>
+    <div class="orb orb--cyan"   data-parallax="0.35"></div>
+    <div class="orb orb--purple" data-parallax="0.22"></div>
+    <div class="orb orb--gold"   data-parallax="0.5"></div>
+    <div class="noise"></div>
+  </div>
+
+  <!-- ════════════════════ NAV ════════════════════ -->
+  <header class="nav" id="nav">
+    <a href="#hero" class="nav__brand" aria-label="FreeSystemDoctor">
+      <span class="nav__logo">
+        <svg viewBox="0 0 64 64" width="30" height="30" aria-hidden="true">
+          <path d="M32 14v36M14 32h36" stroke="url(#navg)" stroke-width="7" stroke-linecap="round"/>
+          <circle cx="32" cy="32" r="6" fill="#0a0f1e" stroke="url(#navg)" stroke-width="3.5"/>
+          <defs><linearGradient id="navg" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#00d4ff"/><stop offset="1" stop-color="#e056d4"/>
+          </linearGradient></defs>
+        </svg>
+      </span>
+      <span class="nav__name">FreeSystem<b>Doctor</b></span>
+    </a>
+
+    <nav class="nav__links" id="navLinks" aria-label="Główna nawigacja">
+      <a href="#features"><span lang="pl">Funkcje</span><span lang="en">Features</span></a>
+      <a href="#ai"><span lang="pl">Lokalne AI</span><span lang="en">Local AI</span></a>
+      <a href="#how"><span lang="pl">Jak działa</span><span lang="en">How it works</span></a>
+      <a href="#compare"><span lang="pl">Porównanie</span><span lang="en">Compare</span></a>
+      <a href="#pricing"><span lang="pl">Cennik</span><span lang="en">Pricing</span></a>
+      <a href="#faq">FAQ</a>
+    </nav>
+
+    <div class="nav__actions">
+      <button class="lang-toggle" id="langToggle" aria-label="Zmień język / Switch language">
+        <span lang="pl">EN</span><span lang="en">PL</span>
+      </button>
+      <a class="btn btn--ghost nav__gh" href="https://github.com/caytec/freesystemdoctor" target="_blank" rel="noopener" aria-label="GitHub">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M12 .5C5.7.5.5 5.7.5 12c0 5.1 3.3 9.4 7.9 10.9.6.1.8-.2.8-.6v-2c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.7 1.3 3.4 1 .1-.8.4-1.3.8-1.6-2.6-.3-5.3-1.3-5.3-5.8 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17.3 4.7 18.3 5 18.3 5c.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.5-2.7 5.5-5.3 5.8.4.4.8 1.1.8 2.2v3.3c0 .4.2.7.8.6 4.6-1.5 7.9-5.8 7.9-10.9C23.5 5.7 18.3.5 12 .5z"/></svg>
+      </a>
+      <a class="btn btn--primary nav__dl" href="https://github.com/caytec/freesystemdoctor/releases/latest" target="_blank" rel="noopener">
+        <span lang="pl">Pobierz</span><span lang="en">Download</span>
+      </a>
+      <button class="nav__burger" id="navBurger" aria-label="Menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <!-- ════════════════════ HERO ════════════════════ -->
+    <section class="hero" id="hero">
+      <div class="hero__inner">
+        <div class="hero__text" data-reveal>
+          <span class="pill" data-reveal>
+            <span class="pill__dot"></span>
+            <span lang="pl">Wersja 2.2.0 · 100% darmowa · MIT</span>
+            <span lang="en">Version 2.2.0 · 100% free · MIT</span>
+          </span>
+
+          <h1 class="hero__title" data-reveal>
+            <span lang="pl">Twój Windows<br><span class="grad">znów jak nowy.</span></span>
+            <span lang="en">Your Windows,<br><span class="grad">brand new again.</span></span>
+          </h1>
+
+          <p class="hero__sub" data-reveal>
+            <span lang="pl">70+ narzędzi do czyszczenia, przyspieszania i ochrony systemu — w jednej lekkiej aplikacji. Teraz z <b>wbudowanym lokalnym AI</b>, które działa offline bez kluczy API.</span>
+            <span lang="en">70+ tools to clean, speed up and protect your system — in one lightweight app. Now with <b>built-in local AI</b> that runs fully offline, no API keys.</span>
+          </p>
+
+          <div class="hero__cta" data-reveal>
+            <a class="btn btn--primary btn--lg" href="https://github.com/caytec/freesystemdoctor/releases/latest" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg>
+              <span lang="pl">Pobierz dla Windows</span><span lang="en">Download for Windows</span>
+            </a>
+            <a class="btn btn--ghost btn--lg" href="#features">
+              <span lang="pl">Zobacz funkcje</span><span lang="en">See features</span>
+            </a>
+          </div>
+
+          <ul class="hero__trust" data-reveal>
+            <li><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg> <span lang="pl">Zero telemetrii</span><span lang="en">Zero telemetry</span></li>
+            <li><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg> <span lang="pl">Otwarty kod (MIT)</span><span lang="en">Open source (MIT)</span></li>
+            <li><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg> <span lang="pl">Bez reklam i PUP</span><span lang="en">No ads, no bundleware</span></li>
+          </ul>
+        </div>
+
+        <!-- App window mockup with 3D tilt + parallax -->
+        <div class="hero__visual" data-reveal>
+          <div class="mockup" id="mockup" data-tilt>
+            <div class="mockup__bar">
+              <span class="dot dot--r"></span><span class="dot dot--y"></span><span class="dot dot--g"></span>
+              <span class="mockup__title">FreeSystemDoctor</span>
+            </div>
+            <div class="mockup__body">
+              <div class="mockup__side">
+                <span class="ms-item ms-item--active">🩺 <span lang="pl">Diagnoza</span><span lang="en">Care</span></span>
+                <span class="ms-item">⚡ <span lang="pl">Przyspiesz</span><span lang="en">Speed up</span></span>
+                <span class="ms-item">🛡️ <span lang="pl">Ochrona</span><span lang="en">Protect</span></span>
+                <span class="ms-item">🤖 <span lang="pl">AI Agent</span><span lang="en">AI Agent</span></span>
+                <span class="ms-item">🎮 <span lang="pl">Gaming</span><span lang="en">Gaming</span></span>
+              </div>
+              <div class="mockup__main">
+                <div class="gauge">
+                  <svg viewBox="0 0 120 120" aria-hidden="true">
+                    <circle cx="60" cy="60" r="52" stroke="#1f2940" stroke-width="10" fill="none"/>
+                    <circle class="gauge__arc" cx="60" cy="60" r="52" stroke="url(#gg)" stroke-width="10" fill="none" stroke-linecap="round" transform="rotate(-90 60 60)"/>
+                    <defs><linearGradient id="gg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#00d4ff"/><stop offset="1" stop-color="#22e688"/></linearGradient></defs>
+                  </svg>
+                  <div class="gauge__num"><span class="count" data-target="94">0</span><small>/100</small></div>
+                </div>
+                <div class="mockup__cards">
+                  <div class="mc"><span class="mc__k" lang="pl">RAM zwolniony</span><span class="mc__k" lang="en">RAM freed</span><span class="mc__v grad">2.4 GB</span></div>
+                  <div class="mc"><span class="mc__k" lang="pl">Śmieci usunięte</span><span class="mc__k" lang="en">Junk removed</span><span class="mc__v grad">8.1 GB</span></div>
+                  <div class="mc"><span class="mc__k" lang="pl">Autostart</span><span class="mc__k" lang="en">Startup</span><span class="mc__v grad">-12</span></div>
+                  <div class="mc"><span class="mc__k" lang="pl">Boot szybszy</span><span class="mc__k" lang="en">Boot faster</span><span class="mc__v grad">31%</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="mockup__glow"></div>
+        </div>
+      </div>
+
+      <a href="#stats" class="hero__scroll" aria-label="Przewiń">
+        <span></span>
+      </a>
+    </section>
+
+    <!-- ════════════════════ STATS ════════════════════ -->
+    <section class="stats" id="stats">
+      <div class="stats__grid">
+        <div class="stat" data-reveal>
+          <div class="stat__num"><span class="count" data-target="70">0</span>+</div>
+          <div class="stat__lbl"><span lang="pl">narzędzi w jednym</span><span lang="en">tools in one app</span></div>
+        </div>
+        <div class="stat" data-reveal>
+          <div class="stat__num"><span class="count" data-target="39">0</span> MB</div>
+          <div class="stat__lbl"><span lang="pl">lekka instalka</span><span lang="en">lightweight install</span></div>
+        </div>
+        <div class="stat" data-reveal>
+          <div class="stat__num">0 zł</div>
+          <div class="stat__lbl"><span lang="pl">i tak zostanie</span><span lang="en">forever free</span></div>
+        </div>
+        <div class="stat" data-reveal>
+          <div class="stat__num"><span class="count" data-target="100">0</span>%</div>
+          <div class="stat__lbl"><span lang="pl">otwarty kod</span><span lang="en">open source</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════ FEATURES ════════════════════ -->
+    <section class="section" id="features">
+      <div class="section__head" data-reveal>
+        <span class="eyebrow"><span lang="pl">Wszystko w jednym</span><span lang="en">All in one</span></span>
+        <h2 class="section__title">
+          <span lang="pl">Jeden program. <span class="grad">Cały arsenał.</span></span>
+          <span lang="en">One app. <span class="grad">A whole arsenal.</span></span>
+        </h2>
+        <p class="section__lead">
+          <span lang="pl">Zamiast 10 osobnych aplikacji — wszystko czego potrzebuje Twój komputer w jednym, przejrzystym miejscu.</span>
+          <span lang="en">Instead of 10 separate apps — everything your PC needs in one clean place.</span>
+        </p>
+      </div>
+
+      <div class="bento">
+        <article class="card card--wide" data-reveal data-parallax="0.05">
+          <div class="card__icon">🧹</div>
+          <h3><span lang="pl">Głębokie czyszczenie</span><span lang="en">Deep cleaning</span></h3>
+          <p><span lang="pl">Dysk, rejestr, pliki tymczasowe, cache przeglądarek, duplikaty i puste foldery. Odzyskaj gigabajty jednym kliknięciem.</span><span lang="en">Disk, registry, temp files, browser cache, duplicates and empty folders. Reclaim gigabytes in one click.</span></p>
+        </article>
+
+        <article class="card" data-reveal>
+          <div class="card__icon">⚡</div>
+          <h3><span lang="pl">Przyspieszanie</span><span lang="en">Speed boost</span></h3>
+          <p><span lang="pl">Optymalizacja RAM, CPU i autostartu. Tryb Turbo i Gaming Booster.</span><span lang="en">RAM, CPU and startup optimization. Turbo mode and Gaming Booster.</span></p>
+        </article>
+
+        <article class="card" data-reveal>
+          <div class="card__icon">🛡️</div>
+          <h3><span lang="pl">Ochrona i prywatność</span><span lang="en">Privacy &amp; protection</span></h3>
+          <p><span lang="pl">Wyłącz telemetrię, chroń kamerę, DNS i zaporę. Bezpieczne usuwanie plików.</span><span lang="en">Disable telemetry, protect webcam, DNS and firewall. Secure file shredding.</span></p>
+        </article>
+
+        <article class="card card--accent" data-reveal data-parallax="0.07">
+          <div class="card__icon">🤖</div>
+          <h3><span lang="pl">AI Agent — teraz lokalnie</span><span lang="en">AI Agent — now local</span></h3>
+          <p><span lang="pl">Analiza zdrowia systemu, porady sprzętowe i gamingowe. Działa offline na lokalnym modelu (Ollama, &lt;1 GB) — bez kluczy i bez wysyłania danych.</span><span lang="en">System health analysis, hardware &amp; gaming advice. Runs offline on a local model (Ollama, &lt;1 GB) — no keys, no data sent.</span></p>
+          <span class="card__badge"><span lang="pl">Nowość</span><span lang="en">New</span></span>
+        </article>
+
+        <article class="card" data-reveal>
+          <div class="card__icon">🔧</div>
+          <h3><span lang="pl">Naprawa i sterowniki</span><span lang="en">Repair &amp; drivers</span></h3>
+          <p><span lang="pl">Naprawa systemu, aktualizacja sterowników, punkty przywracania i kopie.</span><span lang="en">System repair, driver updates, restore points and backups.</span></p>
+        </article>
+
+        <article class="card" data-reveal>
+          <div class="card__icon">📊</div>
+          <h3><span lang="pl">Monitor na żywo</span><span lang="en">Live monitor</span></h3>
+          <p><span lang="pl">CPU, RAM, GPU, temperatury i sieć w czasie rzeczywistym + mini-HUD.</span><span lang="en">CPU, RAM, GPU, temps and network in real time + mini-HUD.</span></p>
+        </article>
+
+        <article class="card card--wide" data-reveal data-parallax="0.05">
+          <div class="card__icon">🚀</div>
+          <h3><span lang="pl">Autostart z Windows + harmonogram</span><span lang="en">Windows autostart + scheduler</span></h3>
+          <p><span lang="pl">Uruchamiaj się automatycznie przy logowaniu (bez okna UAC, przez Harmonogram zadań) i planuj cykliczne czyszczenie. Ustaw i zapomnij.</span><span lang="en">Launch automatically at logon (no UAC popup, via Task Scheduler) and schedule recurring cleanups. Set it and forget it.</span></p>
+        </article>
+      </div>
+    </section>
+
+    <!-- ════════════════════ AI SPOTLIGHT ════════════════════ -->
+    <section class="section ai" id="ai">
+      <div class="ai__inner">
+        <div class="ai__text" data-reveal data-parallax="0.06">
+          <span class="eyebrow"><span lang="pl">🦙 Lokalne AI · offline</span><span lang="en">🦙 Local AI · offline</span></span>
+          <h2 class="section__title">
+            <span lang="pl">Inteligencja, która <span class="grad">nie opuszcza Twojego PC.</span></span>
+            <span lang="en">Intelligence that <span class="grad">never leaves your PC.</span></span>
+          </h2>
+          <p class="section__lead">
+            <span lang="pl">Wbudowany agent AI analizuje sprzęt i system, a następnie podpowiada konkretne usprawnienia. Możesz użyć lekkiego modelu lokalnego (poniżej 1 GB) — wszystko liczy się na Twoim komputerze.</span>
+            <span lang="en">The built-in AI agent analyzes your hardware and system, then suggests concrete improvements. Use a lightweight local model (under 1 GB) — everything runs on your machine.</span>
+          </p>
+          <ul class="ai__list">
+            <li data-reveal><b>qwen2.5:0.5b</b> — <span lang="pl">~394 MB, polecany model poniżej 1 GB</span><span lang="en">~394 MB, recommended sub-1 GB model</span></li>
+            <li data-reveal><span lang="pl"><b>Prywatność</b> — żadne dane nie wychodzą z urządzenia</span><span lang="en"><b>Privacy</b> — no data ever leaves the device</span></li>
+            <li data-reveal><span lang="pl"><b>Bez kosztów</b> — brak kluczy API i abonamentów</span><span lang="en"><b>Zero cost</b> — no API keys, no subscriptions</span></li>
+            <li data-reveal><span lang="pl"><b>Tryb chmurowy</b> opcjonalnie (Groq, Cerebras…) jako zapas</span><span lang="en"><b>Cloud mode</b> optional (Groq, Cerebras…) as fallback</span></li>
+          </ul>
+        </div>
+
+        <div class="ai__demo" data-reveal data-parallax="0.12">
+          <div class="terminal">
+            <div class="terminal__bar"><span class="dot dot--r"></span><span class="dot dot--y"></span><span class="dot dot--g"></span><span>ollama</span></div>
+            <pre class="terminal__body"><code><span class="t-dim">$</span> ollama pull qwen2.5:0.5b
+<span class="t-ok">✓</span> pobrano 394 MB · gotowe
+<span class="t-dim">›</span> FreeSystemDoctor → AI Agent → <span class="t-acc">▶ Analizuj</span>
+
+<span class="t-acc">## Wynik ogólny: 94/100</span>
+<span class="t-ok">✓</span> Sprzęt: bardzo dobry (CPU/RAM/SSD)
+<span class="t-warn">!</span> 12 zbędnych programów w autostarcie
+<span class="t-acc">→</span> Zalecenie: wyłącz indeksowanie na SSD
+<span class="t-acc">→</span> Zalecenie: tryb zasilania „Najwyższa wydajność"
+<span class="t-dim">analiza lokalna · 0 danych wysłanych</span></code></pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════ HOW IT WORKS ════════════════════ -->
+    <section class="section" id="how">
+      <div class="section__head" data-reveal>
+        <span class="eyebrow"><span lang="pl">Prościej się nie da</span><span lang="en">It can't get simpler</span></span>
+        <h2 class="section__title"><span lang="pl">Trzy kroki do <span class="grad">szybszego PC</span></span><span lang="en">Three steps to a <span class="grad">faster PC</span></span></h2>
+      </div>
+      <div class="steps">
+        <div class="step" data-reveal>
+          <div class="step__no">1</div>
+          <h3><span lang="pl">Pobierz i uruchom</span><span lang="en">Download &amp; run</span></h3>
+          <p><span lang="pl">Jeden plik .exe, 39 MB. Bez instalatora-śmietnika, bez kont.</span><span lang="en">A single 39 MB .exe. No junk installer, no accounts.</span></p>
+        </div>
+        <div class="step" data-reveal>
+          <div class="step__no">2</div>
+          <h3><span lang="pl">Skanuj jednym kliknięciem</span><span lang="en">Scan in one click</span></h3>
+          <p><span lang="pl">Diagnoza pokaże co spowalnia system i ile możesz odzyskać.</span><span lang="en">The health check shows what slows you down and what you can reclaim.</span></p>
+        </div>
+        <div class="step" data-reveal>
+          <div class="step__no">3</div>
+          <h3><span lang="pl">Optymalizuj i ciesz się</span><span lang="en">Optimize &amp; enjoy</span></h3>
+          <p><span lang="pl">Zastosuj zalecenia lub włącz autopilota z harmonogramem.</span><span lang="en">Apply the recommendations or enable autopilot with a schedule.</span></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════ COMPARE ════════════════════ -->
+    <section class="section" id="compare">
+      <div class="section__head" data-reveal>
+        <span class="eyebrow"><span lang="pl">Bez kompromisów</span><span lang="en">No compromises</span></span>
+        <h2 class="section__title"><span lang="pl">Dlaczego <span class="grad">FreeSystemDoctor</span>?</span><span lang="en">Why <span class="grad">FreeSystemDoctor</span>?</span></h2>
+      </div>
+      <div class="compare" data-reveal>
+        <table class="compare__table">
+          <thead>
+            <tr>
+              <th><span lang="pl">Funkcja</span><span lang="en">Feature</span></th>
+              <th class="is-us">FreeSystemDoctor</th>
+              <th><span lang="pl">Typowy „cleaner"</span><span lang="en">Typical "cleaner"</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td><span lang="pl">Cena</span><span lang="en">Price</span></td><td class="is-us"><b>0 zł</b></td><td><span lang="pl">abonament</span><span lang="en">subscription</span></td></tr>
+            <tr><td><span lang="pl">Otwarty kod</span><span lang="en">Open source</span></td><td class="is-us">✓ MIT</td><td>✗</td></tr>
+            <tr><td><span lang="pl">Telemetria / śledzenie</span><span lang="en">Telemetry / tracking</span></td><td class="is-us"><span lang="pl">brak</span><span lang="en">none</span></td><td><span lang="pl">często</span><span lang="en">often</span></td></tr>
+            <tr><td><span lang="pl">Lokalne AI (offline)</span><span lang="en">Local AI (offline)</span></td><td class="is-us">✓</td><td>✗</td></tr>
+            <tr><td><span lang="pl">Dodatkowe „bundleware"</span><span lang="en">Bundled extras (PUP)</span></td><td class="is-us"><span lang="pl">nigdy</span><span lang="en">never</span></td><td><span lang="pl">zwykle</span><span lang="en">usually</span></td></tr>
+            <tr><td><span lang="pl">Liczba narzędzi</span><span lang="en">Number of tools</span></td><td class="is-us"><b>70+</b></td><td>10–20</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ════════════════════ PRICING ════════════════════ -->
+    <section class="section" id="pricing">
+      <div class="section__head" data-reveal>
+        <span class="eyebrow"><span lang="pl">Uczciwy cennik</span><span lang="en">Honest pricing</span></span>
+        <h2 class="section__title"><span lang="pl">Wybierz swój <span class="grad">poziom</span></span><span lang="en">Choose your <span class="grad">tier</span></span></h2>
+        <p class="section__lead"><span lang="pl">Rdzeń jest i pozostanie darmowy. Plany Pro tylko jeśli chcesz wesprzeć rozwój i odblokować dodatki.</span><span lang="en">The core is and stays free. Pro plans only if you want to support development and unlock extras.</span></p>
+      </div>
+
+      <div class="tiers">
+        <article class="tier" data-reveal>
+          <h3 class="tier__name">Free</h3>
+          <div class="tier__price">0 zł</div>
+          <p class="tier__desc"><span lang="pl">Wszystko czego potrzebujesz na co dzień.</span><span lang="en">Everything you need day to day.</span></p>
+          <ul class="tier__list">
+            <li><span lang="pl">70+ narzędzi optymalizacji</span><span lang="en">70+ optimization tools</span></li>
+            <li><span lang="pl">Lokalne AI (offline)</span><span lang="en">Local AI (offline)</span></li>
+            <li><span lang="pl">Autostart i harmonogram</span><span lang="en">Autostart &amp; scheduler</span></li>
+            <li><span lang="pl">Aktualizacje na zawsze</span><span lang="en">Updates forever</span></li>
+          </ul>
+          <a class="btn btn--ghost btn--block" href="https://github.com/caytec/freesystemdoctor/releases/latest" target="_blank" rel="noopener"><span lang="pl">Pobierz teraz</span><span lang="en">Download now</span></a>
+        </article>
+
+        <article class="tier tier--featured" data-reveal data-parallax="0.05">
+          <span class="tier__ribbon"><span lang="pl">Najpopularniejszy</span><span lang="en">Most popular</span></span>
+          <h3 class="tier__name">Pro</h3>
+          <div class="tier__price">29 zł<small>/<span lang="pl">rok</span><span lang="en">yr</span></small></div>
+          <p class="tier__desc"><span lang="pl">Dla wymagających i entuzjastów.</span><span lang="en">For power users and enthusiasts.</span></p>
+          <ul class="tier__list">
+            <li><span lang="pl">Wszystko z Free</span><span lang="en">Everything in Free</span></li>
+            <li><span lang="pl">Chmurowe AI premium</span><span lang="en">Premium cloud AI</span></li>
+            <li><span lang="pl">Profile wydajności +</span><span lang="en">Performance profiles +</span></li>
+            <li><span lang="pl">Priorytetowe wsparcie</span><span lang="en">Priority support</span></li>
+          </ul>
+          <a class="btn btn--primary btn--block" href="https://ko-fi.com/F1F51O3A4A" target="_blank" rel="noopener"><span lang="pl">Wesprzyj i odblokuj</span><span lang="en">Support &amp; unlock</span></a>
+        </article>
+
+        <article class="tier" data-reveal>
+          <h3 class="tier__name">Ultimate B2B</h3>
+          <div class="tier__price"><span lang="pl">Wycena</span><span lang="en">Custom</span></div>
+          <p class="tier__desc"><span lang="pl">Dla firm i serwisów IT.</span><span lang="en">For companies and IT shops.</span></p>
+          <ul class="tier__list">
+            <li><span lang="pl">Wdrożenie masowe</span><span lang="en">Mass deployment</span></li>
+            <li><span lang="pl">Raporty i panel floty</span><span lang="en">Reports &amp; fleet panel</span></li>
+            <li><span lang="pl">Branding własny</span><span lang="en">Custom branding</span></li>
+            <li><span lang="pl">Umowa SLA</span><span lang="en">SLA agreement</span></li>
+          </ul>
+          <a class="btn btn--ghost btn--block" href="https://github.com/caytec/freesystemdoctor/discussions" target="_blank" rel="noopener"><span lang="pl">Skontaktuj się</span><span lang="en">Contact us</span></a>
+        </article>
+      </div>
+    </section>
+
+    <!-- ════════════════════ FAQ ════════════════════ -->
+    <section class="section" id="faq">
+      <div class="section__head" data-reveal>
+        <span class="eyebrow">FAQ</span>
+        <h2 class="section__title"><span lang="pl">Częste <span class="grad">pytania</span></span><span lang="en">Frequent <span class="grad">questions</span></span></h2>
+      </div>
+      <div class="faq" data-reveal>
+        <details class="faq__item">
+          <summary><span lang="pl">Czy to naprawdę darmowe?</span><span lang="en">Is it really free?</span></summary>
+          <p><span lang="pl">Tak. Rdzeń aplikacji jest darmowy i otwartoźródłowy (licencja MIT) — na zawsze. Plany Pro są w pełni opcjonalne.</span><span lang="en">Yes. The core app is free and open source (MIT license) — forever. Pro plans are entirely optional.</span></p>
+        </details>
+        <details class="faq__item">
+          <summary><span lang="pl">Czy aplikacja zbiera moje dane?</span><span lang="en">Does it collect my data?</span></summary>
+          <p><span lang="pl">Nie. Zero telemetrii, zero trackerów. Lokalne AI liczy się na Twoim komputerze i nic nie wysyła.</span><span lang="en">No. Zero telemetry, zero trackers. Local AI runs on your machine and sends nothing.</span></p>
+        </details>
+        <details class="faq__item">
+          <summary><span lang="pl">Jak działa lokalne AI?</span><span lang="en">How does local AI work?</span></summary>
+          <p><span lang="pl">Instalujesz darmowe Ollama i pobierasz lekki model (np. qwen2.5:0.5b, ~394 MB). FreeSystemDoctor łączy się z nim lokalnie — offline, bez kluczy API.</span><span lang="en">You install free Ollama and pull a lightweight model (e.g. qwen2.5:0.5b, ~394 MB). FreeSystemDoctor talks to it locally — offline, no API keys.</span></p>
+        </details>
+        <details class="faq__item">
+          <summary><span lang="pl">Czy jest bezpieczna dla mojego systemu?</span><span lang="en">Is it safe for my system?</span></summary>
+          <p><span lang="pl">Tak. Tworzy punkty przywracania i kopie rejestru przed zmianami, a kod jest publiczny do wglądu na GitHubie.</span><span lang="en">Yes. It creates restore points and registry backups before changes, and the code is public on GitHub for review.</span></p>
+        </details>
+        <details class="faq__item">
+          <summary><span lang="pl">Jakie systemy są wspierane?</span><span lang="en">Which systems are supported?</span></summary>
+          <p><span lang="pl">Windows 10 i Windows 11 (64-bit).</span><span lang="en">Windows 10 and Windows 11 (64-bit).</span></p>
+        </details>
+      </div>
+    </section>
+
+    <!-- ════════════════════ FINAL CTA ════════════════════ -->
+    <section class="cta" id="get">
+      <div class="cta__card" data-reveal data-parallax="0.05">
+        <h2 class="cta__title"><span lang="pl">Gotowy na <span class="grad">szybszy komputer</span>?</span><span lang="en">Ready for a <span class="grad">faster PC</span>?</span></h2>
+        <p class="cta__sub"><span lang="pl">Pobierz FreeSystemDoctor i odzyskaj wydajność w kilka minut. Za darmo, bez haczyków.</span><span lang="en">Download FreeSystemDoctor and reclaim performance in minutes. Free, no strings.</span></p>
+        <div class="cta__btns">
+          <a class="btn btn--primary btn--lg" href="https://github.com/caytec/freesystemdoctor/releases/latest" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg>
+            <span lang="pl">Pobierz za darmo</span><span lang="en">Download for free</span>
+          </a>
+          <a class="btn btn--ghost btn--lg" href="https://ko-fi.com/F1F51O3A4A" target="_blank" rel="noopener">☕ <span lang="pl">Postaw kawę</span><span lang="en">Buy a coffee</span></a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ════════════════════ FOOTER ════════════════════ -->
+  <footer class="footer">
+    <div class="footer__grid">
+      <div class="footer__brand">
+        <span class="nav__name">FreeSystem<b>Doctor</b></span>
+        <p><span lang="pl">Darmowy, otwartoźródłowy optymalizator Windows. Zbudowany w Polsce. 🇵🇱</span><span lang="en">Free, open-source Windows optimizer. Built in Poland. 🇵🇱</span></p>
+      </div>
+      <div class="footer__col">
+        <h4><span lang="pl">Produkt</span><span lang="en">Product</span></h4>
+        <a href="#features"><span lang="pl">Funkcje</span><span lang="en">Features</span></a>
+        <a href="#pricing"><span lang="pl">Cennik</span><span lang="en">Pricing</span></a>
+        <a href="https://github.com/caytec/freesystemdoctor/releases/latest" target="_blank" rel="noopener"><span lang="pl">Pobierz</span><span lang="en">Download</span></a>
+      </div>
+      <div class="footer__col">
+        <h4>Open source</h4>
+        <a href="https://github.com/caytec/freesystemdoctor" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://github.com/caytec/freesystemdoctor/issues" target="_blank" rel="noopener"><span lang="pl">Zgłoś błąd</span><span lang="en">Report a bug</span></a>
+        <a href="https://github.com/caytec/freesystemdoctor/blob/main/LICENSE" target="_blank" rel="noopener"><span lang="pl">Licencja MIT</span><span lang="en">MIT License</span></a>
+      </div>
+      <div class="footer__col">
+        <h4><span lang="pl">Prawne</span><span lang="en">Legal</span></h4>
+        <a href="./privacy.html"><span lang="pl">Prywatność</span><span lang="en">Privacy</span></a>
+        <a href="./terms.html"><span lang="pl">Regulamin</span><span lang="en">Terms</span></a>
+        <a href="./affiliate-disclosure.html"><span lang="pl">Afiliacja</span><span lang="en">Affiliate</span></a>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <span>© 2026 FreeSystemDoctor · <span lang="pl">Licencja MIT</span><span lang="en">MIT License</span></span>
+      <span class="footer__made"><span lang="pl">Stworzone z</span><span lang="en">Made with</span> <span class="heart">♥</span> <span lang="pl">dla społeczności</span><span lang="en">for the community</span></span>
+    </div>
+  </footer>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
