@@ -326,4 +326,116 @@
     <string name="app_insights_hidden">Aplikacje bez launchera</string>
     <string name="app_insights_installed">Zainstalowano</string>
     <string name="app_insights_updated">Zaktualizowano</string>
+
+    <!-- Wave 7: Pro Lab (Update 9) -->
+    <string name="unlock_header_tool">Odblokuj: %1$s</string>
+    <string name="unlock_header_generic">Odblokuj to narzędzie</string>
+    <string name="unlock_header_sub">Wybierz sposób włączenia tej funkcji Pro.</string>
+    <string name="unlock_locked_cd">Zablokowane</string>
+    <string name="unlock_opt_tool_title">Odblokuj to narzędzie na 24h</string>
+    <string name="unlock_opt_tool_sub">Obejrzyj krótką reklamę. Tylko to narzędzie, tylko dziś.</string>
+    <string name="unlock_opt_trial_title">Wypróbuj Pro przez 3 dni</string>
+    <string name="unlock_opt_trial_sub">Obejrzyj krótką reklamę, odblokuj wszystko na 3 dni. Oferta jednorazowa.</string>
+    <string name="unlock_opt_buy_title">Kup Pro na zawsze</string>
+    <string name="unlock_opt_buy_sub">Wszystkie narzędzia, bez reklam, wsparcie projektu.</string>
+    <string name="unlock_restore">Przywróć zakupy</string>
+    <string name="unlock_trial_used">Wykorzystany</string>
+    <string name="unlock_ad_not_ready">Reklama nie jest gotowa — spróbuj za chwilę</string>
+    <string name="unlock_trial_expired_title">Twój 3-dniowy okres Pro się skończył</string>
+    <string name="unlock_trial_expired_sub">Wybierz, co dalej — bez pośpiechu.</string>
+
+    <string name="pro_try_trial">Wypróbuj Pro przez 3 dni (obejrzyj reklamę)</string>
+    <string name="pro_try_trial_sub">Oferta jednorazowa. Pełne Pro na 3 dni.</string>
+    <string name="pro_trial_active">Okres Pro aktywny.</string>
+
+    <string name="tool_app_resource">Raport zasobów</string>
+    <string name="app_resource_note">Jeden wynik „kosztu" per aplikacja — z pamięci, cache, danych 30d, czasu ekranowego 7d i ostatniego użycia. Najwięksi zjadacze na górze.</string>
+    <string name="app_resource_score">Wynik</string>
+    <string name="app_resource_storage">Pamięć</string>
+    <string name="app_resource_cache">Cache</string>
+    <string name="app_resource_data">Dane 30d</string>
+    <string name="app_resource_screentime">Ekran 7d</string>
+    <string name="app_resource_last_used">Ostatnio</string>
+    <string name="app_resource_never">Nigdy</string>
+    <string name="app_resource_action_settings">Ustawienia apki</string>
+    <string name="app_resource_action_uninstall">Odinstaluj</string>
+    <string name="app_resource_action_stop">Spróbuj zatrzymać</string>
+    <string name="app_resource_export_csv">Eksport CSV</string>
+    <string name="app_resource_export_done">Zapisano CSV: %1$s</string>
+    <string name="app_resource_disclaimer">Wynik jest heurystyką — wysoki nie zawsze znaczy „usuń". Sprawdź przed akcją.</string>
+    <string name="app_resource_empty">Przyznaj „Dostęp do statystyk użycia", aby policzyć wyniki.</string>
+
+    <string name="tool_storage_forecast">Prognoza pamięci</string>
+    <string name="storage_forecast_note">Przewiduje, za ile dni pamięć się zapełni, na podstawie 7–14 dni trendu wolnego miejsca.</string>
+    <string name="storage_forecast_gathering">Zbieram dane — ok. %1$d dni do startu</string>
+    <string name="storage_forecast_no_trend">Brak trendu wyczerpania.</string>
+    <string name="storage_forecast_days_left">%1$d dni do zapełnienia</string>
+    <string name="storage_forecast_over_year">Powyżej roku zapasu</string>
+    <string name="storage_forecast_free_now">Wolne teraz: %1$s</string>
+    <string name="storage_forecast_open_cleaner">Otwórz Czyszczenie</string>
+    <string name="storage_forecast_disclaimer">Snapshoty są raz dziennie. Prognoza zakłada podobne zużycie.</string>
+    <string name="storage_forecast_warn_title">Pamięć się kończy</string>
+    <string name="storage_forecast_warn_text">~%1$d dni do zapełnienia w obecnym tempie. Otwórz Czyszczenie.</string>
+    <string name="storage_forecast_channel">Prognoza pamięci</string>
+
+    <string name="tool_focus">Tryb skupienia</string>
+    <string name="focus_note">Zwalnia RAM w tle, włącza Nie przeszkadzać (tryb priorytetowy), trzyma czytelne powiadomienie z opcją zakończenia.</string>
+    <string name="focus_start">Rozpocznij sesję</string>
+    <string name="focus_end">Zakończ sesję</string>
+    <string name="focus_running_title">Skupienie aktywne</string>
+    <string name="focus_running_text">Kliknij, by zakończyć · start %1$s</string>
+    <string name="focus_duration">Czas: %1$d min</string>
+    <string name="focus_dnd_perm">Pozwól aplikacji sterować trybem Nie przeszkadzać</string>
+    <string name="focus_dnd_grant">Przyznaj dostęp do DND</string>
+    <string name="focus_channel">Tryb skupienia</string>
+    <string name="focus_profile_gaming">Granie</string>
+    <string name="focus_profile_reading">Czytanie</string>
+    <string name="focus_profile_work">Praca</string>
+
+    <string name="tool_app_lock">Blokada aplikacji</string>
+    <string name="app_lock_note">Wybierz apki blokowane biometrią lub PIN-em urządzenia. Best-effort — to nie jest bariera bezpieczeństwa przeciw zaawansowanemu atakującemu.</string>
+    <string name="app_lock_enable">Włącz blokadę aplikacji</string>
+    <string name="app_lock_pick_apps">Wybierz apki do zablokowania</string>
+    <string name="app_lock_count">Zablokowane: %1$d</string>
+    <string name="app_lock_perm_usage">Wymagany dostęp do statystyk użycia (do wykrywania uruchomienia apki)</string>
+    <string name="app_lock_perm_overlay">Wymagane uprawnienie do nakładki nad innymi aplikacjami</string>
+    <string name="app_lock_perm_grant_usage">Przyznaj dostęp do statystyk</string>
+    <string name="app_lock_perm_grant_overlay">Przyznaj nakładkę</string>
+    <string name="app_lock_running_title">Blokada aplikacji działa</string>
+    <string name="app_lock_running_text">Zablokowane: %1$d</string>
+    <string name="app_lock_channel">Blokada aplikacji</string>
+    <string name="app_lock_prompt_title">Odblokuj aplikację</string>
+    <string name="app_lock_prompt_subtitle">Uwierzytelnij, aby otworzyć.</string>
+
+    <string name="tool_cloud_backup">Backup do chmury</string>
+    <string name="cloud_backup_note">Pakuje ustawienia, listę aplikacji, listę WiFi i opcjonalnie kontakty + SMS do pliku szyfrowanego hasłem. Cel wybierasz sam (Google Drive, OneDrive, dowolna chmura przez SAF).</string>
+    <string name="cloud_backup_pick_folder">Wybierz folder docelowy</string>
+    <string name="cloud_backup_folder_set">Cel ustawiony ✓</string>
+    <string name="cloud_backup_passphrase">Hasło</string>
+    <string name="cloud_backup_passphrase_hint">Min. 12 znaków</string>
+    <string name="cloud_backup_passphrase_warn">Utrata hasła = utrata backupu. Zapisz je offline (kartka lub menedżer haseł).</string>
+    <string name="cloud_backup_include">Co dołączyć</string>
+    <string name="cloud_backup_include_settings">Ustawienia aplikacji</string>
+    <string name="cloud_backup_include_apps">Lista apek (linki Play)</string>
+    <string name="cloud_backup_include_wifi">Lista nazw WiFi</string>
+    <string name="cloud_backup_include_contacts">Kontakty (.vcf)</string>
+    <string name="cloud_backup_include_sms">SMS (.json)</string>
+    <string name="cloud_backup_dryrun">Oszacuj rozmiar</string>
+    <string name="cloud_backup_estimate">Szacunkowo: %1$s</string>
+    <string name="cloud_backup_run">Zrób backup teraz</string>
+    <string name="cloud_backup_schedule">Auto-backup co tydzień</string>
+    <string name="cloud_backup_in_progress">Tworzę backup…</string>
+    <string name="cloud_backup_done">Zapisano backup: %1$s</string>
+    <string name="cloud_backup_failed">Backup nieudany: %1$s</string>
+    <string name="cloud_backup_open_restore">Przywróć z pliku</string>
+    <string name="cloud_backup_channel">Backup do chmury</string>
+    <string name="cloud_backup_disclaimer">Całe szyfrowanie dzieje się na urządzeniu. Chmura widzi tylko zaszyfrowany plik.</string>
+
+    <string name="restore_title">Przywracanie z backupu</string>
+    <string name="restore_pick">Wybierz plik backupu</string>
+    <string name="restore_decrypt">Odszyfruj</string>
+    <string name="restore_apply">Zastosuj zaznaczone</string>
+    <string name="restore_done">Przywracanie ukończone</string>
+    <string name="restore_wrong_passphrase">Błędne hasło lub uszkodzony plik.</string>
+    <string name="restore_manifest">Zawartość: %1$s</string>
 </resources>

@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="whats_new_title">Co nowego w 1.2</string>
+    <string name="whats_new_title">Co nowego w 1.3</string>
     <string name="whats_new_dismiss">Rozumiem</string>
     <string-array name="whats_new_items">
-        <item>Kosz: przeglądaj i przywracaj pliki przeniesione przez system do kosza</item>
-        <item>Ukryte cache: wyczyść foldery, które popularne aplikacje trzymają w Android/media</item>
-        <item>Sejf: zaszyfrowany schowek na pliki chroniony biometrią (Pro)</item>
-        <item>Alarmy baterii: powiadomienia przy ustawionych progach naładowania (Pro)</item>
-        <item>Wgląd w aplikacje: tygodniowy czas ekranowy, ostatnie instalacje, apki bez launchera (Pro)</item>
-        <item>Ekran baterii pokazuje teraz bieżący pobór prądu (mA), jeśli urządzenie to udostępnia</item>
+        <item>Odblokowania per narzędzie (24h) — uczciwsze niż „wszystko albo nic"</item>
+        <item>Jednorazowy 3-dniowy Pro trial za jedną reklamę</item>
+        <item>Raport zasobów aplikacji — jeden uczciwy wynik per apka</item>
+        <item>Prognoza pamięci — przewiduje, kiedy braknie miejsca</item>
+        <item>Tryb skupienia / Game Boost — sesje z DND</item>
+        <item>Blokada aplikacji (Pro) i zaszyfrowany backup do chmury (Pro)</item>
     </string-array>
 </resources>

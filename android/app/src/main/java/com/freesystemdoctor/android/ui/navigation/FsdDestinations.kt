@@ -56,4 +56,10 @@ object ToolRoutes {
     const val APP_VAULT = "tool/app_vault"
     const val BATTERY_ALARMS = "tool/battery_alarms"
     const val APP_INSIGHTS = "tool/app_insights"
+    const val APP_RESOURCE = "tool/app_resource"
+    const val STORAGE_FORECAST = "tool/storage_forecast"
+    const val FOCUS = "tool/focus"
+    const val APP_LOCK = "tool/app_lock"
+    const val CLOUD_BACKUP = "tool/cloud_backup"
+    const val RESTORE_WIZARD = "tool/restore_wizard"
 }

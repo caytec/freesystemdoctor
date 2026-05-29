@@ -49,7 +49,13 @@ import com.freesystemdoctor.android.ui.backup.BackupScreen
 import com.freesystemdoctor.android.ui.battery.BatteryScreen
 import com.freesystemdoctor.android.ui.cache.HiddenCacheScreen
 import com.freesystemdoctor.android.ui.cleaner.CleanerScreen
+import com.freesystemdoctor.android.ui.cloudbackup.CloudBackupScreen
+import com.freesystemdoctor.android.ui.cloudbackup.RestoreWizardScreen
+import com.freesystemdoctor.android.ui.focus.FocusScreen
+import com.freesystemdoctor.android.ui.forecast.StorageForecastScreen
 import com.freesystemdoctor.android.ui.insights.AppInsightsScreen
+import com.freesystemdoctor.android.ui.lock.AppLockScreen
+import com.freesystemdoctor.android.ui.resource.AppResourceScreen
 import com.freesystemdoctor.android.ui.tools.BatteryAlarmsScreen
 import com.freesystemdoctor.android.ui.trash.TrashScreen
 import com.freesystemdoctor.android.ui.vault.VaultScreen
@@ -69,6 +75,7 @@ import com.freesystemdoctor.android.ui.photos.PhotoReviewScreen
 import com.freesystemdoctor.android.ui.photos.SimilarPhotosScreen
 import com.freesystemdoctor.android.ui.components.AnimatedBackdrop
 import com.freesystemdoctor.android.ui.components.BannerAd
+import com.freesystemdoctor.android.ui.components.UnlockSheetHost
 import com.freesystemdoctor.android.ui.pro.ProScreen
 import com.freesystemdoctor.android.ui.settings.SettingsScreen
 import com.freesystemdoctor.android.ui.storage.StorageByTypeScreen
@@ -109,6 +116,12 @@ private val toolTitles: Map<String, Int> = mapOf(
     ToolRoutes.APP_VAULT to R.string.tool_app_vault,
     ToolRoutes.BATTERY_ALARMS to R.string.tool_battery_alarms,
     ToolRoutes.APP_INSIGHTS to R.string.tool_app_insights,
+    ToolRoutes.APP_RESOURCE to R.string.tool_app_resource,
+    ToolRoutes.STORAGE_FORECAST to R.string.tool_storage_forecast,
+    ToolRoutes.FOCUS to R.string.tool_focus,
+    ToolRoutes.APP_LOCK to R.string.tool_app_lock,
+    ToolRoutes.CLOUD_BACKUP to R.string.tool_cloud_backup,
+    ToolRoutes.RESTORE_WIZARD to R.string.restore_title,
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -210,6 +223,7 @@ fun MainScaffold() {
         },
     ) { innerPadding ->
         AnimatedBackdrop()
+        UnlockSheetHost(navigateToPro = { navController.navigate(ROUTE_PRO) }) {
         NavHost(
             navController = navController,
             startDestination = FsdDestination.DASHBOARD.route,
@@ -258,6 +272,15 @@ fun MainScaffold() {
             composable(ToolRoutes.APP_VAULT) { VaultScreen() }
             composable(ToolRoutes.BATTERY_ALARMS) { BatteryAlarmsScreen() }
             composable(ToolRoutes.APP_INSIGHTS) { AppInsightsScreen() }
+            composable(ToolRoutes.APP_RESOURCE) { AppResourceScreen() }
+            composable(ToolRoutes.STORAGE_FORECAST) { StorageForecastScreen() }
+            composable(ToolRoutes.FOCUS) { FocusScreen() }
+            composable(ToolRoutes.APP_LOCK) { AppLockScreen() }
+            composable(ToolRoutes.CLOUD_BACKUP) {
+                CloudBackupScreen(onOpenRestore = { navController.navigate(ToolRoutes.RESTORE_WIZARD) })
+            }
+            composable(ToolRoutes.RESTORE_WIZARD) { RestoreWizardScreen() }
+        }
         }
     }
 }

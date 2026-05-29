@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="whats_new_title">What\'s new in 1.2</string>
+    <string name="whats_new_title">What\'s new in 1.3</string>
     <string name="whats_new_dismiss">Got it</string>
     <string-array name="whats_new_items">
-        <item>Recycle Bin: browse and restore items the system moved to trash</item>
-        <item>Hidden caches: clear shadow folders that popular apps keep under Android/media</item>
-        <item>App Vault: biometric-locked encrypted sandbox for sensitive files (Pro)</item>
-        <item>Battery alarms: get notified at custom low/full thresholds (Pro)</item>
-        <item>App Insights: 7-day screen-time chart, recent installs and apps without a launcher (Pro)</item>
-        <item>Battery screen now shows live current draw (mA) where supported</item>
+        <item>Per-tool ad unlocks (24h) — fairer than all-or-nothing</item>
+        <item>One-time 3-day Pro trial via a single ad</item>
+        <item>App Resource Report — one honest score per app, find the hogs</item>
+        <item>Storage Forecast — predicts when your storage will run out</item>
+        <item>Focus / Game Boost — DND-managed focus sessions</item>
+        <item>App Lock (Pro) and encrypted Cloud Backup (Pro)</item>
     </string-array>
 </resources>

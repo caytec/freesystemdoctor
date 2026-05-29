@@ -44,9 +44,13 @@ fun ProScreen(
 ) {
     val products by viewModel.products.collectAsStateWithLifecycle()
     val isPro by viewModel.isPro.collectAsStateWithLifecycle()
+    val trialUsed by viewModel.trialUsed.collectAsStateWithLifecycle()
+    val trialUntil by viewModel.trialUntil.collectAsStateWithLifecycle()
     val context = androidx.compose.ui.platform.LocalContext.current
     val activity = context.findActivity()
     var rewardGranted by remember { mutableStateOf(false) }
+    var trialGranted by remember { mutableStateOf(false) }
+    val trialActive = trialUntil > System.currentTimeMillis()
 
     Column(
         modifier = modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp),
@@ -146,7 +150,28 @@ fun ProScreen(
                 Text(stringResource(R.string.pro_restore))
             }
 
-            if (viewModel.rewardedReady() && activity != null) {
+            // 3-day Pro trial via rewarded ad (one-time).
+            if (viewModel.rewardedReady() && activity != null && !trialUsed) {
+                com.freesystemdoctor.android.ui.components.GradientButton(
+                    text = stringResource(R.string.pro_try_trial),
+                    onClick = { viewModel.watchAdForTrial(activity) { trialGranted = true } },
+                )
+                Text(
+                    stringResource(R.string.pro_try_trial_sub),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+            if (trialGranted || trialActive) {
+                Text(
+                    stringResource(R.string.pro_trial_active),
+                    color = MaterialTheme.colorScheme.secondary,
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            }
+
+            // Legacy 24h global unlock — grandfathered, hidden when trial available.
+            if (viewModel.rewardedReady() && activity != null && trialUsed) {
                 com.freesystemdoctor.android.ui.components.GradientButton(
                     text = stringResource(R.string.pro_unlock_ad),
                     onClick = { viewModel.watchAdToUnlock(activity) { rewardGranted = true } },

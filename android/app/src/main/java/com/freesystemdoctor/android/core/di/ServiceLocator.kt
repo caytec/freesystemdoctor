@@ -25,8 +25,15 @@ import com.freesystemdoctor.android.engine.apps.RarelyUsedEngine
 import com.freesystemdoctor.android.engine.battery.BatteryEngine
 import com.freesystemdoctor.android.engine.contacts.ContactsEngine
 import com.freesystemdoctor.android.engine.contacts.SmsBackupEngine
+import com.freesystemdoctor.android.data.cloudbackup.CloudBackupKeyStore
 import com.freesystemdoctor.android.engine.cache.HiddenCacheEngine
 import com.freesystemdoctor.android.engine.cache.JunkScannerEngine
+import com.freesystemdoctor.android.engine.cloudbackup.BackupCryptoEngine
+import com.freesystemdoctor.android.engine.cloudbackup.CloudBackupEngine
+import com.freesystemdoctor.android.engine.focus.FocusEngine
+import com.freesystemdoctor.android.engine.forecast.StorageForecastEngine
+import com.freesystemdoctor.android.engine.lock.AppLockEngine
+import com.freesystemdoctor.android.engine.resource.AppResourceEngine
 import com.freesystemdoctor.android.engine.trash.TrashEngine
 import com.freesystemdoctor.android.engine.vault.AppVaultEngine
 import com.freesystemdoctor.android.engine.device.DeviceInfoEngine
@@ -74,6 +81,21 @@ object ServiceLocator {
     val appInsightsEngine: AppInsightsEngine by lazy {
         AppInsightsEngine(appContext, permissionManager)
     }
+    val storageForecastEngine: StorageForecastEngine by lazy {
+        StorageForecastEngine(appContext, storageEngine)
+    }
+    val appResourceEngine: AppResourceEngine by lazy {
+        AppResourceEngine(
+            appContext, permissionManager, appManagerEngine, storageEngine, appUsageEngine, dataUsageEngine,
+        )
+    }
+    val focusEngine: FocusEngine by lazy { FocusEngine(appContext) }
+    val appLockEngine: AppLockEngine by lazy { AppLockEngine(appContext) }
+    private val backupCryptoEngine: BackupCryptoEngine by lazy { BackupCryptoEngine() }
+    val cloudBackupEngine: CloudBackupEngine by lazy {
+        CloudBackupEngine(appContext, backupCryptoEngine)
+    }
+    val cloudBackupKeyStore: CloudBackupKeyStore by lazy { CloudBackupKeyStore(appContext) }
     val largeFilesEngine: LargeFilesEngine by lazy { LargeFilesEngine(appContext) }
     val duplicateEngine: DuplicateFinderEngine by lazy { DuplicateFinderEngine(appContext) }
     val mediaCategoryEngine: MediaStoreCategoryEngine by lazy { MediaStoreCategoryEngine(appContext) }

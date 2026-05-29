@@ -13,6 +13,7 @@ data class DataUsageItem(
     val label: String,
     val mobileBytes: Long,
     val wifiBytes: Long,
+    val packageName: String? = null,
 ) {
     val totalBytes: Long get() = mobileBytes + wifiBytes
 }
@@ -38,11 +39,12 @@ class DataUsageEngine(
 
         val uids = (mobile.keys + wifi.keys)
         uids.mapNotNull { uid ->
-            val label = labelForUid(pm, uid) ?: return@mapNotNull null
+            val (label, pkg) = labelAndPackageForUid(pm, uid) ?: return@mapNotNull null
             val item = DataUsageItem(
                 label = label,
                 mobileBytes = mobile[uid] ?: 0L,
                 wifiBytes = wifi[uid] ?: 0L,
+                packageName = pkg,
             )
             if (item.totalBytes <= 0) null else item
         }.sortedByDescending { it.totalBytes }
@@ -71,11 +73,15 @@ class DataUsageEngine(
         return result
     }
 
-    private fun labelForUid(pm: android.content.pm.PackageManager, uid: Int): String? {
+    private fun labelAndPackageForUid(
+        pm: android.content.pm.PackageManager,
+        uid: Int,
+    ): Pair<String, String>? {
         val packages = pm.getPackagesForUid(uid) ?: return null
         val pkg = packages.firstOrNull() ?: return null
-        return runCatching {
+        val label = runCatching {
             pm.getApplicationLabel(pm.getApplicationInfo(pkg, 0)).toString()
         }.getOrNull() ?: pkg
+        return label to pkg
     }
 }

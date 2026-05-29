@@ -359,4 +359,124 @@
     <string name="app_insights_hidden">Apps without a launcher</string>
     <string name="app_insights_installed">Installed</string>
     <string name="app_insights_updated">Updated</string>
+
+    <!-- Wave 7: Pro Lab (Update 9) -->
+    <!-- Unlock sheet -->
+    <string name="unlock_header_tool">Unlock %1$s</string>
+    <string name="unlock_header_generic">Unlock this tool</string>
+    <string name="unlock_header_sub">Choose how to enable this Pro feature.</string>
+    <string name="unlock_locked_cd">Locked</string>
+    <string name="unlock_opt_tool_title">Unlock this tool for 24h</string>
+    <string name="unlock_opt_tool_sub">Watch a short ad. Just this tool, just for today.</string>
+    <string name="unlock_opt_trial_title">Try Pro for 3 days</string>
+    <string name="unlock_opt_trial_sub">Watch a short ad, unlock everything for 3 days. One-time offer.</string>
+    <string name="unlock_opt_buy_title">Get Pro forever</string>
+    <string name="unlock_opt_buy_sub">All tools, no ads, support development.</string>
+    <string name="unlock_restore">Restore purchases</string>
+    <string name="unlock_trial_used">Trial already used</string>
+    <string name="unlock_ad_not_ready">Ad not ready — try again in a moment</string>
+    <string name="unlock_trial_expired_title">Your 3-day Pro trial ended</string>
+    <string name="unlock_trial_expired_sub">Pick what to do next — no rush.</string>
+
+    <!-- Pro screen extras -->
+    <string name="pro_try_trial">Try Pro for 3 days (watch an ad)</string>
+    <string name="pro_try_trial_sub">One-time offer. Full Pro for 3 days.</string>
+    <string name="pro_trial_active">Pro trial active.</string>
+
+    <!-- App Resource Report -->
+    <string name="tool_app_resource">Resource report</string>
+    <string name="app_resource_note">A single \"cost\" score per app from storage, cache, 30-day data, 7-day screen time and last use. Top hogs first.</string>
+    <string name="app_resource_score">Score</string>
+    <string name="app_resource_storage">Storage</string>
+    <string name="app_resource_cache">Cache</string>
+    <string name="app_resource_data">Data 30d</string>
+    <string name="app_resource_screentime">Screen 7d</string>
+    <string name="app_resource_last_used">Last used</string>
+    <string name="app_resource_never">Never</string>
+    <string name="app_resource_action_settings">App settings</string>
+    <string name="app_resource_action_uninstall">Uninstall</string>
+    <string name="app_resource_action_stop">Try to stop</string>
+    <string name="app_resource_export_csv">Export CSV</string>
+    <string name="app_resource_export_done">Saved CSV: %1$s</string>
+    <string name="app_resource_disclaimer">Score is heuristic — high doesn\'t always mean removable. Review before acting.</string>
+    <string name="app_resource_empty">Grant Usage Access in Settings to compute scores.</string>
+
+    <!-- Storage Forecast -->
+    <string name="tool_storage_forecast">Storage forecast</string>
+    <string name="storage_forecast_note">Predicts how many days until storage runs out, based on a 7–14 day trend of your free space.</string>
+    <string name="storage_forecast_gathering">Gathering data — about %1$d days to go</string>
+    <string name="storage_forecast_no_trend">No depletion trend.</string>
+    <string name="storage_forecast_days_left">%1$d days until full</string>
+    <string name="storage_forecast_over_year">1+ year of headroom</string>
+    <string name="storage_forecast_free_now">Free now: %1$s</string>
+    <string name="storage_forecast_open_cleaner">Open Cleaner</string>
+    <string name="storage_forecast_disclaimer">Snapshots are taken once a day. Forecast assumes your usage stays roughly the same.</string>
+    <string name="storage_forecast_warn_title">Storage filling up</string>
+    <string name="storage_forecast_warn_text">~%1$d days until full at current pace. Open Cleaner.</string>
+    <string name="storage_forecast_channel">Storage forecast</string>
+
+    <!-- Focus / Game Boost -->
+    <string name="tool_focus">Focus mode</string>
+    <string name="focus_note">Frees background RAM, switches the system to Do-Not-Disturb (priority), keeps a clear end-session notification.</string>
+    <string name="focus_start">Start session</string>
+    <string name="focus_end">End session</string>
+    <string name="focus_running_title">Focus active</string>
+    <string name="focus_running_text">Tap to end · started %1$s</string>
+    <string name="focus_duration">Duration: %1$d min</string>
+    <string name="focus_dnd_perm">Allow FreeSystemDoctor to control Do-Not-Disturb</string>
+    <string name="focus_dnd_grant">Grant DND access</string>
+    <string name="focus_channel">Focus mode</string>
+    <string name="focus_profile_gaming">Gaming</string>
+    <string name="focus_profile_reading">Reading</string>
+    <string name="focus_profile_work">Work</string>
+
+    <!-- App Lock -->
+    <string name="tool_app_lock">App Lock</string>
+    <string name="app_lock_note">Pick apps to lock behind your fingerprint or device PIN. Best-effort — not a security boundary against a skilled attacker.</string>
+    <string name="app_lock_enable">Enable App Lock</string>
+    <string name="app_lock_pick_apps">Pick apps to lock</string>
+    <string name="app_lock_count">%1$d apps locked</string>
+    <string name="app_lock_perm_usage">Usage Access is required to detect app launches</string>
+    <string name="app_lock_perm_overlay">Allow drawing over other apps (needed to show the prompt above a locked app)</string>
+    <string name="app_lock_perm_grant_usage">Grant Usage Access</string>
+    <string name="app_lock_perm_grant_overlay">Grant overlay permission</string>
+    <string name="app_lock_running_title">App Lock running</string>
+    <string name="app_lock_running_text">%1$d apps locked</string>
+    <string name="app_lock_channel">App Lock</string>
+    <string name="app_lock_prompt_title">Unlock app</string>
+    <string name="app_lock_prompt_subtitle">Authenticate to open this app.</string>
+
+    <!-- Cloud Backup -->
+    <string name="tool_cloud_backup">Cloud backup</string>
+    <string name="cloud_backup_note">Bundles your settings, app list, Wi-Fi list, and optional contacts + SMS into a passphrase-encrypted file. You pick the destination (Google Drive, OneDrive, any cloud exposed via SAF).</string>
+    <string name="cloud_backup_pick_folder">Pick backup folder</string>
+    <string name="cloud_backup_folder_set">Destination set ✓</string>
+    <string name="cloud_backup_passphrase">Passphrase</string>
+    <string name="cloud_backup_passphrase_hint">Min. 12 characters</string>
+    <string name="cloud_backup_passphrase_warn">If you lose this passphrase, your backup is unrecoverable. Save it offline (paper or password manager).</string>
+    <string name="cloud_backup_include">What to include</string>
+    <string name="cloud_backup_include_settings">App settings</string>
+    <string name="cloud_backup_include_apps">App list (Play links)</string>
+    <string name="cloud_backup_include_wifi">Wi-Fi names list</string>
+    <string name="cloud_backup_include_contacts">Contacts (.vcf)</string>
+    <string name="cloud_backup_include_sms">SMS (.json)</string>
+    <string name="cloud_backup_dryrun">Estimate size</string>
+    <string name="cloud_backup_estimate">Estimated: %1$s</string>
+    <string name="cloud_backup_run">Back up now</string>
+    <string name="cloud_backup_schedule">Auto-backup weekly</string>
+    <string name="cloud_backup_in_progress">Backing up…</string>
+    <string name="cloud_backup_done">Backup saved: %1$s</string>
+    <string name="cloud_backup_failed">Backup failed: %1$s</string>
+    <string name="cloud_backup_open_restore">Restore from file</string>
+    <string name="cloud_backup_channel">Cloud backup</string>
+    <string name="cloud_backup_disclaimer">All encryption happens on this device. The cloud only sees an encrypted blob.</string>
+
+    <!-- Restore wizard -->
+    <string name="restore_title">Restore from backup</string>
+    <string name="restore_pick">Pick backup file</string>
+    <string name="restore_decrypt">Decrypt</string>
+    <string name="restore_apply">Apply selected</string>
+    <string name="restore_done">Restore complete</string>
+    <string name="restore_wrong_passphrase">Wrong passphrase or corrupt file.</string>
+    <string name="restore_manifest">Contents: %1$s</string>
 </resources>

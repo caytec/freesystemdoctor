@@ -19,6 +19,7 @@ class SafTreeStore(private val context: Context) {
 
     private val key = stringPreferencesKey("tree_uri")
     private val androidMediaKey = stringPreferencesKey("android_media_tree_uri")
+    private val backupKey = stringPreferencesKey("backup_tree_uri")
 
     val treeUri: Flow<Uri?> = context.safDataStore.data.map { prefs ->
         prefs[key]?.let { Uri.parse(it) }
@@ -26,6 +27,10 @@ class SafTreeStore(private val context: Context) {
 
     val androidMediaTreeUri: Flow<Uri?> = context.safDataStore.data.map { prefs ->
         prefs[androidMediaKey]?.let { Uri.parse(it) }
+    }
+
+    val backupTreeUri: Flow<Uri?> = context.safDataStore.data.map { prefs ->
+        prefs[backupKey]?.let { Uri.parse(it) }
     }
 
     suspend fun current(): Uri? = treeUri.first()
@@ -38,6 +43,11 @@ class SafTreeStore(private val context: Context) {
     suspend fun persistAndroidMedia(uri: Uri) {
         takePersistable(uri)
         context.safDataStore.edit { it[androidMediaKey] = uri.toString() }
+    }
+
+    suspend fun persistBackup(uri: Uri) {
+        takePersistable(uri)
+        context.safDataStore.edit { it[backupKey] = uri.toString() }
     }
 
     private fun takePersistable(uri: Uri) {
