@@ -53,6 +53,8 @@ import com.freesystemdoctor.android.ui.cloudbackup.CloudBackupScreen
 import com.freesystemdoctor.android.ui.cloudbackup.RestoreWizardScreen
 import com.freesystemdoctor.android.ui.focus.FocusScreen
 import com.freesystemdoctor.android.ui.forecast.StorageForecastScreen
+import com.freesystemdoctor.android.ui.gameboost.GameBoostScreen
+import com.freesystemdoctor.android.ui.history.CleaningHistoryScreen
 import com.freesystemdoctor.android.ui.insights.AppInsightsScreen
 import com.freesystemdoctor.android.ui.lock.AppLockScreen
 import com.freesystemdoctor.android.ui.resource.AppResourceScreen
@@ -122,6 +124,8 @@ private val toolTitles: Map<String, Int> = mapOf(
     ToolRoutes.APP_LOCK to R.string.tool_app_lock,
     ToolRoutes.CLOUD_BACKUP to R.string.tool_cloud_backup,
     ToolRoutes.RESTORE_WIZARD to R.string.restore_title,
+    ToolRoutes.GAME_BOOST to R.string.tool_game_boost,
+    ToolRoutes.CLEANING_HISTORY to R.string.tool_cleaning_history,
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -282,6 +286,8 @@ fun MainScaffold() {
                 CloudBackupScreen(onOpenRestore = { navController.navigate(ToolRoutes.RESTORE_WIZARD) })
             }
             composable(ToolRoutes.RESTORE_WIZARD) { RestoreWizardScreen() }
+            composable(ToolRoutes.GAME_BOOST) { GameBoostScreen() }
+            composable(ToolRoutes.CLEANING_HISTORY) { CleaningHistoryScreen() }
         }
         }
     }

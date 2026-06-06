@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="whats_new_title">Co nowego w 1.4</string>
+    <string name="whats_new_title">Co nowego w 1.5</string>
     <string name="whats_new_dismiss">Rozumiem</string>
     <string-array name="whats_new_items">
-        <item>Wyszukiwarka i filtry narzędzi — znajdź każdą funkcję natychmiast</item>
-        <item>Szybkie akcje na pulpicie — Czyszczenie, Duplikaty, Bateria w jednym tapnięciu</item>
-        <item>Płynniejsze animacje — elementy list pojawiają się i znikają animowanie</item>
-        <item>Nowe Ustawienia — czytelne sekcje, przełącznik motywu systemowego</item>
-        <item>Nowa kolejność zakładek — Aplikacje i Narzędzia bliżej codziennego użytku</item>
-        <item>Mniej inwazyjne reklamy — przerywniki ograniczone do 90s, rzadsze wyzwalacze</item>
+        <item>Game Booster (PRO) — jeden tap, realny boost: RAM, czyszczenie cache, wyciszenie powiadomień, uruchomienie gry</item>
+        <item>Profile dla gier + wyciszenie naszych reklam w trakcie sesji</item>
+        <item>Historia czyszczeń — łącznie odzyskane GB; PRO odblokowuje pełną historię + eksport CSV</item>
+        <item>Asystent AI — 3 analizy/dzień za darmo, bez limitu w PRO</item>
+        <item>Trzymamy się uczciwości: bez fałszywych FPS-ów i napompowanych liczb RAM — tylko prawdziwe wartości</item>
+        <item>Ekran Pro odświeżony z nowymi korzyściami</item>
     </string-array>
 </resources>

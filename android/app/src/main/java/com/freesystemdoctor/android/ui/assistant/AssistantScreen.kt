@@ -88,5 +88,17 @@ fun AssistantScreen(
         state.error?.takeIf { it != "missing_key" }?.let { err ->
             Text(err, color = MaterialTheme.colorScheme.error)
         }
+
+        if (state.limitReached) {
+            Appear {
+                InfoBanner(stringResource(R.string.assistant_limit_reached, AssistantViewModel.FREE_DAILY_LIMIT))
+            }
+        } else if (state.usageToday in 1 until AssistantViewModel.FREE_DAILY_LIMIT) {
+            Text(
+                stringResource(R.string.assistant_usage_today, state.usageToday, AssistantViewModel.FREE_DAILY_LIMIT),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
     }
 }

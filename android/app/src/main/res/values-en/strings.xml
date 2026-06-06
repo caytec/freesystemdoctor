@@ -284,6 +284,9 @@
     <string name="pro_benefit_schedule">Automatic scheduled cleaning</string>
     <string name="pro_benefit_monitor">Live status-bar monitor</string>
     <string name="pro_benefit_support">Support development</string>
+    <string name="pro_benefit_game_boost">Game Booster — one-tap real boost + per-game profiles</string>
+    <string name="pro_benefit_history_export">Full cleaning history + CSV export</string>
+    <string name="pro_benefit_ai_unlimited">Unlimited AI Assistant analyses</string>
     <string name="pro_buy">Subscribe</string>
     <string name="pro_restore">Restore purchases</string>
     <string name="pro_thanks">Thank you for supporting FreeSystemDoctor!</string>
@@ -454,4 +457,42 @@
     <string name="restore_done">Restore complete</string>
     <string name="restore_wrong_passphrase">Wrong passphrase or corrupt file.</string>
     <string name="restore_manifest">Contents: %1$s</string>
+
+    <!-- Update 11: Game Booster (PRO) -->
+    <string name="tool_game_boost">Game Booster</string>
+    <string name="game_boost_title">Game Booster</string>
+    <string name="game_boost_subtitle">Free background RAM, purge cache, mute interruptions — real numbers, no fake FPS.</string>
+    <string name="game_boost_start">Start boost</string>
+    <string name="game_boost_end">End boost</string>
+    <string name="game_boost_running_title">Game Boost active</string>
+    <string name="game_boost_running_text">Tap to open • use the action to end the session</string>
+    <string name="game_boost_channel">Game Boost</string>
+    <string name="game_boost_honesty_note">We don\'t overclock or change CPU governor (impossible without root). We free real resources and reduce interruptions.</string>
+    <string name="game_boost_dnd_missing">Grant Do-Not-Disturb access in Settings to silence calls/notifications during the session.</string>
+    <string name="game_boost_dnd_label">Enter Do-Not-Disturb</string>
+    <string name="game_boost_dnd_sub">Mutes notifications for the duration of the boost (priority + emergency still come through).</string>
+    <string name="game_boost_games_header">Your games</string>
+    <string name="game_boost_no_games">No installed apps declared as games. Tap below to pick from all apps.</string>
+    <string name="game_boost_show_all">Show all apps</string>
+    <string name="game_boost_add_profile">Add to profile</string>
+    <string name="game_boost_remove_profile">Remove from profile</string>
+    <string name="game_boost_result_title">Last boost</string>
+    <string name="game_boost_result_ram">RAM freed: %1$s (real delta)</string>
+    <string name="game_boost_result_cache">Cache purged: %1$s</string>
+    <string name="game_boost_result_sustained">Sustained performance mode supported on this device.</string>
+
+    <string name="tool_cleaning_history">Cleaning history</string>
+    <string name="cleaning_history_title">Cleaning history</string>
+    <string name="cleaning_history_lifetime">Lifetime reclaimed: %1$s</string>
+    <string name="cleaning_history_30d">Last 30 days: %1$s • %2$d items</string>
+    <string name="cleaning_history_empty">No cleans recorded yet. Run a scan and the savings will show up here.</string>
+    <string name="cleaning_history_honesty_note">Every value here is a real measured byte count returned by the cleaner — no estimates.</string>
+    <string name="cleaning_history_records">Recent cleans</string>
+    <string name="cleaning_history_more_pro">+%1$d more records — get PRO to see the full history and export CSV.</string>
+    <string name="cleaning_history_export_csv">Export full history as CSV</string>
+    <string name="cleaning_history_export_ok">Exported %1$d records.</string>
+    <string name="cleaning_history_export_failed">Export failed: %1$s</string>
+
+    <string name="assistant_limit_reached">Daily limit reached (%1$d/day). PRO removes the cap.</string>
+    <string name="assistant_usage_today">Today: %1$d/%2$d analyses (free tier)</string>
 </resources>

@@ -10,6 +10,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.freesystemdoctor.android.ai.AiProvider
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "fsd_settings")
@@ -42,6 +43,8 @@ class SettingsRepository(private val context: Context) {
         val BATTERY_ALARMS = booleanPreferencesKey("battery_alarms_enabled")
         val BATTERY_ALARM_LOW = intPreferencesKey("battery_alarm_low")
         val BATTERY_ALARM_FULL = intPreferencesKey("battery_alarm_full")
+        val AI_USAGE_DAY = stringPreferencesKey("ai_usage_day")
+        val AI_USAGE_COUNT = intPreferencesKey("ai_usage_count")
     }
 
     val settings: Flow<AppSettings> = context.dataStore.data.map { prefs ->
@@ -103,5 +106,29 @@ class SettingsRepository(private val context: Context) {
             it[Keys.BATTERY_ALARM_LOW] = low.coerceIn(5, 50)
             it[Keys.BATTERY_ALARM_FULL] = full.coerceIn(50, 100)
         }
+    }
+
+    /**
+     * Returns today's AI analysis count and bumps it. Used to enforce the free-tier daily cap
+     * (PRO is unlimited; gating lives in [com.freesystemdoctor.android.ui.assistant.AssistantViewModel]).
+     */
+    suspend fun consumeAiUsage(today: String): Int {
+        var newCount = 0
+        context.dataStore.edit { prefs ->
+            val storedDay = prefs[Keys.AI_USAGE_DAY]
+            val current = if (storedDay == today) prefs[Keys.AI_USAGE_COUNT] ?: 0 else 0
+            newCount = current + 1
+            prefs[Keys.AI_USAGE_DAY] = today
+            prefs[Keys.AI_USAGE_COUNT] = newCount
+        }
+        return newCount
+    }
+
+    suspend fun peekAiUsage(today: String): Int {
+        val prefs = context.dataStore.data.map {
+            val day = it[Keys.AI_USAGE_DAY]
+            if (day == today) it[Keys.AI_USAGE_COUNT] ?: 0 else 0
+        }
+        return prefs.first()
     }
 }

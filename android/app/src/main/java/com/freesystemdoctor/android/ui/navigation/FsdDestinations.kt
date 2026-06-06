@@ -62,4 +62,6 @@ object ToolRoutes {
     const val APP_LOCK = "tool/app_lock"
     const val CLOUD_BACKUP = "tool/cloud_backup"
     const val RESTORE_WIZARD = "tool/restore_wizard"
+    const val GAME_BOOST = "tool/game_boost"
+    const val CLEANING_HISTORY = "tool/cleaning_history"
 }

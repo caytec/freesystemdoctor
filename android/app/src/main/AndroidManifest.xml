@@ -129,6 +129,15 @@
                 android:value="app_lock" />
         </service>
 
+        <service
+            android:name=".service.GameBoostService"
+            android:exported="false"
+            android:foregroundServiceType="specialUse">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="game_boost" />
+        </service>
+
         <activity
             android:name=".service.BiometricPromptActivity"
             android:exported="false"

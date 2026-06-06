@@ -19,14 +19,25 @@ data class AssistantUiState(
     val analyzing: Boolean = false,
     val recommendations: String? = null,
     val error: String? = null,
+    /** Today's analyses used (free tier is capped; PRO is unlimited). */
+    val usageToday: Int = 0,
+    val limitReached: Boolean = false,
 )
 
 class AssistantViewModel : ViewModel() {
 
     private val ai = ServiceLocator.aiRepository
     private val settings = ServiceLocator.settingsRepository
+    private val billing = ServiceLocator.billingManager
     private val _state = MutableStateFlow(AssistantUiState(hasKey = ai.hasKey()))
     val state: StateFlow<AssistantUiState> = _state.asStateFlow()
+
+    init {
+        viewModelScope.launch {
+            val used = settings.peekAiUsage(today())
+            _state.value = _state.value.copy(usageToday = used)
+        }
+    }
 
     fun refreshKey() {
         _state.value = _state.value.copy(hasKey = ai.hasKey())
@@ -37,17 +48,53 @@ class AssistantViewModel : ViewModel() {
             _state.value = _state.value.copy(error = "missing_key")
             return
         }
-        _state.value = _state.value.copy(analyzing = true, error = null, recommendations = null)
         viewModelScope.launch {
+            // Free tier: cap at FREE_DAILY_LIMIT per day. PRO is unlimited.
+            val isPro = billing.isPro.value
+            if (!isPro) {
+                val used = settings.peekAiUsage(today())
+                if (used >= FREE_DAILY_LIMIT) {
+                    _state.value = _state.value.copy(
+                        limitReached = true,
+                        usageToday = used,
+                    )
+                    return@launch
+                }
+            }
+            _state.value = _state.value.copy(
+                analyzing = true,
+                error = null,
+                recommendations = null,
+                limitReached = false,
+            )
             val snapshot = buildSnapshot()
             val provider = settings.settings.first().aiProvider
             when (val result = ai.analyze(provider, snapshot)) {
-                is AiResult.Success ->
-                    _state.value = _state.value.copy(analyzing = false, recommendations = result.content)
+                is AiResult.Success -> {
+                    val newCount = if (!isPro) settings.consumeAiUsage(today()) else _state.value.usageToday
+                    _state.value = _state.value.copy(
+                        analyzing = false,
+                        recommendations = result.content,
+                        usageToday = newCount,
+                    )
+                }
                 is AiResult.Error ->
                     _state.value = _state.value.copy(analyzing = false, error = result.message)
             }
         }
+    }
+
+    private fun today(): String {
+        val cal = java.util.Calendar.getInstance()
+        return "%04d-%02d-%02d".format(
+            cal.get(java.util.Calendar.YEAR),
+            cal.get(java.util.Calendar.MONTH) + 1,
+            cal.get(java.util.Calendar.DAY_OF_MONTH),
+        )
+    }
+
+    companion object {
+        const val FREE_DAILY_LIMIT = 3
     }
 
     private suspend fun buildSnapshot(): DeviceHealthSnapshot = withContext(Dispatchers.IO) {

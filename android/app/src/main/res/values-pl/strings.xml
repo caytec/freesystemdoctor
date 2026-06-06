@@ -284,6 +284,9 @@
     <string name="pro_benefit_schedule">Automatyczne zaplanowane czyszczenie</string>
     <string name="pro_benefit_monitor">Monitor na żywo na pasku stanu</string>
     <string name="pro_benefit_support">Wsparcie rozwoju</string>
+    <string name="pro_benefit_game_boost">Game Booster — jeden tap, realny boost + profile gier</string>
+    <string name="pro_benefit_history_export">Pełna historia czyszczeń + eksport CSV</string>
+    <string name="pro_benefit_ai_unlimited">Nielimitowane analizy asystenta AI</string>
     <string name="pro_buy">Subskrybuj</string>
     <string name="pro_restore">Przywróć zakupy</string>
     <string name="pro_thanks">Dziękujemy za wsparcie FreeSystemDoctor!</string>
@@ -454,4 +457,44 @@
     <string name="restore_done">Przywracanie ukończone</string>
     <string name="restore_wrong_passphrase">Błędne hasło lub uszkodzony plik.</string>
     <string name="restore_manifest">Zawartość: %1$s</string>
+
+    <!-- Update 11: Game Booster (PRO) -->
+    <string name="tool_game_boost">Game Booster</string>
+    <string name="game_boost_title">Game Booster</string>
+    <string name="game_boost_subtitle">Zwolnij RAM w tle, wyczyść cache, wycisz powiadomienia — prawdziwe liczby, bez fałszywych FPS-ów.</string>
+    <string name="game_boost_start">Włącz boost</string>
+    <string name="game_boost_end">Zakończ boost</string>
+    <string name="game_boost_running_title">Game Boost aktywny</string>
+    <string name="game_boost_running_text">Dotknij, aby otworzyć • użyj akcji, by zakończyć sesję</string>
+    <string name="game_boost_channel">Game Boost</string>
+    <string name="game_boost_honesty_note">Nie podkręcamy CPU ani nie zmieniamy gubernatora taktów (to niemożliwe bez roota). Zwalniamy prawdziwe zasoby i ograniczamy przerwania.</string>
+    <string name="game_boost_dnd_missing">Włącz dostęp do trybu Nie przeszkadzać w Ustawieniach, aby wyciszyć połączenia/powiadomienia w trakcie sesji.</string>
+    <string name="game_boost_dnd_label">Włącz Nie przeszkadzać</string>
+    <string name="game_boost_dnd_sub">Wycisza powiadomienia na czas boostu (priorytetowe + alarmowe nadal przejdą).</string>
+    <string name="game_boost_games_header">Twoje gry</string>
+    <string name="game_boost_no_games">Żadna zainstalowana aplikacja nie jest oznaczona jako gra. Dotknij poniżej, aby wybrać z wszystkich aplikacji.</string>
+    <string name="game_boost_show_all">Pokaż wszystkie aplikacje</string>
+    <string name="game_boost_add_profile">Dodaj do profilu</string>
+    <string name="game_boost_remove_profile">Usuń z profilu</string>
+    <string name="game_boost_result_title">Ostatni boost</string>
+    <string name="game_boost_result_ram">Zwolniony RAM: %1$s (prawdziwa różnica)</string>
+    <string name="game_boost_result_cache">Wyczyszczony cache: %1$s</string>
+    <string name="game_boost_result_sustained">Sustained-performance mode obsługiwany na tym urządzeniu.</string>
+
+    <!-- Update 11: Historia czyszczenia (lifetime free, pełna + CSV PRO) -->
+    <string name="tool_cleaning_history">Historia czyszczenia</string>
+    <string name="cleaning_history_title">Historia czyszczenia</string>
+    <string name="cleaning_history_lifetime">Łącznie odzyskane: %1$s</string>
+    <string name="cleaning_history_30d">Ostatnie 30 dni: %1$s • %2$d elementów</string>
+    <string name="cleaning_history_empty">Brak zapisanych czyszczeń. Uruchom skan, a wyniki pojawią się tutaj.</string>
+    <string name="cleaning_history_honesty_note">Każda liczba to rzeczywiście zmierzone bajty zwrócone przez silnik — bez szacunków i napompowanych statystyk.</string>
+    <string name="cleaning_history_records">Ostatnie czyszczenia</string>
+    <string name="cleaning_history_more_pro">+%1$d kolejnych wpisów — w PRO odblokujesz pełną historię i eksport CSV.</string>
+    <string name="cleaning_history_export_csv">Eksportuj pełną historię do CSV</string>
+    <string name="cleaning_history_export_ok">Wyeksportowano %1$d wpisów.</string>
+    <string name="cleaning_history_export_failed">Eksport nieudany: %1$s</string>
+
+    <!-- Update 11: Asystent AI — dzienny limit (PRO = bez limitu) -->
+    <string name="assistant_limit_reached">Osiągnięto dzienny limit (%1$d/dzień). PRO znosi limit.</string>
+    <string name="assistant_usage_today">Dziś: %1$d/%2$d analiz (darmowy plan)</string>
 </resources>

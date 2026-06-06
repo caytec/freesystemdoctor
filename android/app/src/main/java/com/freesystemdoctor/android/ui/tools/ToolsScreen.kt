@@ -35,7 +35,9 @@ import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.DeleteSweep
 import androidx.compose.material.icons.filled.DoNotDisturbOn
 import androidx.compose.material.icons.filled.Folder
+import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Insights
+import androidx.compose.material.icons.filled.SportsEsports
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.NetworkCell
 import androidx.compose.material.icons.filled.Close
@@ -102,6 +104,7 @@ private val toolGroups = listOf(
             Tool(R.string.tool_hidden_cache, Icons.Filled.Folder, ToolRoutes.HIDDEN_CACHE),
             Tool(R.string.tool_storage_forecast, Icons.Filled.TrendingDown, ToolRoutes.STORAGE_FORECAST),
             Tool(R.string.tool_shredder, Icons.Filled.DeleteForever, ToolRoutes.SHREDDER, advanced = true),
+            Tool(R.string.tool_cleaning_history, Icons.Filled.History, ToolRoutes.CLEANING_HISTORY),
         ),
     ),
     ToolGroup(
@@ -134,6 +137,7 @@ private val toolGroups = listOf(
             Tool(R.string.tool_battery, Icons.Filled.BatteryChargingFull, ToolRoutes.BATTERY),
             Tool(R.string.tool_battery_alarms, Icons.Filled.BatteryAlert, ToolRoutes.BATTERY_ALARMS, advanced = true),
             Tool(R.string.tool_focus, Icons.Filled.DoNotDisturbOn, ToolRoutes.FOCUS),
+            Tool(R.string.tool_game_boost, Icons.Filled.SportsEsports, ToolRoutes.GAME_BOOST, advanced = true),
             Tool(R.string.tool_speed, Icons.Filled.Speed, ToolRoutes.SPEED_TEST),
             Tool(R.string.tool_data_usage, Icons.Filled.NetworkCell, ToolRoutes.DATA_USAGE),
             Tool(R.string.tool_device_info, Icons.Filled.PhoneAndroid, ToolRoutes.DEVICE_INFO),

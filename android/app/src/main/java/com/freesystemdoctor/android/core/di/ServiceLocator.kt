@@ -30,8 +30,11 @@ import com.freesystemdoctor.android.engine.cache.HiddenCacheEngine
 import com.freesystemdoctor.android.engine.cache.JunkScannerEngine
 import com.freesystemdoctor.android.engine.cloudbackup.BackupCryptoEngine
 import com.freesystemdoctor.android.engine.cloudbackup.CloudBackupEngine
+import com.freesystemdoctor.android.data.gameboost.GameProfileStore
 import com.freesystemdoctor.android.engine.focus.FocusEngine
+import com.freesystemdoctor.android.engine.gameboost.GameBoostEngine
 import com.freesystemdoctor.android.engine.forecast.StorageForecastEngine
+import com.freesystemdoctor.android.engine.history.CleaningHistoryEngine
 import com.freesystemdoctor.android.engine.lock.AppLockEngine
 import com.freesystemdoctor.android.engine.resource.AppResourceEngine
 import com.freesystemdoctor.android.engine.trash.TrashEngine
@@ -84,12 +87,17 @@ object ServiceLocator {
     val storageForecastEngine: StorageForecastEngine by lazy {
         StorageForecastEngine(appContext, storageEngine)
     }
+    val cleaningHistoryEngine: CleaningHistoryEngine by lazy { CleaningHistoryEngine(appContext) }
     val appResourceEngine: AppResourceEngine by lazy {
         AppResourceEngine(
             appContext, permissionManager, appManagerEngine, storageEngine, appUsageEngine, dataUsageEngine,
         )
     }
     val focusEngine: FocusEngine by lazy { FocusEngine(appContext) }
+    val gameProfileStore: GameProfileStore by lazy { GameProfileStore(appContext) }
+    val gameBoostEngine: GameBoostEngine by lazy {
+        GameBoostEngine(appContext, memoryEngine, junkEngine)
+    }
     val appLockEngine: AppLockEngine by lazy { AppLockEngine(appContext) }
     private val backupCryptoEngine: BackupCryptoEngine by lazy { BackupCryptoEngine() }
     val cloudBackupEngine: CloudBackupEngine by lazy {

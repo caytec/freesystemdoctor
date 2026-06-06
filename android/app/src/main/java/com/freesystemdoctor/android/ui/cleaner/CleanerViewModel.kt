@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.freesystemdoctor.android.core.di.ServiceLocator
 import com.freesystemdoctor.android.engine.cache.JunkItem
 import com.freesystemdoctor.android.engine.cache.JunkReport
+import com.freesystemdoctor.android.engine.history.CleanSource
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -35,6 +36,11 @@ class CleanerViewModel : ViewModel() {
         viewModelScope.launch {
             val result = engine.cleanAppCache()
             _state.value = _state.value.copy(lastFreedBytes = result.bytesFreed)
+            ServiceLocator.cleaningHistoryEngine.recordClean(
+                CleanSource.JUNK_CACHE,
+                result.bytesFreed,
+                result.itemsRemoved,
+            )
             scan()
         }
     }

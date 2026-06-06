@@ -53,6 +53,11 @@ class HiddenCacheViewModel : ViewModel() {
             _state.value = _state.value.copy(
                 freedBytes = _state.value.freedBytes + result.bytesFreed,
             )
+            ServiceLocator.cleaningHistoryEngine.recordClean(
+                com.freesystemdoctor.android.engine.history.CleanSource.HIDDEN_CACHE,
+                result.bytesFreed,
+                result.itemsRemoved,
+            )
             scan()
         }
     }

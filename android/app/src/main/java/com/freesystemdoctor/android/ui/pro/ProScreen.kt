@@ -96,8 +96,11 @@ fun ProScreen(
         }
 
         val benefits = listOf(
+            R.string.pro_benefit_game_boost,
             R.string.pro_benefit_ads,
             R.string.pro_benefit_advanced,
+            R.string.pro_benefit_history_export,
+            R.string.pro_benefit_ai_unlimited,
             R.string.pro_benefit_schedule,
             R.string.pro_benefit_monitor,
             R.string.pro_benefit_support,
