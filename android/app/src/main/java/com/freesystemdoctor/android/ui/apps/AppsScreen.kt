@@ -2,6 +2,7 @@ package com.freesystemdoctor.android.ui.apps
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -46,21 +47,24 @@ fun AppsScreen(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
             FilterChip(
                 selected = state.sort == AppSort.SIZE,
                 onClick = { viewModel.setSort(AppSort.SIZE) },
-                label = { Text(stringResource(R.string.apps_sort_size)) },
+                label = { Text(stringResource(R.string.apps_sort_size), maxLines = 1) },
             )
             FilterChip(
                 selected = state.sort == AppSort.NAME,
                 onClick = { viewModel.setSort(AppSort.NAME) },
-                label = { Text(stringResource(R.string.apps_sort_name)) },
+                label = { Text(stringResource(R.string.apps_sort_name), maxLines = 1) },
             )
             FilterChip(
                 selected = state.includeSystem,
                 onClick = { viewModel.toggleSystem() },
-                label = { Text(stringResource(R.string.apps_system)) },
+                label = { Text(stringResource(R.string.apps_system), maxLines = 1) },
             )
         }
 
