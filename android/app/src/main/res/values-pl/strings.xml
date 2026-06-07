@@ -262,6 +262,9 @@
     <string name="memory_note">Prosi system o zwolnienie aplikacji z cache w tle. Na nowoczesnym Androidzie efekt jest mały i tymczasowy — aplikacje wracają — więc pokazujemy realnie zwolnioną ilość, a nie zawyżoną liczbę.</string>
     <string name="memory_free">Zwolnij aplikacje w tle</string>
     <string name="memory_freed">Zwolniono %1$s (może wkrótce zostać ponownie zajęte).</string>
+    <string name="memory_largest_apps_title">Największe zainstalowane aplikacje</string>
+    <string name="memory_largest_apps_hint">Stuknij ikonę kosza, aby odinstalować i zwolnić pamięć.</string>
+    <string name="memory_largest_apps_loading">Mierzenie rozmiaru aplikacji…</string>
 
     <string name="tool_backup">Kopia kontaktów i SMS</string>
     <string name="backup_note">Eksportuje dane do folderu Pobrane. Tylko odczyt — nic nie jest zmieniane, usuwane ani wysyłane.</string>
