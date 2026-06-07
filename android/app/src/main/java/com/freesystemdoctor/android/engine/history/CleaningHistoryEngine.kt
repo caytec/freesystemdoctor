@@ -24,6 +24,13 @@ enum class CleanSource {
     DUPLICATES,
     PHOTOS,
     TRASH,
+    CORPSE_FINDER,
+    APP_DEEP_CLEAN,
+    WHATSAPP_DEEP,
+    TELEGRAM_DEEP,
+    DISCORD_DEEP,
+    TIKTOK_DEEP,
+    SHIZUKU_FORCE_STOP,
     OTHER,
 }
 

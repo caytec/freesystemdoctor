@@ -33,6 +33,18 @@ class SettingsViewModel : ViewModel() {
     fun setScheduledCleaning(enabled: Boolean) = viewModelScope.launch { repo.setScheduledCleaning(enabled) }
     fun setMonitorEnabled(enabled: Boolean) = viewModelScope.launch { repo.setMonitorEnabled(enabled) }
 
+    fun setShizukuEnabled(enabled: Boolean) = viewModelScope.launch {
+        repo.setShizukuEnabled(enabled)
+        if (enabled) ServiceLocator.shizukuManager.requestPermission()
+    }
+
+    /** Stable label for the Settings screen — keeps Compose pure of context lookups. */
+    fun shizukuStatusLabel(): String = when (ServiceLocator.shizukuManager.status()) {
+        com.freesystemdoctor.android.core.shizuku.ShizukuManager.Status.Granted -> "Granted ✓"
+        com.freesystemdoctor.android.core.shizuku.ShizukuManager.Status.Denied -> "Denied"
+        com.freesystemdoctor.android.core.shizuku.ShizukuManager.Status.Unavailable -> "Not installed or not running"
+    }
+
     fun saveKey(key: String) {
         keyStore.setApiKey(key)
         _hasKey.value = keyStore.hasKey()

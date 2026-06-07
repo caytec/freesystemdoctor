@@ -24,6 +24,8 @@ import androidx.compose.material.icons.filled.Backup
 import androidx.compose.material.icons.filled.BatteryAlert
 import androidx.compose.material.icons.filled.BatteryChargingFull
 import androidx.compose.material.icons.filled.BlurOn
+import androidx.compose.material.icons.filled.CleaningServices
+import androidx.compose.material.icons.filled.PieChart
 import androidx.compose.material.icons.filled.CloudUpload
 import androidx.compose.material.icons.filled.Compress
 import androidx.compose.material.icons.filled.Memory
@@ -37,6 +39,9 @@ import androidx.compose.material.icons.filled.DoNotDisturbOn
 import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Insights
+import androidx.compose.material.icons.filled.LocalHospital
+import androidx.compose.material.icons.filled.MarkChatRead
+import androidx.compose.material.icons.filled.OnlinePrediction
 import androidx.compose.material.icons.filled.SportsEsports
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.NetworkCell
@@ -105,6 +110,8 @@ private val toolGroups = listOf(
             Tool(R.string.tool_storage_forecast, Icons.Filled.TrendingDown, ToolRoutes.STORAGE_FORECAST),
             Tool(R.string.tool_shredder, Icons.Filled.DeleteForever, ToolRoutes.SHREDDER, advanced = true),
             Tool(R.string.tool_cleaning_history, Icons.Filled.History, ToolRoutes.CLEANING_HISTORY),
+            Tool(R.string.tool_corpse_finder, Icons.Filled.DeleteForever, ToolRoutes.CORPSE_FINDER, advanced = true),
+            Tool(R.string.tool_storage_treemap, Icons.Filled.PieChart, ToolRoutes.STORAGE_TREEMAP, advanced = true),
         ),
     ),
     ToolGroup(
@@ -128,14 +135,24 @@ private val toolGroups = listOf(
             Tool(R.string.tool_app_resource, Icons.Filled.Assessment, ToolRoutes.APP_RESOURCE),
             Tool(R.string.tool_app_lock, Icons.Filled.ShieldMoon, ToolRoutes.APP_LOCK, advanced = true),
             Tool(R.string.tool_cloud_backup, Icons.Filled.CloudUpload, ToolRoutes.CLOUD_BACKUP, advanced = true),
+            Tool(R.string.tool_app_deep_clean, Icons.Filled.CleaningServices, ToolRoutes.APP_DEEP_CLEAN, advanced = true),
+            Tool(R.string.tool_app_cleaners, Icons.Filled.CleaningServices, ToolRoutes.APP_CLEANERS_HUB, advanced = true),
+        ),
+    ),
+    ToolGroup(
+        R.string.tools_group_battery,
+        listOf(
+            Tool(R.string.tool_battery, Icons.Filled.BatteryChargingFull, ToolRoutes.BATTERY),
+            Tool(R.string.tool_battery_health, Icons.Filled.LocalHospital, ToolRoutes.BATTERY_HEALTH, advanced = true),
+            Tool(R.string.tool_charging_log, Icons.Filled.History, ToolRoutes.CHARGING_LOG, advanced = true),
+            Tool(R.string.tool_battery_drain, Icons.Filled.OnlinePrediction, ToolRoutes.BATTERY_DRAIN, advanced = true),
+            Tool(R.string.tool_battery_alarms, Icons.Filled.BatteryAlert, ToolRoutes.BATTERY_ALARMS, advanced = true),
         ),
     ),
     ToolGroup(
         R.string.tools_group_system,
         listOf(
             Tool(R.string.tool_memory, Icons.Filled.Memory, ToolRoutes.MEMORY),
-            Tool(R.string.tool_battery, Icons.Filled.BatteryChargingFull, ToolRoutes.BATTERY),
-            Tool(R.string.tool_battery_alarms, Icons.Filled.BatteryAlert, ToolRoutes.BATTERY_ALARMS, advanced = true),
             Tool(R.string.tool_focus, Icons.Filled.DoNotDisturbOn, ToolRoutes.FOCUS),
             Tool(R.string.tool_game_boost, Icons.Filled.SportsEsports, ToolRoutes.GAME_BOOST, advanced = true),
             Tool(R.string.tool_speed, Icons.Filled.Speed, ToolRoutes.SPEED_TEST),
@@ -146,6 +163,7 @@ private val toolGroups = listOf(
             Tool(R.string.nav_assistant, Icons.Filled.AutoAwesome, ToolRoutes.ASSISTANT),
             Tool(R.string.tool_wifi, Icons.Filled.Wifi, ToolRoutes.WIFI, advanced = true),
             Tool(R.string.tool_notifications, Icons.Filled.Notifications, ToolRoutes.NOTIFICATIONS, advanced = true),
+            Tool(R.string.tool_notification_stats, Icons.Filled.MarkChatRead, ToolRoutes.NOTIFICATION_STATS),
             Tool(R.string.tool_tweaks, Icons.Filled.Tune, ToolRoutes.TWEAKS, advanced = true),
         ),
     ),

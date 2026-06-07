@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="whats_new_title">What\'s new in 1.5</string>
+    <string name="whats_new_title">What\'s new in 1.6</string>
     <string name="whats_new_dismiss">Got it</string>
     <string-array name="whats_new_items">
-        <item>Game Booster (PRO) — one-tap real boost: free RAM, purge cache, mute interruptions, launch the game</item>
-        <item>Per-game profiles + suppressed in-app ads during the session</item>
-        <item>Cleaning history — see lifetime GB reclaimed; PRO unlocks full history + CSV export</item>
-        <item>AI Assistant — 3 analyses/day free, unlimited with PRO</item>
-        <item>Honest brand kept: no fake FPS, no inflated RAM numbers — only real measured deltas</item>
-        <item>Pro page refreshed with the new benefits</item>
+        <item>CorpseFinder — find &amp; reclaim real GB left by uninstalled apps (PRO)</item>
+        <item>App deep clean + dedicated WhatsApp / Telegram / Discord / TikTok cleaners (PRO)</item>
+        <item>Battery health, charging session log and per-app drain estimate (PRO)</item>
+        <item>Interactive storage treemap — see what\'s eating your space at a glance (PRO)</item>
+        <item>Free insights: Notification Stats (top 7-day spammers), Hibernation suggestions, pre-uninstall preview</item>
+        <item>Optional Shizuku integration (off by default) — wiring ready for the next update</item>
+        <item>Honest brand kept: every byte we report is a real measured byte</item>
     </string-array>
 </resources>

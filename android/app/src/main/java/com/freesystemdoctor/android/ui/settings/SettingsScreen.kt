@@ -193,6 +193,31 @@ fun SettingsScreen(
             }
         }
 
+        // ── Power-user mode (Shizuku) ─────────────────────────────
+        SectionHeader(stringResource(R.string.settings_shizuku_section))
+        GlassCard {
+            Column(
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                PreferenceRow(
+                    title = stringResource(R.string.settings_shizuku_toggle),
+                    subtitle = stringResource(R.string.settings_shizuku_desc),
+                ) {
+                    Switch(
+                        checked = settings.shizukuEnabled,
+                        onCheckedChange = viewModel::setShizukuEnabled,
+                    )
+                }
+                val status = viewModel.shizukuStatusLabel()
+                Text(
+                    status,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        }
+
         // ── About & Legal ─────────────────────────────────────────
         SectionHeader(stringResource(R.string.settings_about))
         GlassCard {

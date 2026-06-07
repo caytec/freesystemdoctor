@@ -96,6 +96,10 @@ fun ProScreen(
         }
 
         val benefits = listOf(
+            R.string.pro_benefit_corpse_finder,
+            R.string.pro_benefit_app_deep_clean,
+            R.string.pro_benefit_battery_suite,
+            R.string.pro_benefit_storage_treemap,
             R.string.pro_benefit_game_boost,
             R.string.pro_benefit_ads,
             R.string.pro_benefit_advanced,

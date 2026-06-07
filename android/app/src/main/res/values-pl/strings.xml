@@ -497,4 +497,88 @@
     <!-- Update 11: Asystent AI — dzienny limit (PRO = bez limitu) -->
     <string name="assistant_limit_reached">Osiągnięto dzienny limit (%1$d/dzień). PRO znosi limit.</string>
     <string name="assistant_usage_today">Dziś: %1$d/%2$d analiz (darmowy plan)</string>
+
+    <!-- Update 12: Pakiet Parytetu Konkurencyjnego -->
+    <string name="tools_group_battery">Bateria i ładowanie</string>
+
+    <string name="tool_corpse_finder">CorpseFinder</string>
+    <string name="corpse_finder_note">Znajduje foldery pozostawione przez odinstalowane aplikacje w Android/data, Android/media i znanych folderach publicznych (WhatsApp, Telegram…). Wybierz katalog główny pamięci raz, aby przyznać dostęp.</string>
+    <string name="corpse_finder_pick">Wybierz katalog pamięci</string>
+    <string name="corpse_finder_scan_blocked_android_data">Niektóre podfoldery Android/data są niedostępne bez Shizuku na Androidzie 13+. Włącz w Ustawieniach, aby je odzyskać.</string>
+    <string name="corpse_finder_count">Znaleziono %1$d szczątków · %2$s do odzyskania</string>
+    <string name="corpse_finder_delete_all">Usuń wszystko</string>
+    <string name="corpse_finder_risk_high">WYS</string>
+    <string name="corpse_finder_risk_medium">ŚR</string>
+    <string name="corpse_finder_risk_low">NIS</string>
+    <string name="corpse_finder_empty">Brak szczątków — nieźle.</string>
+    <string name="corpse_finder_dashboard_banner">Wykryto %1$d pozostałości po odinstalowanych aplikacjach. Otwórz CorpseFinder, aby wyczyścić.</string>
+
+    <string name="tool_app_deep_clean">Głębokie czyszczenie aplikacji</string>
+    <string name="app_deep_clean_note">Czyści zbędne podfoldery wewnątrz danych zainstalowanych aplikacji — cache, logi, .thumbnails, kopie wysłanych mediów. Ścieżki OPT_IN startują odznaczone.</string>
+    <string name="app_deep_clean_empty">Nic zbędnego nie znaleziono. Najpierw przyznaj dostęp do Android/data.</string>
+    <string name="app_deep_clean_run">Wyczyść zaznaczone</string>
+    <string name="app_deep_clean_bytes">%1$s zbędne</string>
+    <string name="app_deep_clean_safety_safe">BEZPIECZNE</string>
+    <string name="app_deep_clean_safety_cautious">UWAGA</string>
+    <string name="app_deep_clean_safety_optin">OPCJONALNE</string>
+
+    <string name="tool_app_cleaners">Czyszczenie aplikacji</string>
+    <string name="app_cleaners_hub_note">Dedykowane czyszczenie dla popularnych aplikacji z precyzyjnym wyborem podfolderów. Wybierz aplikację poniżej.</string>
+    <string name="app_cleaner_whatsapp_title">Czyszczenie WhatsAppa</string>
+    <string name="app_cleaner_telegram_title">Czyszczenie Telegrama</string>
+    <string name="app_cleaner_discord_title">Czyszczenie Discorda</string>
+    <string name="app_cleaner_tiktok_title">Czyszczenie TikToka</string>
+    <string name="app_cleaner_install_required">%1$s nie jest zainstalowany na tym urządzeniu.</string>
+
+    <string name="tool_battery_health">Kondycja baterii</string>
+    <string name="battery_health_note">Szacuje obecną pojemność na podstawie rzeczywistych sesji ładowania. Wymaga co najmniej 3 sesji o delcie ≥40%%.</string>
+    <string name="battery_health_capacity">Zmierzona pojemność</string>
+    <string name="battery_health_percent">%1$d%% wartości fabrycznej</string>
+    <string name="battery_health_sample_count">Na podstawie %1$d sesji</string>
+    <string name="battery_health_not_enough_data">Za mało danych — ładuj normalnie i wróć po kilku pełnych cyklach.</string>
+    <string name="battery_health_design">Wskazówka pojemności fabrycznej</string>
+
+    <string name="tool_charging_log">Dziennik ładowania</string>
+    <string name="charging_log_note">Zapisane sesje ładowania. Próbkujemy pobór prądu co 30 s, gdy telefon jest podłączony — bez fałszywych liczb.</string>
+    <string name="charging_log_session">%1$d%% → %2$d%% · dodano ≈ %3$d mAh · maks %4$s</string>
+    <string name="charging_log_empty">Brak zapisanych sesji ładowania. Podłącz ładowarkę, aby rozpocząć.</string>
+
+    <string name="tool_battery_drain">Zużycie baterii przez aplikacje</string>
+    <string name="battery_drain_note">Szacunek na podstawie czasu w pierwszym planie i kategorii aplikacji. Realne mAh pokażemy tylko, gdy system pozwoli (rzadkość na OEM-ach).</string>
+    <string name="battery_drain_row">%1$d min w foreground · waga %2$s</string>
+    <string name="battery_drain_empty">Brak danych użycia. Przyznaj Dostęp do użycia.</string>
+
+    <string name="tool_storage_treemap">Mapa pamięci</string>
+    <string name="storage_treemap_note">Tapnij prostokąt, aby wejść w folder. Rozmiary są realne — mierzone przez przejście drzewa SAF.</string>
+    <string name="storage_treemap_grant">Wybierz folder do wizualizacji.</string>
+    <string name="storage_treemap_up">W górę</string>
+
+    <string name="tool_notification_stats">Statystyki powiadomień</string>
+    <string name="notification_stats_note">Liczy powiadomienia opublikowane przez każdą aplikację w ciągu ostatnich 7 dni. Wymaga włączonego Dostępu do powiadomień.</string>
+    <string name="notification_stats_count">%1$d w 7 dni</string>
+    <string name="notification_stats_silence">Otwórz ustawienia powiadomień</string>
+    <string name="notification_stats_empty">Brak zapisanych powiadomień. Sprawdź, czy Dostęp do powiadomień jest przyznany.</string>
+
+    <string name="rarely_used_force_stop">Zatrzymaj teraz</string>
+    <string name="rarely_used_restrict_bg">Ogranicz tło</string>
+    <string name="rarely_used_force_stop_done">Wysłano żądanie zatrzymania — system może potrzebować chwili.</string>
+
+    <string name="uninstall_preview_title">Przed odinstalowaniem</string>
+    <string name="uninstall_preview_body">Po odinstalowaniu może zostać ≈ %1$s pozostałości. Wyczyścić teraz CorpseFinderem?</string>
+    <string name="uninstall_preview_clean">Otwórz CorpseFinder</string>
+    <string name="uninstall_preview_skip">Pomiń i odinstaluj</string>
+
+    <string name="settings_shizuku_section">Tryb zaawansowany (Shizuku)</string>
+    <string name="settings_shizuku_toggle">Włącz integrację z Shizuku</string>
+    <string name="settings_shizuku_desc">Opcjonalne. Gdy włączone i Shizuku działa, CorpseFinder i głębokie czyszczenie sięgną Android/data na Androidzie 13+ i wykonają prawdziwy force-stop. Domyślnie wyłączone.</string>
+    <string name="settings_shizuku_status_unavailable">Niezainstalowane lub niedziałające</string>
+    <string name="settings_shizuku_status_denied">Brak uprawnień — otwórz Shizuku, aby przyznać.</string>
+    <string name="settings_shizuku_status_granted">Przyznane ✓</string>
+    <string name="settings_shizuku_request">Poproś o uprawnienia</string>
+    <string name="shizuku_snackbar_unlock">Niektóre foldery wymagają Shizuku. Otwórz Ustawienia, aby włączyć.</string>
+
+    <string name="pro_benefit_corpse_finder">CorpseFinder — odzyskaj realne GB po odinstalowanych aplikacjach</string>
+    <string name="pro_benefit_app_deep_clean">Głębokie czyszczenie + WhatsApp / Telegram / Discord / TikTok</string>
+    <string name="pro_benefit_battery_suite">Kondycja baterii, dziennik ładowania, zużycie</string>
+    <string name="pro_benefit_storage_treemap">Interaktywna mapa pamięci</string>
 </resources>

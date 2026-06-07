@@ -26,8 +26,17 @@ import com.freesystemdoctor.android.engine.battery.BatteryEngine
 import com.freesystemdoctor.android.engine.contacts.ContactsEngine
 import com.freesystemdoctor.android.engine.contacts.SmsBackupEngine
 import com.freesystemdoctor.android.data.cloudbackup.CloudBackupKeyStore
+import com.freesystemdoctor.android.engine.appcleaners.AppCleanersEngine
+import com.freesystemdoctor.android.engine.appdeep.AppDeepCleanEngine
+import com.freesystemdoctor.android.engine.battery.BatteryDrainEngine
+import com.freesystemdoctor.android.engine.battery.BatteryHealthEngine
+import com.freesystemdoctor.android.engine.battery.ChargingSessionEngine
 import com.freesystemdoctor.android.engine.cache.HiddenCacheEngine
 import com.freesystemdoctor.android.engine.cache.JunkScannerEngine
+import com.freesystemdoctor.android.engine.corpse.CorpseFinderEngine
+import com.freesystemdoctor.android.engine.notifications.NotificationStatsEngine
+import com.freesystemdoctor.android.engine.storage.StorageTreemapEngine
+import com.freesystemdoctor.android.core.shizuku.ShizukuManager
 import com.freesystemdoctor.android.engine.cloudbackup.BackupCryptoEngine
 import com.freesystemdoctor.android.engine.cloudbackup.CloudBackupEngine
 import com.freesystemdoctor.android.data.gameboost.GameProfileStore
@@ -136,4 +145,21 @@ object ServiceLocator {
     val appOpenAdManager: AppOpenAdManager by lazy {
         AppOpenAdManager(appContext as Application)
     }
+
+    // Update 12: Competitor Parity Pack
+    val corpseFinderEngine: CorpseFinderEngine by lazy { CorpseFinderEngine(appContext) }
+    val appDeepCleanEngine: AppDeepCleanEngine by lazy { AppDeepCleanEngine(appContext) }
+    val appCleanersEngine: AppCleanersEngine by lazy { AppCleanersEngine(appContext) }
+    val chargingSessionEngine: ChargingSessionEngine by lazy { ChargingSessionEngine(appContext) }
+    val batteryHealthEngine: BatteryHealthEngine by lazy {
+        BatteryHealthEngine(chargingSessionEngine, batteryEngine)
+    }
+    val batteryDrainEngine: BatteryDrainEngine by lazy {
+        BatteryDrainEngine(appContext, permissionManager)
+    }
+    val storageTreemapEngine: StorageTreemapEngine by lazy { StorageTreemapEngine(appContext) }
+    val notificationStatsEngine: NotificationStatsEngine by lazy {
+        NotificationStatsEngine(appContext)
+    }
+    val shizukuManager: ShizukuManager by lazy { ShizukuManager(appContext) }
 }

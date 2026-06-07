@@ -2,6 +2,7 @@ package com.freesystemdoctor.android.service
 
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
+import com.freesystemdoctor.android.core.di.ServiceLocator
 
 data class ActiveNotification(
     val key: String,
@@ -13,6 +14,10 @@ data class ActiveNotification(
 /**
  * Lets the user review and dismiss active notifications. Enabled by the user via
  * the system Notification Access screen (a sensitive permission), not at runtime.
+ *
+ * Also feeds [com.freesystemdoctor.android.engine.notifications.NotificationStatsEngine]
+ * with one event per posted notification so the Notification Stats free-tier tool can
+ * show 7-day spammer counts.
  */
 class FsdNotificationListener : NotificationListenerService() {
 
@@ -22,6 +27,10 @@ class FsdNotificationListener : NotificationListenerService() {
 
     override fun onListenerDisconnected() {
         if (instance === this) instance = null
+    }
+
+    override fun onNotificationPosted(sbn: StatusBarNotification?) {
+        sbn?.packageName?.let { ServiceLocator.notificationStatsEngine.record(it) }
     }
 
     fun snapshot(): List<ActiveNotification> = runCatching {

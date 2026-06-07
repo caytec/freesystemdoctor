@@ -27,6 +27,8 @@ data class AppSettings(
     val batteryAlarmsEnabled: Boolean = false,
     val batteryAlarmLow: Int = 15,
     val batteryAlarmFull: Int = 80,
+    val shizukuEnabled: Boolean = false,
+    val shizukuSnackbarShown: Boolean = false,
 )
 
 class SettingsRepository(private val context: Context) {
@@ -45,6 +47,8 @@ class SettingsRepository(private val context: Context) {
         val BATTERY_ALARM_FULL = intPreferencesKey("battery_alarm_full")
         val AI_USAGE_DAY = stringPreferencesKey("ai_usage_day")
         val AI_USAGE_COUNT = intPreferencesKey("ai_usage_count")
+        val SHIZUKU_ENABLED = booleanPreferencesKey("shizuku_enabled")
+        val SHIZUKU_SNACKBAR_SHOWN = booleanPreferencesKey("shizuku_snackbar_shown")
     }
 
     val settings: Flow<AppSettings> = context.dataStore.data.map { prefs ->
@@ -62,6 +66,8 @@ class SettingsRepository(private val context: Context) {
             batteryAlarmsEnabled = prefs[Keys.BATTERY_ALARMS] ?: false,
             batteryAlarmLow = prefs[Keys.BATTERY_ALARM_LOW] ?: 15,
             batteryAlarmFull = prefs[Keys.BATTERY_ALARM_FULL] ?: 80,
+            shizukuEnabled = prefs[Keys.SHIZUKU_ENABLED] ?: false,
+            shizukuSnackbarShown = prefs[Keys.SHIZUKU_SNACKBAR_SHOWN] ?: false,
         )
     }
 
@@ -106,6 +112,14 @@ class SettingsRepository(private val context: Context) {
             it[Keys.BATTERY_ALARM_LOW] = low.coerceIn(5, 50)
             it[Keys.BATTERY_ALARM_FULL] = full.coerceIn(50, 100)
         }
+    }
+
+    suspend fun setShizukuEnabled(enabled: Boolean) {
+        context.dataStore.edit { it[Keys.SHIZUKU_ENABLED] = enabled }
+    }
+
+    suspend fun setShizukuSnackbarShown(shown: Boolean) {
+        context.dataStore.edit { it[Keys.SHIZUKU_SNACKBAR_SHOWN] = shown }
     }
 
     /**

@@ -55,8 +55,20 @@ import com.freesystemdoctor.android.ui.cloudbackup.CloudBackupScreen
 import com.freesystemdoctor.android.ui.cloudbackup.RestoreWizardScreen
 import com.freesystemdoctor.android.ui.focus.FocusScreen
 import com.freesystemdoctor.android.ui.forecast.StorageForecastScreen
+import com.freesystemdoctor.android.ui.appcleaners.AppCleanersHubScreen
+import com.freesystemdoctor.android.ui.appcleaners.DiscordCleanerScreen
+import com.freesystemdoctor.android.ui.appcleaners.TelegramCleanerScreen
+import com.freesystemdoctor.android.ui.appcleaners.TikTokCleanerScreen
+import com.freesystemdoctor.android.ui.appcleaners.WhatsAppCleanerScreen
+import com.freesystemdoctor.android.ui.appdeep.AppDeepCleanScreen
+import com.freesystemdoctor.android.ui.battery.charging.ChargingLogScreen
+import com.freesystemdoctor.android.ui.battery.drain.BatteryDrainScreen
+import com.freesystemdoctor.android.ui.battery.health.BatteryHealthScreen
+import com.freesystemdoctor.android.ui.corpse.CorpseFinderScreen
 import com.freesystemdoctor.android.ui.gameboost.GameBoostScreen
 import com.freesystemdoctor.android.ui.history.CleaningHistoryScreen
+import com.freesystemdoctor.android.ui.notifications.stats.NotificationStatsScreen
+import com.freesystemdoctor.android.ui.storage.treemap.StorageTreemapScreen
 import com.freesystemdoctor.android.ui.insights.AppInsightsScreen
 import com.freesystemdoctor.android.ui.lock.AppLockScreen
 import com.freesystemdoctor.android.ui.resource.AppResourceScreen
@@ -128,6 +140,18 @@ private val toolTitles: Map<String, Int> = mapOf(
     ToolRoutes.RESTORE_WIZARD to R.string.restore_title,
     ToolRoutes.GAME_BOOST to R.string.tool_game_boost,
     ToolRoutes.CLEANING_HISTORY to R.string.tool_cleaning_history,
+    ToolRoutes.CORPSE_FINDER to R.string.tool_corpse_finder,
+    ToolRoutes.APP_DEEP_CLEAN to R.string.tool_app_deep_clean,
+    ToolRoutes.APP_CLEANERS_HUB to R.string.tool_app_cleaners,
+    ToolRoutes.APP_CLEANER_WHATSAPP to R.string.app_cleaner_whatsapp_title,
+    ToolRoutes.APP_CLEANER_TELEGRAM to R.string.app_cleaner_telegram_title,
+    ToolRoutes.APP_CLEANER_DISCORD to R.string.app_cleaner_discord_title,
+    ToolRoutes.APP_CLEANER_TIKTOK to R.string.app_cleaner_tiktok_title,
+    ToolRoutes.BATTERY_HEALTH to R.string.tool_battery_health,
+    ToolRoutes.CHARGING_LOG to R.string.tool_charging_log,
+    ToolRoutes.BATTERY_DRAIN to R.string.tool_battery_drain,
+    ToolRoutes.STORAGE_TREEMAP to R.string.tool_storage_treemap,
+    ToolRoutes.NOTIFICATION_STATS to R.string.tool_notification_stats,
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -298,6 +322,20 @@ fun MainScaffold() {
             composable(ToolRoutes.RESTORE_WIZARD) { RestoreWizardScreen() }
             composable(ToolRoutes.GAME_BOOST) { GameBoostScreen() }
             composable(ToolRoutes.CLEANING_HISTORY) { CleaningHistoryScreen() }
+            composable(ToolRoutes.CORPSE_FINDER) { CorpseFinderScreen() }
+            composable(ToolRoutes.APP_DEEP_CLEAN) { AppDeepCleanScreen() }
+            composable(ToolRoutes.APP_CLEANERS_HUB) {
+                AppCleanersHubScreen(onOpen = { navController.navigate(it) })
+            }
+            composable(ToolRoutes.APP_CLEANER_WHATSAPP) { WhatsAppCleanerScreen() }
+            composable(ToolRoutes.APP_CLEANER_TELEGRAM) { TelegramCleanerScreen() }
+            composable(ToolRoutes.APP_CLEANER_DISCORD) { DiscordCleanerScreen() }
+            composable(ToolRoutes.APP_CLEANER_TIKTOK) { TikTokCleanerScreen() }
+            composable(ToolRoutes.BATTERY_HEALTH) { BatteryHealthScreen() }
+            composable(ToolRoutes.CHARGING_LOG) { ChargingLogScreen() }
+            composable(ToolRoutes.BATTERY_DRAIN) { BatteryDrainScreen() }
+            composable(ToolRoutes.STORAGE_TREEMAP) { StorageTreemapScreen() }
+            composable(ToolRoutes.NOTIFICATION_STATS) { NotificationStatsScreen() }
         }
         }
     }

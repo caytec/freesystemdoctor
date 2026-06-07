@@ -537,4 +537,100 @@
     <!-- Update 11: AI Assistant daily cap (PRO = unlimited) -->
     <string name="assistant_limit_reached">Daily limit reached (%1$d/day). PRO removes the cap.</string>
     <string name="assistant_usage_today">Today: %1$d/%2$d analyses (free tier)</string>
+
+    <!-- Update 12: Competitor Parity Pack -->
+    <string name="tools_group_battery">Battery &amp; charging</string>
+
+    <!-- CorpseFinder -->
+    <string name="tool_corpse_finder">CorpseFinder</string>
+    <string name="corpse_finder_note">Finds folders left behind by uninstalled apps under Android/data, Android/media, and well-known public dirs (WhatsApp, Telegram…). Pick the storage root once to grant access.</string>
+    <string name="corpse_finder_pick">Pick storage root</string>
+    <string name="corpse_finder_scan_blocked_android_data">Some Android/data subfolders can\'t be read without Shizuku on Android 13+. Enable it in Settings to recover them.</string>
+    <string name="corpse_finder_count">%1$d corpses found · %2$s recoverable</string>
+    <string name="corpse_finder_delete_all">Delete all</string>
+    <string name="corpse_finder_risk_high">HIGH</string>
+    <string name="corpse_finder_risk_medium">MEDIUM</string>
+    <string name="corpse_finder_risk_low">LOW</string>
+    <string name="corpse_finder_empty">No corpses found — nice.</string>
+    <string name="corpse_finder_dashboard_banner">Detected %1$d leftover folders from uninstalled apps. Open CorpseFinder to clean.</string>
+
+    <!-- App Deep Clean -->
+    <string name="tool_app_deep_clean">App deep clean</string>
+    <string name="app_deep_clean_note">Targets expendable subfolders inside each installed app\'s data — cache, logs, .thumbnails, sent-media backups. OPT_IN paths start unchecked.</string>
+    <string name="app_deep_clean_empty">Nothing expendable found. Grant the Android/data folder first if you haven\'t.</string>
+    <string name="app_deep_clean_run">Clean selected</string>
+    <string name="app_deep_clean_bytes">%1$s expendable</string>
+    <string name="app_deep_clean_safety_safe">SAFE</string>
+    <string name="app_deep_clean_safety_cautious">CAUTIOUS</string>
+    <string name="app_deep_clean_safety_optin">OPT-IN</string>
+
+    <!-- App Cleaners Hub -->
+    <string name="tool_app_cleaners">App cleaners</string>
+    <string name="app_cleaners_hub_note">Per-app deep cleaners with fine-grained subfolder toggles. Pick a supported app below.</string>
+    <string name="app_cleaner_whatsapp_title">WhatsApp cleaner</string>
+    <string name="app_cleaner_telegram_title">Telegram cleaner</string>
+    <string name="app_cleaner_discord_title">Discord cleaner</string>
+    <string name="app_cleaner_tiktok_title">TikTok cleaner</string>
+    <string name="app_cleaner_install_required">%1$s is not installed on this device.</string>
+
+    <!-- Battery Health -->
+    <string name="tool_battery_health">Battery health</string>
+    <string name="battery_health_note">Estimates current capacity from your real charging sessions. Needs at least 3 sessions of ≥40%% delta to compute.</string>
+    <string name="battery_health_capacity">Measured capacity</string>
+    <string name="battery_health_percent">%1$d%% of new</string>
+    <string name="battery_health_sample_count">Based on %1$d sessions</string>
+    <string name="battery_health_not_enough_data">Not enough data yet — keep charging your phone normally and check back after a few full cycles.</string>
+    <string name="battery_health_design">Design capacity hint</string>
+
+    <!-- Charging Log -->
+    <string name="tool_charging_log">Charging log</string>
+    <string name="charging_log_note">Recorded charging sessions. We sample current draw every 30 seconds while plugged in — no fake numbers.</string>
+    <string name="charging_log_session">%1$d%% → %2$d%% · added ≈ %3$d mAh · peak %4$s</string>
+    <string name="charging_log_empty">No charging sessions recorded yet. Plug your phone in to start the log.</string>
+
+    <!-- Battery Drain -->
+    <string name="tool_battery_drain">Battery drain by app</string>
+    <string name="battery_drain_note">Estimate based on foreground time and app category. We only show real mAh when the system grants direct access to battery stats (rare on OEM builds).</string>
+    <string name="battery_drain_row">%1$d min foreground · weight %2$s</string>
+    <string name="battery_drain_empty">No usage data available. Grant Usage Access to see the breakdown.</string>
+
+    <!-- Storage Treemap -->
+    <string name="tool_storage_treemap">Storage treemap</string>
+    <string name="storage_treemap_note">Tap a rectangle to drill into a folder. Sizes are real — measured by walking the granted SAF tree.</string>
+    <string name="storage_treemap_grant">Pick a folder to visualize.</string>
+    <string name="storage_treemap_up">Go up</string>
+
+    <!-- Notification Stats -->
+    <string name="tool_notification_stats">Notification stats</string>
+    <string name="notification_stats_note">Counts notifications posted by each app over the last 7 days. Enable Notification Access first.</string>
+    <string name="notification_stats_count">%1$d in 7 days</string>
+    <string name="notification_stats_silence">Open notification settings</string>
+    <string name="notification_stats_empty">No notifications recorded yet. Make sure notification access is granted.</string>
+
+    <!-- Hibernation Suggestions on Rarely Used -->
+    <string name="rarely_used_force_stop">Force-stop now</string>
+    <string name="rarely_used_restrict_bg">Restrict background</string>
+    <string name="rarely_used_force_stop_done">Sent stop request — system may need a moment.</string>
+
+    <!-- Pre-Uninstall Preview -->
+    <string name="uninstall_preview_title">Before you uninstall</string>
+    <string name="uninstall_preview_body">≈ %1$s of leftover data may stay behind after uninstall. Clean it now with CorpseFinder?</string>
+    <string name="uninstall_preview_clean">Open CorpseFinder</string>
+    <string name="uninstall_preview_skip">Skip and uninstall</string>
+
+    <!-- Shizuku -->
+    <string name="settings_shizuku_section">Power-user mode (Shizuku)</string>
+    <string name="settings_shizuku_toggle">Enable Shizuku integration</string>
+    <string name="settings_shizuku_desc">Optional. When enabled and Shizuku is running, CorpseFinder and App Deep Clean can reach Android/data on Android 13+ and run real force-stop. Off by default.</string>
+    <string name="settings_shizuku_status_unavailable">Not installed or not running</string>
+    <string name="settings_shizuku_status_denied">Permission denied — open Shizuku to grant.</string>
+    <string name="settings_shizuku_status_granted">Granted ✓</string>
+    <string name="settings_shizuku_request">Request permission</string>
+    <string name="shizuku_snackbar_unlock">Some folders need Shizuku to clean. Open Settings to enable.</string>
+
+    <!-- Update 12 PRO benefits -->
+    <string name="pro_benefit_corpse_finder">CorpseFinder — recover real GB from uninstalled apps</string>
+    <string name="pro_benefit_app_deep_clean">App deep clean + WhatsApp / Telegram / Discord / TikTok cleaners</string>
+    <string name="pro_benefit_battery_suite">Battery health, charging log, drain breakdown</string>
+    <string name="pro_benefit_storage_treemap">Interactive storage treemap</string>
 </resources>

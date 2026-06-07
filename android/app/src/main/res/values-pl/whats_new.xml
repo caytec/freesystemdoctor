@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="whats_new_title">Co nowego w 1.5</string>
+    <string name="whats_new_title">Co nowego w 1.6</string>
     <string name="whats_new_dismiss">Rozumiem</string>
     <string-array name="whats_new_items">
-        <item>Game Booster (PRO) — jeden tap, realny boost: RAM, czyszczenie cache, wyciszenie powiadomień, uruchomienie gry</item>
-        <item>Profile dla gier + wyciszenie naszych reklam w trakcie sesji</item>
-        <item>Historia czyszczeń — łącznie odzyskane GB; PRO odblokowuje pełną historię + eksport CSV</item>
-        <item>Asystent AI — 3 analizy/dzień za darmo, bez limitu w PRO</item>
-        <item>Trzymamy się uczciwości: bez fałszywych FPS-ów i napompowanych liczb RAM — tylko prawdziwe wartości</item>
-        <item>Ekran Pro odświeżony z nowymi korzyściami</item>
+        <item>CorpseFinder — odzyskaj prawdziwe GB pozostawione przez odinstalowane aplikacje (PRO)</item>
+        <item>Głębokie czyszczenie aplikacji + dedykowane WhatsApp / Telegram / Discord / TikTok (PRO)</item>
+        <item>Kondycja baterii, dziennik sesji ładowania i szacunkowe zużycie per aplikacja (PRO)</item>
+        <item>Interaktywna mapa pamięci — zobacz, co zajmuje miejsce, na pierwszy rzut oka (PRO)</item>
+        <item>Darmowe wglądy: Statystyki powiadomień (top spamerów z 7 dni), sugestie hibernacji, podgląd przed odinstalowaniem</item>
+        <item>Opcjonalna integracja z Shizuku (domyślnie wyłączona) — gotowa na kolejną aktualizację</item>
+        <item>Trzymamy się uczciwości: każdy zaraportowany bajt to realnie zmierzony bajt</item>
     </string-array>
 </resources>
