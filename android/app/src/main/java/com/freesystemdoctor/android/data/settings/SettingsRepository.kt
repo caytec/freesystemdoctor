@@ -15,6 +15,8 @@ import kotlinx.coroutines.flow.map
 
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "fsd_settings")
 
+enum class ScanDepth { QUICK, DEEP }
+
 data class AppSettings(
     val onboardingDone: Boolean = false,
     val darkTheme: Boolean = true,
@@ -29,6 +31,8 @@ data class AppSettings(
     val batteryAlarmFull: Int = 80,
     val shizukuEnabled: Boolean = false,
     val shizukuSnackbarShown: Boolean = false,
+    val scanDepth: ScanDepth = ScanDepth.QUICK,
+    val includePhotosInDeepScan: Boolean = false,
 )
 
 class SettingsRepository(private val context: Context) {
@@ -49,6 +53,8 @@ class SettingsRepository(private val context: Context) {
         val AI_USAGE_COUNT = intPreferencesKey("ai_usage_count")
         val SHIZUKU_ENABLED = booleanPreferencesKey("shizuku_enabled")
         val SHIZUKU_SNACKBAR_SHOWN = booleanPreferencesKey("shizuku_snackbar_shown")
+        val SCAN_DEPTH = stringPreferencesKey("scan_depth")
+        val INCLUDE_PHOTOS_DEEP = booleanPreferencesKey("include_photos_deep_scan")
     }
 
     val settings: Flow<AppSettings> = context.dataStore.data.map { prefs ->
@@ -68,7 +74,19 @@ class SettingsRepository(private val context: Context) {
             batteryAlarmFull = prefs[Keys.BATTERY_ALARM_FULL] ?: 80,
             shizukuEnabled = prefs[Keys.SHIZUKU_ENABLED] ?: false,
             shizukuSnackbarShown = prefs[Keys.SHIZUKU_SNACKBAR_SHOWN] ?: false,
+            scanDepth = prefs[Keys.SCAN_DEPTH]
+                ?.let { runCatching { ScanDepth.valueOf(it) }.getOrNull() }
+                ?: ScanDepth.QUICK,
+            includePhotosInDeepScan = prefs[Keys.INCLUDE_PHOTOS_DEEP] ?: false,
         )
+    }
+
+    suspend fun setScanDepth(depth: ScanDepth) {
+        context.dataStore.edit { it[Keys.SCAN_DEPTH] = depth.name }
+    }
+
+    suspend fun setIncludePhotosInDeepScan(enabled: Boolean) {
+        context.dataStore.edit { it[Keys.INCLUDE_PHOTOS_DEEP] = enabled }
     }
 
     suspend fun setOnboardingDone(done: Boolean) {

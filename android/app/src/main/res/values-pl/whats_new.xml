@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="whats_new_title">Co nowego w 1.6</string>
+    <string name="whats_new_title">Co nowego w 1.7</string>
     <string name="whats_new_dismiss">Rozumiem</string>
     <string-array name="whats_new_items">
-        <item>CorpseFinder — odzyskaj prawdziwe GB pozostawione przez odinstalowane aplikacje (PRO)</item>
-        <item>Głębokie czyszczenie aplikacji + dedykowane WhatsApp / Telegram / Discord / TikTok (PRO)</item>
-        <item>Kondycja baterii, dziennik sesji ładowania i szacunkowe zużycie per aplikacja (PRO)</item>
-        <item>Interaktywna mapa pamięci — zobacz, co zajmuje miejsce, na pierwszy rzut oka (PRO)</item>
-        <item>Darmowe wglądy: Statystyki powiadomień (top spamerów z 7 dni), sugestie hibernacji, podgląd przed odinstalowaniem</item>
-        <item>Opcjonalna integracja z Shizuku (domyślnie wyłączona) — gotowa na kolejną aktualizację</item>
-        <item>Trzymamy się uczciwości: każdy zaraportowany bajt to realnie zmierzony bajt</item>
+        <item>NOWOŚĆ: Głębokie skanowanie łączy 12 etapów w jeden animowany przepływ</item>
+        <item>Ukryte cache, CorpseFinder, głębokie czyszczenie aplikacji i duże duplikaty — wszystko z jednego przycisku</item>
+        <item>Automatycznie wykrywa puste foldery oraz pliki logów i awarii</item>
+        <item>Kosz systemowy i schowek uwzględnione w każdym Głębokim skanowaniu</item>
+        <item>Opcjonalnie: nieostre i wizualnie podobne zdjęcia (domyślnie wyłączone — dodaje ~2 min)</item>
+        <item>Pełny raport-rozdzielnia: stuknij dowolny wiersz, aby przejść prosto do dedykowanego ekranu czyszczenia</item>
+        <item>Anuluj skanowanie jednym dotknięciem — częściowe wyniki zostają</item>
+        <item>Wciąż uczciwie: skanowanie zawsze darmowe, brak zmyślonych liczb, brak auto-usuwania zaawansowanych faz</item>
     </string-array>
 </resources>

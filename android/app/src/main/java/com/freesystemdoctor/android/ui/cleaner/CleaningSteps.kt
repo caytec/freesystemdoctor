@@ -171,16 +171,34 @@ private fun StepIcon(status: PhaseStatus) {
     }
 }
 
-private fun phaseLabelRes(id: CleanPhaseId): Int = when (id) {
+internal fun phaseLabelRes(id: CleanPhaseId): Int = when (id) {
     CleanPhaseId.CACHE_SCAN -> R.string.cleaner_phase_cache_scan
     CleanPhaseId.CACHE_CLEAN -> R.string.cleaner_phase_cache_clean
     CleanPhaseId.APK_SCAN -> R.string.cleaner_phase_apk
     CleanPhaseId.TEMP_SCAN -> R.string.cleaner_phase_temp
+    CleanPhaseId.TRASH_SCAN -> R.string.cleaner_phase_trash
+    CleanPhaseId.CLIPBOARD_SCAN -> R.string.cleaner_phase_clipboard
+    CleanPhaseId.LARGE_FILES_SCAN -> R.string.cleaner_phase_large_files
+    CleanPhaseId.EMPTY_FOLDER_SCAN -> R.string.cleaner_phase_empty_folders
+    CleanPhaseId.LOG_FILES_SCAN -> R.string.cleaner_phase_log_files
+    CleanPhaseId.HIDDEN_CACHE_SCAN -> R.string.cleaner_phase_hidden_cache
+    CleanPhaseId.CORPSE_SCAN -> R.string.cleaner_phase_corpse
+    CleanPhaseId.APP_DEEP_SCAN -> R.string.cleaner_phase_app_deep
+    CleanPhaseId.DUPLICATE_SCAN -> R.string.cleaner_phase_duplicates
+    CleanPhaseId.BLURRY_PHOTOS_SCAN -> R.string.cleaner_phase_blurry_photos
+    CleanPhaseId.SIMILAR_PHOTOS_SCAN -> R.string.cleaner_phase_similar_photos
     CleanPhaseId.SUMMARY -> R.string.cleaner_phase_summary
 }
 
 @Composable
-private fun phaseResultText(phase: CleanPhase): String {
+internal fun phaseResultText(phase: CleanPhase): String {
+    phase.skipReason?.let { reason ->
+        return when (reason) {
+            SkipReason.NO_SAF -> stringResource(R.string.cleaner_phase_skip_no_saf)
+            SkipReason.NOT_SUPPORTED -> stringResource(R.string.cleaner_phase_skip_not_supported)
+            SkipReason.CANCELLED -> stringResource(R.string.cleaner_phase_skip_cancelled)
+        }
+    }
     val size = ByteFormatter.format(phase.bytes)
     return when (phase.id) {
         CleanPhaseId.CACHE_SCAN -> stringResource(R.string.cleaner_phase_cache_scan_result, size)
@@ -192,6 +210,40 @@ private fun phaseResultText(phase: CleanPhase): String {
         )
         CleanPhaseId.TEMP_SCAN -> stringResource(
             R.string.cleaner_phase_temp_result, phase.count, size,
+        )
+        CleanPhaseId.TRASH_SCAN -> stringResource(
+            R.string.cleaner_phase_trash_result, phase.count, size,
+        )
+        CleanPhaseId.CLIPBOARD_SCAN -> stringResource(
+            if (phase.count > 0) R.string.cleaner_phase_clipboard_has
+            else R.string.cleaner_phase_clipboard_empty,
+        )
+        CleanPhaseId.LARGE_FILES_SCAN -> stringResource(
+            R.string.cleaner_phase_large_files_result, phase.count, size,
+        )
+        CleanPhaseId.EMPTY_FOLDER_SCAN -> stringResource(
+            R.string.cleaner_phase_empty_folders_result, phase.count,
+        )
+        CleanPhaseId.LOG_FILES_SCAN -> stringResource(
+            R.string.cleaner_phase_log_files_result, phase.count, size,
+        )
+        CleanPhaseId.HIDDEN_CACHE_SCAN -> stringResource(
+            R.string.cleaner_phase_hidden_cache_result, phase.count, size,
+        )
+        CleanPhaseId.CORPSE_SCAN -> stringResource(
+            R.string.cleaner_phase_corpse_result, phase.count, size,
+        )
+        CleanPhaseId.APP_DEEP_SCAN -> stringResource(
+            R.string.cleaner_phase_app_deep_result, phase.count, size,
+        )
+        CleanPhaseId.DUPLICATE_SCAN -> stringResource(
+            R.string.cleaner_phase_duplicates_result, phase.count, size,
+        )
+        CleanPhaseId.BLURRY_PHOTOS_SCAN -> stringResource(
+            R.string.cleaner_phase_blurry_photos_result, phase.count, size,
+        )
+        CleanPhaseId.SIMILAR_PHOTOS_SCAN -> stringResource(
+            R.string.cleaner_phase_similar_photos_result, phase.count, size,
         )
         CleanPhaseId.SUMMARY -> stringResource(R.string.cleaner_phase_summary_result, size)
     }

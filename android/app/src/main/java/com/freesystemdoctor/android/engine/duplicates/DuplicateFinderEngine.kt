@@ -6,7 +6,9 @@ import android.provider.MediaStore
 import com.freesystemdoctor.android.core.result.ScanProgress
 import com.freesystemdoctor.android.core.util.Hashing
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
+import kotlin.coroutines.coroutineContext
 
 data class DuplicateFile(
     val uri: Uri,
@@ -40,6 +42,7 @@ class DuplicateFinderEngine(private val context: Context) {
         val byHash = HashMap<String, MutableList<DuplicateFile>>()
         val collisionFiles = bySize.values.flatten()
         collisionFiles.forEachIndexed { index, file ->
+            coroutineContext.ensureActive()
             progress(ScanProgress(index + 1, collisionFiles.size, file.displayName))
             val hash = runCatching {
                 context.contentResolver.openInputStream(file.uri)?.use { Hashing.sha256(it) }

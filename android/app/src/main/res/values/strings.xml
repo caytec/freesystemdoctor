@@ -62,6 +62,49 @@
     <string name="cleaner_report_done">Done</string>
     <string name="cleaner_report_clean_media">Remove remaining</string>
 
+    <!-- Update 13: Deep Clean Pack -->
+    <string name="cleaner_scan_quick">Quick</string>
+    <string name="cleaner_scan_deep">Deep</string>
+    <string name="cleaner_cancel">Cancel</string>
+    <string name="cleaner_include_photos_title">Include photos in Deep scan</string>
+    <string name="cleaner_include_photos_hint">Adds blurry &amp; similar photo review. Adds ~2 min on large libraries.</string>
+    <string name="cleaner_report_title_cancelled">Cleaning cancelled</string>
+    <string name="cleaner_report_remaining_total">+ %1$s reclaimable — review to confirm</string>
+    <string name="cleaner_report_show_all">Show all (+%1$d)</string>
+    <string name="cleaner_report_row_detail_deleted">%1$d files removed by us</string>
+    <string name="cleaner_report_row_detail_review">%1$d items · awaiting your confirmation</string>
+    <string name="cleaner_report_count_only">%1$d items</string>
+    <string name="cleaner_report_skip_no_saf">Needs folder access — grant in Storage tool</string>
+    <string name="cleaner_report_skip_not_supported">Skipped — not available on this device</string>
+    <string name="cleaner_report_skip_cancelled">Cancelled</string>
+
+    <string name="cleaner_phase_trash">Scanning system recycle bin</string>
+    <string name="cleaner_phase_trash_result">Trash: %1$d items · %2$s</string>
+    <string name="cleaner_phase_clipboard">Checking clipboard</string>
+    <string name="cleaner_phase_clipboard_has">Clipboard has content</string>
+    <string name="cleaner_phase_clipboard_empty">Clipboard empty</string>
+    <string name="cleaner_phase_large_files">Looking for large files (≥ 50 MB)</string>
+    <string name="cleaner_phase_large_files_result">%1$d large files · %2$s</string>
+    <string name="cleaner_phase_empty_folders">Looking for empty folders</string>
+    <string name="cleaner_phase_empty_folders_result">%1$d empty folders</string>
+    <string name="cleaner_phase_log_files">Looking for log &amp; crash files</string>
+    <string name="cleaner_phase_log_files_result">%1$d log files · %2$s</string>
+    <string name="cleaner_phase_hidden_cache">Scanning hidden caches (WhatsApp, Telegram…)</string>
+    <string name="cleaner_phase_hidden_cache_result">%1$d hidden caches · %2$s</string>
+    <string name="cleaner_phase_corpse">Finding leftover data (CorpseFinder)</string>
+    <string name="cleaner_phase_corpse_result">%1$d corpses · %2$s</string>
+    <string name="cleaner_phase_app_deep">App deep clean (40+ paths)</string>
+    <string name="cleaner_phase_app_deep_result">%1$d expendable folders · %2$s</string>
+    <string name="cleaner_phase_duplicates">Looking for large duplicates (≥ 10 MB)</string>
+    <string name="cleaner_phase_duplicates_result">%1$d duplicate groups · %2$s</string>
+    <string name="cleaner_phase_blurry_photos">Reviewing screenshots &amp; blurry photos</string>
+    <string name="cleaner_phase_blurry_photos_result">%1$d photos · %2$s</string>
+    <string name="cleaner_phase_similar_photos">Finding visually similar photos</string>
+    <string name="cleaner_phase_similar_photos_result">%1$d similar groups · %2$s</string>
+    <string name="cleaner_phase_skip_no_saf">Skipped — needs folder access</string>
+    <string name="cleaner_phase_skip_not_supported">Skipped — not supported</string>
+    <string name="cleaner_phase_skip_cancelled">Cancelled</string>
+
     <!-- Storage analyzer -->
     <string name="storage_title">Storage analyzer</string>
     <string name="storage_breakdown">Breakdown by app</string>

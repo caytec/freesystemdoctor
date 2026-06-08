@@ -13,6 +13,7 @@ import com.freesystemdoctor.android.data.billing.ProStore
 import com.freesystemdoctor.android.data.saf.SafTreeStore
 import com.freesystemdoctor.android.data.settings.SettingsRepository
 import com.freesystemdoctor.android.engine.files.FileShredderEngine
+import com.freesystemdoctor.android.engine.files.LogFilesEngine
 import com.freesystemdoctor.android.engine.files.SafTreeEngine
 import com.freesystemdoctor.android.engine.network.DataUsageEngine
 import com.freesystemdoctor.android.engine.system.SystemTweaksEngine
@@ -162,4 +163,7 @@ object ServiceLocator {
         NotificationStatsEngine(appContext)
     }
     val shizukuManager: ShizukuManager by lazy { ShizukuManager(appContext) }
+
+    // Update 13: Deep Clean Pack
+    val logFilesEngine: LogFilesEngine by lazy { LogFilesEngine(appContext) }
 }

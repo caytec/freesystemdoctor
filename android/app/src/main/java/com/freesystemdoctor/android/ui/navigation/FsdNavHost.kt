@@ -275,7 +275,9 @@ fun MainScaffold() {
             composable(FsdDestination.DASHBOARD.route) {
                 DashboardScreen(onNavigate = { navController.navigate(it) })
             }
-            composable(FsdDestination.CLEANER.route) { CleanerScreen() }
+            composable(FsdDestination.CLEANER.route) {
+                CleanerScreen(onNavigate = { navController.navigate(it) })
+            }
             composable(FsdDestination.STORAGE.route) { StorageScreen() }
             composable(FsdDestination.APPS.route) { AppsScreen() }
             composable(FsdDestination.TOOLS.route) {

@@ -3,6 +3,7 @@ package com.freesystemdoctor.android.ui.cleaner
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.layout.Arrangement
@@ -15,15 +16,23 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.CleaningServices
+import androidx.compose.material.icons.filled.Radar
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -32,6 +41,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.freesystemdoctor.android.R
 import com.freesystemdoctor.android.core.di.ServiceLocator
 import com.freesystemdoctor.android.core.util.ByteFormatter
+import com.freesystemdoctor.android.data.settings.ScanDepth
 import com.freesystemdoctor.android.ui.components.Appear
 import com.freesystemdoctor.android.ui.components.InfoBanner
 import com.freesystemdoctor.android.ui.components.StatCard
@@ -39,6 +49,7 @@ import com.freesystemdoctor.android.ui.components.StatCard
 @Composable
 fun CleanerScreen(
     modifier: Modifier = Modifier,
+    onNavigate: (String) -> Unit = {},
     viewModel: CleanerViewModel = viewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -74,17 +85,57 @@ fun CleanerScreen(
             )
         }
 
+        // Quick / Deep selector
+        ScanDepthSelector(
+            depth = state.depth,
+            enabled = !state.scanning,
+            onChange = viewModel::setDepth,
+        )
+
+        // Photo-toggle row, visible only on Deep
+        AnimatedVisibility(visible = state.depth == ScanDepth.DEEP) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        stringResource(R.string.cleaner_include_photos_title),
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                    Text(
+                        stringResource(R.string.cleaner_include_photos_hint),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+                Switch(
+                    checked = state.includePhotos,
+                    onCheckedChange = viewModel::setIncludePhotos,
+                    enabled = !state.scanning,
+                )
+            }
+        }
+
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Button(onClick = {
-                ServiceLocator.appOpenAdManager.suppressForMillis(60_000L)
-                viewModel.scan()
-            }, enabled = !state.scanning) {
+            Button(
+                onClick = {
+                    ServiceLocator.appOpenAdManager.suppressForMillis(60_000L)
+                    viewModel.scan()
+                },
+                enabled = !state.scanning,
+            ) {
                 Text(stringResource(R.string.cleaner_scan))
             }
             OutlinedButton(onClick = viewModel::cleanAppCache, enabled = !state.scanning) {
                 Text(stringResource(R.string.cleaner_app_cache))
             }
-            if (report != null && report.mediaItems.isNotEmpty()) {
+            if (state.scanning) {
+                OutlinedButton(onClick = viewModel::cancelScan) {
+                    Text(stringResource(R.string.cleaner_cancel))
+                }
+            } else if (report != null && report.mediaItems.isNotEmpty()) {
                 Button(onClick = {
                     ServiceLocator.appOpenAdManager.suppressForMillis(30_000L)
                     viewModel.buildDeleteRequest()?.let { pi ->
@@ -108,6 +159,7 @@ fun CleanerScreen(
                 report = state.cleanReport,
                 onDismiss = viewModel::dismissReport,
                 onCleanMedia = if (report != null && report.mediaItems.isNotEmpty()) launchMediaCleanup else null,
+                onOpenRoute = onNavigate,
             )
         } else if (state.phases.isNotEmpty()) {
             CleaningSteps(phases = state.phases)
@@ -135,7 +187,7 @@ fun CleanerScreen(
                                         .fillMaxWidth()
                                         .padding(horizontal = 14.dp, vertical = 12.dp),
                                     horizontalArrangement = Arrangement.SpaceBetween,
-                                    verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
+                                    verticalAlignment = Alignment.CenterVertically,
                                 ) {
                                     Text(
                                         item.displayName,
@@ -154,5 +206,27 @@ fun CleanerScreen(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun ScanDepthSelector(
+    depth: ScanDepth,
+    enabled: Boolean,
+    onChange: (ScanDepth) -> Unit,
+) {
+    SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
+        SegmentedButton(
+            selected = depth == ScanDepth.QUICK,
+            onClick = { if (enabled) onChange(ScanDepth.QUICK) },
+            shape = SegmentedButtonDefaults.itemShape(index = 0, count = 2),
+            icon = { Icon(Icons.Filled.Bolt, contentDescription = null) },
+        ) { Text(stringResource(R.string.cleaner_scan_quick)) }
+        SegmentedButton(
+            selected = depth == ScanDepth.DEEP,
+            onClick = { if (enabled) onChange(ScanDepth.DEEP) },
+            shape = SegmentedButtonDefaults.itemShape(index = 1, count = 2),
+            icon = { Icon(Icons.Filled.Radar, contentDescription = null) },
+        ) { Text(stringResource(R.string.cleaner_scan_deep)) }
     }
 }

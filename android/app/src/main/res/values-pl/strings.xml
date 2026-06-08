@@ -58,6 +58,49 @@
     <string name="cleaner_report_done">Gotowe</string>
     <string name="cleaner_report_clean_media">Usuń pozostałe</string>
 
+    <!-- Aktualizacja 13: Pakiet głębokiego czyszczenia -->
+    <string name="cleaner_scan_quick">Szybkie</string>
+    <string name="cleaner_scan_deep">Głębokie</string>
+    <string name="cleaner_cancel">Anuluj</string>
+    <string name="cleaner_include_photos_title">Uwzględnij zdjęcia w głębokim skanowaniu</string>
+    <string name="cleaner_include_photos_hint">Dodaje przegląd nieostrych i podobnych zdjęć. Dodaje ~2 min przy dużych galeriach.</string>
+    <string name="cleaner_report_title_cancelled">Czyszczenie anulowane</string>
+    <string name="cleaner_report_remaining_total">+ %1$s do odzyskania — przejrzyj i potwierdź</string>
+    <string name="cleaner_report_show_all">Pokaż wszystkie (+%1$d)</string>
+    <string name="cleaner_report_row_detail_deleted">Usunęliśmy %1$d plików</string>
+    <string name="cleaner_report_row_detail_review">%1$d pozycji · czeka na Twoje potwierdzenie</string>
+    <string name="cleaner_report_count_only">%1$d pozycji</string>
+    <string name="cleaner_report_skip_no_saf">Wymaga dostępu do folderu — przyznaj w narzędziu Pamięć</string>
+    <string name="cleaner_report_skip_not_supported">Pominięto — niedostępne na tym urządzeniu</string>
+    <string name="cleaner_report_skip_cancelled">Anulowano</string>
+
+    <string name="cleaner_phase_trash">Skanowanie systemowego kosza</string>
+    <string name="cleaner_phase_trash_result">Kosz: %1$d pozycji · %2$s</string>
+    <string name="cleaner_phase_clipboard">Sprawdzanie schowka</string>
+    <string name="cleaner_phase_clipboard_has">Schowek zawiera dane</string>
+    <string name="cleaner_phase_clipboard_empty">Schowek pusty</string>
+    <string name="cleaner_phase_large_files">Szukanie dużych plików (≥ 50 MB)</string>
+    <string name="cleaner_phase_large_files_result">%1$d dużych plików · %2$s</string>
+    <string name="cleaner_phase_empty_folders">Szukanie pustych folderów</string>
+    <string name="cleaner_phase_empty_folders_result">%1$d pustych folderów</string>
+    <string name="cleaner_phase_log_files">Szukanie logów i raportów awarii</string>
+    <string name="cleaner_phase_log_files_result">%1$d plików logów · %2$s</string>
+    <string name="cleaner_phase_hidden_cache">Skanowanie ukrytych cache (WhatsApp, Telegram…)</string>
+    <string name="cleaner_phase_hidden_cache_result">%1$d ukrytych cache · %2$s</string>
+    <string name="cleaner_phase_corpse">Wyszukiwanie pozostałości po aplikacjach</string>
+    <string name="cleaner_phase_corpse_result">%1$d pozostałości · %2$s</string>
+    <string name="cleaner_phase_app_deep">Głębokie czyszczenie aplikacji (40+ ścieżek)</string>
+    <string name="cleaner_phase_app_deep_result">%1$d zbędnych folderów · %2$s</string>
+    <string name="cleaner_phase_duplicates">Szukanie dużych duplikatów (≥ 10 MB)</string>
+    <string name="cleaner_phase_duplicates_result">%1$d grup duplikatów · %2$s</string>
+    <string name="cleaner_phase_blurry_photos">Przegląd zrzutów i nieostrych zdjęć</string>
+    <string name="cleaner_phase_blurry_photos_result">%1$d zdjęć · %2$s</string>
+    <string name="cleaner_phase_similar_photos">Szukanie podobnych zdjęć</string>
+    <string name="cleaner_phase_similar_photos_result">%1$d grup podobnych · %2$s</string>
+    <string name="cleaner_phase_skip_no_saf">Pominięto — wymaga dostępu do folderu</string>
+    <string name="cleaner_phase_skip_not_supported">Pominięto — nieobsługiwane</string>
+    <string name="cleaner_phase_skip_cancelled">Anulowano</string>
+
     <string name="storage_title">Analiza pamięci</string>
     <string name="storage_breakdown">Podział wg aplikacji</string>
     <string name="storage_app_size">Aplikacja: %1$s · Dane: %2$s · Cache: %3$s</string>
