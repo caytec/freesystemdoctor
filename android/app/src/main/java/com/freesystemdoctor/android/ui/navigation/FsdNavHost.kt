@@ -163,6 +163,7 @@ fun MainScaffold() {
     val dark = MaterialTheme.colorScheme.background.luminance() < 0.5f
     val isLeaf = currentRoute == ROUTE_SETTINGS || currentRoute == ROUTE_PRO ||
         currentRoute?.startsWith("tool/") == true
+    val showBottomNav = currentRoute != ROUTE_SETTINGS && currentRoute != ROUTE_PRO
 
     val title = when {
         currentRoute == ROUTE_SETTINGS -> stringResource(R.string.settings_title)
@@ -211,7 +212,7 @@ fun MainScaffold() {
         bottomBar = {
             Column {
                 if (currentRoute != ROUTE_PRO && currentRoute != ROUTE_SETTINGS) BannerAd()
-                if (!isLeaf) {
+                if (showBottomNav) {
                 NavigationBar(containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.92f)) {
                     val destination = backStackEntry?.destination
                     FsdDestination.entries.forEach { dest ->
