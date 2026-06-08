@@ -44,6 +44,19 @@ class JunkScannerEngine(private val context: Context) {
         )
     }
 
+    /** Measures this app's own cache directories without touching them. */
+    suspend fun measureAppCache(): Long = withContext(Dispatchers.IO) { ownCacheBytes() }
+
+    /** MediaStore APK leftovers (.apk install files indexed externally). */
+    suspend fun findApkLeftovers(): List<JunkItem> = withContext(Dispatchers.IO) {
+        queryMediaJunkFiltered(apk = true, temp = false)
+    }
+
+    /** MediaStore-indexed *.tmp and *.log files. */
+    suspend fun findTempFiles(): List<JunkItem> = withContext(Dispatchers.IO) {
+        queryMediaJunkFiltered(apk = false, temp = true)
+    }
+
     fun cleanAppCache(): CleanResult = runCatching {
         var freed = 0L
         var count = 0
@@ -84,7 +97,11 @@ class JunkScannerEngine(private val context: Context) {
             .sumOf { dir -> dir.walkTopDown().filter(File::isFile).sumOf { it.length() } }
     }
 
-    private fun queryMediaJunk(): List<JunkItem> {
+    private fun queryMediaJunk(): List<JunkItem> =
+        queryMediaJunkFiltered(apk = true, temp = true)
+
+    private fun queryMediaJunkFiltered(apk: Boolean, temp: Boolean): List<JunkItem> {
+        if (!apk && !temp) return emptyList()
         val collection = MediaStore.Files.getContentUri(MediaStore.VOLUME_EXTERNAL)
         val projection = arrayOf(
             MediaStore.Files.FileColumns._ID,
@@ -92,13 +109,22 @@ class JunkScannerEngine(private val context: Context) {
             MediaStore.Files.FileColumns.SIZE,
             MediaStore.Files.FileColumns.MIME_TYPE,
         )
-        val selection = "${MediaStore.Files.FileColumns.MIME_TYPE} = ? OR " +
-            "${MediaStore.Files.FileColumns.DISPLAY_NAME} LIKE ? OR " +
-            "${MediaStore.Files.FileColumns.DISPLAY_NAME} LIKE ?"
-        val args = arrayOf("application/vnd.android.package-archive", "%.tmp", "%.log")
+        val clauses = mutableListOf<String>()
+        val args = mutableListOf<String>()
+        if (apk) {
+            clauses += "${MediaStore.Files.FileColumns.MIME_TYPE} = ?"
+            args += "application/vnd.android.package-archive"
+        }
+        if (temp) {
+            clauses += "${MediaStore.Files.FileColumns.DISPLAY_NAME} LIKE ?"
+            args += "%.tmp"
+            clauses += "${MediaStore.Files.FileColumns.DISPLAY_NAME} LIKE ?"
+            args += "%.log"
+        }
+        val selection = clauses.joinToString(" OR ")
 
         val items = mutableListOf<JunkItem>()
-        context.contentResolver.query(collection, projection, selection, args, null)?.use { c ->
+        context.contentResolver.query(collection, projection, selection, args.toTypedArray(), null)?.use { c ->
             val idCol = c.getColumnIndexOrThrow(MediaStore.Files.FileColumns._ID)
             val nameCol = c.getColumnIndexOrThrow(MediaStore.Files.FileColumns.DISPLAY_NAME)
             val sizeCol = c.getColumnIndexOrThrow(MediaStore.Files.FileColumns.SIZE)

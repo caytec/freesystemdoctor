@@ -34,6 +34,16 @@
     <string name="cleaner_freed">Zwolniono %1$s</string>
     <string name="cleaner_grant_folder">Przyznaj dostęp do folderu, by skanować głębiej</string>
     <string name="cleaner_note">Pamięci podręcznej innych aplikacji nie da się wyczyścić bez roota — otwórz ustawienia każdej z nich, aby zrobić to ręcznie.</string>
+    <string name="cleaner_phase_cache_scan">Sprawdzanie pamięci podręcznej</string>
+    <string name="cleaner_phase_cache_scan_result">Znaleziono %1$s w cache</string>
+    <string name="cleaner_phase_cache_clean">Czyszczenie pamięci podręcznej</string>
+    <string name="cleaner_phase_cache_clean_result">Wyczyszczono %1$d plików · zwolniono %2$s</string>
+    <string name="cleaner_phase_apk">Szukanie pozostałych plików APK</string>
+    <string name="cleaner_phase_apk_result">Znaleziono %1$d plików APK · %2$s</string>
+    <string name="cleaner_phase_temp">Szukanie plików tymczasowych i logów</string>
+    <string name="cleaner_phase_temp_result">Znaleziono %1$d plików · %2$s</string>
+    <string name="cleaner_phase_summary">Finalizowanie</string>
+    <string name="cleaner_phase_summary_result">Gotowe — %1$s do odzyskania</string>
 
     <string name="storage_title">Analiza pamięci</string>
     <string name="storage_breakdown">Podział wg aplikacji</string>

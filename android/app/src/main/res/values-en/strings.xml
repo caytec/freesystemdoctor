@@ -34,6 +34,16 @@
     <string name="cleaner_freed">Freed %1$s</string>
     <string name="cleaner_grant_folder">Grant folder access for deep junk scan</string>
     <string name="cleaner_note">Other apps\' caches cannot be cleared without root — open each app\'s settings to clear them manually.</string>
+    <string name="cleaner_phase_cache_scan">Checking app cache</string>
+    <string name="cleaner_phase_cache_scan_result">Found %1$s of cache</string>
+    <string name="cleaner_phase_cache_clean">Clearing app cache</string>
+    <string name="cleaner_phase_cache_clean_result">Cleared %1$d files · %2$s freed</string>
+    <string name="cleaner_phase_apk">Looking for leftover APK installers</string>
+    <string name="cleaner_phase_apk_result">Found %1$d APK files · %2$s</string>
+    <string name="cleaner_phase_temp">Looking for temp &amp; log files</string>
+    <string name="cleaner_phase_temp_result">Found %1$d files · %2$s</string>
+    <string name="cleaner_phase_summary">Wrapping up</string>
+    <string name="cleaner_phase_summary_result">All done — %1$s reclaimable</string>
 
     <string name="storage_title">Storage analyzer</string>
     <string name="storage_breakdown">Breakdown by app</string>
