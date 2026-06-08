@@ -23,11 +23,32 @@ data class CleanPhase(
     val count: Int = 0,
 )
 
+/**
+ * Snapshot of a completed clean. Powers the in-screen full report card so the
+ * user sees exactly what happened — never inflated numbers.
+ */
+data class CleaningReport(
+    val cacheBytesFreed: Long,
+    val cacheFilesRemoved: Int,
+    val apkBytesFound: Long,
+    val apkFilesFound: Int,
+    val tempBytesFound: Long,
+    val tempFilesFound: Int,
+) {
+    val totalReclaimableBytes: Long
+        get() = cacheBytesFreed + apkBytesFound + tempBytesFound
+    val remainingMediaItems: Int
+        get() = apkFilesFound + tempFilesFound
+    val remainingMediaBytes: Long
+        get() = apkBytesFound + tempBytesFound
+}
+
 data class CleanerUiState(
     val scanning: Boolean = false,
     val report: JunkReport? = null,
     val lastFreedBytes: Long = 0,
     val phases: List<CleanPhase> = emptyList(),
+    val cleanReport: CleaningReport? = null,
 )
 
 class CleanerViewModel : ViewModel() {
@@ -44,7 +65,7 @@ class CleanerViewModel : ViewModel() {
             CleanPhase(CleanPhaseId.TEMP_SCAN, PhaseStatus.PENDING),
             CleanPhase(CleanPhaseId.SUMMARY, PhaseStatus.PENDING),
         )
-        _state.update { it.copy(scanning = true, phases = initial, report = null) }
+        _state.update { it.copy(scanning = true, phases = initial, report = null, cleanReport = null) }
         viewModelScope.launch {
             mark(CleanPhaseId.CACHE_SCAN, PhaseStatus.RUNNING)
             val cacheBytes = engine.measureAppCache()
@@ -88,7 +109,7 @@ class CleanerViewModel : ViewModel() {
             CleanPhase(CleanPhaseId.TEMP_SCAN, PhaseStatus.PENDING),
             CleanPhase(CleanPhaseId.SUMMARY, PhaseStatus.PENDING),
         )
-        _state.update { it.copy(scanning = true, phases = initial, report = null) }
+        _state.update { it.copy(scanning = true, phases = initial, report = null, cleanReport = null) }
         viewModelScope.launch {
             mark(CleanPhaseId.CACHE_SCAN, PhaseStatus.RUNNING)
             val cacheBytesBefore = engine.measureAppCache()
@@ -122,6 +143,14 @@ class CleanerViewModel : ViewModel() {
                 count = result.itemsRemoved + apks.size + temps.size,
             )
 
+            val report = CleaningReport(
+                cacheBytesFreed = result.bytesFreed,
+                cacheFilesRemoved = result.itemsRemoved,
+                apkBytesFound = apks.sumOf { it.sizeBytes },
+                apkFilesFound = apks.size,
+                tempBytesFound = temps.sumOf { it.sizeBytes },
+                tempFilesFound = temps.size,
+            )
             _state.update {
                 it.copy(
                     scanning = false,
@@ -130,6 +159,7 @@ class CleanerViewModel : ViewModel() {
                         appCacheBytes = 0L,
                         mediaItems = (apks + temps).sortedByDescending { item -> item.sizeBytes },
                     ),
+                    cleanReport = report,
                 )
             }
             ServiceLocator.cleaningHistoryEngine.recordClean(
@@ -145,7 +175,14 @@ class CleanerViewModel : ViewModel() {
 
     fun buildDeleteRequest() = engine.buildDeleteRequest(mediaUris())
 
-    fun onMediaDeleted() = scan()
+    fun onMediaDeleted() {
+        _state.update { it.copy(cleanReport = null) }
+        scan()
+    }
+
+    fun dismissReport() {
+        _state.update { it.copy(cleanReport = null) }
+    }
 
     private fun mark(id: CleanPhaseId, status: PhaseStatus, bytes: Long = 0L, count: Int = 0) {
         _state.update { s ->

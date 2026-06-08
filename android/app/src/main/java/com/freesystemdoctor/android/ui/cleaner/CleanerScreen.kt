@@ -96,7 +96,20 @@ fun CleanerScreen(
             }
         }
 
-        if (state.phases.isNotEmpty()) {
+        val launchMediaCleanup: () -> Unit = {
+            ServiceLocator.appOpenAdManager.suppressForMillis(30_000L)
+            viewModel.buildDeleteRequest()?.let { pi ->
+                deleteLauncher.launch(IntentSenderRequest.Builder(pi.intentSender).build())
+            }
+        }
+
+        if (state.cleanReport != null && !state.scanning) {
+            AnimatedReport(
+                report = state.cleanReport,
+                onDismiss = viewModel::dismissReport,
+                onCleanMedia = if (report != null && report.mediaItems.isNotEmpty()) launchMediaCleanup else null,
+            )
+        } else if (state.phases.isNotEmpty()) {
             CleaningSteps(phases = state.phases)
         }
 

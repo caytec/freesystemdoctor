@@ -48,6 +48,19 @@
     <string name="cleaner_phase_temp_result">Found %1$d files · %2$s</string>
     <string name="cleaner_phase_summary">Wrapping up</string>
     <string name="cleaner_phase_summary_result">All done — %1$s reclaimable</string>
+    <string name="cleaner_report_title">Cleaning complete</string>
+    <string name="cleaner_report_subtitle">Removed %1$d cached files from this app</string>
+    <string name="cleaner_report_breakdown_title">Breakdown</string>
+    <string name="cleaner_report_row_cache">App cache cleared</string>
+    <string name="cleaner_report_row_cache_detail">%1$d files removed from this app</string>
+    <string name="cleaner_report_row_apk">Leftover APK installers</string>
+    <string name="cleaner_report_row_apk_detail">%1$d files found · awaiting your confirmation</string>
+    <string name="cleaner_report_row_temp">Temp &amp; log files</string>
+    <string name="cleaner_report_row_temp_detail">%1$d files found · awaiting your confirmation</string>
+    <string name="cleaner_report_total">Total reclaimable</string>
+    <string name="cleaner_report_remaining_hint">%1$d more files (%2$s) can be removed with your confirmation.</string>
+    <string name="cleaner_report_done">Done</string>
+    <string name="cleaner_report_clean_media">Remove remaining</string>
 
     <!-- Storage analyzer -->
     <string name="storage_title">Storage analyzer</string>

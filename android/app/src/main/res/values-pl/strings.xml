@@ -44,6 +44,19 @@
     <string name="cleaner_phase_temp_result">Znaleziono %1$d plików · %2$s</string>
     <string name="cleaner_phase_summary">Finalizowanie</string>
     <string name="cleaner_phase_summary_result">Gotowe — %1$s do odzyskania</string>
+    <string name="cleaner_report_title">Czyszczenie zakończone</string>
+    <string name="cleaner_report_subtitle">Usunięto %1$d plików z pamięci podręcznej tej aplikacji</string>
+    <string name="cleaner_report_breakdown_title">Szczegóły</string>
+    <string name="cleaner_report_row_cache">Pamięć podręczna wyczyszczona</string>
+    <string name="cleaner_report_row_cache_detail">Usunięto %1$d plików z tej aplikacji</string>
+    <string name="cleaner_report_row_apk">Pozostałe instalatory APK</string>
+    <string name="cleaner_report_row_apk_detail">Znaleziono %1$d plików · czekają na potwierdzenie</string>
+    <string name="cleaner_report_row_temp">Pliki tymczasowe i logi</string>
+    <string name="cleaner_report_row_temp_detail">Znaleziono %1$d plików · czekają na potwierdzenie</string>
+    <string name="cleaner_report_total">Łącznie do odzyskania</string>
+    <string name="cleaner_report_remaining_hint">Można jeszcze usunąć %1$d plików (%2$s) po Twoim potwierdzeniu.</string>
+    <string name="cleaner_report_done">Gotowe</string>
+    <string name="cleaner_report_clean_media">Usuń pozostałe</string>
 
     <string name="storage_title">Analiza pamięci</string>
     <string name="storage_breakdown">Podział wg aplikacji</string>
