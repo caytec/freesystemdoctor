@@ -86,6 +86,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.freesystemdoctor.android.R
 import com.freesystemdoctor.android.ui.components.Appear
 import com.freesystemdoctor.android.ui.components.LocalUnlockController
+import com.freesystemdoctor.android.ui.components.NativeAdCard
 import com.freesystemdoctor.android.ui.components.SectionHeader
 import com.freesystemdoctor.android.ui.components.bounceClick
 import com.freesystemdoctor.android.ui.navigation.ToolRoutes
@@ -304,6 +305,11 @@ fun ToolsScreen(
                                 onOpen(tool.route)
                             }
                         })
+                    }
+                    if (groupIndex == 0) {
+                        item(span = { GridItemSpan(maxLineSpan) }, key = "native_ad_after_first_group") {
+                            NativeAdCard(modifier = Modifier.padding(vertical = 4.dp))
+                        }
                     }
                 }
             }

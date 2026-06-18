@@ -12,4 +12,5 @@ object AdUnits {
     val INTERSTITIAL: String = BuildConfig.ADMOB_INTERSTITIAL_ID
     val REWARDED: String = BuildConfig.ADMOB_REWARDED_ID
     val APP_OPEN: String = BuildConfig.ADMOB_APPOPEN_ID
+    val NATIVE: String = BuildConfig.ADMOB_NATIVE_ID
 }

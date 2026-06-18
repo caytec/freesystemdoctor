@@ -70,6 +70,11 @@ android {
             "ADMOB_APPOPEN_ID",
             "\"${admob("admob.appopen.id", "ca-app-pub-3940256099942544/9257395921")}\"",
         )
+        buildConfigField(
+            "String",
+            "ADMOB_NATIVE_ID",
+            "\"${admob("admob.native.id", "ca-app-pub-3940256099942544/2247696110")}\"",
+        )
     }
 
     signingConfigs {
