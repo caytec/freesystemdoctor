@@ -13,9 +13,71 @@
   code { background: #e9eef6; padding: 1px 5px; border-radius: 4px; }
   .muted { color: #5b6b82; font-size: .9rem; }
   hr { border: none; border-top: 2px solid #8884; margin: 3rem 0; }
+  /* download hero */
+  .hero { background: linear-gradient(135deg,#1a3a5c 0%,#0d2137 100%);
+    color:#eceff4; border-radius:16px; padding:32px 28px; margin-bottom:2rem; }
+  .hero h1 { font-size:2rem; margin:0 0 6px; color:#fff; border:none; }
+  .hero p { margin:4px 0 20px; opacity:.8; font-size:1rem; }
+  .badge { display:inline-block; background:#ffffff22; border:1px solid #ffffff44;
+    border-radius:6px; font-size:.75rem; padding:2px 8px; margin:0 4px 12px 0;
+    vertical-align:middle; }
+  .dl-btn { display:inline-flex; align-items:center; gap:8px;
+    background:#4ade80; color:#0a1a10; font-weight:700; font-size:1rem;
+    text-decoration:none; padding:13px 26px; border-radius:10px;
+    transition:opacity .15s; }
+  .dl-btn:hover { opacity:.88; }
+  .dl-btn svg { flex-shrink:0; }
+  .dl-btn-outline { background:transparent; border:2px solid #4ade80;
+    color:#4ade80; margin-left:10px; font-weight:600; }
+  .steps { margin:18px 0 0; padding:0; list-style:none; font-size:.9rem; opacity:.75; }
+  .steps li::before { content:"→ "; }
+  .steps li { margin:2px 0; }
+  .note-box { background:#fff3cd22; border-left:3px solid #fbbf24;
+    padding:10px 14px; border-radius:0 8px 8px 0; font-size:.85rem;
+    margin-top:14px; opacity:.9; }
 </style>
 </head>
 <body>
+
+<!-- ========== DOWNLOAD HERO ========== -->
+<div class="hero">
+  <h1>FreeSystemDoctor</h1>
+  <p>Czyszczenie pamięci · Prywatność · Optymalizacja · Android 8.0+</p>
+  <span class="badge">v2.0.0</span>
+  <span class="badge">Android 8+</span>
+  <span class="badge">Darmowe · reklamy</span>
+  <span class="badge">Bez Play Store</span>
+  <br>
+  <a class="dl-btn"
+     href="https://github.com/caytec/freesystemdoctor/releases/latest/download/FreeSystemDoctor-free.apk"
+     download>
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+         stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+      <polyline points="7 10 12 15 17 10"/>
+      <line x1="12" y1="15" x2="12" y2="3"/>
+    </svg>
+    Pobierz APK (Free)
+  </a>
+  <a class="dl-btn dl-btn-outline"
+     href="https://github.com/caytec/freesystemdoctor/releases/latest"
+     target="_blank" rel="noopener">
+    Wszystkie wersje →
+  </a>
+
+  <ul class="steps">
+    <li>Pobierz APK na telefon z Androidem</li>
+    <li>Otwórz plik → zezwól na instalację z nieznanego źródła (jednorazowo)</li>
+    <li>Zainstaluj i uruchom</li>
+  </ul>
+  <div class="note-box">
+    Aplikacja nie jest jeszcze dostępna w Google Play — pobierz bezpośrednio z GitHub.
+    Wersja Pro (bez reklam) pojawi się po publikacji w sklepie.
+  </div>
+</div>
+
+<!-- EN version of hero (below fold) accessible via anchor -->
+<div id="download-en" style="display:none"></div>
 
 <h1>Polityka prywatności — FreeSystemDoctor (Android)</h1>
 <p class="muted">Ostatnia aktualizacja: 26 maja 2026</p>

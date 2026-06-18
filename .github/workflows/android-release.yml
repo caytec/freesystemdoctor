@@ -1,15 +1,28 @@
 name: Android Release
 
-# Builds a signed release AAB + APK. Triggered manually or by a version tag.
-# Configure these repository secrets first (Settings → Secrets → Actions):
-#   KEYSTORE_BASE64   - base64 of android/release.jks  (base64 -w0 release.jks)
-#   KEYSTORE_PASSWORD - keystore password
-#   KEY_ALIAS         - key alias (e.g. fsd)
-#   KEY_PASSWORD      - key password
+# Builds a signed release APK + AAB, then publishes a GitHub Release with the
+# APK as a public download asset. Triggered by a version tag (e.g. v2.0.0)
+# or manually via workflow_dispatch.
+#
+# Required repository secrets (Settings → Secrets and variables → Actions):
+#   KEYSTORE_BASE64   – base64 of android/release.jks
+#                       Generate: base64 -w0 android/release.jks | pbcopy
+#   KEYSTORE_PASSWORD – keystore password (fsdRelease2026! or whatever yours is)
+#   KEY_ALIAS         – key alias (fsd)
+#   KEY_PASSWORD      – key password
+
 on:
   push:
     tags: [ "v*" ]
   workflow_dispatch:
+    inputs:
+      publish_release:
+        description: "Create GitHub Release?"
+        type: boolean
+        default: true
+
+permissions:
+  contents: write   # needed to create GitHub Releases
 
 jobs:
   release:
@@ -17,6 +30,7 @@ jobs:
     defaults:
       run:
         working-directory: android
+
     steps:
       - uses: actions/checkout@v4
 
@@ -38,24 +52,57 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
-      - name: Build signed AAB + APK
+      - name: Build signed release APK + AAB (free flavor)
         env:
           KEYSTORE_FILE: release.jks
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-        run: ./gradlew --no-daemon bundleRelease assembleRelease
+        run: ./gradlew --no-daemon assembleFreeRelease bundleFreeRelease
 
-      - name: Upload AAB (for Google Play)
-        uses: actions/upload-artifact@v4
-        with:
-          name: fsd-release-aab
-          path: android/app/build/outputs/bundle/release/*.aab
-          if-no-files-found: error
+      - name: Rename artifacts for clean filenames
+        run: |
+          mkdir -p ../dist
+          cp app/build/outputs/apk/free/release/app-free-release.apk \
+             ../dist/FreeSystemDoctor-free.apk
+          cp app/build/outputs/bundle/freeRelease/app-free-release.aab \
+             ../dist/FreeSystemDoctor-free.aab
+        working-directory: android
 
-      - name: Upload APK (for sideload)
+      # Permanent public URL after this step:
+      # https://github.com/caytec/freesystemdoctor/releases/latest/download/FreeSystemDoctor-free.apk
+      - name: Publish GitHub Release
+        if: startsWith(github.ref, 'refs/tags/') || inputs.publish_release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="${GITHUB_REF_NAME:-manual}"
+          gh release create "$TAG" \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "FreeSystemDoctor $TAG" \
+            --notes "## FreeSystemDoctor $TAG
+
+          **Pobierz APK** (poniżej) i zainstaluj ręcznie na telefonie.
+          Wymagany Android 8.0+.
+
+          ### Jak zainstalować
+          1. Pobierz \`FreeSystemDoctor-free.apk\`
+          2. Otwórz plik na telefonie
+          3. Gdy pojawi się komunikat o nieznanym źródle — zezwól dla przeglądarki/pliku
+          4. Zainstaluj i gotowe
+
+          ---
+
+          **Download APK** below and sideload on any Android 8.0+ phone.
+          " \
+            --latest \
+            ../dist/FreeSystemDoctor-free.apk \
+            ../dist/FreeSystemDoctor-free.aab
+        working-directory: android
+
+      - name: Upload APK artifact (fallback)
         uses: actions/upload-artifact@v4
         with:
           name: fsd-release-apk
-          path: android/app/build/outputs/apk/release/*.apk
+          path: dist/FreeSystemDoctor-free.apk
           if-no-files-found: warn
