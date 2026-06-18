@@ -31,6 +31,7 @@ import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -60,6 +61,18 @@ fun CleanerScreen(
         if (result.resultCode == android.app.Activity.RESULT_OK) {
             viewModel.onMediaDeleted()
             activity?.let { ServiceLocator.adsController.maybeShowInterstitial(it) }
+        }
+    }
+
+    LaunchedEffect(state.cleanReport) {
+        val report = state.cleanReport
+        if (report != null && !state.scanning && !report.cancelled) {
+            activity?.let { act ->
+                com.freesystemdoctor.android.ui.review.maybeRequestReview(
+                    act,
+                    ServiceLocator.settingsRepository,
+                )
+            }
         }
     }
 

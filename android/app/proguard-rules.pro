@@ -36,3 +36,7 @@
 # OkHttp / Okio ship their own consumer rules; AdMob and Play Billing bundle theirs.
 -dontwarn okhttp3.**
 -dontwarn okio.**
+
+# Play Core review-ktx references an annotation from a newer play-services-tasks
+# that isn't on its classpath; safe to ignore (annotation only, no runtime effect).
+-dontwarn com.google.android.gms.common.annotation.**

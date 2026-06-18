@@ -184,6 +184,7 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
 
     implementation(libs.play.services.ads)
+    implementation(libs.play.review.ktx)
     implementation(libs.billing.ktx)
     implementation(libs.user.messaging.platform)
 

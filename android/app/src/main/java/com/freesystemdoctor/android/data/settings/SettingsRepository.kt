@@ -55,6 +55,8 @@ class SettingsRepository(private val context: Context) {
         val SHIZUKU_SNACKBAR_SHOWN = booleanPreferencesKey("shizuku_snackbar_shown")
         val SCAN_DEPTH = stringPreferencesKey("scan_depth")
         val INCLUDE_PHOTOS_DEEP = booleanPreferencesKey("include_photos_deep_scan")
+        val CLEAN_COUNT = intPreferencesKey("clean_count")
+        val LAST_REVIEW_PROMPT_DATE = stringPreferencesKey("last_review_prompt_date")
     }
 
     val settings: Flow<AppSettings> = context.dataStore.data.map { prefs ->
@@ -162,5 +164,27 @@ class SettingsRepository(private val context: Context) {
             if (day == today) it[Keys.AI_USAGE_COUNT] ?: 0 else 0
         }
         return prefs.first()
+    }
+
+    /**
+     * Bumps the lifetime "successful clean" counter and returns the new value. Used by
+     * [com.freesystemdoctor.android.ui.review.maybeRequestReview] to gate the Play
+     * in-app review prompt to the 3rd-or-later clean.
+     */
+    suspend fun incrementCleanCount(): Int {
+        var newCount = 0
+        context.dataStore.edit { prefs ->
+            newCount = (prefs[Keys.CLEAN_COUNT] ?: 0) + 1
+            prefs[Keys.CLEAN_COUNT] = newCount
+        }
+        return newCount
+    }
+
+    /** ISO `yyyy-MM-dd` of the last in-app review prompt, or empty if never. */
+    suspend fun lastReviewPromptDateOnce(): String =
+        context.dataStore.data.map { it[Keys.LAST_REVIEW_PROMPT_DATE].orEmpty() }.first()
+
+    suspend fun recordReviewPromptDate(isoDate: String) {
+        context.dataStore.edit { it[Keys.LAST_REVIEW_PROMPT_DATE] = isoDate }
     }
 }
