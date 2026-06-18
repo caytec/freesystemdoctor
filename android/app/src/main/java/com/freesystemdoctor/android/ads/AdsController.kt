@@ -29,6 +29,8 @@ class AdsController(private val appContext: Context) {
     private var interstitial: InterstitialAd? = null
     private var rewarded: RewardedAd? = null
     private var lastInterstitialAt = 0L
+    private var interstitialsThisSession = 0
+    private val processStartAt = System.currentTimeMillis()
 
     fun initialize(canRequest: Boolean) {
         canRequestAds = canRequest
@@ -64,8 +66,11 @@ class AdsController(private val appContext: Context) {
     /** Shows an interstitial if allowed and the frequency cap has elapsed. */
     fun maybeShowInterstitial(activity: Activity) {
         if (!adsAllowed()) return
+        val now = System.currentTimeMillis()
+        if (now - processStartAt < COLD_START_GRACE_MS) return
+        if (interstitialsThisSession >= MAX_PER_SESSION) return
         val ad = interstitial ?: run { preloadInterstitial(); return }
-        if (System.currentTimeMillis() - lastInterstitialAt < MIN_INTERVAL_MS) return
+        if (now - lastInterstitialAt < MIN_INTERVAL_MS) return
         ad.fullScreenContentCallback = object : FullScreenContentCallback() {
             override fun onAdDismissedFullScreenContent() {
                 interstitial = null
@@ -77,7 +82,8 @@ class AdsController(private val appContext: Context) {
                 preloadInterstitial()
             }
         }
-        lastInterstitialAt = System.currentTimeMillis()
+        lastInterstitialAt = now
+        interstitialsThisSession++
         ServiceLocator.appOpenAdManager.suppressNextShow()
         ad.show(activity)
     }
@@ -122,5 +128,7 @@ class AdsController(private val appContext: Context) {
 
     private companion object {
         const val MIN_INTERVAL_MS = 90 * 1000L
+        const val COLD_START_GRACE_MS = 30 * 1000L
+        const val MAX_PER_SESSION = 3
     }
 }
