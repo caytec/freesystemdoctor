@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="whats_new_title">What\'s new in 1.7</string>
+    <string name="whats_new_title">What\'s new in 2.0</string>
     <string name="whats_new_dismiss">Got it</string>
     <string-array name="whats_new_items">
-        <item>NEW: Deep Scan unifies 12 cleaning phases into a single animated flow</item>
-        <item>Hidden caches, CorpseFinder, app deep-clean &amp; large duplicates now run from the main Cleaner button</item>
-        <item>Empty folders &amp; log/crash files are now detected automatically</item>
-        <item>Trash &amp; clipboard included in every Deep scan</item>
-        <item>Opt-in: blurry &amp; visually similar photos (off by default — adds ~2 min)</item>
-        <item>Full launchpad report: tap any row to jump straight to its dedicated cleanup screen</item>
-        <item>Cancel scan with one tap — partial results are kept</item>
-        <item>Still honest: scan is always free, no fake numbers, no auto-delete on advanced phases</item>
+        <item>NEW: Privacy &amp; Security pack — APK risk scan, network privacy dots, browser data cleanup</item>
+        <item>NEW: Privacy profiles (Balanced / Strict / Game) — walk through permission revokes in one flow</item>
+        <item>NEW: Modes — Game / Travel / Focus / Privacy / Storage-Saver bundles, one tap to apply, one tap to restore</item>
+        <item>NEW: Auto-rules — react to low storage, charging, boot, weekly schedules and open Wi-Fi</item>
+        <item>Dashboard refresh: Privacy Score card and active-mode chip in the top bar</item>
+        <item>Free tier now ships with daily quotas (3 audits, 1 profile, 1 mode switch). PRO removes the cap</item>
+        <item>Still honest: every score derives from PackageManager, ConnectivityManager &amp; StorageStatsManager — no network calls</item>
     </string-array>
 </resources>

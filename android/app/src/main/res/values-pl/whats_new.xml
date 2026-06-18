@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="whats_new_title">Co nowego w 1.7</string>
+    <string name="whats_new_title">Co nowego w 2.0</string>
     <string name="whats_new_dismiss">Rozumiem</string>
     <string-array name="whats_new_items">
-        <item>NOWOŚĆ: Głębokie skanowanie łączy 12 etapów w jeden animowany przepływ</item>
-        <item>Ukryte cache, CorpseFinder, głębokie czyszczenie aplikacji i duże duplikaty — wszystko z jednego przycisku</item>
-        <item>Automatycznie wykrywa puste foldery oraz pliki logów i awarii</item>
-        <item>Kosz systemowy i schowek uwzględnione w każdym Głębokim skanowaniu</item>
-        <item>Opcjonalnie: nieostre i wizualnie podobne zdjęcia (domyślnie wyłączone — dodaje ~2 min)</item>
-        <item>Pełny raport-rozdzielnia: stuknij dowolny wiersz, aby przejść prosto do dedykowanego ekranu czyszczenia</item>
-        <item>Anuluj skanowanie jednym dotknięciem — częściowe wyniki zostają</item>
-        <item>Wciąż uczciwie: skanowanie zawsze darmowe, brak zmyślonych liczb, brak auto-usuwania zaawansowanych faz</item>
+        <item>NOWOŚĆ: Pakiet Prywatność i bezpieczeństwo — skan ryzyka APK, prywatność sieci, dane przeglądarek</item>
+        <item>NOWOŚĆ: Profile prywatności (Wyważony / Rygorystyczny / Gra) — przejdź przez odbieranie uprawnień w jednym przepływie</item>
+        <item>NOWOŚĆ: Tryby — Gra / Podróż / Skupienie / Prywatność / Oszczędzanie pamięci, jeden dotyk by zastosować i przywrócić</item>
+        <item>NOWOŚĆ: Auto-reguły — reaguj na niskie miejsce, ładowanie, start, harmonogramy i otwarte Wi-Fi</item>
+        <item>Odświeżona strona główna: kafelek Wyniku prywatności i chip aktywnego trybu w pasku górnym</item>
+        <item>Wersja darmowa z dziennymi limitami (3 audyty, 1 profil, 1 zmiana trybu). PRO usuwa limit</item>
+        <item>Wciąż uczciwie: każdy wynik pochodzi z PackageManager, ConnectivityManager i StorageStatsManager — bez wywołań sieciowych</item>
     </string-array>
 </resources>

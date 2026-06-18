@@ -89,6 +89,7 @@ import com.freesystemdoctor.android.ui.notifications.NotificationCleanerScreen
 import com.freesystemdoctor.android.ui.photos.CompressScreen
 import com.freesystemdoctor.android.ui.photos.PhotoReviewScreen
 import com.freesystemdoctor.android.ui.photos.SimilarPhotosScreen
+import com.freesystemdoctor.android.ui.components.ActiveModeChip
 import com.freesystemdoctor.android.ui.components.AnimatedBackdrop
 import com.freesystemdoctor.android.ui.components.BannerAd
 import com.freesystemdoctor.android.ui.components.UnlockSheetHost
@@ -100,6 +101,11 @@ import com.freesystemdoctor.android.ui.system.ClipboardScreen
 import com.freesystemdoctor.android.ui.tools.ScheduleScreen
 import com.freesystemdoctor.android.ui.tools.SystemTweaksScreen
 import com.freesystemdoctor.android.ui.tools.ToolsScreen
+import com.freesystemdoctor.android.ui.privacy.PrivacyAuditScreen
+import com.freesystemdoctor.android.ui.privacy.PrivacyProfilesScreen
+import com.freesystemdoctor.android.ui.privacy.BrowserDataScreen
+import com.freesystemdoctor.android.ui.modes.ModesScreen
+import com.freesystemdoctor.android.ui.automation.AutoRulesScreen
 import com.freesystemdoctor.android.ui.theme.appBackgroundBrush
 
 private val toolTitles: Map<String, Int> = mapOf(
@@ -152,6 +158,11 @@ private val toolTitles: Map<String, Int> = mapOf(
     ToolRoutes.BATTERY_DRAIN to R.string.tool_battery_drain,
     ToolRoutes.STORAGE_TREEMAP to R.string.tool_storage_treemap,
     ToolRoutes.NOTIFICATION_STATS to R.string.tool_notification_stats,
+    ToolRoutes.PRIVACY_AUDIT to R.string.tool_privacy_audit,
+    ToolRoutes.PRIVACY_PROFILES to R.string.tool_privacy_profiles,
+    ToolRoutes.BROWSER_DATA to R.string.tool_browser_data,
+    ToolRoutes.MODES to R.string.tool_modes,
+    ToolRoutes.AUTO_RULES to R.string.tool_auto_rules,
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -196,6 +207,7 @@ fun MainScaffold() {
                     }
                 },
                 actions = {
+                    ActiveModeChip(onClick = { navController.navigate(ToolRoutes.MODES) })
                     IconButton(onClick = { navController.navigate(ROUTE_PRO) }) {
                         Icon(
                             Icons.Filled.WorkspacePremium,
@@ -339,6 +351,12 @@ fun MainScaffold() {
             composable(ToolRoutes.BATTERY_DRAIN) { BatteryDrainScreen() }
             composable(ToolRoutes.STORAGE_TREEMAP) { StorageTreemapScreen() }
             composable(ToolRoutes.NOTIFICATION_STATS) { NotificationStatsScreen() }
+
+            composable(ToolRoutes.PRIVACY_AUDIT) { PrivacyAuditScreen() }
+            composable(ToolRoutes.PRIVACY_PROFILES) { PrivacyProfilesScreen() }
+            composable(ToolRoutes.BROWSER_DATA) { BrowserDataScreen() }
+            composable(ToolRoutes.MODES) { ModesScreen() }
+            composable(ToolRoutes.AUTO_RULES) { AutoRulesScreen() }
         }
         }
     }

@@ -6,6 +6,7 @@ import com.freesystemdoctor.android.core.di.ServiceLocator
 import com.freesystemdoctor.android.engine.battery.BatteryInfo
 import com.freesystemdoctor.android.engine.device.DeviceInfo
 import com.freesystemdoctor.android.engine.memory.MemoryInfo
+import com.freesystemdoctor.android.engine.privacy.NetworkPrivacyReport
 import com.freesystemdoctor.android.engine.storage.VolumeInfo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,6 +22,8 @@ data class DashboardUiState(
     val battery: BatteryInfo? = null,
     val device: DeviceInfo? = null,
     val healthScore: Int = 0,
+    val networkPrivacy: NetworkPrivacyReport? = null,
+    val activeModeId: String? = null,
 )
 
 class DashboardViewModel : ViewModel() {
@@ -39,6 +42,8 @@ class DashboardViewModel : ViewModel() {
             val memory = ServiceLocator.memoryEngine.read()
             val battery = ServiceLocator.batteryEngine.read()
             val device = ServiceLocator.deviceInfoEngine.read()
+            val network = runCatching { ServiceLocator.networkPrivacyEngine.snapshot() }.getOrNull()
+            val activeMode = runCatching { ServiceLocator.modeStore.activeSnapshotOnce()?.activeModeId }.getOrNull()
             _state.value = DashboardUiState(
                 loading = false,
                 volume = volume,
@@ -46,6 +51,8 @@ class DashboardViewModel : ViewModel() {
                 battery = battery,
                 device = device,
                 healthScore = computeHealthScore(volume, memory, battery),
+                networkPrivacy = network,
+                activeModeId = activeMode,
             )
         }
     }

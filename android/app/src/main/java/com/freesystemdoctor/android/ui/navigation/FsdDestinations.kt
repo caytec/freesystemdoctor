@@ -76,4 +76,11 @@ object ToolRoutes {
     const val BATTERY_DRAIN = "tool/battery_drain"
     const val STORAGE_TREEMAP = "tool/storage_treemap"
     const val NOTIFICATION_STATS = "tool/notification_stats"
+
+    // Update 14: Privacy, Modes & Auto-Rules
+    const val PRIVACY_AUDIT = "tool/privacy_audit"
+    const val PRIVACY_PROFILES = "tool/privacy_profiles"
+    const val BROWSER_DATA = "tool/browser_data"
+    const val MODES = "tool/modes"
+    const val AUTO_RULES = "tool/auto_rules"
 }

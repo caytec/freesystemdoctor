@@ -19,6 +19,16 @@ class BootReceiver : BroadcastReceiver() {
             try {
                 val enabled = ServiceLocator.settingsRepository.settings.first().monitorEnabled
                 if (enabled) MonitorService.start(context.applicationContext)
+                runCatching { ServiceLocator.appModesEngine.reapplyOnBoot() }
+                runCatching {
+                    val rules = ServiceLocator.autoRuleStore.enabledOnce()
+                    if (rules.isNotEmpty()) {
+                        ServiceLocator.workScheduler.setAutoRules(true)
+                        ServiceLocator.autoRulesEngine.evaluate(
+                            com.freesystemdoctor.android.data.automation.AutoRuleTrigger.BOOT,
+                        )
+                    }
+                }
             } finally {
                 pending.finish()
             }

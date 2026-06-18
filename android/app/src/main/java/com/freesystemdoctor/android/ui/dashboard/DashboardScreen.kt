@@ -20,6 +20,7 @@ import androidx.compose.material.icons.filled.CleaningServices
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Memory
 import androidx.compose.material.icons.filled.PhoneAndroid
+import androidx.compose.material.icons.filled.ShieldMoon
 import androidx.compose.material.icons.filled.Storage
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -124,6 +125,25 @@ fun DashboardScreen(
                     value = "${d.manufacturer} ${d.model}",
                     subtitle = "Android ${d.androidVersion} (API ${d.sdkInt}) · ${d.cpuCores} cores",
                     icon = Icons.Filled.PhoneAndroid,
+                )
+            }
+        }
+        state.networkPrivacy?.let { net ->
+            add {
+                val score = net.score
+                val accent = when {
+                    score >= 75 -> GoodGreen
+                    score >= 50 -> WarnAmber
+                    else -> BadRed
+                }
+                StatCard(
+                    title = stringRes(R.string.dashboard_privacy_score),
+                    value = "$score",
+                    subtitle = stringRes(R.string.dashboard_privacy_subtitle),
+                    progress = score / 100f,
+                    icon = Icons.Filled.ShieldMoon,
+                    accent = accent,
+                    modifier = Modifier.bounceClick { onNavigate(ToolRoutes.PRIVACY_AUDIT) },
                 )
             }
         }

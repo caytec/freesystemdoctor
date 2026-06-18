@@ -63,6 +63,23 @@ class WorkScheduler(private val context: Context) {
         }
     }
 
+    fun setAutoRules(enabled: Boolean) {
+        val wm = WorkManager.getInstance(context)
+        if (enabled) {
+            val request = PeriodicWorkRequestBuilder<AutoRuleWorker>(30, TimeUnit.MINUTES)
+                .setConstraints(Constraints.Builder().setRequiresBatteryNotLow(true).build())
+                .build()
+            wm.enqueueUniquePeriodicWork(
+                AUTO_RULES_NAME,
+                ExistingPeriodicWorkPolicy.UPDATE,
+                request,
+            )
+            AutoRuleWorker.ensureChannel(context)
+        } else {
+            wm.cancelUniqueWork(AUTO_RULES_NAME)
+        }
+    }
+
     fun setCloudBackupSchedule(enabled: Boolean) {
         val wm = WorkManager.getInstance(context)
         if (enabled) {
@@ -90,5 +107,6 @@ class WorkScheduler(private val context: Context) {
         const val BATTERY_ALARM_NAME = "fsd_battery_alarms"
         const val STORAGE_SNAPSHOT_NAME = "fsd_storage_snapshots"
         const val CLOUD_BACKUP_NAME = "fsd_cloud_backup"
+        const val AUTO_RULES_NAME = "fsd_auto_rules"
     }
 }

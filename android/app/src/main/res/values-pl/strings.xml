@@ -650,4 +650,100 @@
     <string name="pro_benefit_app_deep_clean">Głębokie czyszczenie + WhatsApp / Telegram / Discord / TikTok</string>
     <string name="pro_benefit_battery_suite">Kondycja baterii, dziennik ładowania, zużycie</string>
     <string name="pro_benefit_storage_treemap">Interaktywna mapa pamięci</string>
+
+    <!-- Update 14: Prywatność, Tryby i Auto-reguły (v2.0.0) -->
+    <string name="tools_group_privacy">Prywatność i bezpieczeństwo</string>
+    <string name="tools_group_automation">Automatyzacja</string>
+    <string name="tool_privacy_audit">Audyt prywatności</string>
+    <string name="tool_privacy_profiles">Profile prywatności</string>
+    <string name="tool_browser_data">Dane przeglądarek</string>
+    <string name="tool_modes">Tryby</string>
+    <string name="tool_auto_rules">Auto-reguły</string>
+
+    <string name="dashboard_privacy_score">Wynik prywatności</string>
+    <string name="dashboard_privacy_subtitle">Sieć i uprawnienia aplikacji</string>
+
+    <string name="privacy_score_title">Wynik prywatności</string>
+    <string name="privacy_score_subtitle">Wynik sieci: %1$d</string>
+    <string name="privacy_run_scan">Uruchom audyt prywatności</string>
+    <string name="privacy_run_scan_again">Skanuj ponownie</string>
+    <string name="privacy_running">Skanowanie aplikacji…</string>
+    <string name="privacy_include_system">Uwzględnij aplikacje systemowe</string>
+    <string name="privacy_apps_header">Ryzykowne aplikacje (%1$d)</string>
+    <string name="privacy_network_header">Prywatność sieci</string>
+    <string name="privacy_dot_vpn">VPN aktywny</string>
+    <string name="privacy_dot_dns">Prywatny DNS</string>
+    <string name="privacy_dot_wifi">Bezpieczeństwo Wi-Fi</string>
+    <string name="privacy_dot_captive">Brak portalu logowania</string>
+    <string name="privacy_dot_ipv6">Dostępne IPv6</string>
+
+    <string name="privacy_profiles_builtin">Profile wbudowane</string>
+    <string name="privacy_profiles_custom">Twoje profile</string>
+    <string name="privacy_profile_balanced">Wyważony</string>
+    <string name="privacy_profile_strict">Rygorystyczny</string>
+    <string name="privacy_profile_game">Gra</string>
+    <string name="privacy_profile_review">Przejrzyj</string>
+    <string name="privacy_profile_minimal">Brak ograniczeń</string>
+    <string name="privacy_plan_title">Zastosuj %1$s</string>
+    <string name="privacy_plan_apps">%1$d aplikacji wymaga uwagi.</string>
+    <string name="privacy_plan_clipboard">Schowek zostanie wyczyszczony.</string>
+    <string name="privacy_plan_dns">Zostanie zaproponowany Prywatny DNS.</string>
+    <string name="privacy_plan_more">…oraz %1$d więcej.</string>
+    <string name="privacy_plan_apply">Przejdź krok po kroku</string>
+    <string name="privacy_perm_location">Lokalizacja</string>
+    <string name="privacy_perm_contacts">Kontakty</string>
+    <string name="privacy_perm_mic">Mikrofon</string>
+    <string name="privacy_perm_camera">Aparat</string>
+    <string name="privacy_perm_sms">SMS</string>
+    <string name="privacy_perm_clipboard">Wyczyść schowek</string>
+    <string name="privacy_perm_dns">Prywatny DNS</string>
+
+    <string name="browser_data_header">Przeglądarki na urządzeniu</string>
+    <string name="browser_data_empty">Nie wykryto obsługiwanych przeglądarek.</string>
+    <string name="browser_data_size">Cache %1$s · Dane %2$s</string>
+    <string name="browser_data_clear">Wyczyść</string>
+
+    <string name="modes_builtin">Tryby wbudowane</string>
+    <string name="modes_custom">Twoje tryby</string>
+    <string name="modes_none_active">Brak aktywnego trybu. Wybierz jeden, aby zastosować zestaw ustawień.</string>
+    <string name="modes_active_label">Aktywny tryb</string>
+    <string name="modes_deactivate">Wyłącz</string>
+    <string name="modes_activate">Włącz</string>
+    <string name="modes_already_active">Aktywny</string>
+    <string name="mode_game">Gra</string>
+    <string name="mode_travel">Podróż</string>
+    <string name="mode_focus">Skupienie</string>
+    <string name="mode_privacy">Prywatność</string>
+    <string name="mode_storage_saver">Oszczędzanie pamięci</string>
+    <string name="mode_summary_notifications">Wycisz powiadomienia</string>
+    <string name="mode_summary_pause_clean">Wstrzymaj planowane czyszczenie</string>
+    <string name="mode_summary_dark">Ciemny motyw</string>
+    <string name="mode_summary_light">Jasny motyw</string>
+    <string name="mode_summary_privacy">Zastosuj profil prywatności</string>
+    <string name="mode_summary_dns">Sugeruj Prywatny DNS</string>
+    <string name="mode_summary_minimal">Brak specjalnych ustawień</string>
+
+    <string name="auto_rules_active">Aktywne reguły</string>
+    <string name="auto_rules_add">Dodaj regułę</string>
+    <string name="auto_rules_empty">Brak aktywnych reguł. Wybierz szablon poniżej.</string>
+    <string name="auto_rules_channel">Auto-reguły</string>
+    <string name="auto_rule_low_storage">Mało pamięci</string>
+    <string name="auto_rule_low_storage_desc">Powiadom, gdy wolne miejsce spadnie poniżej 10%</string>
+    <string name="auto_rule_charging">Ładowanie pełne</string>
+    <string name="auto_rule_charging_desc">Uruchom czyszczenie cache podczas ładowania</string>
+    <string name="auto_rule_boot">Po starcie</string>
+    <string name="auto_rule_boot_desc">Aktywuj tryb Skupienie po starcie urządzenia</string>
+    <string name="auto_rule_weekly">Cotygodniowy deep scan</string>
+    <string name="auto_rule_weekly_desc">Uruchom deep scan w każdą niedzielę rano</string>
+    <string name="auto_rule_open_wifi">Otwarte Wi-Fi</string>
+    <string name="auto_rule_open_wifi_desc">Aktywuj tryb Prywatność po połączeniu z otwartą siecią</string>
+    <string name="auto_rule_install">Nowa instalacja (PRO)</string>
+    <string name="auto_rule_install_desc">Statyczny skan nowo instalowanych aplikacji</string>
+
+    <string name="action_add">Dodaj</string>
+    <string name="action_cancel">Anuluj</string>
+
+    <string name="pro_benefit_privacy_audit">Nielimitowane audyty prywatności — bez dziennego limitu</string>
+    <string name="pro_benefit_modes">Nielimitowane przełączenia trybów + tryby własne</string>
+    <string name="pro_benefit_auto_rules">Nielimitowane auto-reguły, w tym skanowanie nowych instalacji</string>
 </resources>

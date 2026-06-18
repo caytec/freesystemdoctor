@@ -9,7 +9,11 @@ import com.freesystemdoctor.android.billing.BillingManager
 import com.freesystemdoctor.android.core.media.MediaDeleteHelper
 import com.freesystemdoctor.android.core.permission.PermissionManager
 import com.freesystemdoctor.android.data.ai.AiKeyStore
+import com.freesystemdoctor.android.data.automation.AutoRuleStore
 import com.freesystemdoctor.android.data.billing.ProStore
+import com.freesystemdoctor.android.data.modes.ModeStore
+import com.freesystemdoctor.android.data.privacy.PrivacyProfileStore
+import com.freesystemdoctor.android.data.quota.DailyQuotaStore
 import com.freesystemdoctor.android.data.saf.SafTreeStore
 import com.freesystemdoctor.android.data.settings.SettingsRepository
 import com.freesystemdoctor.android.engine.files.FileShredderEngine
@@ -166,4 +170,34 @@ object ServiceLocator {
 
     // Update 13: Deep Clean Pack
     val logFilesEngine: LogFilesEngine by lazy { LogFilesEngine(appContext) }
+
+    // Update 14: Privacy, Modes & Auto-Rules
+    val dailyQuotaStore: DailyQuotaStore by lazy { DailyQuotaStore(appContext) }
+    val privacyProfileStore: PrivacyProfileStore by lazy { PrivacyProfileStore(appContext) }
+    val modeStore: ModeStore by lazy { ModeStore(appContext) }
+    val autoRuleStore: AutoRuleStore by lazy { AutoRuleStore(appContext) }
+    val apkStaticScannerEngine: com.freesystemdoctor.android.engine.privacy.ApkStaticScannerEngine by lazy {
+        com.freesystemdoctor.android.engine.privacy.ApkStaticScannerEngine(appContext)
+    }
+    val networkPrivacyEngine: com.freesystemdoctor.android.engine.privacy.NetworkPrivacyEngine by lazy {
+        com.freesystemdoctor.android.engine.privacy.NetworkPrivacyEngine(appContext)
+    }
+    val privacyProfileEngine: com.freesystemdoctor.android.engine.privacy.PrivacyProfileEngine by lazy {
+        com.freesystemdoctor.android.engine.privacy.PrivacyProfileEngine(
+            appContext, permissionAuditEngine, clipboardEngine,
+        )
+    }
+    val browserDataEngine: com.freesystemdoctor.android.engine.privacy.BrowserDataEngine by lazy {
+        com.freesystemdoctor.android.engine.privacy.BrowserDataEngine(appContext)
+    }
+    val appModesEngine: com.freesystemdoctor.android.engine.modes.AppModesEngine by lazy {
+        com.freesystemdoctor.android.engine.modes.AppModesEngine(
+            modeStore, privacyProfileStore, settingsRepository, workScheduler,
+        )
+    }
+    val autoRulesEngine: com.freesystemdoctor.android.engine.automation.AutoRulesEngine by lazy {
+        com.freesystemdoctor.android.engine.automation.AutoRulesEngine(
+            appContext, autoRuleStore, modeStore, appModesEngine, junkEngine, apkStaticScannerEngine,
+        )
+    }
 }

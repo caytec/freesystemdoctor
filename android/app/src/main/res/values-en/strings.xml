@@ -647,4 +647,100 @@
     <string name="pro_benefit_app_deep_clean">App deep clean + WhatsApp / Telegram / Discord / TikTok cleaners</string>
     <string name="pro_benefit_battery_suite">Battery health, charging log, drain breakdown</string>
     <string name="pro_benefit_storage_treemap">Interactive storage treemap</string>
+
+    <!-- Update 14: Privacy, Modes &amp; Auto-Rules (v2.0.0) -->
+    <string name="tools_group_privacy">Privacy &amp; security</string>
+    <string name="tools_group_automation">Automation</string>
+    <string name="tool_privacy_audit">Privacy audit</string>
+    <string name="tool_privacy_profiles">Privacy profiles</string>
+    <string name="tool_browser_data">Browser data</string>
+    <string name="tool_modes">Modes</string>
+    <string name="tool_auto_rules">Auto-rules</string>
+
+    <string name="dashboard_privacy_score">Privacy score</string>
+    <string name="dashboard_privacy_subtitle">Network &amp; app permissions</string>
+
+    <string name="privacy_score_title">Privacy score</string>
+    <string name="privacy_score_subtitle">Network score: %1$d</string>
+    <string name="privacy_run_scan">Run privacy audit</string>
+    <string name="privacy_run_scan_again">Re-scan</string>
+    <string name="privacy_running">Scanning apps…</string>
+    <string name="privacy_include_system">Include system apps</string>
+    <string name="privacy_apps_header">Risky apps (%1$d)</string>
+    <string name="privacy_network_header">Network privacy</string>
+    <string name="privacy_dot_vpn">VPN active</string>
+    <string name="privacy_dot_dns">Private DNS</string>
+    <string name="privacy_dot_wifi">Wi-Fi security</string>
+    <string name="privacy_dot_captive">No captive portal</string>
+    <string name="privacy_dot_ipv6">IPv6 available</string>
+
+    <string name="privacy_profiles_builtin">Built-in profiles</string>
+    <string name="privacy_profiles_custom">Your profiles</string>
+    <string name="privacy_profile_balanced">Balanced</string>
+    <string name="privacy_profile_strict">Strict</string>
+    <string name="privacy_profile_game">Game</string>
+    <string name="privacy_profile_review">Review</string>
+    <string name="privacy_profile_minimal">No active restrictions</string>
+    <string name="privacy_plan_title">Apply %1$s</string>
+    <string name="privacy_plan_apps">%1$d apps need attention.</string>
+    <string name="privacy_plan_clipboard">Clipboard will be cleared.</string>
+    <string name="privacy_plan_dns">Will suggest setting Private DNS.</string>
+    <string name="privacy_plan_more">…and %1$d more.</string>
+    <string name="privacy_plan_apply">Walk through</string>
+    <string name="privacy_perm_location">Location</string>
+    <string name="privacy_perm_contacts">Contacts</string>
+    <string name="privacy_perm_mic">Microphone</string>
+    <string name="privacy_perm_camera">Camera</string>
+    <string name="privacy_perm_sms">SMS</string>
+    <string name="privacy_perm_clipboard">Clear clipboard</string>
+    <string name="privacy_perm_dns">Private DNS</string>
+
+    <string name="browser_data_header">Browsers on this device</string>
+    <string name="browser_data_empty">No supported browsers detected.</string>
+    <string name="browser_data_size">Cache %1$s · Data %2$s</string>
+    <string name="browser_data_clear">Clear</string>
+
+    <string name="modes_builtin">Built-in modes</string>
+    <string name="modes_custom">Your modes</string>
+    <string name="modes_none_active">No mode active. Pick one to apply a setting bundle.</string>
+    <string name="modes_active_label">Active mode</string>
+    <string name="modes_deactivate">Deactivate</string>
+    <string name="modes_activate">Activate</string>
+    <string name="modes_already_active">Active</string>
+    <string name="mode_game">Game</string>
+    <string name="mode_travel">Travel</string>
+    <string name="mode_focus">Focus</string>
+    <string name="mode_privacy">Privacy</string>
+    <string name="mode_storage_saver">Storage saver</string>
+    <string name="mode_summary_notifications">Snooze notifications</string>
+    <string name="mode_summary_pause_clean">Pause scheduled clean</string>
+    <string name="mode_summary_dark">Dark theme</string>
+    <string name="mode_summary_light">Light theme</string>
+    <string name="mode_summary_privacy">Apply privacy profile</string>
+    <string name="mode_summary_dns">Suggest Private DNS</string>
+    <string name="mode_summary_minimal">No special settings</string>
+
+    <string name="auto_rules_active">Active rules</string>
+    <string name="auto_rules_add">Add a rule</string>
+    <string name="auto_rules_empty">No active rules. Pick a preset below to get started.</string>
+    <string name="auto_rules_channel">Auto-rules</string>
+    <string name="auto_rule_low_storage">Low storage</string>
+    <string name="auto_rule_low_storage_desc">Notify when free space falls below 10%</string>
+    <string name="auto_rule_charging">Charging full</string>
+    <string name="auto_rule_charging_desc">Run cache clean while charging is plentiful</string>
+    <string name="auto_rule_boot">On boot</string>
+    <string name="auto_rule_boot_desc">Activate Focus mode at startup</string>
+    <string name="auto_rule_weekly">Weekly deep scan</string>
+    <string name="auto_rule_weekly_desc">Run a deep scan every Sunday morning</string>
+    <string name="auto_rule_open_wifi">Open Wi-Fi</string>
+    <string name="auto_rule_open_wifi_desc">Activate Privacy mode when joining an open network</string>
+    <string name="auto_rule_install">App installed (PRO)</string>
+    <string name="auto_rule_install_desc">Run static APK risk scan on newly installed apps</string>
+
+    <string name="action_add">Add</string>
+    <string name="action_cancel">Cancel</string>
+
+    <string name="pro_benefit_privacy_audit">Unlimited privacy audits — no daily cap</string>
+    <string name="pro_benefit_modes">Unlimited mode switches + custom modes</string>
+    <string name="pro_benefit_auto_rules">Unlimited auto-rules including new-install scanning</string>
 </resources>

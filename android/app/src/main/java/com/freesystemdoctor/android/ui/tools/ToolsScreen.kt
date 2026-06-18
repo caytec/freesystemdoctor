@@ -20,7 +20,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Analytics
 import androidx.compose.material.icons.filled.Apps
 import androidx.compose.material.icons.filled.AutoAwesome
+import androidx.compose.material.icons.filled.AutoMode
 import androidx.compose.material.icons.filled.Backup
+import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.BatteryAlert
 import androidx.compose.material.icons.filled.BatteryChargingFull
 import androidx.compose.material.icons.filled.BlurOn
@@ -165,6 +167,23 @@ private val toolGroups = listOf(
             Tool(R.string.tool_notifications, Icons.Filled.Notifications, ToolRoutes.NOTIFICATIONS, advanced = true),
             Tool(R.string.tool_notification_stats, Icons.Filled.MarkChatRead, ToolRoutes.NOTIFICATION_STATS),
             Tool(R.string.tool_tweaks, Icons.Filled.Tune, ToolRoutes.TWEAKS, advanced = true),
+        ),
+    ),
+    // Update 14: Privacy & Security
+    ToolGroup(
+        R.string.tools_group_privacy,
+        listOf(
+            Tool(R.string.tool_privacy_audit, Icons.Filled.ShieldMoon, ToolRoutes.PRIVACY_AUDIT),
+            Tool(R.string.tool_privacy_profiles, Icons.Filled.Security, ToolRoutes.PRIVACY_PROFILES),
+            Tool(R.string.tool_browser_data, Icons.Filled.DeleteSweep, ToolRoutes.BROWSER_DATA),
+        ),
+    ),
+    // Update 14: Automation
+    ToolGroup(
+        R.string.tools_group_automation,
+        listOf(
+            Tool(R.string.tool_modes, Icons.Filled.Bolt, ToolRoutes.MODES),
+            Tool(R.string.tool_auto_rules, Icons.Filled.AutoMode, ToolRoutes.AUTO_RULES),
         ),
     ),
 )
