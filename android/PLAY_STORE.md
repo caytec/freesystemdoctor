@@ -1,6 +1,6 @@
 # Google Play — listing, Data safety i checklista
 
-Polityka prywatności (hostowana): **https://freesystemdoctor.pl/privacy-android.html**
+Polityka prywatności (hostowana): **https://caytec.github.io/freesystemdoctor/privacy-android.html**
 Kontakt: coopaisolutions@gmail.com
 
 ---

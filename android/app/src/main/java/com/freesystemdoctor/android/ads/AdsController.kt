@@ -2,6 +2,7 @@ package com.freesystemdoctor.android.ads
 
 import android.app.Activity
 import android.content.Context
+import com.freesystemdoctor.android.analytics.AnalyticsEvent
 import com.freesystemdoctor.android.core.di.ServiceLocator
 import com.google.android.gms.ads.AdError
 import com.google.android.gms.ads.AdRequest
@@ -123,7 +124,10 @@ class AdsController(private val appContext: Context) {
             }
         }
         ServiceLocator.appOpenAdManager.suppressNextShow()
-        ad.show(activity) { onReward() }
+        ad.show(activity) {
+            ServiceLocator.analytics.log(AnalyticsEvent.RewardedView(granted = true))
+            onReward()
+        }
     }
 
     private companion object {

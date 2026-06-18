@@ -4,6 +4,8 @@ import android.app.Application
 import android.content.Context
 import com.freesystemdoctor.android.ads.AdsController
 import com.freesystemdoctor.android.ads.AppOpenAdManager
+import com.freesystemdoctor.android.analytics.Analytics
+import com.freesystemdoctor.android.analytics.LogAnalytics
 import com.freesystemdoctor.android.ai.AiRepository
 import com.freesystemdoctor.android.billing.BillingManager
 import com.freesystemdoctor.android.core.media.MediaDeleteHelper
@@ -75,6 +77,8 @@ object ServiceLocator {
     fun init(context: Context) {
         appContext = context.applicationContext
     }
+
+    val analytics: Analytics by lazy { LogAnalytics() }
 
     val permissionManager: PermissionManager by lazy { PermissionManager(appContext) }
     val settingsRepository: SettingsRepository by lazy { SettingsRepository(appContext) }

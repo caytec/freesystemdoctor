@@ -17,6 +17,8 @@ import com.android.billingclient.api.acknowledgePurchase
 import com.android.billingclient.api.queryProductDetails
 import com.android.billingclient.api.queryPurchasesAsync
 import com.freesystemdoctor.android.BuildConfig
+import com.freesystemdoctor.android.analytics.AnalyticsEvent
+import com.freesystemdoctor.android.core.di.ServiceLocator
 import com.freesystemdoctor.android.data.billing.ProStore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -191,6 +193,11 @@ class BillingManager(
                 if (entitled) {
                     _isPro.value = true
                     proStore.setPro(true)
+                    purchases?.forEach { p ->
+                        p.products.forEach { sku ->
+                            ServiceLocator.analytics.log(AnalyticsEvent.PaywallPurchase(sku))
+                        }
+                    }
                 }
             }
         }
