@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AddCircleOutline
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.PlayArrow
@@ -32,9 +33,11 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.freesystemdoctor.android.R
+import com.freesystemdoctor.android.data.quota.DailyQuotaStore
 
 /**
- * Bottom sheet that offers three ways to unlock a Pro-gated tool:
+ * Bottom sheet that offers ways to unlock a Pro-gated tool:
+ *  0) (only if request originated from a quota exhaustion) Watch an ad → +1 use today.
  *  1) Watch an ad to unlock just THIS tool for 24h.
  *  2) Watch an ad to start a one-time 3-day "Try Pro" (disabled once consumed).
  *  3) Buy Pro forever.
@@ -49,6 +52,7 @@ fun UnlockSheet(
     rewardedReady: Boolean,
     trialUsed: Boolean,
     trialJustExpired: Boolean,
+    onWatchAdForBonus: () -> Unit,
     onWatchAdForTool: () -> Unit,
     onWatchAdForTrial: () -> Unit,
     onBuyPro: () -> Unit,
@@ -66,6 +70,17 @@ fun UnlockSheet(
             verticalArrangement = Arrangement.spacedBy(14.dp),
         ) {
             Header(request = request, trialJustExpired = trialJustExpired)
+
+            if (request.quotaKey != null) {
+                UnlockOption(
+                    icon = Icons.Filled.AddCircleOutline,
+                    title = stringResource(R.string.unlock_opt_bonus_title),
+                    subtitle = stringResource(R.string.unlock_opt_bonus_sub),
+                    enabled = rewardedReady,
+                    disabledNote = if (!rewardedReady) stringResource(R.string.unlock_ad_not_ready) else null,
+                    onClick = onWatchAdForBonus,
+                )
+            }
 
             UnlockOption(
                 icon = Icons.Filled.PlayArrow,
@@ -196,4 +211,8 @@ private fun UnlockOption(
     }
 }
 
-data class UnlockRequest(val route: String, val labelRes: Int? = null)
+data class UnlockRequest(
+    val route: String,
+    val labelRes: Int? = null,
+    val quotaKey: DailyQuotaStore.Key? = null,
+)

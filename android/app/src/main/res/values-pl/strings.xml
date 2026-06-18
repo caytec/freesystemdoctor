@@ -412,6 +412,8 @@
     <string name="unlock_header_generic">Odblokuj to narzędzie</string>
     <string name="unlock_header_sub">Wybierz sposób włączenia tej funkcji Pro.</string>
     <string name="unlock_locked_cd">Zablokowane</string>
+    <string name="unlock_opt_bonus_title">Dodaj jedno użycie dzisiaj</string>
+    <string name="unlock_opt_bonus_sub">Obejrzyj krótką reklamę, aby cofnąć jedno dzisiejsze użycie.</string>
     <string name="unlock_opt_tool_title">Odblokuj to narzędzie na 24h</string>
     <string name="unlock_opt_tool_sub">Obejrzyj krótką reklamę. Tylko to narzędzie, tylko dziś.</string>
     <string name="unlock_opt_trial_title">Wypróbuj Pro przez 3 dni</string>

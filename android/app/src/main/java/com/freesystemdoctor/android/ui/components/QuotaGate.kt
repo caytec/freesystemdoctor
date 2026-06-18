@@ -20,12 +20,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.freesystemdoctor.android.core.di.ServiceLocator
 import com.freesystemdoctor.android.data.quota.DailyQuotaStore
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
 /**
@@ -45,12 +47,24 @@ fun QuotaGatedButton(
 ) {
     val billing = ServiceLocator.billingManager
     val store = ServiceLocator.dailyQuotaStore
+    val proStore = ServiceLocator.proStore
     val isPro by billing.isPro.collectAsState()
     val used by store.used(quotaKey).collectAsState(initial = 0)
+    val effectiveEntitlement by remember(unlockRoute) {
+        combine(
+            proStore.trialUntil,
+            proStore.rewardUntil,
+            proStore.toolUnlocks,
+        ) { trial, reward, unlocks ->
+            val now = System.currentTimeMillis()
+            trial > now || reward > now || (unlocks[unlockRoute] ?: 0L) > now
+        }
+    }.collectAsState(initial = false)
     val controller = LocalUnlockController.current
     val scope = rememberCoroutineScope()
 
-    val exhausted = !isPro && used >= quotaKey.limit
+    val proEquivalent = isPro || effectiveEntitlement
+    val exhausted = !proEquivalent && used >= quotaKey.limit
 
     Row(
         modifier = modifier.fillMaxWidth(),
@@ -64,10 +78,10 @@ fun QuotaGatedButton(
             shape = RoundedCornerShape(14.dp),
             onClick = {
                 if (exhausted) {
-                    controller.request(unlockRoute)
+                    controller.request(unlockRoute, quotaKey = quotaKey)
                 } else {
                     scope.launch {
-                        store.consume(quotaKey)
+                        if (!proEquivalent) store.consume(quotaKey)
                         onConsume()
                     }
                 }
@@ -78,9 +92,9 @@ fun QuotaGatedButton(
             }
             Text(text, modifier = Modifier.padding(start = if (exhausted) 8.dp else 0.dp))
         }
-        if (!isPro) {
+        if (!proEquivalent) {
             AssistChip(
-                onClick = { controller.request(unlockRoute) },
+                onClick = { controller.request(unlockRoute, quotaKey = quotaKey) },
                 label = {
                     Text(
                         text = "$used/${quotaKey.limit}",

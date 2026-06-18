@@ -412,6 +412,8 @@
     <string name="unlock_header_generic">Unlock this tool</string>
     <string name="unlock_header_sub">Choose how to enable this Pro feature.</string>
     <string name="unlock_locked_cd">Locked</string>
+    <string name="unlock_opt_bonus_title">Get one more use today</string>
+    <string name="unlock_opt_bonus_sub">Watch a short ad to refund one daily use.</string>
     <string name="unlock_opt_tool_title">Unlock this tool for 24h</string>
     <string name="unlock_opt_tool_sub">Watch a short ad. Just this tool, just for today.</string>
     <string name="unlock_opt_trial_title">Try Pro for 3 days</string>

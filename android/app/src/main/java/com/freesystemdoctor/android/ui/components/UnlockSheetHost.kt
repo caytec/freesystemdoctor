@@ -12,6 +12,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import com.freesystemdoctor.android.core.di.ServiceLocator
+import com.freesystemdoctor.android.data.quota.DailyQuotaStore
 import com.freesystemdoctor.android.ui.navigation.ROUTE_PRO
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
@@ -39,13 +40,14 @@ fun UnlockSheetHost(
     val billing = ServiceLocator.billingManager
     val ads = ServiceLocator.adsController
     val proStore = ServiceLocator.proStore
+    val quotaStore = ServiceLocator.dailyQuotaStore
 
     var request by remember { mutableStateOf<UnlockRequest?>(null) }
 
     val controller = remember {
         object : UnlockController {
-            override fun request(route: String, labelRes: Int?) {
-                request = UnlockRequest(route, labelRes)
+            override fun request(route: String, labelRes: Int?, quotaKey: DailyQuotaStore.Key?) {
+                request = UnlockRequest(route, labelRes, quotaKey)
             }
         }
     }
@@ -74,6 +76,17 @@ fun UnlockSheetHost(
             rewardedReady = ads.rewardedReady,
             trialUsed = trialUsed,
             trialJustExpired = current.route == "__trial_expired__",
+            onWatchAdForBonus = {
+                val key = current.quotaKey
+                if (key != null) {
+                    activity?.let { act ->
+                        ads.showRewarded(act) {
+                            scope.launch { quotaStore.grantBonus(key) }
+                        }
+                    }
+                }
+                request = null
+            },
             onWatchAdForTool = {
                 activity?.let { act ->
                     ads.showRewarded(act) {

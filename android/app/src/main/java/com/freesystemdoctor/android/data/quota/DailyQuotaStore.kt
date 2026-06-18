@@ -40,6 +40,19 @@ class DailyQuotaStore(private val context: Context) {
         return newCount
     }
 
+    /**
+     * Refunds one use for [key] (effectively "grant +1 today"). Used when a free user
+     * watches a rewarded ad from the [com.freesystemdoctor.android.ui.components.UnlockSheet]
+     * after exhausting the daily limit.
+     */
+    suspend fun grantBonus(key: Key): Int {
+        var newCount = 0
+        context.quotaDataStore.edit { prefs ->
+            newCount = key.counter.refund(prefs, DayBucketCounter.today())
+        }
+        return newCount
+    }
+
     /** True if the next [consume] for [key] would exceed its daily limit. */
     suspend fun isExhausted(key: Key): Boolean = usedOnce(key) >= key.limit
 }

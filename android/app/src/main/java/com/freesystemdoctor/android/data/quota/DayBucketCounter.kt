@@ -36,6 +36,16 @@ class DayBucketCounter(name: String) {
         return next
     }
 
+    /** Refunds one use for [today], floor of 0. Returns the new count. */
+    fun refund(prefs: MutablePreferences, today: String): Int {
+        val storedDay = prefs[dayKey]
+        val current = if (storedDay == today) prefs[countKey] ?: 0 else 0
+        val next = (current - 1).coerceAtLeast(0)
+        prefs[dayKey] = today
+        prefs[countKey] = next
+        return next
+    }
+
     companion object {
         private val LOCAL_DAY: SimpleDateFormat by lazy {
             SimpleDateFormat("yyyy-MM-dd", Locale.US)
