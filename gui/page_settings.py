@@ -48,14 +48,14 @@ class SettingsPage(tk.Frame):
         from .native_ad_widgets import PartnerGrid
         card = Card(parent)
         card.pack(fill="x", pady=(0, 12))
-        SectionLabel(card, "✦ Monetyzacja i wsparcie").pack(anchor="w", padx=10, pady=8)
+        SectionLabel(card, "✦ Monetization & support").pack(anchor="w", padx=10, pady=8)
 
         tk.Label(card,
-            text=("FreeSystemDoctor jest darmowy. Pomagamy go utrzymać przez "
-                  "starannie wybrane rekomendacje partnerskie (afiliacja). "
-                  "Brak third-party ad networks, brak trackerów, brak impression "
-                  "pixels — sieć kontaktujemy tylko gdy Ty świadomie klikniesz CTA. "
-                  "Wszystkie poniższe opcje możesz wyłączyć w 1 kliknięciu."),
+            text=("FreeSystemDoctor is free. We help keep it that way through a few "
+                  "hand-picked partner recommendations (affiliate links). "
+                  "No third-party ad networks, no trackers, no impression "
+                  "pixels — a partner is contacted only when you deliberately click a CTA. "
+                  "You can turn off everything below with one click."),
             bg=T.PANEL, fg=T.FG2, font=T.FONT_SMALL,
             justify="left", anchor="w", wraplength=560).pack(
             anchor="w", padx=10, pady=(0, 8))
@@ -66,7 +66,7 @@ class SettingsPage(tk.Frame):
         row1.pack(fill="x", padx=10, pady=(0, 4))
         tk.Checkbutton(
             row1,
-            text="Pokazuj rekomendacje partnerów (banery + tip-of-the-day)",
+            text="Show partner recommendations (banners + tip of the day)",
             variable=self._aff_var,
             bg=T.PANEL, fg=T.FG, selectcolor=T.ACCENT,
             activebackground=T.PANEL, font=T.FONT_BODY,
@@ -79,8 +79,8 @@ class SettingsPage(tk.Frame):
         row2.pack(fill="x", padx=10, pady=(0, 4))
         tk.Checkbutton(
             row2,
-            text=("Wspieraj rozwój przez delikatne reklamy native "
-                  "(opcjonalne, własny serwer, 1 fetch / 24 h)"),
+            text=("Support development with subtle native ads "
+                  "(optional, our own server, 1 fetch / 24 h)"),
             variable=self._adnet_var,
             bg=T.PANEL, fg=T.FG, selectcolor=T.ACCENT,
             activebackground=T.PANEL, font=T.FONT_BODY,
@@ -90,22 +90,22 @@ class SettingsPage(tk.Frame):
         # Newsletter reset ------------------------------------------------
         row3 = tk.Frame(card, bg=T.PANEL)
         row3.pack(fill="x", padx=10, pady=(2, 6))
-        sub_state = "✓ zapisany" if email_capture.is_subscribed() else "—"
+        sub_state = "✓ subscribed" if email_capture.is_subscribed() else "—"
         tk.Label(row3,
                  text=f"Newsletter: {sub_state}",
                  bg=T.PANEL, fg=T.FG2, font=T.FONT_SMALL).pack(side="left")
-        ActionButton(row3, text="Resetuj wskazówki",
+        ActionButton(row3, text="Reset tips",
                      command=sponsored_notifications.reset).pack(side="right")
         if email_capture.is_subscribed():
-            ActionButton(row3, text="Wypisz mnie",
+            ActionButton(row3, text="Unsubscribe",
                          command=email_capture.unsubscribe).pack(side="right", padx=(0, 6))
 
         # Local stats line (transparency) ---------------------------------
         stats = affiliate.get_local_stats()
         tk.Label(card,
-            text=(f"Lokalne statystyki (nigdy nie wysyłane): "
-                  f"{stats['total_impressions']} wyświetleń · "
-                  f"{stats['total_clicks']} kliknięć"),
+            text=(f"Local stats (never sent anywhere): "
+                  f"{stats['total_impressions']} impressions · "
+                  f"{stats['total_clicks']} clicks"),
             bg=T.PANEL, fg=T.FG2, font=T.FONT_SMALL).pack(
             anchor="w", padx=10, pady=(0, 6))
 
@@ -123,15 +123,15 @@ class SettingsPage(tk.Frame):
         row = tk.Frame(card, bg=T.PANEL)
         row.pack(fill="x", padx=10, pady=(0, 10))
 
-        ActionButton(row, text="Pokaż HUD",
+        ActionButton(row, text="Show HUD",
                      command=self._hud_show).pack(side="left", padx=(0, 6))
-        ActionButton(row, text="Ukryj HUD",
+        ActionButton(row, text="Hide HUD",
                      command=self._hud_hide).pack(side="left", padx=(0, 6))
-        ActionButton(row, text="Przenieś do rogu ↘",
+        ActionButton(row, text="Move to corner ↘",
                      command=self._hud_corner).pack(side="left")
 
         tk.Label(row,
-                 text="  Mini-overlay CPU/RAM/GPU zawsze na wierzchu",
+                 text="  Always-on-top mini CPU/RAM/GPU overlay",
                  bg=T.PANEL, fg=T.FG2, font=T.FONT_SMALL).pack(side="left", padx=8)
 
     def _hud_show(self):
@@ -386,23 +386,53 @@ class SettingsPage(tk.Frame):
                  bg=T.PANEL, fg=T.FG2, font=T.FONT_SMALL,
                  wraplength=560, justify="left").pack(anchor="w", padx=10, pady=(0, 8))
 
+        # Simple mode — show only essential tools (beginner-friendly)
+        simple_row = tk.Frame(card, bg=T.PANEL)
+        simple_row.pack(fill="x", padx=10, pady=(0, 4))
+        tk.Label(simple_row, text="Simple mode:", bg=T.PANEL, fg=T.FG,
+                 font=T.FONT_BODY, width=20, anchor="w").pack(side="left")
+        from engine import app_settings as _aset2
+        self._simple_var = tk.BooleanVar(
+            value=_aset2.get("ui_mode", "advanced") == "simple")
+        ToggleSwitch(simple_row, variable=self._simple_var,
+                     command=self._on_simple_toggle).pack(side="left", padx=12)
+        tk.Label(card,
+                 text="Shows only the essential, everyday tools in the menu. "
+                      "Turn off to see every advanced tool.",
+                 bg=T.PANEL, fg=T.FG2, font=T.FONT_SMALL,
+                 wraplength=560, justify="left").pack(anchor="w", padx=10, pady=(0, 8))
+
     def _on_anim_toggle(self):
         from engine import app_settings as _aset
         on = self._anim_var.get()
         T.set_animations_enabled(on)
         _aset.set_and_save("animations_enabled", on)
 
+    def _on_simple_toggle(self):
+        from engine import app_settings as _aset
+        mode = "simple" if self._simple_var.get() else "advanced"
+        _aset.set_and_save("ui_mode", mode)
+        # Apply immediately so the sidebar updates without a restart.
+        try:
+            self._app._sidebar.refresh_mode()
+            from .widgets import Toast
+            Toast.show(self.winfo_toplevel(),
+                       "Simple mode on — showing essential tools" if mode == "simple"
+                       else "Showing all tools", "info")
+        except Exception:
+            pass
+
     def _build_autorun_card(self, parent):
         from engine import startup_manager
         card = Card(parent)
         card.pack(fill="x", pady=(0, 12))
-        SectionLabel(card, "🚀 Uruchamiaj z Windowsem").pack(anchor="w", padx=10, pady=8)
+        SectionLabel(card, "🚀 Start with Windows").pack(anchor="w", padx=10, pady=8)
 
         tk.Label(card,
             text=(
-                "Uruchamia FreeSystemDoctor automatycznie przy każdym logowaniu.\n"
-                "Używa Harmonogramu zadań Windows z uprawnieniami administratora "
-                "— brak okna UAC przy starcie systemu."
+                "Launches FreeSystemDoctor automatically every time you sign in.\n"
+                "Uses Windows Task Scheduler with administrator rights "
+                "— no UAC prompt at startup."
             ),
             bg=T.PANEL, fg=T.FG2, font=T.FONT_SMALL,
             justify="left", anchor="w", wraplength=560,
@@ -411,7 +441,7 @@ class SettingsPage(tk.Frame):
         self._autorun_var = tk.BooleanVar(value=startup_manager.is_autorun_enabled())
         row = tk.Frame(card, bg=T.PANEL)
         row.pack(fill="x", padx=10, pady=(0, 4))
-        tk.Label(row, text="Autostart przy logowaniu:",
+        tk.Label(row, text="Start at sign-in:",
                  bg=T.PANEL, fg=T.FG, font=T.FONT_BODY).pack(side="left")
         ToggleSwitch(row, variable=self._autorun_var,
                      command=self._on_autorun_toggle).pack(side="left", padx=12)
@@ -426,18 +456,18 @@ class SettingsPage(tk.Frame):
             ok = startup_manager.register_autorun()
             if ok:
                 self._autorun_status.config(
-                    text="✓ Zadanie harmonogramu utworzone — autostart aktywny", fg=T.SUCCESS)
+                    text="✓ Scheduled task created — autostart is active", fg=T.SUCCESS)
             else:
                 self._autorun_var.set(False)
                 self._autorun_status.config(
-                    text="✗ Nie udało się utworzyć zadania — uruchom jako administrator", fg=T.DANGER)
+                    text="✗ Could not create the task — run as administrator", fg=T.DANGER)
         else:
             ok = startup_manager.unregister_autorun()
             if ok:
-                self._autorun_status.config(text="Autostart wyłączony", fg=T.FG2)
+                self._autorun_status.config(text="Autostart disabled", fg=T.FG2)
             else:
                 self._autorun_status.config(
-                    text="✗ Nie udało się usunąć zadania", fg=T.DANGER)
+                    text="✗ Could not remove the task", fg=T.DANGER)
 
     def _build_tray_card(self, parent):
         card = Card(parent)

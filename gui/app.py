@@ -99,7 +99,7 @@ _NAV_CATEGORIES = [
     # ── Dashboard & Monitoring ────────────────────────────────────────────────
     {
         "id":    "dashboard",
-        "label": "PULPIT",       # Dashboard
+        "label": "DASHBOARD",    # Pulpit
         "color": T.HIGHLIGHT,
         "items": [
             ("home",       "🏠", "Home",           HomePage),
@@ -132,7 +132,7 @@ _NAV_CATEGORIES = [
     # ── Performance & Speed ───────────────────────────────────────────────────
     {
         "id":    "performance",
-        "label": "WYDAJNOŚĆ",     # Performance
+        "label": "PERFORMANCE",  # Wydajność
         "color": T.SUCCESS,
         "items": [
             ("care",       "♥",  "System Care",     CarePage),
@@ -160,7 +160,7 @@ _NAV_CATEGORIES = [
     # ── Cleaning ──────────────────────────────────────────────────────────────
     {
         "id":    "clean",
-        "label": "CZYSZCZENIE",   # Cleaning
+        "label": "CLEANING",     # Czyszczenie
         "color": T.WARNING,
         "items": [
             ("disk_analyzer","📁","Disk Analyzer",  DiskAnalyzerPage),
@@ -175,7 +175,7 @@ _NAV_CATEGORIES = [
     # ── Disk & Storage ────────────────────────────────────────────────────────
     {
         "id":    "disk",
-        "label": "DYSK",         # Disk
+        "label": "DISK",         # Dysk
         "color": "#40c4ff",
         "items": [
             ("disk_opt",   "💿", "Disk Optimizer",  DiskOptimizerPage),
@@ -186,7 +186,7 @@ _NAV_CATEGORIES = [
     # ── Network ───────────────────────────────────────────────────────────────
     {
         "id":    "network",
-        "label": "SIEĆ",         # Network
+        "label": "NETWORK",      # Sieć
         "color": "#7b61ff",
         "items": [
             ("internet",   "🌐", "Net Booster",     InternetBoosterPage),
@@ -197,7 +197,7 @@ _NAV_CATEGORIES = [
     # ── Protection & Privacy ──────────────────────────────────────────────────
     {
         "id":    "protect",
-        "label": "OCHRONA",      # Protection
+        "label": "PROTECTION",   # Ochrona
         "color": T.DANGER,
         "items": [
             ("protect",    "🛡",  "Protection",      ProtectPage),
@@ -210,7 +210,7 @@ _NAV_CATEGORIES = [
     # ── Repair & Backup ───────────────────────────────────────────────────────
     {
         "id":    "repair",
-        "label": "NAPRAWA",      # Repair
+        "label": "REPAIR",       # Naprawa
         "color": "#ffab40",
         "items": [
             ("repair",     "🔨", "System Repair",   SystemRepairPage),
@@ -223,7 +223,7 @@ _NAV_CATEGORIES = [
     # ── Apps & Software ───────────────────────────────────────────────────────
     {
         "id":    "apps",
-        "label": "APLIKACJE",    # Apps
+        "label": "APPS",         # Aplikacje
         "color": "#00e676",
         "items": [
             ("software",   "⬇",  "Software",        SoftwarePage),
@@ -234,7 +234,7 @@ _NAV_CATEGORIES = [
     # ── Customize & Settings ──────────────────────────────────────────────────
     {
         "id":    "personal",
-        "label": "WYGLĄD",       # Look & Feel
+        "label": "GENERAL",      # Wygląd / ustawienia
         "color": T.FG2,
         "items": [
             ("themes",     "🎨", "Themes",          ThemeManagerPage),
@@ -244,6 +244,59 @@ _NAV_CATEGORIES = [
         ],
     },
 ]
+
+
+# ── Simple mode ───────────────────────────────────────────────────────────────
+# Curated, beginner-friendly tools shown when the user picks "Simple mode".
+# Every category keeps at least one entry so the sidebar structure stays familiar.
+# Advanced mode (default) shows everything.
+SIMPLE_KEYS = {
+    # Dashboard
+    "home", "autopilot", "guardian", "health", "dashboard",
+    # AI / Auto
+    "ai_ask", "wizard",
+    # Performance
+    "care", "speedup", "turbo",
+    # Gaming
+    "game",
+    # Cleaning
+    "disk_analyzer", "space_hogs", "browser_auto",
+    # Disk
+    "disk_opt", "defrag",
+    # Network
+    "internet",
+    # Protection
+    "protect",
+    # Repair
+    "repair", "restore", "backup",
+    # Apps
+    "software",
+    # General
+    "themes", "settings",
+}
+
+
+def ui_simple_mode() -> bool:
+    """True when the user has chosen the simplified, beginner-friendly view."""
+    try:
+        from engine import app_settings
+        return app_settings.get("ui_mode", "advanced") == "simple"
+    except Exception:
+        return False
+
+
+def visible_items(cat: dict) -> list:
+    """Return a category's nav items filtered by the current UI mode.
+
+    In simple mode, only SIMPLE_KEYS are shown; if that would empty a category,
+    fall back to all items so the user is never stranded on a blank panel.
+    """
+    items = cat.get("items", [])
+    if not ui_simple_mode():
+        return items
+    filtered = [it for it in items if it[0] in SIMPLE_KEYS]
+    return filtered or items
+
 
 _TOOLS_TABS = [
     ("Disk Cleaner",      CleanerTab),
@@ -531,7 +584,7 @@ class _SidebarPanel(tk.Frame):
                  fg=cat["color"], font=(T.FONT_FAMILY, 8, "bold"),
                  padx=12, pady=8).pack(side="left")
 
-        for key, icon, label, PageClass in cat["items"]:
+        for key, icon, label, PageClass in visible_items(cat):
             if PageClass is None:
                 self._add_expand_item(key, icon, label, cat["color"], special=True)
             else:
@@ -684,6 +737,11 @@ class _SidebarPanel(tk.Frame):
     def get_all_buttons(self) -> dict:
         return self._btns
 
+    def refresh_mode(self):
+        """Re-render the open category after a Simple/Advanced mode change."""
+        if self._expanded and self._active_cat:
+            self._show_category(self._active_cat)
+
 
 def import_math_sin(x):
     import math
@@ -826,8 +884,13 @@ class App(tk.Tk):
         # Global Ctrl+K command palette
         self.bind_all("<Control-k>", self._open_palette)
         self.bind_all("<Control-K>", self._open_palette)
-        # Opt-in prompt for LibreHardwareMonitor (only first run, dismissible)
-        maybe_show_first_run_dialog(self)
+        # First-run welcome for non-technical users (shown once). If it appears,
+        # defer the optional LibreHardwareMonitor prompt to a later launch so the
+        # two dialogs never stack on a brand-new install.
+        from .welcome_dialog import maybe_show_welcome
+        if not maybe_show_welcome(self):
+            # Opt-in prompt for LibreHardwareMonitor (only first run, dismissible)
+            maybe_show_first_run_dialog(self)
 
     # ── styles ─────────────────────────────────────────────────────────────────
 
