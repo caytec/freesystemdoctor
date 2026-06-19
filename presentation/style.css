@@ -493,18 +493,10 @@ h3 {
   justify-content: center;
 }
 .btn-ico svg { width: 5mm; height: 5mm; display: block; }
-.cta .contact {
-  margin-top: 7mm;
-  font-size: 10.5pt;
-  color: var(--text-muted);
-  line-height: 1.55;
-}
-.cta .contact strong { color: var(--coral); }
-
 /* Publisher credit on the final CTA slide. */
 .cta .publisher {
-  margin-top: 6mm;
-  padding-top: 4mm;
+  margin-top: 12mm;
+  padding-top: 5mm;
   border-top: 1px solid rgba(255, 255, 255, 0.10);
   font-size: 10pt;
   color: var(--text-muted);
