@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 740" role="img" aria-label="Cleaner screen mockup">
+  <defs>
+    <linearGradient id="bg2" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%"  stop-color="#0F1B2D"/>
+      <stop offset="100%" stop-color="#0A1320"/>
+    </linearGradient>
+    <linearGradient id="ring2" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FF6F61"/>
+      <stop offset="100%" stop-color="#9C7BFF"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="360" height="740" rx="36" fill="url(#bg2)"/>
+  <rect x="160" y="14" width="40" height="6" rx="3" fill="#0A1320"/>
+
+  <text x="24" y="64" font-family="sans-serif" font-size="20" font-weight="700" fill="#ECEFF4" data-i18n="cleaner.title">Junk cleaner</text>
+
+  <!-- Big number card -->
+  <rect x="20" y="92" width="320" height="120" rx="18" fill="#16263D"/>
+  <text x="40" y="124" font-family="sans-serif" font-size="11" fill="#A7B4C7" letter-spacing="1.5" data-i18n="cleaner.reclaimable">RECLAIMABLE</text>
+  <text x="40" y="172" font-family="sans-serif" font-size="40" font-weight="800" fill="url(#ring2)">2.4 GB</text>
+  <text x="40" y="194" font-family="sans-serif" font-size="11" fill="#A7B4C7" data-i18n="cleaner.subtitle">cache + leftover APKs + temp files</text>
+
+  <!-- Category rows -->
+  <g font-family="sans-serif">
+    <rect x="20" y="228" width="320" height="60" rx="14" fill="#16263D"/>
+    <circle cx="48" cy="258" r="14" fill="#FF6F61" opacity="0.16"/>
+    <text x="48" y="263" font-size="14" fill="#FF6F61" text-anchor="middle">●</text>
+    <text x="74" y="252" font-size="14" fill="#ECEFF4" data-i18n="cleaner.cat_cache">App cache (this app)</text>
+    <text x="74" y="272" font-size="11" fill="#A7B4C7">812 MB</text>
+    <text x="324" y="263" font-size="11" fill="#35D0BA" text-anchor="end" data-i18n="cleaner.safe">SAFE</text>
+
+    <rect x="20" y="296" width="320" height="60" rx="14" fill="#16263D"/>
+    <circle cx="48" cy="326" r="14" fill="#9C7BFF" opacity="0.16"/>
+    <text x="48" y="331" font-size="14" fill="#9C7BFF" text-anchor="middle">●</text>
+    <text x="74" y="320" font-size="14" fill="#ECEFF4" data-i18n="cleaner.cat_apk">Leftover APK files</text>
+    <text x="74" y="340" font-size="11" fill="#A7B4C7">7 files · 1.1 GB</text>
+    <text x="324" y="331" font-size="11" fill="#FFB300" text-anchor="end" data-i18n="cleaner.confirm">CONFIRM</text>
+
+    <rect x="20" y="364" width="320" height="60" rx="14" fill="#16263D"/>
+    <circle cx="48" cy="394" r="14" fill="#35D0BA" opacity="0.16"/>
+    <text x="48" y="399" font-size="14" fill="#35D0BA" text-anchor="middle">●</text>
+    <text x="74" y="388" font-size="14" fill="#ECEFF4" data-i18n="cleaner.cat_temp">Temp &amp; log files</text>
+    <text x="74" y="408" font-size="11" fill="#A7B4C7">42 files · 488 MB</text>
+    <text x="324" y="399" font-size="11" fill="#FFB300" text-anchor="end" data-i18n="cleaner.confirm">CONFIRM</text>
+
+    <rect x="20" y="432" width="320" height="60" rx="14" fill="#16263D"/>
+    <circle cx="48" cy="462" r="14" fill="#4FC3F7" opacity="0.16"/>
+    <text x="48" y="467" font-size="14" fill="#4FC3F7" text-anchor="middle">●</text>
+    <text x="74" y="456" font-size="14" fill="#ECEFF4" data-i18n="cleaner.cat_empty">Empty folders</text>
+    <text x="74" y="476" font-size="11" fill="#A7B4C7">18 folders</text>
+    <text x="324" y="467" font-size="11" fill="#35D0BA" text-anchor="end" data-i18n="cleaner.safe">SAFE</text>
+  </g>
+
+  <!-- Honesty banner -->
+  <rect x="20" y="510" width="320" height="60" rx="14" fill="#9C7BFF" fill-opacity="0.10" stroke="#9C7BFF" stroke-width="1"/>
+  <text x="36" y="534" font-family="sans-serif" font-size="11" fill="#9C7BFF" data-i18n="cleaner.honest_title">No fake gigabytes.</text>
+  <text x="36" y="552" font-family="sans-serif" font-size="11" fill="#A7B4C7" data-i18n="cleaner.honest_body">We show the real amount you can free.</text>
+
+  <!-- Main CTA -->
+  <rect x="20" y="590" width="320" height="56" rx="18" fill="url(#ring2)"/>
+  <text x="180" y="624" font-family="sans-serif" font-size="16" font-weight="700" fill="#0A1320" text-anchor="middle" data-i18n="cleaner.clean">CLEAN 2.4 GB</text>
+
+  <rect x="20" y="664" width="320" height="56" rx="20" fill="#16263D"/>
+  <g font-family="sans-serif" font-size="10" fill="#A7B4C7" text-anchor="middle">
+    <text x="60" y="710" data-i18n="nav.dashboard">Dashboard</text>
+    <circle cx="124" cy="688" r="4" fill="#FF6F61"/>
+    <text x="124" y="710" fill="#FF6F61" data-i18n="nav.cleaner">Clean</text>
+    <text x="188" y="710" data-i18n="nav.storage">Storage</text>
+    <text x="252" y="710" data-i18n="nav.apps">Apps</text>
+    <text x="316" y="710" data-i18n="nav.tools">Tools</text>
+  </g>
+</svg>
