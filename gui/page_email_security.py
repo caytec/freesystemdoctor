@@ -58,13 +58,13 @@ class EmailSecurityPage(tk.Frame):
         tree_frame.pack(fill="both", expand=True, padx=10, pady=(0, 8))
 
         apply_treeview_style()
-        self._acct_tree = ttk.Treeview(tree_frame, columns=("client", "encryption"), height=6)
+        self._acct_tree = ttk.Treeview(tree_frame, columns=("client", "protocol"), height=6)
         self._acct_tree.column("#0", width=250)
         self._acct_tree.column("client", width=120)
-        self._acct_tree.column("encryption", width=100)
+        self._acct_tree.column("protocol", width=100)
         self._acct_tree.heading("#0", text="Email Address")
         self._acct_tree.heading("client", text="Client")
-        self._acct_tree.heading("encryption", text="Encryption")
+        self._acct_tree.heading("protocol", text="Protocol")
 
         sb = ttk.Scrollbar(tree_frame, orient="vertical", command=self._acct_tree.yview)
         self._acct_tree.configure(yscrollcommand=sb.set)
@@ -113,7 +113,7 @@ class EmailSecurityPage(tk.Frame):
         self._acct_tree.delete(*self._acct_tree.get_children())
         for account in accounts:
             self._acct_tree.insert("", "end", text=account.email,
-                                  values=(account.client, account.encryption or "Unknown"))
+                                  values=(account.client, account.protocol or "—"))
 
         # Update issues
         self._issues_text.config(state="normal")

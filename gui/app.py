@@ -11,6 +11,11 @@ from .widgets import StatusBar, SidebarButton, apply_treeview_style, Toast
 
 KOFI_URL = "https://ko-fi.com/F1F51O3A4A"
 
+# AiPOL SA — company branding shown in the app corner.
+AIPOL_URL  = "https://aipol.com.pl"
+AIPOL_NAME = "AiPOL SA"
+AIPOL_NOTE = "AI software solutions"
+
 # ── Page imports ───────────────────────────────────────────────────────────────
 from .page_care             import CarePage
 from .page_speedup          import SpeedUpPage
@@ -148,7 +153,7 @@ _NAV_CATEGORIES = [
     {
         "id":    "gaming",
         "label": "GAMING",
-        "color": "#ff5252",
+        "color": "#ff5c5c",
         "items": [
             ("game",       "🎮", "Game Booster",   GameBoosterPage),
             ("deep_clean", "💾", "Deep Clean",     DeepCleanPage),
@@ -176,7 +181,7 @@ _NAV_CATEGORIES = [
     {
         "id":    "disk",
         "label": "DISK",         # Dysk
-        "color": "#40c4ff",
+        "color": "#4d8bff",
         "items": [
             ("disk_opt",   "💿", "Disk Optimizer",  DiskOptimizerPage),
             ("defrag",     "🔄", "Smart Defrag",    SmartDefragPage),
@@ -187,7 +192,7 @@ _NAV_CATEGORIES = [
     {
         "id":    "network",
         "label": "NETWORK",      # Sieć
-        "color": "#7b61ff",
+        "color": "#19c3c3",
         "items": [
             ("internet",   "🌐", "Net Booster",     InternetBoosterPage),
             ("dns_lock",   "🔐", "DNS Protector",   DnsProtectorPage),
@@ -224,7 +229,7 @@ _NAV_CATEGORIES = [
     {
         "id":    "apps",
         "label": "APPS",         # Aplikacje
-        "color": "#00e676",
+        "color": "#18c08f",
         "items": [
             ("software",   "⬇",  "Software",        SoftwarePage),
             ("action",     "⚠",  "Action Center",   ActionCenterPage),
@@ -965,6 +970,7 @@ class App(tk.Tk):
         # ── Status bar ─────────────────────────────────────────────────────────
         self._status = StatusBar(self)
         self._status.pack(fill="x", side="bottom")
+        self._build_aipol_branding(self._status)
         tk.Frame(self, bg=T.BORDER, height=1).pack(fill="x", side="bottom")
 
         # ── Body ───────────────────────────────────────────────────────────────
@@ -994,6 +1000,62 @@ class App(tk.Tk):
                            lambda e: self._sidebar._collapse())
 
         self._build_pages()
+
+    def _build_aipol_branding(self, parent):
+        """AiPOL SA logo + clickable link + small company note, in the app corner
+        (bottom-right of the status bar). Opens aipol.com.pl in the browser."""
+        wrap = tk.Frame(parent, bg=T.SIDEBAR, cursor="hand2")
+        wrap.pack(side="right", padx=12)
+
+        # Wordmark "logo": a small brand hexagon + company name.
+        mark = tk.Canvas(wrap, width=16, height=16, bg=T.SIDEBAR,
+                         highlightthickness=0)
+        mark.pack(side="left", padx=(0, 5))
+        mark.create_polygon(8, 1, 15, 5, 15, 12, 8, 16, 1, 12, 1, 5,
+                            fill=T.lerp_color(T.SIDEBAR, T.HIGHLIGHT, 0.30),
+                            outline=T.HIGHLIGHT)
+        mark.create_text(8, 8, text="A", fill=T.HIGHLIGHT,
+                         font=(T.FONT_FAMILY, 8, "bold"))
+
+        name_lbl = tk.Label(wrap, text=AIPOL_NAME, bg=T.SIDEBAR, fg=T.FG,
+                            font=(T.FONT_FAMILY, 9, "bold"))
+        name_lbl.pack(side="left")
+        sep_lbl = tk.Label(wrap, text="·", bg=T.SIDEBAR, fg=T.FG2,
+                           font=T.FONT_SMALL)
+        sep_lbl.pack(side="left", padx=4)
+        link_lbl = tk.Label(wrap, text="aipol.com.pl", bg=T.SIDEBAR,
+                            fg=T.HIGHLIGHT, font=T.FONT_SMALL)
+        link_lbl.pack(side="left")
+        note_lbl = tk.Label(wrap, text=f"· {AIPOL_NOTE}", bg=T.SIDEBAR,
+                            fg=T.FG2, font=T.FONT_MICRO)
+        note_lbl.pack(side="left", padx=(4, 0))
+
+        widgets = [wrap, mark, name_lbl, sep_lbl, link_lbl, note_lbl]
+
+        def _open(_e=None):
+            try:
+                webbrowser.open(AIPOL_URL)
+            except Exception:
+                pass
+
+        def _enter(_e=None):
+            try:
+                link_lbl.config(fg=T.lighten(T.HIGHLIGHT, 0.2))
+                name_lbl.config(fg=T.HIGHLIGHT)
+            except tk.TclError:
+                pass
+
+        def _leave(_e=None):
+            try:
+                link_lbl.config(fg=T.HIGHLIGHT)
+                name_lbl.config(fg=T.FG)
+            except tk.TclError:
+                pass
+
+        for w in widgets:
+            w.bind("<Button-1>", _open)
+            w.bind("<Enter>", _enter)
+            w.bind("<Leave>", _leave)
 
     def _build_pages(self):
         def make(PageClass):

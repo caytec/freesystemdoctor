@@ -33,8 +33,21 @@ def _detect_outlook_accounts() -> list[EmailAccount]:
                 for j in range(winreg.QueryInfoKey(profile_key)[0]):
                     try:
                         account_name = winreg.EnumKey(profile_key, j)
-                        if "@" in account_name or "pop" in account_name.lower() or "imap" in account_name.lower():
-                            account = EmailAccount("Outlook", account_name)
+                        low = account_name.lower()
+                        if "@" in account_name or "pop" in low or "imap" in low:
+                            # Protocol is inferable from the account/key name.
+                            if "imap" in low:
+                                proto = "IMAP"
+                            elif "pop" in low:
+                                proto = "POP3"
+                            elif "smtp" in low:
+                                proto = "SMTP"
+                            elif "exchange" in low or "outlook" in low:
+                                proto = "Exchange"
+                            else:
+                                proto = ""
+                            account = EmailAccount("Outlook", account_name,
+                                                   protocol=proto)
                             accounts.append(account)
                     except Exception:
                         pass

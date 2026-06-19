@@ -75,7 +75,11 @@ FREE_LIMIT_LABELS: dict[str, str] = {
 # LicenseManager
 # ─────────────────────────────────────────────────────────────
 class LicenseManager:
-    API_URL      = "http://frog02.mikr.us:21187/api/v1"
+    # SECURITY: default is plain HTTP (the VPS has no TLS on this port). Keys are
+    # HMAC-signed + device-bound so a MITM cannot forge a usable key, but set
+    # FSD_LICENSE_API_URL to an https://… proxy to also encrypt the channel.
+    API_URL      = os.environ.get("FSD_LICENSE_API_URL",
+                                  "http://frog02.mikr.us:21187/api/v1")
     CACHE_TTL_S  = 30 * 24 * 3600          # 30 days offline grace
 
     def __init__(self):

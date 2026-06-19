@@ -135,21 +135,28 @@ def list_extensions(browser: str) -> list[BrowserExtension]:
     return extensions
 
 
+# Starter blocklist of KNOWN-malicious extension IDs (Chrome Web Store ids).
+# Matching by stable extension ID — not by name keywords — so legitimate
+# extensions (uBlock Origin, AdBlock, password managers, VPNs, analytics
+# opt-outs, crypto wallets) are NEVER flagged or mass-removed. Extend this set
+# from a real reputation feed rather than guessing by name.
+_KNOWN_MALICIOUS_IDS: set[str] = {
+    # documented malware / removed-from-store extensions
+    "mlojlfildnehdpnlmpkeiplnfapjkjje",  # The Great Suspender (post-hijack)
+    "jiofmdifioeejeilfkpegipdjiopiekl",  # HoverZoom (history exfiltration)
+}
+
+
 def detect_malicious_extensions(browser: str) -> list[BrowserExtension]:
-    """Detect potentially malicious extensions."""
-    all_extensions = list_extensions(browser)
-    suspicious_keywords = [
-        "ads", "toolbar", "coupon", "deal", "discount", "cashback",
-        "crypto", "miner", "proxy", "vpn", "tracker", "analytics"
-    ]
+    """Detect KNOWN-malicious extensions by their stable ID.
 
-    malicious = []
-    for ext in all_extensions:
-        lower_name = ext.name.lower()
-        if any(keyword in lower_name for keyword in suspicious_keywords):
-            malicious.append(ext)
-
-    return malicious
+    Returns only extensions whose ID is on the curated blocklist. Name-based
+    keyword guessing was removed because it produced dangerous false positives
+    (it flagged uBlock Origin, VPNs, etc.), and "Remove All Suspicious" would
+    then delete those legitimate tools.
+    """
+    return [ext for ext in list_extensions(browser)
+            if getattr(ext, "id", "") in _KNOWN_MALICIOUS_IDS]
 
 
 def remove_extension(browser: str, ext_id: str) -> bool:

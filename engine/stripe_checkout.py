@@ -5,6 +5,7 @@ Opens browser checkout, polls for CD-key, then activates locally
 
 from __future__ import annotations
 
+import os
 import threading
 import time
 import webbrowser
@@ -14,7 +15,15 @@ from typing import Callable, Optional
 
 logger = logging.getLogger("fsd.stripe")
 
-API_URL = "http://frog02.mikr.us:21187/api/v1"
+# License/activation API endpoint.
+# SECURITY: the default endpoint is plain HTTP because the mikr.us VPS does not
+# expose TLS on this port. CD-keys are HMAC-signed and device-bound, so a
+# man-in-the-middle cannot forge a usable key, but the email/key are visible in
+# transit. To harden, put an HTTPS terminator in front (Cloudflare Tunnel,
+# Caddy/Let's Encrypt, or the mikr.us HTTPS proxy) and set FSD_LICENSE_API_URL
+# to that https://… address — no rebuild required.
+API_URL = os.environ.get("FSD_LICENSE_API_URL",
+                         "http://frog02.mikr.us:21187/api/v1")
 
 
 class CheckoutSession:

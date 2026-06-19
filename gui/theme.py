@@ -1,43 +1,47 @@
-"""Central colour / font constants — premium glassmorphism dark theme."""
+"""Central colour / font constants — AiPOL SA corporate AI navy/blue theme.
+
+Palette aligned with AiPOL SA (aipol.com.pl): deep navy backgrounds with an
+electric-blue primary accent and a teal secondary accent.
+"""
 
 # ── Backgrounds ───────────────────────────────────────────────────────────────
-BG      = "#0d1117"   # deep space black
-PANEL   = "#161b27"   # card / panel — slightly blue-tinted
-ACCENT  = "#1c2438"   # header / elevated panels
-SIDEBAR = "#0a0e1a"   # sidebar (deepest)
+BG      = "#0a1020"   # deep navy
+PANEL   = "#111a2e"   # card / panel
+ACCENT  = "#1a2640"   # header / elevated panels
+SIDEBAR = "#070c18"   # sidebar (deepest navy)
 
 # ── Brand colours ─────────────────────────────────────────────────────────────
-HIGHLIGHT     = "#00d4ff"   # electric cyan — premium feel
-HIGHLIGHT_END = "#0099cc"   # gradient end
-SCAN_GLOW     = "#40e0ff"   # bright cyan for glow effects
-PURPLE        = "#7b61ff"   # secondary accent purple
-PURPLE_END    = "#5a45cc"   # purple gradient end
+HIGHLIGHT     = "#2f6bff"   # electric blue — AiPOL primary accent
+HIGHLIGHT_END = "#1e50d8"   # gradient end (deeper blue)
+SCAN_GLOW     = "#5b86ff"   # bright blue for glow effects
+PURPLE        = "#19c3c3"   # secondary accent — teal (AiPOL)
+PURPLE_END    = "#0f9a9a"   # teal gradient end
 
 # ── Semantic colours ──────────────────────────────────────────────────────────
-SUCCESS = "#00e676"   # vivid green
-WARNING = "#ffab40"   # warm amber
-DANGER  = "#ff5252"   # vivid red
-INFO    = "#40c4ff"   # info blue
+SUCCESS = "#18c08f"   # teal-green
+WARNING = "#f5a623"   # amber
+DANGER  = "#ff5c5c"   # red
+INFO    = "#4d8bff"   # info blue
 
 # ── Badge backgrounds ─────────────────────────────────────────────────────────
-BADGE_OK   = "#00311a"
-BADGE_WARN = "#332200"
-BADGE_ERR  = "#330d0d"
+BADGE_OK   = "#0c2e24"
+BADGE_WARN = "#332600"
+BADGE_ERR  = "#3a1414"
 
 # ── Toggle ────────────────────────────────────────────────────────────────────
-TOGGLE_ON  = "#00d4ff"
-TOGGLE_OFF = "#1c2438"
+TOGGLE_ON  = "#2f6bff"
+TOGGLE_OFF = "#1a2640"
 
 # ── Text ──────────────────────────────────────────────────────────────────────
-FG  = "#e8edf5"   # primary — crisp white-blue
-FG2 = "#8a94b0"   # secondary / muted (raised contrast for readability)
+FG  = "#eaf0fb"   # primary — crisp white-blue
+FG2 = "#8d99ba"   # secondary / muted (readable on navy)
 
 # ── Borders / dividers ────────────────────────────────────────────────────────
-BORDER     = "#1e2d45"
-BORDER_GLOW = "#00d4ff"   # highlighted border
+BORDER     = "#1e2c4a"
+BORDER_GLOW = "#2f6bff"   # highlighted border
 
 # ── Glass effect colors ───────────────────────────────────────────────────────
-GLASS_BG   = "#161b27cc"  # semi-transparent panel
+GLASS_BG   = "#111a2ecc"  # semi-transparent panel
 GLASS_EDGE = "#ffffff14"  # subtle glass rim
 
 # ── Fonts ─────────────────────────────────────────────────────────────────────

@@ -95,19 +95,19 @@ class SystemHud:
         # hud.show() / hud.hide() / hud.destroy()
     """
 
-    BG        = "#0a0e1a"
-    PANEL     = "#161b27"
-    FG        = "#e8edf5"
-    FG2       = "#6b7a99"
-    CLR_CPU   = "#00d4ff"
-    CLR_RAM   = "#00e676"
-    CLR_GPU   = "#ffab40"
-    BAR_BG    = "#1c2438"
-    BORDER    = "#1e2d45"
-    HIGHLIGHT = "#00d4ff"
-    PURPLE    = "#7b61ff"
-    DANGER    = "#ff5252"
-    SUCCESS   = "#00e676"
+    BG        = "#070c18"
+    PANEL     = "#111a2e"
+    FG        = "#eaf0fb"
+    FG2       = "#8d99ba"
+    CLR_CPU   = "#2f6bff"
+    CLR_RAM   = "#18c08f"
+    CLR_GPU   = "#f5a623"
+    BAR_BG    = "#1a2640"
+    BORDER    = "#1e2c4a"
+    HIGHLIGHT = "#2f6bff"
+    PURPLE    = "#19c3c3"
+    DANGER    = "#ff5c5c"
+    SUCCESS   = "#18c08f"
     ALPHA     = 0.92
     WIDTH     = 240
     ROW_H     = 18
