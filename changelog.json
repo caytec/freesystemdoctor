@@ -1,7 +1,12 @@
 {
-  "updated": "2026-06-19T07:23:45.540530Z",
-  "count": 30,
+  "updated": "2026-06-19T07:40:29.218225Z",
+  "count": 31,
   "commits": [
+    {
+      "sha": "63685e58b612455f4bab63212ab232b947de4326",
+      "date": "2026-06-19T09:40:10+02:00",
+      "msg": "feat(ux): English UI consistency, first-run welcome, Simple/Advanced mode"
+    },
     {
       "sha": "fe809df0fea8648aaa85bc83e057bd1ee6fd1398",
       "date": "2026-06-19T09:23:11+02:00",
