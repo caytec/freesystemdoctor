@@ -31,11 +31,11 @@ fun admob(key: String, default: String): String =
     (admobProps.getProperty(key) ?: System.getenv(key.uppercase().replace('.', '_')) ?: default)
 
 android {
-    namespace = "com.freesystemdoctor.android"
+    namespace = "com.freeandroiddoctor.android"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.freesystemdoctor.android"
+        applicationId = "com.freeandroiddoctor.android"
         minSdk = 26
         targetSdk = 35
         versionCode = 9
@@ -124,14 +124,14 @@ android {
             dimension = "version"
             applicationIdSuffix = ".free"
             versionNameSuffix = "-free"
-            resValue("string", "app_name", "FreeSystemDoctor (Free)")
+            resValue("string", "app_name", "FreeAndroidDoctor (Free)")
             buildConfigField("Boolean", "IS_FREE_VERSION", "true")
         }
         create("pro") {
             dimension = "version"
             applicationIdSuffix = ".pro"
             versionNameSuffix = "-pro"
-            resValue("string", "app_name", "FreeSystemDoctor")
+            resValue("string", "app_name", "FreeAndroidDoctor")
             buildConfigField("Boolean", "IS_FREE_VERSION", "false")
         }
     }

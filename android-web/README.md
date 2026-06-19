@@ -1,6 +1,6 @@
-# FreeSystemDoctor Android — landing page
+# FreeAndroidDoctor Android — landing page
 
-Statyczna strona promocyjna dla androidowej wersji FreeSystemDoctor.
+Statyczna strona promocyjna dla androidowej wersji FreeAndroidDoctor.
 **Bez build-stepu.** Wszystko czystym HTML/CSS/JS + SVG. Wrzucasz folder na hosting i działa.
 
 ## Struktura
@@ -53,8 +53,8 @@ Otwórz `http://localhost:8000`.
 2. Wgraj cały folder `android-web/` do `public_html/android/` (albo gdziekolwiek)
 3. Twoja strona będzie pod `https://twojadomena.pl/android/`
 
-### Wariant B — GitHub Pages (już używasz dla `freesystemdoctor.pl`)
-Strona zadziała automatycznie pod `https://freesystemdoctor.pl/android-web/` po pushu na branch `main`. Jeśli chcesz pod krótszym URL-em (`freesystemdoctor.pl/android/`) — utwórz w roocie symlink albo przenieś folder do `android/`.
+### Wariant B — GitHub Pages
+Strona zadziała automatycznie pod `https://caytec.github.io/FreeAndroidDoctor/android-web/` po pushu na branch `main`. Jeśli chcesz pod krótszym URL-em — przenieś folder do roota repo, albo dodaj CNAME z własną domeną (np. `freeandroiddoctor.pl`).
 
 ### Wariant C — Netlify / Vercel / Cloudflare Pages
 1. Połącz repo z platformą
@@ -71,7 +71,7 @@ zip -r android-web.zip android-web/
 
 ## Konfiguracja — co warto zmienić przed publikacją
 
-1. **`index.html` linia ~14, ~16** — `og:url` i `canonical` URL: zmień na docelowy adres (np. `https://freesystemdoctor.pl/android/`)
+1. **`index.html` linia ~14, ~16** — `og:url` i `canonical` URL: zmień na docelowy adres (np. `https://freeandroiddoctor.pl/`)
 2. **`index.html` link do JSON-LD `downloadUrl`**: docelowy URL releasu na GitHubie
 3. **`script.js` linia ~138** — jeśli zmienisz nazwę repo, podmień w przycisku „Pobierz APK"
 4. **`privacy.html`** — pole `coopaisolutions@gmail.com` to maila kontaktowy (zostaw lub zmień)

@@ -1,8 +1,8 @@
-# FreeSystemDoctor — Polski opis (Google Play)
+# FreeAndroidDoctor — Polski opis (Google Play)
 
 ## Tytuł aplikacji (max 30 znaków)
 ```
-FreeSystemDoctor: Cleaner
+FreeAndroidDoctor: Cleaner
 ```
 *Zostawia 8 znaków zapasu — można dorzucić " Free" jeśli słowo "free" pomaga w wyszukiwaniu.*
 
@@ -13,7 +13,7 @@ Uczciwy cleaner bez fake-boostów, bez sprzedaży danych. Open source. PL + EN.
 
 ## Pełny opis (max 4000 znaków)
 ```
-FreeSystemDoctor to darmowa, open-source aplikacja do czyszczenia i konserwacji Twojego telefonu z Androidem. Bez fake-gigabajtów, bez „RAM boostera", bez wykradania kontaktów. Tylko realna kontrola nad pamięcią, baterią i aplikacjami.
+FreeAndroidDoctor to darmowa, open-source aplikacja do czyszczenia i konserwacji Twojego telefonu z Androidem. Bez fake-gigabajtów, bez „RAM boostera", bez wykradania kontaktów. Tylko realna kontrola nad pamięcią, baterią i aplikacjami.
 
 🔹 CO POTRAFI
 
@@ -66,11 +66,11 @@ Jednorazowe wsparcie projektu odblokowuje 4 narzędzia premium (Vault, Battery A
 
 🔹 REKLAMY I PRYWATNOŚĆ
 
-Wersja darmowa zawiera reklamy AdMob (standardowy SDK Google'a). Przy pierwszym uruchomieniu pokazujemy okno zgody UMP — Ty decydujesz. Aplikacja sama nie loguje niczego do żadnego serwera. Pełna polityka prywatności: https://freesystemdoctor.pl/android/privacy.html
+Wersja darmowa zawiera reklamy AdMob (standardowy SDK Google'a). Przy pierwszym uruchomieniu pokazujemy okno zgody UMP — Ty decydujesz. Aplikacja sama nie loguje niczego do żadnego serwera. Pełna polityka prywatności: https://freeandroiddoctor.pl/privacy.html
 
 🔹 KONTAKT
 
-Bugi i sugestie: github.com/caytec/freesystemdoctor/issues
+Bugi i sugestie: github.com/caytec/FreeAndroidDoctor/issues
 Email: coopaisolutions@gmail.com
 ```
 

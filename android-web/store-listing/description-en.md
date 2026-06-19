@@ -1,8 +1,8 @@
-# FreeSystemDoctor — English description (Google Play)
+# FreeAndroidDoctor — English description (Google Play)
 
 ## App title (max 30 chars)
 ```
-FreeSystemDoctor: Cleaner
+FreeAndroidDoctor: Cleaner
 ```
 
 ## Short description (max 80 chars)
@@ -12,7 +12,7 @@ Honest cleaner — no fake boosters, no data harvesting. Open source. PL + EN.
 
 ## Full description (max 4000 chars)
 ```
-FreeSystemDoctor is a free, open-source phone-cleaning and maintenance app for Android. No fake gigabytes, no "RAM Booster" placebo, no contact harvesting. Just real control over your storage, battery, and apps.
+FreeAndroidDoctor is a free, open-source phone-cleaning and maintenance app for Android. No fake gigabytes, no "RAM Booster" placebo, no contact harvesting. Just real control over your storage, battery, and apps.
 
 🔹 WHAT IT DOES
 
@@ -65,11 +65,11 @@ A one-time tip unlocks 4 premium tools (Vault, Battery Alarms, App Insights, Shr
 
 🔹 ADS & PRIVACY
 
-The free version contains AdMob ads (Google's standard ads SDK). On first launch we show a UMP consent dialog — you decide. The app itself doesn't log anything to any server. Full privacy policy: https://freesystemdoctor.pl/android/privacy.html
+The free version contains AdMob ads (Google's standard ads SDK). On first launch we show a UMP consent dialog — you decide. The app itself doesn't log anything to any server. Full privacy policy: https://freeandroiddoctor.pl/privacy.html
 
 🔹 CONTACT
 
-Bugs and suggestions: github.com/caytec/freesystemdoctor/issues
+Bugs and suggestions: github.com/caytec/FreeAndroidDoctor/issues
 Email: coopaisolutions@gmail.com
 ```
 

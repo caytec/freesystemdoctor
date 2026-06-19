@@ -1,10 +1,10 @@
-# FreeSystemDoctor — Android
+# FreeAndroidDoctor — Android
 
 Darmowa aplikacja do czyszczenia i dbania o telefon z Androidem — odpowiednik windowsowego
-FreeSystemDoctor. **Nie wymaga roota.** Kotlin + Jetpack Compose (Material 3), polski i angielski.
+FreeAndroidDoctor. **Nie wymaga roota.** Kotlin + Jetpack Compose (Material 3), polski i angielski.
 
 A free, no-root phone cleaning & maintenance app — the Android counterpart of the Windows
-FreeSystemDoctor. Kotlin + Jetpack Compose (Material 3), Polish & English.
+FreeAndroidDoctor. Kotlin + Jetpack Compose (Material 3), Polish & English.
 
 ## Funkcje główne / Core features
 
@@ -54,7 +54,7 @@ w Ustawieniach (domyślnie wyłączony).
 |-----------|---------|-------------|
 | **Podobne zdjęcia** | Grupuje wizualnie podobne zdjęcia (hash percepcyjny aHash + Hamming), usuwa nadmiarowe | media |
 | **Zrzuty i rozmyte** | Wykrywa zrzuty ekranu (ścieżka/nazwa) i rozmyte zdjęcia (wariancja Laplace'a) | media |
-| **Kompresja zdjęć** | Tworzy mniejsze kopie JPEG w Pictures/FreeSystemDoctor (oryginał zostaje) | media |
+| **Kompresja zdjęć** | Tworzy mniejsze kopie JPEG w Pictures/FreeAndroidDoctor (oryginał zostaje) | media |
 | **Analizator WiFi** *(zaawansowane)* | Sieci w pobliżu: pasmo, kanał, siła, zabezpieczenie | lokalizacja, stan WiFi |
 | **Menedżer powiadomień** *(zaawansowane)* | Przegląd i odrzucanie aktywnych powiadomień | dostęp do powiadomień |
 

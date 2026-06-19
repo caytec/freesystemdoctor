@@ -34,7 +34,7 @@
   </g>
 
   <g font-family="-apple-system, Segoe UI, Roboto, sans-serif" fill="#ECEFF4">
-    <text x="300" y="220" font-size="78" font-weight="800">FreeSystemDoctor</text>
+    <text x="300" y="220" font-size="78" font-weight="800">FreeAndroidDoctor</text>
     <text x="300" y="280" font-size="36" font-weight="500" fill="#FFB6AB">for Android</text>
     <text x="300" y="380" font-size="28" fill="#A7B4C7">Honest phone cleaner. No fake</text>
     <text x="300" y="416" font-size="28" fill="#A7B4C7">boosters. No data harvesting. FOSS.</text>
@@ -49,5 +49,5 @@
     <text x="740" y="500" fill="#35D0BA" text-anchor="middle">PL · EN</text>
   </g>
 
-  <text x="80" y="600" font-family="-apple-system, Segoe UI, Roboto, sans-serif" font-size="20" fill="#5B6B82">freesystemdoctor.pl/android</text>
+  <text x="80" y="600" font-family="-apple-system, Segoe UI, Roboto, sans-serif" font-size="20" fill="#5B6B82">freeandroiddoctor.pl</text>
 </svg>

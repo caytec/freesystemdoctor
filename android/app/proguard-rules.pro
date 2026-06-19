@@ -28,8 +28,8 @@
 -keepclassmembers class **$$serializer { *; }
 
 # Our serializable AI DTOs.
--keep,includedescriptorclasses class com.freesystemdoctor.android.ai.**$$serializer { *; }
--keepclassmembers class com.freesystemdoctor.android.ai.** {
+-keep,includedescriptorclasses class com.freeandroiddoctor.android.ai.**$$serializer { *; }
+-keepclassmembers class com.freeandroiddoctor.android.ai.** {
     *** Companion;
 }
 

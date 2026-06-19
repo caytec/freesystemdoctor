@@ -64,13 +64,13 @@ jobs:
         run: |
           mkdir -p ../dist
           cp app/build/outputs/apk/free/release/app-free-release.apk \
-             ../dist/FreeSystemDoctor-free.apk
+             ../dist/FreeAndroidDoctor-free.apk
           cp app/build/outputs/bundle/freeRelease/app-free-release.aab \
-             ../dist/FreeSystemDoctor-free.aab
+             ../dist/FreeAndroidDoctor-free.aab
         working-directory: android
 
       # Permanent public URL after this step:
-      # https://github.com/caytec/freesystemdoctor/releases/latest/download/FreeSystemDoctor-free.apk
+      # https://github.com/caytec/FreeAndroidDoctor/releases/latest/download/FreeAndroidDoctor-free.apk
       - name: Publish GitHub Release
         if: startsWith(github.ref, 'refs/tags/') || inputs.publish_release
         env:
@@ -79,14 +79,14 @@ jobs:
           TAG="${GITHUB_REF_NAME:-manual}"
           gh release create "$TAG" \
             --repo "$GITHUB_REPOSITORY" \
-            --title "FreeSystemDoctor $TAG" \
-            --notes "## FreeSystemDoctor $TAG
+            --title "FreeAndroidDoctor $TAG" \
+            --notes "## FreeAndroidDoctor $TAG
 
           **Pobierz APK** (poniżej) i zainstaluj ręcznie na telefonie.
           Wymagany Android 8.0+.
 
           ### Jak zainstalować
-          1. Pobierz \`FreeSystemDoctor-free.apk\`
+          1. Pobierz \`FreeAndroidDoctor-free.apk\`
           2. Otwórz plik na telefonie
           3. Gdy pojawi się komunikat o nieznanym źródle — zezwól dla przeglądarki/pliku
           4. Zainstaluj i gotowe
@@ -96,13 +96,13 @@ jobs:
           **Download APK** below and sideload on any Android 8.0+ phone.
           " \
             --latest \
-            ../dist/FreeSystemDoctor-free.apk \
-            ../dist/FreeSystemDoctor-free.aab
+            ../dist/FreeAndroidDoctor-free.apk \
+            ../dist/FreeAndroidDoctor-free.aab
         working-directory: android
 
       - name: Upload APK artifact (fallback)
         uses: actions/upload-artifact@v4
         with:
           name: fsd-release-apk
-          path: dist/FreeSystemDoctor-free.apk
+          path: dist/FreeAndroidDoctor-free.apk
           if-no-files-found: warn

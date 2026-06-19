@@ -20,5 +20,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "FreeSystemDoctor"
+rootProject.name = "FreeAndroidDoctor"
 include(":app")

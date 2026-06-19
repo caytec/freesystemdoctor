@@ -1,4 +1,4 @@
-/* FreeSystemDoctor Android landing — interactions */
+/* FreeAndroidDoctor Android landing — interactions */
 (() => {
   'use strict';
 

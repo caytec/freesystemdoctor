@@ -1,6 +1,6 @@
 # Google Play — listing, Data safety i checklista
 
-Polityka prywatności (hostowana): **https://caytec.github.io/freesystemdoctor/privacy-android.html**
+Polityka prywatności (hostowana): **https://caytec.github.io/FreeAndroidDoctor/privacy-android.html**
 Kontakt: coopaisolutions@gmail.com
 
 ---
@@ -10,14 +10,14 @@ Kontakt: coopaisolutions@gmail.com
 ### Polski
 
 **Nazwa aplikacji (max 30 zn.):**
-`FreeSystemDoctor: Czyszczenie`
+`FreeAndroidDoctor: Czyszczenie`
 
 **Krótki opis (max 80 zn.):**
 `Czyszczenie, optymalizacja i kopie zapasowe telefonu. Bez roota, bez zbędnych danych.`
 
 **Pełny opis:**
 ```
-FreeSystemDoctor to lekki, uczciwy optymalizator telefonu — bez roota i bez fałszywych obietnic.
+FreeAndroidDoctor to lekki, uczciwy optymalizator telefonu — bez roota i bez fałszywych obietnic.
 
 CZYSZCZENIE I PAMIĘĆ
 • Skaner śmieci: cache aplikacji, pliki APK, .tmp/.log
@@ -45,7 +45,7 @@ Wersja darmowa z reklamami. Pro usuwa reklamy i odblokowuje narzędzia zaawansow
 
 ### English
 
-**App name (max 30):** `FreeSystemDoctor: Cleaner`
+**App name (max 30):** `FreeAndroidDoctor: Cleaner`
 
 **Short description (max 80):**
 `Clean, optimize and back up your phone. No root, no unnecessary data.`

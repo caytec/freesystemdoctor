@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">FreeSystemDoctor</string>
+    <string name="app_name">FreeAndroidDoctor</string>
 
     <string name="nav_dashboard">Pulpit</string>
     <string name="nav_cleaner">Czyszczenie</string>
@@ -139,7 +139,7 @@
     <string name="settings_version">Wersja</string>
 
     <string name="onboarding_title">Witaj</string>
-    <string name="onboarding_subtitle">FreeSystemDoctor czyści i dba o telefon bez roota. Część funkcji wymaga specjalnego dostępu.</string>
+    <string name="onboarding_subtitle">FreeAndroidDoctor czyści i dba o telefon bez roota. Część funkcji wymaga specjalnego dostępu.</string>
     <string name="perm_usage_access">Dostęp do statystyk użycia</string>
     <string name="perm_usage_access_desc">Odczyt rozmiarów aplikacji i czasu użycia.</string>
     <string name="perm_media">Zdjęcia i multimedia</string>
@@ -265,7 +265,7 @@
     <string name="tweak_autostart">Menedżer autostartu</string>
     <string name="tweak_autostart_desc">Otwiera ekran autostartu Twojego urządzenia (zależny od producenta).</string>
     <string name="tweak_open">Otwórz</string>
-    <string name="monitor_title">FreeSystemDoctor</string>
+    <string name="monitor_title">FreeAndroidDoctor</string>
     <string name="monitor_text">RAM %1$s · wolne %2$s · pamięć %3$s wolne</string>
     <string name="monitor_channel_name">Monitor na żywo</string>
 
@@ -288,7 +288,7 @@
     <string name="photoreview_delete_screenshots">Usuń zrzuty</string>
     <string name="photoreview_delete_blurry">Usuń rozmyte</string>
 
-    <string name="compress_note">Tworzy mniejszą kopię JPEG w Pictures/FreeSystemDoctor. Oryginał pozostaje, możesz go usunąć samodzielnie.</string>
+    <string name="compress_note">Tworzy mniejszą kopię JPEG w Pictures/FreeAndroidDoctor. Oryginał pozostaje, możesz go usunąć samodzielnie.</string>
     <string name="compress_saved">Zaoszczędzono dotąd: %1$s</string>
     <string name="compress_action">Kompresuj</string>
 
@@ -345,7 +345,7 @@
     <string name="backup_error">Eksport nie powiódł się.</string>
 
     <string name="nav_pro">Kup Pro</string>
-    <string name="pro_title">FreeSystemDoctor Pro</string>
+    <string name="pro_title">FreeAndroidDoctor Pro</string>
     <string name="pro_active">Masz wersję Pro</string>
     <string name="pro_subtitle">Odblokuj wszystko i usuń reklamy.</string>
     <string name="pro_benefit_ads">Usuń wszystkie reklamy</string>
@@ -358,7 +358,7 @@
     <string name="pro_benefit_ai_unlimited">Nielimitowane analizy asystenta AI</string>
     <string name="pro_buy">Subskrybuj</string>
     <string name="pro_restore">Przywróć zakupy</string>
-    <string name="pro_thanks">Dziękujemy za wsparcie FreeSystemDoctor!</string>
+    <string name="pro_thanks">Dziękujemy za wsparcie FreeAndroidDoctor!</string>
     <string name="pro_unavailable">Plany się ładują lub są niedostępne. Upewnij się, że jesteś zalogowany w Google Play.</string>
     <string name="pro_unlock_ad">Obejrzyj reklamę, aby odblokować narzędzia zaawansowane na 24h</string>
     <string name="pro_unlock_ad_done">Narzędzia zaawansowane odblokowane na 24 godziny.</string>

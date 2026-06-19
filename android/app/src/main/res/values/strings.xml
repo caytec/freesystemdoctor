@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">FreeSystemDoctor</string>
+    <string name="app_name">FreeAndroidDoctor</string>
     <!-- admob_app_id is injected via Gradle resValue from android/admob.properties -->
 
     <!-- Navigation -->
@@ -148,7 +148,7 @@
 
     <!-- Permissions / onboarding -->
     <string name="onboarding_title">Welcome</string>
-    <string name="onboarding_subtitle">FreeSystemDoctor cleans and maintains your phone without root. Some features need special access.</string>
+    <string name="onboarding_subtitle">FreeAndroidDoctor cleans and maintains your phone without root. Some features need special access.</string>
     <string name="perm_usage_access">Usage access</string>
     <string name="perm_usage_access_desc">Read per-app storage sizes and app usage.</string>
     <string name="perm_media">Photos &amp; media</string>
@@ -292,7 +292,7 @@
     <string name="tweak_autostart">Autostart manager</string>
     <string name="tweak_autostart_desc">Opens your device\'s autostart screen (OEM-specific).</string>
     <string name="tweak_open">Open</string>
-    <string name="monitor_title">FreeSystemDoctor</string>
+    <string name="monitor_title">FreeAndroidDoctor</string>
     <string name="monitor_text">RAM %1$s · free %2$s · storage %3$s free</string>
     <string name="monitor_channel_name">Live monitor</string>
 
@@ -316,7 +316,7 @@
     <string name="photoreview_delete_screenshots">Delete screenshots</string>
     <string name="photoreview_delete_blurry">Delete blurry</string>
 
-    <string name="compress_note">Creates a smaller JPEG copy in Pictures/FreeSystemDoctor. The original is kept so you can delete it yourself.</string>
+    <string name="compress_note">Creates a smaller JPEG copy in Pictures/FreeAndroidDoctor. The original is kept so you can delete it yourself.</string>
     <string name="compress_saved">Saved so far: %1$s</string>
     <string name="compress_action">Compress</string>
 
@@ -376,7 +376,7 @@
 
     <!-- Pro / monetization -->
     <string name="nav_pro">Go Pro</string>
-    <string name="pro_title">FreeSystemDoctor Pro</string>
+    <string name="pro_title">FreeAndroidDoctor Pro</string>
     <string name="pro_active">You\'re Pro</string>
     <string name="pro_subtitle">Unlock everything and remove ads.</string>
     <string name="pro_benefit_ads">Remove all ads</string>
@@ -389,7 +389,7 @@
     <string name="pro_benefit_ai_unlimited">Unlimited AI Assistant analyses</string>
     <string name="pro_buy">Subscribe</string>
     <string name="pro_restore">Restore purchases</string>
-    <string name="pro_thanks">Thank you for supporting FreeSystemDoctor!</string>
+    <string name="pro_thanks">Thank you for supporting FreeAndroidDoctor!</string>
     <string name="pro_unavailable">Plans are loading or unavailable. Make sure you\'re signed in to Google Play.</string>
     <string name="pro_unlock_ad">Watch an ad to unlock advanced tools for 24h</string>
     <string name="pro_unlock_ad_done">Advanced tools unlocked for 24 hours.</string>
@@ -504,7 +504,7 @@
     <string name="focus_running_title">Focus active</string>
     <string name="focus_running_text">Tap to end · started %1$s</string>
     <string name="focus_duration">Duration: %1$d min</string>
-    <string name="focus_dnd_perm">Allow FreeSystemDoctor to control Do-Not-Disturb</string>
+    <string name="focus_dnd_perm">Allow FreeAndroidDoctor to control Do-Not-Disturb</string>
     <string name="focus_dnd_grant">Grant DND access</string>
     <string name="focus_channel">Focus mode</string>
     <string name="focus_profile_gaming">Gaming</string>

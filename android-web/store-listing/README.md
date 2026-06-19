@@ -163,7 +163,7 @@ done
    - Wgraj 5 PNG-ów z folderu `store-listing/` przekonwertowanych z SVG przez `rsvg-convert -w 1080 -h 2220`
    - Wgraj osobno dla wersji EN i PL (zakładka „Add language" → Polish)
 4. **Tytuł i opis**: skopiuj z `description-pl.md` (dla PL) i `description-en.md` (dla EN)
-5. **Link do polityki prywatności**: `https://freesystemdoctor.pl/android/privacy.html`
+5. **Link do polityki prywatności**: `https://freeandroiddoctor.pl/privacy.html`
 
 ## Inne sklepy
 

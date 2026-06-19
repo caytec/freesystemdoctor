@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-"""Generate Google Play store graphics for FreeSystemDoctor (brand: navy + coral)."""
+"""Generate Google Play store graphics for FreeAndroidDoctor (brand: navy + coral)."""
 import math
 from PIL import Image, ImageDraw, ImageFont
 
-OUT = "/home/user/freesystemdoctor/android/playstore"
+import os
+OUT = os.path.dirname(os.path.abspath(__file__))
 FREG = "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf"
 FBOLD = "/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf"
 
@@ -101,7 +102,7 @@ def make_feature():
     gauge(d, gx, cy, int(h * 0.30), int(h * 0.07), 0.82, GREEN)
     ctext(d, gx, cy - int(h * 0.12), "92", font(True, int(h * 0.20)), TEXT, anchor="mm")
     tx = int(w * 0.36)
-    d.text((tx, int(h * 0.30)), "FreeSystemDoctor", font=font(True, int(h * 0.135)), fill=TEXT)
+    d.text((tx, int(h * 0.30)), "FreeAndroidDoctor", font=font(True, int(h * 0.135)), fill=TEXT)
     d.text((tx, int(h * 0.50)), "Czyść • Optymalizuj • Bez roota", font=font(False, int(h * 0.072)), fill=CORAL_LT)
     d.text((tx, int(h * 0.63)), "30+ narzędzi: śmieci, duplikaty, zdjęcia, bateria, backup", font=font(False, int(h * 0.052)), fill=TEXT2)
     img = img.resize((1024, 500), Image.LANCZOS)
@@ -199,7 +200,7 @@ def shot_cleaner():
 
 # ---------- 6. Screenshot: Pro ----------
 def shot_pro():
-    img, d, w, h = screen_base("FreeSystemDoctor Pro", "Bez reklam. Wszystkie narzędzia zaawansowane.")
+    img, d, w, h = screen_base("FreeAndroidDoctor Pro", "Bez reklam. Wszystkie narzędzia zaawansowane.")
     cx = w // 2
     gauge(d, cx, int(h*0.235), int(h*0.085), int(h*0.020), 1.0, CORAL)
     ctext(d, cx, int(h*0.215), "PRO", font(True, int(h*0.040)), CORAL, anchor="mm")
