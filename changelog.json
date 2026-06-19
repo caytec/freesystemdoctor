@@ -1,7 +1,12 @@
 {
-  "updated": "2026-05-26T16:55:31.601044Z",
-  "count": 22,
+  "updated": "2026-05-26T17:00:13.105085Z",
+  "count": 23,
   "commits": [
+    {
+      "sha": "3e2be24d2860860ca094e73b5cabec3ef166967b",
+      "date": "2026-05-26T18:59:25+02:00",
+      "msg": "fix: download links point to release page (stable across versions)"
+    },
     {
       "sha": "0a2b6e4b928423066fa98796c8ccad3aedbec385",
       "date": "2026-05-26T18:54:09+02:00",
