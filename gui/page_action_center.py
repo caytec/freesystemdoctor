@@ -2,10 +2,10 @@
 
 import threading
 import tkinter as tk
-from tkinter import ttk
+from tkinter import ttk, messagebox
 
 from . import theme as T
-from .widgets import Card, SectionLabel, ActionButton, apply_treeview_style
+from .widgets import Card, SectionLabel, ActionButton, Toast, apply_treeview_style
 from engine import system_info
 
 
@@ -56,27 +56,34 @@ class ActionCenterPage(tk.Frame):
         self._score_canvas = tk.Canvas(row, width=120, height=120,
                                        bg=T.PANEL, highlightthickness=0)
         self._score_canvas.pack(side="left", padx=(0, 16))
-        self._draw_score(75)
+        self._draw_score(None)   # neutral "measuring" state until on_activate runs
 
         right_info = tk.Frame(row, bg=T.PANEL)
         right_info.pack(side="left", fill="both", expand=True)
         tk.Label(right_info, text="System Health Score", bg=T.PANEL,
                  fg=T.FG, font=T.FONT_H2).pack(anchor="w")
-        self._health_label = tk.Label(right_info, text="Good", bg=T.PANEL,
-                                       fg=T.SUCCESS, font=T.FONT_TITLE)
+        self._health_label = tk.Label(right_info, text="Measuring…", bg=T.PANEL,
+                                       fg=T.FG2, font=T.FONT_TITLE)
         self._health_label.pack(anchor="w")
         self._health_detail = tk.Label(right_info, text="", bg=T.PANEL,
                                         fg=T.FG2, font=T.FONT_SMALL,
                                         wraplength=300, justify="left")
         self._health_detail.pack(anchor="w")
 
-    def _draw_score(self, score: int):
+    def _draw_score(self, score):
         self._score_canvas.delete("all")
         cx, cy, r = 60, 60, 50
-        color = T.score_color(score)
         # Background ring
         self._score_canvas.create_oval(cx-r, cy-r, cx+r, cy+r,
                                         outline="#2a2a4a", width=10, fill=T.PANEL)
+        if score is None:
+            # Neutral "measuring" state — no fabricated number.
+            self._score_canvas.create_text(cx, cy - 6, text="—",
+                                            fill=T.FG2, font=T.FONT_TITLE)
+            self._score_canvas.create_text(cx, cy + 16, text="…",
+                                            fill=T.FG2, font=T.FONT_SMALL)
+            return
+        color = T.score_color(score)
         # Score arc
         angle = int(score / 100 * 360)
         self._score_canvas.create_arc(cx-r, cy-r, cx+r, cy+r,
@@ -204,11 +211,27 @@ class ActionCenterPage(tk.Frame):
             self._app._switch_page("software")
 
     def _quick_clean(self):
+        if not messagebox.askyesno(
+                "Clean junk files?",
+                "This will delete temporary and cache files that are older than "
+                "24 hours.\n\nFiles currently in use are left untouched. Continue?"):
+            return
         from engine import disk_cleaner
-        threading.Thread(target=lambda: [
-            disk_cleaner.clean_folder(r.path)
-            for r in disk_cleaner.scan_junk()
-        ], daemon=True).start()
+
+        def work():
+            try:
+                # clean_all uses a safe 24h age guard so in-use files are kept.
+                result = disk_cleaner.clean_all(min_age_hours=24)
+                freed = result.get("freed_str", "0 B")
+                cleaned = result.get("cleaned", 0)
+                self.after(0, lambda: Toast.show(
+                    self.winfo_toplevel(),
+                    f"Cleaned {cleaned} file(s), freed {freed}", "success"))
+            except Exception as e:
+                self.after(0, lambda e=e: Toast.show(
+                    self.winfo_toplevel(), f"Clean failed: {e}", "error"))
+
+        threading.Thread(target=work, daemon=True).start()
 
     def _quick_ram(self):
         from engine import ram_daemon

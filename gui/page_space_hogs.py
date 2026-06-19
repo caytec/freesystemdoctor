@@ -229,7 +229,7 @@ class SpaceHogsPage(tk.Frame):
         self._cancel = sh.CancelFlag()
         self._files_tree.delete(*self._files_tree.get_children())
         self._folders_tree.delete(*self._folders_tree.get_children())
-        self._progress.start()
+        self._progress.indeterminate(True)
         self._set_status(f"Scanning {path}…")
 
         def work():
@@ -266,7 +266,7 @@ class SpaceHogsPage(tk.Frame):
 
     def _scan_done(self, files, folders, path, cancelled):
         self._scanning = False
-        self._progress.stop()
+        self._progress.indeterminate(False)
 
         for f in files:
             self._files_tree.insert(
@@ -289,7 +289,7 @@ class SpaceHogsPage(tk.Frame):
 
     def _scan_error(self, msg: str):
         self._scanning = False
-        self._progress.stop()
+        self._progress.indeterminate(False)
         self._set_status(f"✗ Scan error: {msg}")
         messagebox.showerror("Scan failed", msg)
 

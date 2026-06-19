@@ -116,9 +116,19 @@ def scan_startup_with_impact() -> list[StartupEntry]:
 
 
 def estimate_startup_time() -> dict:
-    """Estimate total startup time impact."""
+    """Estimate total startup time impact.
+
+    Always returns the full key set so callers can read every field even when
+    psutil is unavailable (avoids KeyError crashes in the GUI).
+    """
     if not _PSUTIL:
-        return {"estimated_ms": 0, "high_impact_count": 0}
+        return {
+            "estimated_ms": 0,
+            "estimated_seconds": 0,
+            "high_impact_count": 0,
+            "total_count": 0,
+            "savings_if_disabled": 0,
+        }
 
     entries = scan_startup_with_impact()
     high_impact = [e for e in entries if e.impact == "High" and e.enabled]

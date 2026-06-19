@@ -1,11 +1,9 @@
-"""Internationalization — EN/PL language support."""
+"""Internationalization — EN/PL language support.
 
-import json
-import os
-from pathlib import Path
-
-_CONFIG_DIR = Path(os.environ.get("TEMP", "C:\\Temp")) / "FreeSystemDoctor"
-_LANG_FILE = _CONFIG_DIR / "language.json"
+The chosen language is persisted via ``engine.app_settings`` (``~/.fsd/settings.json``)
+— deliberately NOT under %TEMP%, because FreeSystemDoctor's own Turbo Clean wipes
+the temp folder and would otherwise reset the user's language on every clean.
+"""
 
 _CURRENT_LANG = "en"
 
@@ -134,10 +132,10 @@ _TRANSLATIONS = {
 def get_language() -> str:
     global _CURRENT_LANG
     try:
-        if _LANG_FILE.exists():
-            with open(_LANG_FILE) as f:
-                data = json.load(f)
-                _CURRENT_LANG = data.get("language", "en")
+        from engine import app_settings
+        lang = app_settings.get("language", None)
+        if lang in _TRANSLATIONS:
+            _CURRENT_LANG = lang
     except Exception:
         pass
     return _CURRENT_LANG
@@ -148,9 +146,8 @@ def set_language(lang: str):
     if lang in _TRANSLATIONS:
         _CURRENT_LANG = lang
         try:
-            _CONFIG_DIR.mkdir(parents=True, exist_ok=True)
-            with open(_LANG_FILE, "w") as f:
-                json.dump({"language": lang}, f)
+            from engine import app_settings
+            app_settings.set_and_save("language", lang)
         except Exception:
             pass
 

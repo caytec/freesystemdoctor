@@ -108,7 +108,8 @@ class SmartDefragPage(tk.Frame):
             def progress_cb(pct, status):
                 self.after(0, lambda: self._update_progress(pct, status))
 
-            results = sd.optimize_all_drives(progress_cb)
+            # Explicit user click → force=True so it actually optimizes now
+            results = sd.optimize_all_drives(progress_cb, force=True)
             self.after(0, lambda: self._on_optimize_complete(results))
 
         threading.Thread(target=optimize, daemon=True).start()

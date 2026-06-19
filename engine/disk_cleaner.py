@@ -240,6 +240,35 @@ def clean_folder(path: str, min_age_hours: float = 0, progress_cb=None) -> tuple
     return freed, deleted
 
 
+def clean_all(min_age_hours: float = 24, progress_cb=None) -> dict:
+    """High-level cleanup: scan all junk categories and delete eligible files.
+
+    Used by the Scheduled Cleaner / auto-clean. Defaults to ``min_age_hours=24``
+    so it never deletes files that are actively in use (in-flight temp/cache).
+
+    Returns ``{"cleaned": files_deleted, "freed_bytes": int, "freed_str": str}``.
+    """
+    total_freed = 0
+    total_deleted = 0
+    try:
+        results = scan_junk(progress_cb=progress_cb)
+    except Exception:
+        results = []
+    for r in results:
+        try:
+            freed, deleted = clean_folder(r.path, min_age_hours=min_age_hours,
+                                          progress_cb=progress_cb)
+            total_freed += freed
+            total_deleted += deleted
+        except Exception:
+            continue
+    return {
+        "cleaned": total_deleted,
+        "freed_bytes": total_freed,
+        "freed_str": _format_size(total_freed),
+    }
+
+
 def empty_recycle_bin() -> bool:
     try:
         # SHERB_NOCONFIRMATION | SHERB_NOPROGRESSUI | SHERB_NOSOUND = 7

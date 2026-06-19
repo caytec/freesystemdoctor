@@ -9,6 +9,19 @@ from .widgets import Card, SectionLabel, ActionButton, ProgressBar, apply_treevi
 from engine import empty_folder_finder as eff
 
 
+def _fmt_size(num_bytes: int) -> str:
+    """Human-readable size from a byte count."""
+    try:
+        n = float(num_bytes)
+    except (TypeError, ValueError):
+        return "0 B"
+    for unit in ("B", "KB", "MB", "GB"):
+        if n < 1024 or unit == "GB":
+            return f"{n:.0f} {unit}" if unit == "B" else f"{n:.1f} {unit}"
+        n /= 1024
+    return f"{n:.1f} GB"
+
+
 class EmptyFolderFinderPage(tk.Frame):
     def __init__(self, parent, app_ref):
         super().__init__(parent, bg=T.BG)
@@ -53,7 +66,7 @@ class EmptyFolderFinderPage(tk.Frame):
         self._tree.column("#0", width=400)
         self._tree.column("size", width=100)
         self._tree.heading("#0", text="Folder Path")
-        self._tree.heading("size", text="Size (KB)")
+        self._tree.heading("size", text="Size")
         self._tree.pack(fill="both", expand=True)
 
         # Buttons
@@ -73,18 +86,21 @@ class EmptyFolderFinderPage(tk.Frame):
         def scan():
             try:
                 folders = eff.scan_empty_folders()
-                self._tree.delete(*self._tree.get_children())
-                for folder in folders[:1000]:
-                    path = folder.get("path", "")
-                    size = folder.get("size_kb", 0)
-                    self._tree.insert("", "end", text=path, values=(f"{size} KB",))
 
-                self._progress.set_value(100)
-                count = len(folders)
-                self._stats.config(text=f"Found {count} empty folder(s)")
+                def _show():
+                    self._tree.delete(*self._tree.get_children())
+                    for folder in folders[:1000]:
+                        path = folder.get("path", "")
+                        size_b = folder.get("size_on_disk", 0)
+                        self._tree.insert("", "end", text=path,
+                                          values=(_fmt_size(size_b),))
+                    self._progress.set_value(100)
+                    self._stats.config(text=f"Found {len(folders)} empty folder(s)")
+
+                self.after(0, _show)
             except Exception as e:
-                self._stats.config(text=f"Error: {e}")
-                self._progress.set_value(0)
+                self.after(0, lambda e=e: (self._stats.config(text=f"Error: {e}"),
+                                           self._progress.set_value(0)))
 
         threading.Thread(target=scan, daemon=True).start()
 

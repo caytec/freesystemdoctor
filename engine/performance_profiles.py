@@ -104,22 +104,24 @@ def activate_profile(profile_name: str) -> bool:
 
     profile = profiles[profile_name]
 
-    # Set power plan
+    # Set power plan — canonical Windows power-scheme GUIDs.
     power_plans = {
-        "power_saver": "381b4222-f694-41f0-9685-ff5bb260df2e",
-        "balanced": "381b4222-f694-41f0-9685-ff5bb260df3b",
+        "power_saver":      "a1841308-3541-4fab-bc81-f71556f20b4a",
+        "balanced":         "381b4222-f694-41f0-9685-ff5bb260df2e",
         "high_performance": "8c5e7fda-e8bf-45a6-a6cc-4b3c1f7d313b",
     }
 
+    power_ok = True   # True if no plan needed or the plan switch succeeded
     if profile["cpu_power_plan"] in power_plans:
+        power_ok = False
         try:
             guid = power_plans[profile["cpu_power_plan"]]
-            subprocess.run(
+            proc = subprocess.run(
                 ["powercfg", "/setactive", guid],
-                capture_output=True,
-                timeout=5, creationflags=0x08000000)
+                capture_output=True, timeout=5, creationflags=0x08000000)
+            power_ok = (proc.returncode == 0)
         except Exception:
-            pass
+            power_ok = False
 
     # Close bandwidth hogs if requested
     if profile["close_bandwidth_hogs"]:
@@ -129,7 +131,8 @@ def activate_profile(profile_name: str) -> bool:
             pass
 
     _ACTIVE_PROFILE = profile_name
-    return True
+    # Report real success: the power-plan switch is the core measurable action.
+    return power_ok
 
 
 def _close_bandwidth_hogs() -> int:
@@ -182,7 +185,7 @@ def get_power_plan() -> dict:
         if "power_saver" in output.lower():
             return {"name": "Power Saver", "guid": "a1841308-3541-4fab-bc81-f71556f20b4a"}
         elif "balanced" in output.lower():
-            return {"name": "Balanced", "guid": "381b4222-f694-41f0-9685-ff5bb260df3b"}
+            return {"name": "Balanced", "guid": "381b4222-f694-41f0-9685-ff5bb260df2e"}
         elif "high" in output.lower():
             return {"name": "High Performance", "guid": "8c5e7fda-e8bf-45a6-a6cc-4b3c1f7d313b"}
     except Exception:

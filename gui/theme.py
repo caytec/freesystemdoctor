@@ -30,7 +30,7 @@ TOGGLE_OFF = "#1c2438"
 
 # ── Text ──────────────────────────────────────────────────────────────────────
 FG  = "#e8edf5"   # primary — crisp white-blue
-FG2 = "#6b7a99"   # secondary / muted
+FG2 = "#8a94b0"   # secondary / muted (raised contrast for readability)
 
 # ── Borders / dividers ────────────────────────────────────────────────────────
 BORDER     = "#1e2d45"

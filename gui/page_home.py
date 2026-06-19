@@ -383,7 +383,7 @@ class HomePage(tk.Frame):
 
         actions = [
             ("❤", "Health Check",   "Full system audit",         T.DANGER,    "health"),
-            ("🧹", "Deep Clean",     "Remove junk files",         T.WARNING,   "tools"),
+            ("🧹", "Deep Clean",     "Remove junk files",         T.WARNING,   "deep_clean"),
             ("🎮", "Game Booster",   "Optimize for gaming",       T.SUCCESS,   "game"),
             ("🤖", "AI Analysis",    "Smart recommendations",     T.PURPLE,    "ai"),
             ("⚡", "Speed Up",       "Boost performance",         T.HIGHLIGHT, "speedup"),
@@ -447,20 +447,42 @@ class HomePage(tk.Frame):
 
         self._activity_frame = tk.Frame(card, bg=T.PANEL)
         self._activity_frame.pack(fill="both", expand=True, padx=8, pady=8)
+        self._refresh_activity()
 
-        placeholder_activities = [
-            ("✓", "System scanned", T.SUCCESS),
-            ("⚡", "Startup optimized", T.HIGHLIGHT),
-            ("🧹", "Junk files removed", T.WARNING),
-            ("🛡", "Protection checked", T.DANGER),
-        ]
-        for icon, text, color in placeholder_activities:
+    def _refresh_activity(self):
+        """Populate Recent Activity from real Performance Guardian events."""
+        try:
+            from engine import performance_guardian
+            events = performance_guardian.get_events(6)
+        except Exception:
+            events = []
+
+        for child in self._activity_frame.winfo_children():
+            child.destroy()
+
+        kinds = {
+            "action": ("✓", T.SUCCESS),
+            "alert":  ("⚠", T.WARNING),
+            "info":   ("ℹ", T.HIGHLIGHT),
+        }
+        if not events:
+            row = tk.Frame(self._activity_frame, bg=T.PANEL, pady=3)
+            row.pack(fill="x")
+            tk.Label(row, text="●", bg=T.PANEL, fg=T.FG2,
+                     font=(T.FONT_FAMILY, 10), width=3).pack(side="left")
+            tk.Label(row, text="Monitoring active — no events yet",
+                     bg=T.PANEL, fg=T.FG2, font=T.FONT_MICRO,
+                     anchor="w").pack(side="left")
+            return
+
+        for ev in events:
+            icon, color = kinds.get(ev.get("kind", "info"), ("ℹ", T.HIGHLIGHT))
             row = tk.Frame(self._activity_frame, bg=T.PANEL, pady=3)
             row.pack(fill="x")
             tk.Label(row, text=icon, bg=T.PANEL, fg=color,
                      font=(T.FONT_FAMILY, 10), width=3).pack(side="left")
-            tk.Label(row, text=text, bg=T.PANEL, fg=T.FG2,
-                     font=T.FONT_MICRO, anchor="w").pack(side="left")
+            tk.Label(row, text=str(ev.get("message", ""))[:48], bg=T.PANEL,
+                     fg=T.FG2, font=T.FONT_MICRO, anchor="w").pack(side="left")
 
     def _load_system_info(self):
         def fetch():
@@ -495,6 +517,9 @@ class HomePage(tk.Frame):
                 self._info_labels[key].config(text=val)
 
     def _start_live_updates(self):
+        self._prev_net = None    # (total_bytes, timestamp) for throughput delta
+        self._activity_tick = 0
+
         def update_loop():
             import time as _t
             while self._running:
@@ -505,14 +530,27 @@ class HomePage(tk.Frame):
                     cpu = psutil.cpu_percent(interval=1)
                     ram = psutil.virtual_memory().percent
                     disk = psutil.disk_usage("C:\\").percent
+                    # Real network utilization: bytes/sec since the last sample,
+                    # scaled against a 100 Mbps (12.5 MB/s) reference link.
+                    net_pct = 0
                     try:
-                        net = psutil.net_io_counters()
-                        # Fake net utilization as a ratio of bytes_sent
-                        net_pct = min(100, (net.bytes_sent + net.bytes_recv) / 1e9 * 10)
+                        nio = psutil.net_io_counters()
+                        total = nio.bytes_sent + nio.bytes_recv
+                        now = _t.time()
+                        if self._prev_net is not None:
+                            prev_total, prev_t = self._prev_net
+                            dt = max(0.001, now - prev_t)
+                            bytes_per_s = max(0, total - prev_total) / dt
+                            net_pct = min(100, bytes_per_s / 12_500_000 * 100)
+                        self._prev_net = (total, now)
                     except Exception:
                         net_pct = 0
                     self.after(0, lambda c=cpu, r=ram, d=disk, n=net_pct:
                                self._apply_metrics(c, r, d, n))
+                    # Refresh the activity feed roughly every ~5 samples.
+                    self._activity_tick = (self._activity_tick + 1) % 5
+                    if self._activity_tick == 0:
+                        self.after(0, self._refresh_activity)
                 except Exception:
                     _t.sleep(2)
 

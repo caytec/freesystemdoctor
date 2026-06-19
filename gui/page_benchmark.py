@@ -76,19 +76,29 @@ class BenchmarkPage(tk.Frame):
         def run():
             try:
                 if bench_type == "cpu":
-                    score = bm.cpu_benchmark()
+                    result = bm.cpu_benchmark()
                 elif bench_type == "ram":
-                    score = bm.ram_benchmark()
+                    result = bm.ram_benchmark()
                 elif bench_type == "disk":
-                    score = bm.disk_benchmark()
+                    result = bm.disk_benchmark()
                 else:
                     return
 
-                progress.set_value(score)
-                status.config(text=f"Score: {score:.0f}/100", fg=T.SUCCESS)
+                # Engine functions return a dict, e.g. {"score": .., "read_mbps": ..}
+                score = float(result.get("score", 0)) if isinstance(result, dict) else float(result)
+                detail = ""
+                if isinstance(result, dict):
+                    if result.get("ops_per_sec"):
+                        detail = f"  ({result['ops_per_sec']:,.0f} ops/s)"
+                    elif result.get("read_mbps") or result.get("write_mbps"):
+                        detail = (f"  (read {result.get('read_mbps', 0):.0f} MB/s, "
+                                  f"write {result.get('write_mbps', 0):.0f} MB/s)")
+                msg = f"Score: {score:.0f}/100{detail}"
+                self.after(0, lambda: (progress.set_value(score),
+                                       status.config(text=msg, fg=T.SUCCESS)))
             except Exception as e:
-                status.config(text=f"Error: {e}", fg=T.DANGER)
-                progress.set_value(0)
+                self.after(0, lambda e=e: (status.config(text=f"Error: {e}", fg=T.DANGER),
+                                           progress.set_value(0)))
 
         threading.Thread(target=run, daemon=True).start()
 

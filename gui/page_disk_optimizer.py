@@ -69,62 +69,99 @@ class DiskOptimizerPage(tk.Frame):
         # Load initial drives
         self._load_drives()
 
+    @staticmethod
+    def _drive_kind(drive: dict) -> str:
+        return "SSD" if drive.get("is_ssd") else "HDD"
+
     def _load_drives(self):
         def load():
             try:
                 drives = do.get_drives()
                 text = "Available Drives:\n\n"
                 for drive in drives:
-                    text += f"  • {drive['letter']}: {drive['label']} ({drive['type']}) — {drive['size_gb']:.1f} GB\n"
-                self._drives_label.config(text=text)
+                    label = drive.get("label") or "Local Disk"
+                    text += (f"  • {drive['letter']}: {label} ({self._drive_kind(drive)}) "
+                             f"— {drive.get('total_gb', 0):.0f} GB, "
+                             f"{drive.get('free_gb', 0):.0f} GB free\n")
+                self.after(0, lambda: self._drives_label.config(text=text))
             except Exception as e:
-                self._drives_label.config(text=f"Error loading drives: {e}")
+                self.after(0, lambda e=e: self._drives_label.config(
+                    text=f"Error loading drives: {e}"))
 
         threading.Thread(target=load, daemon=True).start()
 
     def _on_scan(self):
-        self._output.config(state="normal")
-        self._output.delete("1.0", "end")
-        self._output.config(state="disabled")
-        self._update_output("Scanning drives...")
+        self._clear_output()
+        self._update_output("Scanning drives...\n")
+
+        def scan():
+            try:
+                drives = do.get_drives()
+                for drive in drives:
+                    rec = drive.get("recommendation", "ok")
+                    advice = {"trim": "SSD — run TRIM",
+                              "defrag": "needs defragmentation",
+                              "ok": "healthy, no action needed"}.get(rec, rec)
+                    self._update_output(
+                        f"\n{drive['letter']}: ({self._drive_kind(drive)}) → {advice}\n")
+                    try:
+                        health = do.get_drive_health(drive["letter"])
+                        self._update_output(
+                            f"   Health: {health.get('status', 'unknown')}\n")
+                    except Exception:
+                        pass
+                self._update_output("\n✓ Scan complete.\n")
+            except Exception as e:
+                self._update_output(f"Error: {e}\n")
+
+        threading.Thread(target=scan, daemon=True).start()
 
     def _on_defrag(self):
-        self._output.config(state="normal")
-        self._output.delete("1.0", "end")
-        self._output.config(state="disabled")
+        self._clear_output()
         self._update_output("Defragmentation started...\n")
 
         def defrag():
             try:
-                drives = do.get_drives()
+                drives = [d for d in do.get_drives() if not d.get("is_ssd")]
+                if not drives:
+                    self._update_output("No HDD drives found (SSDs use TRIM instead).\n")
+                    return
                 for drive in drives:
-                    if drive['type'] != 'SSD':
-                        self._update_output(f"\nDefragmenting {drive['letter']}...\n")
-                        for line in do.defrag_drive(drive['letter']):
-                            self._update_output(line + "\n")
+                    self._update_output(f"\nDefragmenting {drive['letter']}...\n")
+                    result = do.defrag_drive(drive["letter"])
+                    self._update_output((result.get("output") or "").strip() + "\n")
+                    self._update_output(
+                        ("✓ Done" if result.get("success") else "✗ Failed") + "\n")
             except Exception as e:
                 self._update_output(f"Error: {e}\n")
 
         threading.Thread(target=defrag, daemon=True).start()
 
     def _on_trim(self):
-        self._output.config(state="normal")
-        self._output.delete("1.0", "end")
-        self._output.config(state="disabled")
+        self._clear_output()
         self._update_output("TRIM optimization started...\n")
 
         def trim():
             try:
-                drives = do.get_drives()
+                drives = [d for d in do.get_drives() if d.get("is_ssd")]
+                if not drives:
+                    self._update_output("No SSD drives found.\n")
+                    return
                 for drive in drives:
-                    if drive['type'] == 'SSD':
-                        self._update_output(f"\nTRIMming {drive['letter']}...\n")
-                        for line in do.trim_drive(drive['letter']):
-                            self._update_output(line + "\n")
+                    self._update_output(f"\nTRIMming {drive['letter']}...\n")
+                    result = do.trim_drive(drive["letter"])
+                    self._update_output((result.get("output") or "").strip() + "\n")
+                    self._update_output(
+                        ("✓ Done" if result.get("success") else "✗ Failed") + "\n")
             except Exception as e:
                 self._update_output(f"Error: {e}\n")
 
         threading.Thread(target=trim, daemon=True).start()
+
+    def _clear_output(self):
+        self._output.config(state="normal")
+        self._output.delete("1.0", "end")
+        self._output.config(state="disabled")
 
     def _update_output(self, text):
         def update():

@@ -229,13 +229,18 @@ def should_optimize(drive: str) -> bool:
         return True
 
 
-def optimize_all_drives(progress_cb=None) -> list[dict]:
-    """Optimize all drives that need it."""
+def optimize_all_drives(progress_cb=None, force=False) -> list[dict]:
+    """Optimize all drives that need it.
+
+    ``force=True`` (e.g. an explicit user click on "Optimize All Drives")
+    optimizes every drive regardless of the schedule interval. Scheduled/
+    automated runs leave ``force=False`` so they still respect the interval.
+    """
     results = []
     drives = get_drives()
 
     for i, drive_info in enumerate(drives):
-        if should_optimize(drive_info["mountpoint"]):
+        if force or should_optimize(drive_info["mountpoint"]):
             if progress_cb:
                 pct = int((i / len(drives)) * 100)
                 progress_cb(pct, f"Optimizing {drive_info['device']}...")

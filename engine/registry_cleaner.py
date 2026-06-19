@@ -173,3 +173,26 @@ def remove_issue(issue: RegIssue) -> bool:
         return True
     except OSError:
         return False
+
+
+def clean_registry(progress_cb=None) -> dict:
+    """High-level registry cleanup: scan and remove only safe-to-remove issues.
+
+    Used by the Scheduled Cleaner / auto-clean. Conservatively skips any issue
+    flagged ``safe_to_remove=False``.
+
+    Returns ``{"fixed": int, "found": int, "skipped": int}``.
+    """
+    try:
+        issues = scan_registry(progress_cb=progress_cb)
+    except Exception:
+        issues = []
+    fixed = 0
+    skipped = 0
+    for issue in issues:
+        if not getattr(issue, "safe_to_remove", False):
+            skipped += 1
+            continue
+        if remove_issue(issue):
+            fixed += 1
+    return {"fixed": fixed, "found": len(issues), "skipped": skipped}

@@ -192,7 +192,7 @@ class CarePage(tk.Frame):
         self._scanning = True
         self._scan_results = {}
         self._fix_btn.config(state="disabled")
-        self._fix_result.config(text="")
+        self._fix_result_frame.pack_forget()
         self._total_lbl.config(text="")
         self._scan_status_lbl.config(text="Scanning...")
         self._scan_btn.set_scanning(True)

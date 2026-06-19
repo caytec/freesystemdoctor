@@ -78,29 +78,61 @@ class ScheduledCleanerPage(tk.Frame):
         ActionButton(card, text="Start Cleanup",
                      command=self._on_run_now).pack(anchor="w", padx=10, pady=(0, 8))
 
+    # frequency, time, and modules for each schedule card
+    _SCHEDULES = {
+        "daily":  ("daily",  "02:00", ["disk_cleaner", "registry_cleaner"]),
+        "weekly": ("weekly", "03:00", ["disk_cleaner", "registry_cleaner",
+                                       "empty_folder_finder"]),
+    }
+
     def _on_schedule_toggle(self, schedule_type, var):
+        status_label = getattr(self, f"_{schedule_type}_status")
         if var.get():
+            freq, time_str, modules = self._SCHEDULES[schedule_type]
+
             def enable():
                 try:
-                    sc.set_schedule(schedule_type)
-                    status_label = getattr(self, f"_{schedule_type}_status")
-                    status_label.config(text="✓ Enabled", fg=T.SUCCESS)
+                    ok = sc.set_schedule(True, freq, time_str, modules)
+                    if ok:
+                        self.after(0, lambda: status_label.config(
+                            text="✓ Enabled", fg=T.SUCCESS))
+                    else:
+                        raise RuntimeError(
+                            "Could not create the scheduled task (admin rights required).")
                 except Exception as e:
-                    var.set(False)
-                    messagebox.showerror("Error", f"Failed to enable: {e}")
+                    self.after(0, lambda e=e: (
+                        var.set(False),
+                        status_label.config(text="Disabled", fg=T.FG2),
+                        messagebox.showerror("Error", f"Failed to enable: {e}")))
 
             threading.Thread(target=enable, daemon=True).start()
         else:
-            status_label = getattr(self, f"_{schedule_type}_status")
-            status_label.config(text="Disabled", fg=T.FG2)
+            def disable():
+                try:
+                    sc.delete_schedule()
+                except Exception:
+                    pass
+                self.after(0, lambda: status_label.config(text="Disabled", fg=T.FG2))
+
+            threading.Thread(target=disable, daemon=True).start()
 
     def _on_run_now(self):
         def run():
             try:
-                sc.run_auto_clean()
-                messagebox.showinfo("Success", "Cleanup completed successfully")
+                summary = sc.run_auto_clean(
+                    modules=["disk_cleaner", "registry_cleaner"])
+                fixed = summary.get("issues_fixed", 0)
+                errors = summary.get("errors", [])
+                if errors:
+                    self.after(0, lambda: messagebox.showwarning(
+                        "Completed with warnings",
+                        f"Cleaned {fixed} item(s).\n\nIssues:\n" + "\n".join(errors[:5])))
+                else:
+                    self.after(0, lambda: messagebox.showinfo(
+                        "Success", f"Cleanup completed — {fixed} item(s) cleaned."))
             except Exception as e:
-                messagebox.showerror("Error", f"Cleanup failed: {e}")
+                self.after(0, lambda e=e: messagebox.showerror(
+                    "Error", f"Cleanup failed: {e}"))
 
         threading.Thread(target=run, daemon=True).start()
 

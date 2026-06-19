@@ -590,7 +590,7 @@ class SidebarButton(tk.Canvas):
                          fill=icon_fg, font=T.FONT_ICON)
         # Label
         self.create_text(w//2, h//2 + 16, text=self._label,
-                         fill=text_fg, font=(T.FONT_FAMILY, 7),
+                         fill=text_fg, font=(T.FONT_FAMILY, 8),
                          width=w - 4)
 
         # Notification dot

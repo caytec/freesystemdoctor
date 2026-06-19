@@ -140,7 +140,6 @@ _NAV_CATEGORIES = [
             ("turbo",      "🔥", "Turbo Mode",      TurboModePage),
             ("cpu_max",    "⚡", "CPU Max Perf.",   CpuOptimizerPage),
             ("profiles",   "🎯", "Perf. Profiles",  PerformanceProfilesPage),
-            ("memory",     "🧠", "RAM & Perf.",     None),
             ("svc_opt",    "⚙",  "Service Optim.",  ServiceOptimizerPage),
             ("startup",    "🚀", "Startup Insights",StartupInsightsPage),
         ],
@@ -164,14 +163,12 @@ _NAV_CATEGORIES = [
         "label": "CZYSZCZENIE",   # Cleaning
         "color": T.WARNING,
         "items": [
-            ("clean_tools","🧹", "All Cleaners",    None),
             ("disk_analyzer","📁","Disk Analyzer",  DiskAnalyzerPage),
             ("space_hogs",  "🗂","Space Hogs",      SpaceHogsPage),
             ("empty",      "📂", "Empty Folders",   EmptyFolderFinderPage),
             ("browser_hist","🌐","Browser History", BrowserHistoryPage),
             ("browser_auto","🔄","Browser Auto-Clean", BrowserAutoCleanPage),
             ("cloud",      "☁",  "Cloud Cleaner",   CloudCleanerPage),
-            ("onedrive",   "🔵", "OneDrive",        OneDriveCleanerPage),
             ("drive_wipe", "💿", "Drive Wipe",      DriveWipePage),
         ],
     },
@@ -242,9 +239,8 @@ _NAV_CATEGORIES = [
         "items": [
             ("themes",     "🎨", "Themes",          ThemeManagerPage),
             ("icons",      "🖥", "Icon Saver",      IconSaverPage),
-            ("publisher",  "🌍", "Publisher",       PublisherPage),
             ("settings",   "⚙",  "Settings",        SettingsPage),
-            ("toolbox",    "🔧", "All Tools",       None),
+            ("toolbox",    "🔧", "All Tools (Adv.)", None),
         ],
     },
 ]
