@@ -1,7 +1,12 @@
 {
-  "updated": "2026-06-19T04:35:35.797733Z",
-  "count": 29,
+  "updated": "2026-06-19T07:23:45.540530Z",
+  "count": 30,
   "commits": [
+    {
+      "sha": "fe809df0fea8648aaa85bc83e057bd1ee6fd1398",
+      "date": "2026-06-19T09:23:11+02:00",
+      "msg": "fix: repair broken features + improve readability/navigation for non-technical users"
+    },
     {
       "sha": "0a7e6165a95e6e55ae7ff992857c6c48c9a789ab",
       "date": "2026-06-19T06:35:15+02:00",
