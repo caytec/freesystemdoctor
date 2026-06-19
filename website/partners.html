@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Polecane narzędzia — FreeSystemDoctor</title>
+<meta name="robots" content="noindex,follow">
+<style>
+  :root{--bg:#0d1117;--panel:#161b27;--fg:#e8edf5;--fg2:#6b7a99;
+        --cyan:#00d4ff;--purple:#8b6dff;--border:#1e2d45}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,Segoe UI,sans-serif;background:var(--bg);
+       color:var(--fg);min-height:100vh;padding:32px 16px}
+  .wrap{max-width:880px;margin:0 auto}
+  h1{font-size:1.6rem;background:linear-gradient(90deg,var(--cyan),var(--purple));
+     -webkit-background-clip:text;background-clip:text;color:transparent}
+  p.lead{color:var(--fg2)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
+        gap:14px;margin-top:24px}
+  a.card{display:block;text-decoration:none;background:var(--panel);
+         border:1px solid var(--border);border-radius:12px;padding:16px;
+         transition:.18s;color:var(--fg)}
+  a.card:hover{border-color:var(--cyan);transform:translateY(-2px)}
+  .card .t{font-weight:700;color:var(--cyan)}
+  .card .d{color:var(--fg2);font-size:.9rem;margin-top:4px}
+  .disc{margin-top:28px;color:var(--fg2);font-size:.8rem;border-top:1px solid var(--border);padding-top:16px}
+  #redir{text-align:center;margin-top:60px;color:var(--fg2)}
+  a{color:var(--cyan)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <!--
+    SINGLE PLACE TO MANAGE AFFILIATE LINKS.
+    Replace each placeholder URL below with your real affiliate link.
+    The app links here as /partners?ref=<id> and is redirected automatically;
+    UTM params are preserved. No tracking pixels, no bundling.
+  -->
+  <div id="content">
+    <h1>Polecane darmowe narzędzia 🐸</h1>
+    <p class="lead">Ręcznie wybrane programy, których sami używamy. Klik = drobna prowizja
+       dla nas (bez dodatkowych kosztów dla Ciebie) i utrzymanie FreeSystemDoctor za darmo.</p>
+    <div class="grid" id="grid"></div>
+    <p class="disc">Ujawnienie: niektóre linki są afiliacyjne. Polecamy wyłącznie produkty,
+       które przeszły naszą weryfikację (brak PUP, brak toolbarów). Możesz wyłączyć
+       rekomendacje w aplikacji: Ustawienia → Monetyzacja.</p>
+  </div>
+  <div id="redir" hidden>Przekierowuję do partnera… <br><a id="manual" href="#">Kliknij, jeśli nie nastąpi automatycznie</a></div>
+</div>
+<script>
+  // ===== EDIT HERE: offer id -> real affiliate URL =========================
+  const LINKS = {
+    brave:        "https://brave.com/freesystemdoctor",
+    protonvpn:    "https://protonvpn.com/freesystemdoctor",
+    nordvpn:      "https://go.nordvpn.net/aff_c?offer_id=15&aff_id=freesystemdoctor",
+    surfshark:    "https://get.surfshark.net/aff_c?offer_id=926&aff_id=freesystemdoctor",
+    bitdefender:  "https://www.bitdefender.com/freesystemdoctor",
+    malwarebytes: "https://www.malwarebytes.com/affiliate/freesystemdoctor",
+    eset:         "https://www.eset.com/pl/freesystemdoctor",
+    adguard:      "https://adguard.com/freesystemdoctor",
+    pcloud:       "https://www.pcloud.com/freesystemdoctor",
+    internxt:     "https://internxt.com/freesystemdoctor",
+    backblaze:    "https://www.backblaze.com/freesystemdoctor",
+    bitwarden:    "https://bitwarden.com/freesystemdoctor",
+    "1password":  "https://1password.com/freesystemdoctor",
+    nordpass:     "https://nordpass.com/aff/freesystemdoctor",
+    notion:       "https://affiliate.notion.so/freesystemdoctor",
+    office365:    "https://www.microsoft.com/microsoft-365/freesystemdoctor",
+    spotify:      "https://www.spotify.com/freesystemdoctor",
+    protonmail:   "https://proton.me/mail/freesystemdoctor",
+  };
+  const TITLES = {
+    brave:["Brave Browser","3× szybsze ładowanie, blokuje reklamy natywnie"],
+    protonvpn:["ProtonVPN","Szwajcarski VPN no-logs, darmowy na zawsze"],
+    nordvpn:["NordVPN","5500+ serwerów, 6 urządzeń"],
+    surfshark:["Surfshark","Nielimitowane urządzenia + adblocker"],
+    bitdefender:["Bitdefender","Najlepszy AV 2026, zero spowolnień"],
+    malwarebytes:["Malwarebytes","Anty-malware #1 obok Defendera"],
+    eset:["ESET HOME","Lekki silnik, ochrona bankowości"],
+    adguard:["AdGuard","Blokuje reklamy systemowo"],
+    pcloud:["pCloud 500GB","Lifetime — koniec subskrypcji"],
+    internxt:["Internxt","Szyfrowany cloud z UE, 10GB free"],
+    backblaze:["Backblaze","Unlimited backup za $9/mc"],
+    bitwarden:["Bitwarden","Open-source menedżer haseł"],
+    "1password":["1Password","Najlepszy UX, Watchtower"],
+    nordpass:["NordPass","Od twórców NordVPN"],
+    notion:["Notion","Notatki, projekty, AI"],
+    office365:["Microsoft 365","Office + 1TB OneDrive"],
+    spotify:["Spotify Premium","3 miesiące za darmo"],
+    protonmail:["Proton Mail","Szyfrowany e-mail z UE"],
+  };
+  // ========================================================================
+  const q = new URLSearchParams(location.search);
+  const ref = (q.get("ref") || "").toLowerCase();
+  function withUtm(url){
+    const u = new URL(url);
+    ["utm_source","utm_medium","utm_campaign"].forEach(k=>{
+      if(q.get(k)) u.searchParams.set(k, q.get(k));
+    });
+    return u.toString();
+  }
+  if (ref && LINKS[ref]) {
+    const dest = withUtm(LINKS[ref]);
+    document.getElementById("content").hidden = true;
+    const r = document.getElementById("redir"); r.hidden = false;
+    document.getElementById("manual").href = dest;
+    location.replace(dest);
+  } else {
+    const g = document.getElementById("grid");
+    for (const id in LINKS){
+      const [t,d] = TITLES[id] || [id,""];
+      const a = document.createElement("a");
+      a.className = "card"; a.href = withUtm(LINKS[id]); a.rel="sponsored noopener";
+      a.innerHTML = `<div class="t">${t}</div><div class="d">${d}</div>`;
+      g.appendChild(a);
+    }
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dziękujemy za instalację — FreeSystemDoctor</title>
+<meta name="robots" content="noindex,follow">
+<style>
+  :root{--bg:#0d1117;--panel:#161b27;--fg:#e8edf5;--fg2:#6b7a99;
+        --cyan:#00d4ff;--purple:#8b6dff;--magenta:#e056d4;--border:#1e2d45;--green:#00e676}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,Segoe UI,sans-serif;background:var(--bg);
+       color:var(--fg);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+  .box{max-width:640px;text-align:center}
+  h1{font-size:2rem;background:linear-gradient(90deg,var(--cyan),var(--purple),var(--magenta));
+     -webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:8px}
+  p{color:var(--fg2);line-height:1.6}
+  .row{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:24px}
+  a.btn{text-decoration:none;padding:12px 22px;border-radius:10px;font-weight:700;
+        border:1px solid var(--border);color:var(--fg);background:var(--panel);transition:.18s}
+  a.btn:hover{border-color:var(--cyan);transform:translateY(-2px)}
+  a.btn.primary{background:linear-gradient(90deg,var(--cyan),var(--purple));color:#06121b;border:0}
+  .tips{text-align:left;margin-top:28px;background:var(--panel);border:1px solid var(--border);
+        border-radius:12px;padding:18px 22px}
+  .tips li{color:var(--fg2);margin:6px 0}
+  small{color:var(--fg2)}
+</style>
+</head>
+<body>
+<div class="box">
+  <div style="font-size:3rem">🐸✅</div>
+  <h1>Dziękujemy za instalację!</h1>
+  <p>FreeSystemDoctor jest gotowy. Otwórz aplikację i uruchom <strong>Auto-Pilot</strong>,
+     aby jednym kliknięciem wyczyścić i przyspieszyć komputer.</p>
+  <div class="row">
+    <a class="btn primary" href="/">Strona główna</a>
+    <a class="btn" href="/partners?utm_source=thanks">Polecane darmowe narzędzia</a>
+    <a class="btn" href="https://github.com/caytec/freesystemdoctor">Dokumentacja / GitHub</a>
+  </div>
+  <ul class="tips tips">
+    <li>🚀 <strong>Auto-Pilot</strong> — czyści RAM, pliki tymczasowe, kosz i DNS jednym kliknięciem.</li>
+    <li>🛡 <strong>Performance Guardian</strong> — pilnuje wydajności w tle non-stop.</li>
+    <li>⌨ <strong>Ctrl + K</strong> — paleta poleceń: wpisz nazwę dowolnego z 70+ narzędzi.</li>
+    <li>💎 <strong>Pro</strong> ($9.99/rok) — odblokowuje AI Agent, backup, nielimitowane harmonogramy.</li>
+  </ul>
+  <p style="margin-top:22px"><small>FreeSystemDoctor jest darmowy i open-source (MIT).
+     Bez telemetrii, bez bundleware, bez wymuszonych reklam.</small></p>
+</div>
+</body>
+</html>

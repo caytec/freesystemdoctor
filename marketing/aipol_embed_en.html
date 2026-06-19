@@ -1,0 +1,141 @@
+<!--
+  ============================================================================
+  FreeSystemDoctor — embeddable segment (ENGLISH) for aipol.com.pl
+  ----------------------------------------------------------------------------
+  HOW TO USE:
+    • Paste this ENTIRE block (including <style>) anywhere on a page/post
+      (HTML editor / "Custom HTML" / code block). It is self-contained.
+    • All styles are scoped to .fsd-embed, so they will NOT clash with the rest
+      of the site. Works on light and dark themes (it has its own background).
+    • The "download" links point to the latest GitHub release (always current)
+      and to the product site with utm_source=aipol (for traffic measurement).
+  ============================================================================
+-->
+<section class="fsd-embed">
+  <style>
+    .fsd-embed{--bg:#0d1117;--panel:#161b27;--panel2:#1c2438;--fg:#e8edf5;
+      --fg2:#9aa7c0;--cyan:#00d4ff;--purple:#8b6dff;--magenta:#e056d4;
+      --green:#00e676;--border:#243049;
+      all:initial;display:block;box-sizing:border-box;
+      font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+      color:var(--fg);background:radial-gradient(120% 120% at 0% 0%,#10182a 0%,var(--bg) 55%);
+      border:1px solid var(--border);border-radius:18px;padding:clamp(20px,4vw,40px);
+      max-width:1040px;margin:24px auto;line-height:1.55}
+    .fsd-embed *{box-sizing:border-box}
+    .fsd-embed .fsd-badge{display:inline-block;font-size:.72rem;font-weight:700;
+      letter-spacing:.04em;color:var(--cyan);background:rgba(0,212,255,.1);
+      border:1px solid rgba(0,212,255,.3);border-radius:999px;padding:4px 10px;margin-bottom:14px}
+    .fsd-embed h2{font-size:clamp(1.6rem,4vw,2.4rem);line-height:1.15;margin:0 0 10px;
+      font-weight:800;background:linear-gradient(90deg,var(--cyan),var(--purple),var(--magenta));
+      -webkit-background-clip:text;background-clip:text;color:transparent}
+    .fsd-embed .fsd-lead{color:var(--fg2);font-size:clamp(1rem,2vw,1.12rem);max-width:70ch;margin:0 0 18px}
+    .fsd-embed .fsd-meta{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 22px}
+    .fsd-embed .fsd-chip{font-size:.8rem;color:var(--fg2);background:var(--panel);
+      border:1px solid var(--border);border-radius:8px;padding:5px 11px}
+    .fsd-embed .fsd-chip b{color:var(--fg)}
+    .fsd-embed .fsd-cta{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:0 0 8px}
+    .fsd-embed a.fsd-btn{text-decoration:none;font-weight:700;border-radius:12px;
+      padding:14px 26px;display:inline-flex;align-items:center;gap:8px;transition:.18s;
+      border:1px solid var(--border);color:var(--fg);background:var(--panel)}
+    .fsd-embed a.fsd-btn:hover{border-color:var(--cyan);transform:translateY(-2px)}
+    .fsd-embed a.fsd-btn.fsd-primary{border:0;color:#06121b;
+      background:linear-gradient(90deg,var(--cyan),var(--purple));
+      box-shadow:0 8px 24px rgba(0,212,255,.25)}
+    .fsd-embed a.fsd-btn.fsd-primary:hover{box-shadow:0 12px 30px rgba(139,109,255,.35)}
+    .fsd-embed .fsd-sub{font-size:.82rem;color:var(--fg2);margin:6px 0 26px}
+    .fsd-embed h3{font-size:1.15rem;margin:30px 0 14px;color:var(--fg)}
+    .fsd-embed .fsd-grid{display:grid;gap:14px;
+      grid-template-columns:repeat(auto-fill,minmax(240px,1fr))}
+    .fsd-embed .fsd-card{background:var(--panel);border:1px solid var(--border);
+      border-radius:14px;padding:16px 18px}
+    .fsd-embed .fsd-card .fsd-h{font-weight:700;color:var(--cyan);margin:0 0 6px;font-size:.98rem}
+    .fsd-embed .fsd-card p{margin:0;color:var(--fg2);font-size:.88rem}
+    .fsd-embed .fsd-new{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));margin-top:6px}
+    .fsd-embed .fsd-new div{background:linear-gradient(180deg,var(--panel),var(--panel2));
+      border:1px solid var(--border);border-radius:12px;padding:14px 16px;font-size:.9rem}
+    .fsd-embed .fsd-new b{color:var(--fg)}
+    .fsd-embed .fsd-pro{margin-top:26px;display:flex;flex-wrap:wrap;gap:14px;align-items:center;
+      background:rgba(139,109,255,.08);border:1px solid rgba(139,109,255,.3);
+      border-radius:14px;padding:16px 20px}
+    .fsd-embed .fsd-pro .fsd-price{font-weight:800;color:var(--purple);font-size:1.05rem;white-space:nowrap}
+    .fsd-embed .fsd-pro span{color:var(--fg2);font-size:.9rem}
+    .fsd-embed .fsd-trust{margin-top:22px;color:var(--fg2);font-size:.82rem;
+      border-top:1px solid var(--border);padding-top:16px}
+    .fsd-embed .fsd-trust a{color:var(--cyan)}
+  </style>
+
+  <span class="fsd-badge">FREE · OPEN-SOURCE (MIT) · WINDOWS 10/11</span>
+  <h2>FreeSystemDoctor — 70+ Windows optimization tools in one app</h2>
+  <p class="fsd-lead">
+    An all-in-one Windows optimizer that replaces a dozen separate programs —
+    cleaning, speed-up, privacy, repair and monitoring. A lightweight ~40&nbsp;MB
+    portable file. <b>No telemetry, no bundleware, no forced ads.</b>
+    With a built-in AI assistant that can run fully <b>offline</b>.
+  </p>
+
+  <div class="fsd-meta">
+    <span class="fsd-chip"><b>70+</b> tools</span>
+    <span class="fsd-chip"><b>~40 MB</b> portable</span>
+    <span class="fsd-chip">Windows <b>10 / 11</b> (64-bit)</span>
+    <span class="fsd-chip"><b>MIT</b> license</span>
+    <span class="fsd-chip">Version <b>2.2.0</b></span>
+  </div>
+
+  <div class="fsd-cta">
+    <a class="fsd-btn fsd-primary"
+       href="https://github.com/caytec/freesystemdoctor/releases/latest"
+       rel="noopener" target="_blank">⬇️ Download free</a>
+    <a class="fsd-btn"
+       href="https://freesystemdoctor.com.pl/?utm_source=aipol&utm_medium=referral&utm_campaign=embed_en"
+       rel="noopener" target="_blank">Product page →</a>
+  </div>
+  <p class="fsd-sub">Installer or portable (.exe). SHA-256 checksum included with each release.</p>
+
+  <h3>What it does — 70+ tools across 8 categories</h3>
+  <div class="fsd-grid">
+    <div class="fsd-card"><p class="fsd-h">🧹 Cleaning</p>
+      <p>Deep disk cleaner, registry cleaner, browser cache/history, duplicate &amp; empty-folder
+         finders, large files, OneDrive/cloud, Recycle Bin &amp; temp.</p></div>
+    <div class="fsd-card"><p class="fsd-h">⚡ Performance</p>
+      <p>RAM &amp; CPU optimization, startup &amp; services, performance profiles
+         (Work/Gaming/Battery), Turbo mode, speed-up wizard.</p></div>
+    <div class="fsd-card"><p class="fsd-h">🎮 Gaming</p>
+      <p>Game Booster (anti-cheat-safe), app prioritizer &amp; freezer,
+         CPU/RAM/disk benchmark.</p></div>
+    <div class="fsd-card"><p class="fsd-h">🛡️ Privacy &amp; security</p>
+      <p>Disable Windows telemetry, webcam guard, DNS protector, firewall/Defender status,
+         DoD 5220.22-M shredder, free-space wipe.</p></div>
+    <div class="fsd-card"><p class="fsd-h">🔧 Repair &amp; backup</p>
+      <p>System repair, driver updater, system restore points, registry backup.</p></div>
+    <div class="fsd-card"><p class="fsd-h">📊 Monitoring</p>
+      <p>Real-time CPU/RAM/GPU/disk/network, hardware temperatures, bandwidth monitor,
+         always-on-top mini-HUD, resource alerts.</p></div>
+    <div class="fsd-card"><p class="fsd-h">💿 Disk &amp; network</p>
+      <p>Smart Defrag (SSD-aware), disk optimizer (TRIM/health), file recovery,
+         internet/TCP booster, network security.</p></div>
+    <div class="fsd-card"><p class="fsd-h">🤖 Automation &amp; AI</p>
+      <p>Scheduler &amp; cron builder, idle maintenance, autostart (no UAC popup),
+         auto-shutdown, AI assistant (multi-provider, offline-capable via Ollama).</p></div>
+  </div>
+
+  <h3>New in 2.2</h3>
+  <div class="fsd-new">
+    <div>🚀 <b>1-Click Auto-Pilot</b> — cleans, frees RAM and re-scores your PC; animated before/after health report.</div>
+    <div>🛡️ <b>Performance Guardian</b> — always-on background monitoring that keeps performance up (optional auto-fix).</div>
+    <div>⌨️ <b>Command Palette (Ctrl+K)</b> — fuzzy-search and launch any of the 70+ tools instantly.</div>
+    <div>📉 <b>Health Timeline</b> — system-health trends over time with regression alerts.</div>
+    <div>💬 <b>Ask your PC</b> — describe a problem in plain words, get an answer and the right tool.</div>
+  </div>
+
+  <div class="fsd-pro">
+    <span class="fsd-price">Pro — $9.99/year</span>
+    <span>The core is free forever. Pro unlocks the AI Agent, system backup,
+      unlimited schedules and profiles, and more. Completely optional.</span>
+  </div>
+
+  <p class="fsd-trust">
+    Free and open-source under MIT · no telemetry · no bundleware · no forced ads.
+    &nbsp;|&nbsp; <a href="https://github.com/caytec/freesystemdoctor" rel="noopener" target="_blank">Source code</a>
+    &nbsp;·&nbsp; <a href="https://freesystemdoctor.com.pl/?utm_source=aipol" rel="noopener" target="_blank">freesystemdoctor.com.pl</a>
+  </p>
+</section>

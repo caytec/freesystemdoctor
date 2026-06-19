@@ -220,20 +220,34 @@ class SpeedupWizardPage(tk.Frame):
                 try:
                     if key == "disk" and r.get("items"):
                         from engine import disk_cleaner
-                        disk_cleaner.clean_items(r["items"])
-                        done.append(f"Disk Cleaner: cleaned")
+                        freed = 0
+                        count = 0
+                        for item in r["items"]:
+                            if not getattr(item, "selected", True):
+                                continue
+                            b, c = disk_cleaner.clean_folder(item.path)
+                            freed += b
+                            count += c
+                        done.append(f"Disk Cleaner: removed {count} files, "
+                                    f"freed {_fmt_bytes(freed)}")
                     elif key == "registry" and r.get("data"):
                         from engine import registry_cleaner
-                        registry_cleaner.fix_issues(r["data"])
-                        done.append(f"Registry: fixed {len(r['data'])} issues")
+                        fixed = 0
+                        for issue in r["data"]:
+                            try:
+                                if registry_cleaner.remove_issue(issue):
+                                    fixed += 1
+                            except Exception:
+                                pass
+                        done.append(f"Registry: fixed {fixed}/{len(r['data'])} issues")
                     elif key == "privacy" and r.get("items"):
                         from engine import privacy_cleaner
                         freed, _ = privacy_cleaner.clean_browser_privacy(r["items"])
                         done.append(f"Privacy: cleaned {_fmt_bytes(freed)}")
                     elif key == "memory":
                         from engine import memory_optimizer
-                        memory_optimizer.free_ram()
-                        done.append("Memory: optimized")
+                        trimmed, _errs = memory_optimizer.trim_working_sets()
+                        done.append(f"Memory: trimmed {trimmed} processes")
                 except Exception as e:
                     done.append(f"{title}: error — {e}")
 

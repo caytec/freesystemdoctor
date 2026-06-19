@@ -30,6 +30,25 @@ from datetime import datetime, timedelta
 CONFIG_DIR = Path(os.environ.get("APPDATA", os.path.expanduser("~"))) / "FreeSystemDoctor"
 CONFIG_FILE = CONFIG_DIR / "affiliate.json"
 
+# All affiliate clicks route through a single landing page we control, so the
+# real partner links can be swapped server-side without rebuilding the app.
+# The page reads ?ref=<offer_id> and 302-redirects to the live affiliate URL.
+# Set to "" to fall back to each offer's direct ``url`` instead.
+PARTNERS_URL = "https://freesystemdoctor.com.pl/partners"
+
+
+def partner_link(offer: dict) -> str:
+    """Resolve the outbound URL for an offer.
+
+    Routes through PARTNERS_URL (with ref + UTM) when configured, so live
+    affiliate links are managed in one place; otherwise uses the direct URL.
+    """
+    oid = offer.get("id", "")
+    if PARTNERS_URL:
+        return (f"{PARTNERS_URL}?ref={oid}"
+                f"&utm_source=app&utm_medium=affiliate&utm_campaign={oid}")
+    return offer.get("url", PARTNERS_URL or "")
+
 # Minimum minutes between two impressions of the same offer on the same page.
 IMPRESSION_COOLDOWN_MIN = 45
 
@@ -371,7 +390,7 @@ def record_click(offer_id: str) -> bool:
     _save(state)
 
     try:
-        webbrowser.open(offer["url"])
+        webbrowser.open(partner_link(offer))
     except Exception:
         pass
     return True

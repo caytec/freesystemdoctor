@@ -522,9 +522,85 @@ class SystemHud:
         else:
             menu.add_command(label="Pokaż HUD", command=self.show)
         menu.add_command(label="Przenieś do rogu ↘", command=self._place_bottom_right)
+        menu.add_command(label="🔅 Przezroczystość…", command=self._open_alpha_slider)
         menu.add_separator()
         menu.add_command(label="Zamknij HUD", command=self.destroy)
         menu.tk_popup(event.x_root, event.y_root)
+
+    # ── transparency slider ───────────────────────────────────────────────────
+
+    def _open_alpha_slider(self):
+        if getattr(self, "_alpha_win", None) is not None:
+            try:
+                self._alpha_win.destroy()
+            except Exception:
+                pass
+            self._alpha_win = None
+
+        win = tk.Toplevel(self._win)
+        self._alpha_win = win
+        win.overrideredirect(True)
+        win.wm_attributes("-topmost", True)
+        if sys.platform == "win32":
+            win.wm_attributes("-toolwindow", True)
+        win.configure(bg=self.PANEL, highlightthickness=1,
+                      highlightbackground=self.HIGHLIGHT)
+
+        # Position above the HUD
+        hx = self._win.winfo_x()
+        hy = self._win.winfo_y()
+        ww = self.WIDTH
+        wh = 70
+        wy = hy - wh - 6
+        if wy < 0:
+            wy = hy + self._height + 6
+        win.geometry(f"{ww}x{wh}+{hx}+{wy}")
+
+        tk.Label(win, text="Przezroczystość HUD",
+                 bg=self.PANEL, fg=self.FG,
+                 font=("Segoe UI", 8, "bold")).pack(anchor="w", padx=8, pady=(6, 0))
+
+        row = tk.Frame(win, bg=self.PANEL)
+        row.pack(fill="x", padx=8, pady=4)
+
+        val_lbl = tk.Label(row, text=f"{int(self.ALPHA*100)}%",
+                           bg=self.PANEL, fg=self.HIGHLIGHT,
+                           font=("Segoe UI", 8, "bold"), width=5, anchor="e")
+        val_lbl.pack(side="right")
+
+        def on_change(v):
+            try:
+                a = max(0.20, min(1.0, float(v) / 100.0))
+                self._win.wm_attributes("-alpha", a)
+                self.ALPHA = a
+                val_lbl.config(text=f"{int(a*100)}%")
+                try:
+                    from engine import app_settings
+                    app_settings.set_and_save("hud_alpha", round(a, 3))
+                except Exception:
+                    pass
+            except Exception:
+                pass
+
+        scale = tk.Scale(row, from_=20, to=100, orient="horizontal",
+                         bg=self.PANEL, fg=self.FG,
+                         troughcolor=self.BAR_BG, highlightthickness=0,
+                         bd=0, sliderrelief="flat", showvalue=False,
+                         activebackground=self.HIGHLIGHT,
+                         command=on_change)
+        scale.set(int(self.ALPHA * 100))
+        scale.pack(side="left", fill="x", expand=True)
+
+        def close(_e=None):
+            try:
+                win.destroy()
+            except Exception:
+                pass
+            self._alpha_win = None
+
+        win.bind("<FocusOut>", close)
+        win.bind("<Escape>", close)
+        win.focus_force()
 
     # ── public API ────────────────────────────────────────────────────────────
 

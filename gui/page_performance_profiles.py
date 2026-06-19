@@ -7,6 +7,9 @@ from tkinter import messagebox
 from . import theme as T
 from .widgets import Card, SectionLabel, ActionButton
 from engine import performance_profiles as pp
+from engine import license_manager as lm
+
+from ._pro_gate import limit_banner, at_limit_dialog
 
 
 class PerformanceProfilesPage(tk.Frame):
@@ -26,6 +29,10 @@ class PerformanceProfilesPage(tk.Frame):
 
         body = tk.Frame(self, bg=T.BG)
         body.pack(fill="both", expand=True, padx=16, pady=12)
+
+        banner = limit_banner(body, "performance_profiles")
+        if banner:
+            banner.pack(fill="x", pady=(0, 10))
 
         # Status card
         self._build_status_card(body)
@@ -55,10 +62,13 @@ class PerformanceProfilesPage(tk.Frame):
         self._profile_buttons = {}
         profiles = pp.list_profiles()
 
-        for profile in profiles:
-            self._build_profile_button(profiles_frame, profile)
+        # Free tier: only the first N profiles are usable; the rest are Pro.
+        limit = lm.effective_limit("performance_profiles")  # None = unlimited
+        for idx, profile in enumerate(profiles):
+            locked = limit is not None and idx >= limit
+            self._build_profile_button(profiles_frame, profile, locked)
 
-    def _build_profile_button(self, parent, profile):
+    def _build_profile_button(self, parent, profile, locked=False):
         frame = tk.Frame(parent, bg=T.ACCENT if profile["active"] else T.BORDER, height=80)
         frame.pack(fill="x", pady=4)
         frame.pack_propagate(False)
@@ -74,8 +84,14 @@ class PerformanceProfilesPage(tk.Frame):
                        font=T.FONT_SMALL, wraplength=400)
         desc.pack(anchor="w", padx=10, pady=2)
 
+        if locked:
+            btn = tk.Button(inner, text="🔒 Pro", bg=T.ACCENT,
+                            fg=T.HIGHLIGHT, font=T.FONT_BODY, padx=10, pady=4,
+                            command=lambda: at_limit_dialog("performance_profiles"))
+            btn.pack(anchor="e", padx=10, pady=(0, 6))
+            return
+
         status = "ACTIVE" if profile["active"] else "Switch"
-        status_color = T.SUCCESS if profile["active"] else T.FG2
 
         btn = tk.Button(inner, text=status, bg=T.HIGHLIGHT if profile["active"] else T.ACCENT,
                        fg=T.FG, font=T.FONT_BODY, padx=10, pady=4,

@@ -159,6 +159,8 @@ class ActionButton(tk.Canvas):
         self._command = command
         self._hover = False
         self._pressed = False
+        self._lift = 0.0          # 0→1 animated hover amount (smooth)
+        self._lift_anim = None
         self._ripple = 0
         self._ripple_active = False
         self._enabled = True
@@ -199,10 +201,10 @@ class ActionButton(tk.Canvas):
         if self._enabled:
             if self._pressed:
                 c1, c2 = T.darken(self._c1, 0.2), T.darken(self._c2, 0.2)
-            elif self._hover:
-                c1, c2 = T.lighten(self._c1, 0.08), T.lighten(self._c2, 0.12)
             else:
-                c1, c2 = self._c1, self._c2
+                lift = self._lift
+                c1 = T.lighten(self._c1, 0.08 * lift)
+                c2 = T.lighten(self._c2, 0.14 * lift)
         else:
             c1 = c2 = T.lerp_color(T.PANEL, T.BORDER, 0.5)
 
@@ -231,9 +233,9 @@ class ActionButton(tk.Canvas):
             self.create_rectangle(r, 1, w-r, h//2, fill=shine, outline="")
             self.create_rectangle(r, 1, w-r, h//4, fill=T.lighten(shine, 0.1), outline="")
 
-        # Glow border on hover
-        if self._hover and self._enabled:
-            glow_c = T.lerp_color(self._c2, "#ffffff", 0.4)
+        # Glow border on hover (fades in/out with lift)
+        if self._lift > 0.02 and self._enabled and not self._pressed:
+            glow_c = T.lerp_color(c2, "#ffffff", 0.45 * self._lift)
             self.create_rectangle(1, 1, w-1, h-1, fill="", outline=glow_c)
 
         # Ripple
@@ -249,15 +251,28 @@ class ActionButton(tk.Canvas):
         self.create_text(w//2, h//2, text=self._text,
                          fill=fg, font=T.FONT_BOLD)
 
+    def _animate_lift(self, target: float):
+        if self._lift_anim:
+            self._lift_anim()
+        start = self._lift
+        if abs(start - target) < 0.01:
+            return
+
+        def step(t):
+            self._lift = start + (target - start) * t
+            self._draw()
+
+        self._lift_anim = T.animate(self, 140, step, easing=T.ease_out_cubic)
+
     def _on_enter(self):
         if self._enabled:
             self._hover = True
-            self._draw()
+            self._animate_lift(1.0)
 
     def _on_leave(self):
         self._hover = False
         self._pressed = False
-        self._draw()
+        self._animate_lift(0.0)
 
     def _on_press(self):
         if self._enabled:
@@ -367,8 +382,11 @@ class ProgressBar(tk.Frame):
                                  highlightthickness=0, bd=0)
         self._canvas.pack(fill="x", expand=True)
         self._value = 0
+        self._target = 0
+        self._value_anim = None
         self._shimmer = 0
         self._shimmer_active = False
+        self._shimmer_running = False
         self._indeterminate = False
         self._ind_pos = 0
         self._bind_width()
@@ -417,18 +435,57 @@ class ProgressBar(tk.Frame):
                                          fill_w / max(1, w))
                     c.create_oval(cap_x - h, 0, cap_x, h, fill=cap_c, outline="")
 
-                # Shimmer
-                if self._shimmer_active:
-                    sx = int(self._shimmer * fill_w / 100)
-                    c.create_rectangle(sx, 0, sx + 30, h,
-                                       fill=T.lighten(T.HIGHLIGHT, 0.4), outline="")
+                # Shimmer — a soft highlight band sweeping across the fill,
+                # clipped to the filled region so it never spills onto the track.
+                if self._shimmer_active and fill_w > h:
+                    band = 34
+                    sx = int(self._shimmer * (fill_w + band) / 130) - band
+                    x0 = max(r, sx)
+                    x1 = min(fill_w, sx + band)
+                    if x1 > x0:
+                        c.create_rectangle(x0, 0, x1, h,
+                                           fill=T.lighten(T.HIGHLIGHT, 0.4),
+                                           outline="")
 
     def set(self, value: float):
-        self._value = max(0, min(100, value))
+        target = max(0, min(100, value))
+        self._target = target
         self._indeterminate = False
-        self._draw()
+        # Animate smoothly from the current value to the new target
+        if self._value_anim:
+            self._value_anim()
+        start = self._value
+
+        def step(t):
+            self._value = start + (target - start) * t
+            self._draw()
+
+        self._value_anim = T.animate(self, 280, step, easing=T.ease_out_cubic)
+
+        # Keep a shimmer sweeping while in-progress; stop at 0 / 100
+        if 0 < target < 100:
+            self._start_shimmer()
+        else:
+            self._shimmer_active = False
 
     set_value = set
+
+    def _start_shimmer(self):
+        self._shimmer_active = True
+        if self._shimmer_running:
+            return
+        self._shimmer_running = True
+        self._shimmer_loop()
+
+    def _shimmer_loop(self):
+        if not self._shimmer_active or not (0 < self._target < 100):
+            self._shimmer_running = False
+            self._shimmer_active = False
+            self._draw()
+            return
+        self._shimmer = (self._shimmer + 3) % 130
+        self._draw()
+        self.after(24, self._shimmer_loop)
 
     def indeterminate(self, start: bool = True):
         if start:
@@ -918,33 +975,51 @@ class MetricCard(tk.Frame):
         tk.Label(self, text=label, bg=T.PANEL,
                  fg=T.FG2, font=T.FONT_MICRO).pack(anchor="w")
 
-        # Hover glow effect
+        # Hover glow effect (animated)
         self._color = color
+        self._hover_t = 0.0
+        self._hover_anim = None
         for w in (self, self._icon_lbl, self._val_lbl):
-            w.bind("<Enter>", lambda e: self._on_enter())
-            w.bind("<Leave>", lambda e: self._on_leave())
+            w.bind("<Enter>", lambda e: self._animate_hover(1.0))
+            w.bind("<Leave>", lambda e: self._animate_hover(0.0))
 
-    def _on_enter(self):
-        glow_bg = T.lerp_color(T.PANEL, self._color, 0.08)
-        self.config(bg=glow_bg)
-        for child in self.winfo_children():
-            try:
-                child.config(bg=glow_bg)
-            except Exception:
-                pass
+    def _set_bg(self, t: float):
+        bg = T.lerp_color(T.PANEL, self._color, 0.10 * t)
+        try:
+            self.config(bg=bg)
+            for child in self.winfo_children():
+                try:
+                    child.config(bg=bg)
+                except Exception:
+                    pass
+        except tk.TclError:
+            pass
 
-    def _on_leave(self):
-        self.config(bg=T.PANEL)
-        for child in self.winfo_children():
-            try:
-                child.config(bg=T.PANEL)
-            except Exception:
-                pass
+    def _animate_hover(self, target: float):
+        if self._hover_anim:
+            self._hover_anim()
+        start = self._hover_t
+
+        def step(t):
+            self._hover_t = start + (target - start) * t
+            self._set_bg(self._hover_t)
+
+        self._hover_anim = T.animate(self, 160, step, easing=T.ease_out_cubic)
 
     def update_value(self, value: str, color: str = None):
         self._val_lbl.config(text=value)
         if color:
             self._icon_lbl.config(fg=color)
+
+    def count_up(self, target: float, suffix: str = "", duration_ms: int = 700,
+                 fmt="{:.0f}"):
+        """Animate the numeric value from 0 → *target* with easing."""
+        def step(t):
+            try:
+                self._val_lbl.config(text=fmt.format(target * t) + suffix)
+            except tk.TclError:
+                pass
+        T.animate(self, duration_ms, step, easing=T.ease_out_cubic)
 
 
 # ── Notification toast ────────────────────────────────────────────────────────
@@ -994,18 +1069,21 @@ class Toast:
         offset = len(Toast._instances) * (wh + 8)
         x = sw - ww - 20
         y = sh - 60 - wh - offset
-        self._win.geometry(f"{ww}x{wh}+{x}+{y}")
+        self._x, self._y = x, y
+        self._ww, self._wh = ww, wh
+        # Start 22px lower, slide up into place while fading in
+        self._win.geometry(f"{ww}x{wh}+{x}+{y + 22}")
 
-        # Fade in
+        # Fade + slide in
         self._fade_in(duration)
 
-    def _fade_in(self, duration: int, alpha: float = 0.0):
-        if alpha < 0.95:
-            alpha = min(0.95, alpha + 0.07)
-            self._win.attributes("-alpha", alpha)
-            self._win.after(16, lambda: self._fade_in(duration, alpha))
-        else:
-            self._win.after(duration, self._fade_out)
+    def _fade_in(self, duration: int):
+        def step(t):
+            self._win.attributes("-alpha", 0.96 * t)
+            cy = int(self._y + 22 * (1 - t))
+            self._win.geometry(f"{self._ww}x{self._wh}+{self._x}+{cy}")
+        T.animate(self._win, 260, step, easing=T.ease_out_cubic,
+                  on_done=lambda: self._win.after(duration, self._fade_out))
 
     def _fade_out(self, alpha: float = 0.95):
         if alpha > 0.0:

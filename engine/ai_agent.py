@@ -935,6 +935,92 @@ def analyze_system(stream_cb: Callable = None, mode: str = "full") -> HealthRepo
     return report
 
 
+# ── generic free-form prompt (used by "Ask your PC") ──────────────────────────
+
+def _ask_provider(name: str, prompt: str) -> tuple[Optional[str], Optional[str]]:
+    """Send an arbitrary prompt to a single provider. Returns (text, error)."""
+    if name == "Ollama":
+        if not requests:
+            return None, "Ollama: requests not installed"
+        if not ollama_is_running():
+            return None, "Ollama: server not running"
+        models = ollama_list_models()
+        if not models:
+            return None, f"Ollama: no models installed (try: ollama pull {OLLAMA_DEFAULT_MODEL})"
+        model = OLLAMA_DEFAULT_MODEL if OLLAMA_DEFAULT_MODEL in models else models[0]
+        try:
+            resp = requests.post(
+                f"{OLLAMA_BASE_URL}/api/chat",
+                json={"model": model,
+                      "messages": [{"role": "user", "content": prompt}],
+                      "stream": False,
+                      "options": {"temperature": 0.6, "num_predict": 400}},
+                timeout=120)
+            if resp.status_code != 200:
+                return None, f"Ollama: HTTP {resp.status_code}"
+            return (resp.json()["message"]["content"].strip() or None), None
+        except Exception as e:
+            return None, f"Ollama: {type(e).__name__}"
+
+    if name == "Anthropic":
+        key = os.getenv("ANTHROPIC_API_KEY")
+        if not key:
+            return None, "Anthropic: No API key configured"
+        model = os.getenv("ANTHROPIC_MODEL", "claude-haiku-4-5-20251001")
+        return _call_api_raw(
+            "Anthropic", "https://api.anthropic.com/v1/messages",
+            {"x-api-key": key, "anthropic-version": "2023-06-01",
+             "Content-Type": "application/json"},
+            {"model": model, "max_tokens": 600,
+             "messages": [{"role": "user", "content": prompt}]},
+            response_parser=_parse_anthropic_response)
+
+    # OpenAI-compatible providers
+    cfg = {
+        "Cerebras":   ("CEREBRAS_API_KEY", "CEREBRAS_MODEL",
+                       "qwen-3-235b-a22b-instruct-2507",
+                       "https://api.cerebras.ai/v1/chat/completions", {}),
+        "Groq":       ("GROQ_API_KEY", "GROQ_MODEL", "llama-3.3-70b-versatile",
+                       "https://api.groq.com/openai/v1/chat/completions", {}),
+        "OpenRouter": ("OPENROUTER_API_KEY", "OPENROUTER_MODEL",
+                       "meta-llama/llama-3.2-3b-instruct:free",
+                       "https://openrouter.ai/api/v1/chat/completions",
+                       {"HTTP-Referer": "https://github.com/kajetan-dev/FreeSystemDoctor",
+                        "X-Title": "FreeSystemDoctor"}),
+    }.get(name)
+    if not cfg:
+        return None, f"{name}: unknown provider"
+    key_env, model_env, default_model, url, extra_headers = cfg
+    key = os.getenv(key_env)
+    if not key:
+        return None, f"{name}: No API key configured"
+    model = os.getenv(model_env, default_model)
+    headers = {"Authorization": f"Bearer {key}", "Content-Type": "application/json"}
+    headers.update(extra_headers)
+    return _call_api_raw(
+        name, url, headers,
+        {"model": model, "messages": [{"role": "user", "content": prompt}],
+         "max_tokens": 600, "temperature": 0.6})
+
+
+def ask(prompt: str) -> tuple[Optional[str], Optional[str]]:
+    """Run an arbitrary prompt through the same provider chain as analyze_system
+    (Ollama-first ⇒ offline-capable). Returns (answer_text, error)."""
+    if PREFERRED_API == "auto":
+        chain = _DEFAULT_CHAIN
+    else:
+        chain = [PREFERRED_API] + [n for n in _DEFAULT_CHAIN if n != PREFERRED_API]
+
+    errors: list[str] = []
+    for name in chain:
+        text, err = _ask_provider(name, prompt)
+        if text:
+            return text, None
+        if err:
+            errors.append(err)
+    return None, (" | ".join(errors) if errors else "No AI provider configured")
+
+
 # ── public aliases for backwards compat ───────────────────────────────────────
 def call_cerebras(data, stream_cb=None, mode="full"):
     c, _ = _call_cerebras(data, stream_cb, mode); return c

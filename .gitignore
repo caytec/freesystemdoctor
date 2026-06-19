@@ -32,3 +32,28 @@ cloudflared-fsd.service
 .env.*
 *.pem
 *.key
+
+# Build output / artifacts (distributed via GitHub Releases, not git)
+dist/
+dist_test/
+dist_fixed/
+dist_installer/
+build_test/
+node_modules/
+*.exe
+*.db
+
+# License backend & deploy infra — contains live keys / VPS credentials (PRIVATE)
+license_server/
+cloudflare-worker/
+affiliate-applications/
+
+# Internal setup docs with embedded keys (keep local only)
+STRIPE_SETUP.md
+MONETIZATION_SETUP.md
+BACKEND_DEPLOYMENT_LOG.md
+test_stripe.py
+test_backend.py
+
+# Duplicate/scratch spec
+FreeSystemDoctor_v222.spec

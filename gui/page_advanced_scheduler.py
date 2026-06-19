@@ -7,6 +7,8 @@ from tkinter import messagebox, ttk
 from . import theme as T
 from .widgets import Card, SectionLabel, ActionButton, apply_treeview_style
 from engine import advanced_scheduler as asched
+from engine import license_manager as lm
+from ._pro_gate import limit_banner, at_limit_dialog
 
 
 class AdvancedSchedulerPage(tk.Frame):
@@ -16,16 +18,24 @@ class AdvancedSchedulerPage(tk.Frame):
         self._build_ui()
 
     def _build_ui(self):
+        self._build_scheduler_ui()
+
+    def _build_scheduler_ui(self):
+        """Scheduler UI — Free capped at 3 tasks (FREE_LIMITS), Pro unlimited."""
         hdr = tk.Frame(self, bg=T.ACCENT, height=48)
         hdr.pack(fill="x")
         hdr.pack_propagate(False)
         tk.Label(hdr, text="Advanced Scheduler", bg=T.ACCENT, fg=T.FG,
                  font=T.FONT_TITLE).pack(side="left", padx=16)
-        tk.Label(hdr, text="Schedule maintenance tasks with cron-like expressions",
+        tk.Label(hdr, text="Cron-like maintenance scheduling",
                  bg=T.ACCENT, fg=T.FG2, font=T.FONT_SMALL).pack(side="left", padx=4)
 
         body = tk.Frame(self, bg=T.BG)
         body.pack(fill="both", expand=True, padx=16, pady=12)
+
+        banner = limit_banner(body, "advanced_scheduler")
+        if banner:
+            banner.pack(fill="x", pady=(0, 10))
 
         self._build_tasks_card(body)
         self._build_create_task_card(body)
@@ -133,6 +143,12 @@ class AdvancedSchedulerPage(tk.Frame):
 
         if not name or not action or not cron:
             messagebox.showwarning("Missing Fields", "Fill in all fields")
+            return
+
+        # Free-tier quota: max 3 scheduled tasks
+        existing = asched.load_scheduled_tasks()
+        if not lm.is_within_limit("advanced_scheduler", len(existing)):
+            at_limit_dialog("advanced_scheduler")
             return
 
         # Find action key

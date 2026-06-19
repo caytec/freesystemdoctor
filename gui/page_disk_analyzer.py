@@ -9,6 +9,9 @@ from .widgets import Card, SectionLabel, ActionButton, ProgressBar, apply_treevi
 from engine import disk_analyzer as da
 
 
+from ._pro_gate import gate_or_build
+
+
 class DiskAnalyzerPage(tk.Frame):
     def __init__(self, parent, app_ref):
         super().__init__(parent, bg=T.BG)
@@ -26,6 +29,9 @@ class DiskAnalyzerPage(tk.Frame):
         self._load_drives()
 
     def _build_ui(self):
+        # Pro-feature gate — shows upsell for Free users
+        if gate_or_build(self, "disk_analyzer", "Disk Analyzer"):
+            return
         hdr = tk.Frame(self, bg=T.ACCENT, height=48)
         hdr.pack(fill="x")
         hdr.pack_propagate(False)
@@ -116,6 +122,8 @@ class DiskAnalyzerPage(tk.Frame):
 
     def _load_drives(self):
         """FAST: just enumerate drives via psutil — no filesystem walking."""
+        if getattr(self, "_pro_gated", False):
+            return  # widgets not built (Pro upsell shown instead)
         try:
             drives = da.list_drives()
         except Exception as e:

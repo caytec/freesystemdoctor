@@ -69,6 +69,10 @@ from .page_auto_shutdown    import AutoShutdownPage
 from .page_icon_saver       import IconSaverPage
 from .page_browser_autoclean import BrowserAutoCleanPage
 from .page_publisher        import PublisherPage
+from .page_autopilot        import AutoPilotPage
+from .page_performance_guardian import PerformanceGuardianPage
+from .page_health_timeline  import HealthTimelinePage
+from .page_ai_ask           import AIAskPage
 from .system_hud            import SystemHud
 
 # Legacy tool tabs
@@ -99,7 +103,10 @@ _NAV_CATEGORIES = [
         "color": T.HIGHLIGHT,
         "items": [
             ("home",       "🏠", "Home",           HomePage),
+            ("autopilot",  "🚀", "Auto-Pilot",     AutoPilotPage),
+            ("guardian",   "🛡",  "Perf. Guardian", PerformanceGuardianPage),
             ("health",     "❤",  "Health Check",   HealthCheckPage),
+            ("timeline",   "📉", "Health Timeline",HealthTimelinePage),
             ("dashboard",  "📊", "Live Monitor",   RealtimeDashboardPage),
             ("monitor",    "📈", "Resource Mon.",  ResourceMonitorPage),
             ("hardware",   "🌡",  "HW Monitor",     HardwareMonitorPage),
@@ -113,6 +120,7 @@ _NAV_CATEGORIES = [
         "color": T.PURPLE,
         "items": [
             ("ai",         "🤖", "AI Agent",        AIAgentPage),
+            ("ai_ask",     "💬", "Ask your PC",     AIAskPage),
             ("wizard",     "⭐", "Speedup Wizard",  SpeedupWizardPage),
             ("idle",       "💤", "Idle Maintain.",  IdleMaintenancePage),
             ("auto",       "⚙",  "Scheduled Clean", ScheduledCleanerPage),
@@ -802,11 +810,26 @@ class App(tk.Tk):
         self._pages: dict[str, tk.Frame] = {}
         self._active_page: str = ""
         self._fade_alpha = 1.0
+        self._palette = None
+        # Animations are app-controlled (default ON) — independent of Windows'
+        # performance/reduced-motion settings.
+        try:
+            from engine import app_settings
+            T.set_animations_enabled(app_settings.get("animations_enabled", True))
+        except Exception:
+            pass
+        # Restore persisted window geometry (size + position) before building UI
+        self._restore_window_geometry()
         self._setup_styles()
         self._build_ui()
-        self._switch_page("home")
+        # Restore the last page the user had open (falls back to home)
+        self._switch_page(self._restore_last_page())
         self._hud = SystemHud(self)
+        self._restore_hud_state()
         self.protocol("WM_DELETE_WINDOW", self._on_close)
+        # Global Ctrl+K command palette
+        self.bind_all("<Control-k>", self._open_palette)
+        self.bind_all("<Control-K>", self._open_palette)
         # Opt-in prompt for LibreHardwareMonitor (only first run, dismissible)
         maybe_show_first_run_dialog(self)
 
@@ -940,65 +963,74 @@ class App(tk.Tk):
 
     # ── navigation ─────────────────────────────────────────────────────────────
 
+    def _open_palette(self, _e=None):
+        """Toggle the Ctrl+K command palette."""
+        if self._palette is not None and self._palette.winfo_exists():
+            self._palette._close()
+            self._palette = None
+            return "break"
+        from .command_palette import CommandPalette
+        self._palette = CommandPalette(self)
+        self._palette.show()
+        return "break"
+
+    def activate_key(self, key: str):
+        """Public navigation entry point used by the command palette + AI tool-mapping.
+        Resolves alias keys (memory/clean_tools/toolbox → tools) which already live in
+        self._pages, then delegates to _switch_page."""
+        target = {"clean_tools": "tools", "memory": "tools",
+                  "toolbox": "tools"}.get(key, key)
+        if target in self._pages:
+            self._switch_page(target)
+
     def _switch_page(self, name: str):
         if name == self._active_page:
             return
         if name not in self._pages:
             return
-        # Guard: don't start a new transition if one is already running
-        if getattr(self, "_transitioning", False):
-            # Just do instant swap if spammed
-            if self._active_page and self._active_page in self._pages:
-                self._pages[self._active_page].pack_forget()
-            page = self._pages[name]
-            page.pack(fill="both", expand=True)
-            self._active_page = name
-            self._sidebar.set_active(name)
-            if hasattr(page, "on_activate"):
+        # Hide current, show new
+        if self._active_page and self._active_page in self._pages:
+            self._pages[self._active_page].pack_forget()
+        page = self._pages[name]
+        page.pack(fill="both", expand=True)
+        self._active_page = name
+        self._sidebar.set_active(name)
+        if hasattr(page, "on_activate"):
+            try:
                 page.on_activate()
-            self._update_breadcrumb(name)
+            except Exception:
+                # A gated/Pro-upsell page may skip building widgets that its
+                # on_activate hook expects — never let that break navigation.
+                pass
+        self._update_breadcrumb(name)
+        self._reveal_page()
+
+    def _reveal_page(self):
+        """Smooth top-down reveal on page switch. A BG-coloured overlay frame
+        retracts from full height to zero with ease-out timing, so the new page
+        appears to drop into place. Page child layouts are untouched."""
+        try:
+            cover = tk.Frame(self._content_wrapper, bg=T.BG)
+            cover.place(relx=0, rely=0, relwidth=1, relheight=1)
+            cover.lift()
+        except tk.TclError:
             return
-        self._do_crossfade(name)
 
-    def _do_crossfade(self, name: str, step: int = 0, steps: int = 8):
-        """Two-phase crossfade: darken overlay → swap page → lift overlay."""
-        HALF = steps // 2
-        interval = max(1, T.TRANSITION_MS // steps)
+        def step(t):
+            # t: 0→1 eased; retract height 1→0
+            try:
+                cover.place_configure(relheight=max(0.0, 1.0 - t))
+            except tk.TclError:
+                pass
 
-        if step == 0:
-            self._transitioning = True
+        def done():
+            try:
+                cover.destroy()
+            except tk.TclError:
+                pass
 
-        if step <= HALF:
-            # Phase 1: overlay fades in over current content
-            t = step / HALF
-            overlay_bg = T.lerp_color(T.BG, T.SIDEBAR, t * 0.7)
-            self._fade_overlay.config(bg=overlay_bg)
-            self._fade_overlay.place(relx=0, rely=0, relwidth=1, relheight=1)
-            self._fade_overlay.lift()
-
-            if step == HALF:
-                # ── swap at midpoint ──────────────────────────────────────────
-                if self._active_page and self._active_page in self._pages:
-                    self._pages[self._active_page].pack_forget()
-                page = self._pages[name]
-                page.pack(fill="both", expand=True)
-                self._active_page = name
-                self._sidebar.set_active(name)
-                if hasattr(page, "on_activate"):
-                    page.on_activate()
-                self._update_breadcrumb(name)
-        else:
-            # Phase 2: overlay lifts to reveal new page
-            t = (step - HALF) / HALF
-            overlay_bg = T.lerp_color(T.SIDEBAR, T.BG, t * 0.7)
-            self._fade_overlay.config(bg=overlay_bg)
-            if step == steps:
-                self._fade_overlay.place_forget()
-                self._transitioning = False
-                return
-
-        self.after(interval,
-                   lambda: self._do_crossfade(name, step + 1, steps))
+        T.animate(self, T.TRANSITION_MS, step, on_done=done,
+                  easing=T.ease_out_cubic)
 
     def _update_breadcrumb(self, name: str):
         """Show 'CATEGORY  ›  Page Label' in the status bar."""
@@ -1012,9 +1044,91 @@ class App(tk.Tk):
         # Fallback for special pages (tools, etc.)
         self._status.set(name.replace("_", " ").title())
 
+    # ── settings persistence ───────────────────────────────────────────────────
+
+    def _restore_window_geometry(self):
+        """Apply persisted window size/position, if any (validated on-screen)."""
+        try:
+            from engine import app_settings
+            geo = app_settings.get("window_geometry")
+            if isinstance(geo, str) and "x" in geo:
+                # Clamp position so the window can't be restored fully off-screen
+                self.geometry(geo)
+            if app_settings.get("window_maximized"):
+                self.after(0, lambda: self._safe_zoom())
+        except Exception:
+            pass
+
+    def _safe_zoom(self):
+        try:
+            self.state("zoomed")
+        except Exception:
+            pass
+
+    def _restore_last_page(self) -> str:
+        """Return the last open page key if still valid, else 'home'."""
+        try:
+            from engine import app_settings
+            last = app_settings.get("last_page")
+            if last and last in self._pages:
+                return last
+        except Exception:
+            pass
+        return "home"
+
+    def _restore_hud_state(self):
+        """Apply persisted HUD alpha / position / visibility."""
+        try:
+            from engine import app_settings
+            hud = self._hud
+            alpha = app_settings.get("hud_alpha")
+            if isinstance(alpha, (int, float)):
+                a = max(0.20, min(1.0, float(alpha)))
+                hud.ALPHA = a
+                hud._win.wm_attributes("-alpha", a)
+            geo = app_settings.get("hud_geometry")
+            if isinstance(geo, str) and "+" in geo:
+                hud._win.geometry(geo)
+            if app_settings.get("hud_hidden"):
+                hud.hide()
+        except Exception:
+            pass
+
+    def _persist_settings(self):
+        """Capture current UI state into the settings store and flush to disk."""
+        try:
+            from engine import app_settings
+            values = {"last_page": self._active_page}
+            # Window geometry — store maximized flag, else the normal geometry
+            try:
+                if self.state() == "zoomed":
+                    values["window_maximized"] = True
+                else:
+                    values["window_maximized"] = False
+                    values["window_geometry"] = self.geometry()
+            except Exception:
+                pass
+            # HUD state
+            try:
+                hud = self._hud
+                values["hud_alpha"] = round(float(hud.ALPHA), 3)
+                values["hud_hidden"] = not hud._visible
+                hud._win.update_idletasks()
+                values["hud_geometry"] = (
+                    f"+{hud._win.winfo_x()}+{hud._win.winfo_y()}"
+                )
+            except Exception:
+                pass
+            app_settings.set_many(values)
+            app_settings.save()
+        except Exception:
+            pass
+
     # ── run ────────────────────────────────────────────────────────────────────
 
     def _on_close(self):
+        # Persist user settings BEFORE tearing anything down
+        self._persist_settings()
         try:
             self._hud.destroy()
         except Exception:

@@ -9,6 +9,9 @@ from .widgets import Card, SectionLabel, ActionButton, ToggleSwitch
 from engine import turbo_mode as tm
 
 
+from ._pro_gate import limit_banner
+
+
 class TurboModePage(tk.Frame):
     def __init__(self, parent, app_ref):
         super().__init__(parent, bg=T.BG)
@@ -30,6 +33,10 @@ class TurboModePage(tk.Frame):
 
         body = tk.Frame(self, bg=T.BG)
         body.pack(fill="both", expand=True, padx=16, pady=12)
+
+        banner = limit_banner(body, "turbo_mode")
+        if banner:
+            banner.pack(fill="x", pady=(0, 10))
 
         # Performance mode card
         self._build_performance_card(body)

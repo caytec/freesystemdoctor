@@ -58,8 +58,138 @@ FONT_LARGE  = (FONT_FAMILY, 15, "bold")
 # ── Utilities ─────────────────────────────────────────────────────────────────
 
 # ── Animation timing ──────────────────────────────────────────────────────────
-TRANSITION_MS = 120   # page crossfade total duration (ms)
-STAGGER_MS    = 45    # per-item stagger delay in sidebar reveal (ms)
+TRANSITION_MS = 220   # page reveal total duration (ms)
+STAGGER_MS    = 38    # per-item stagger delay in sidebar reveal (ms)
+FRAME_MS      = 16    # ~60 fps animation frame interval
+
+
+# ── Easing functions ──────────────────────────────────────────────────────────
+# All take t in [0, 1] and return an eased value (usually in [0, 1]).
+
+def ease_linear(t: float) -> float:
+    return t
+
+
+def ease_out_quad(t: float) -> float:
+    return 1 - (1 - t) * (1 - t)
+
+
+def ease_out_cubic(t: float) -> float:
+    return 1 - (1 - t) ** 3
+
+
+def ease_in_cubic(t: float) -> float:
+    return t * t * t
+
+
+def ease_in_out_cubic(t: float) -> float:
+    if t < 0.5:
+        return 4 * t * t * t
+    return 1 - (-2 * t + 2) ** 3 / 2
+
+
+def ease_out_back(t: float) -> float:
+    """Overshoots slightly past 1.0 then settles — gives a 'springy' pop."""
+    c1 = 1.70158
+    c3 = c1 + 1
+    return 1 + c3 * (t - 1) ** 3 + c1 * (t - 1) ** 2
+
+
+def ease_out_expo(t: float) -> float:
+    return 1.0 if t >= 1 else 1 - 2 ** (-10 * t)
+
+
+# ── Reusable tween engine ─────────────────────────────────────────────────────
+
+# Animations are an APP-level decision, deliberately decoupled from the Windows
+# "Adjust for best performance" / reduced-motion settings: the app stays smooth
+# and animated even when the OS is tuned for performance. Default ON; only an
+# explicit in-app toggle changes it.
+ANIMATIONS_ENABLED = True
+
+
+def set_animations_enabled(enabled: bool):
+    global ANIMATIONS_ENABLED
+    ANIMATIONS_ENABLED = bool(enabled)
+
+
+def animations_enabled() -> bool:
+    return ANIMATIONS_ENABLED
+
+
+def animate(widget, duration_ms: int, on_step, on_done=None,
+            easing=ease_out_cubic):
+    """Drive a smooth, frame-rate-independent animation via Tk's event loop.
+
+    Parameters
+    ----------
+    widget      : any Tk widget — used for ``after`` scheduling and liveness.
+    duration_ms : total animation length in milliseconds.
+    on_step     : callable(eased_t) invoked each frame with the eased progress
+                  (0.0 → 1.0). Raise nothing; TclError is swallowed.
+    on_done     : optional callable() invoked once when the animation completes.
+    easing      : easing function mapping linear t → eased t.
+
+    Returns
+    -------
+    A cancel() callable that stops the animation early.
+    """
+    # Animations disabled → jump straight to the final state, no frames.
+    if not ANIMATIONS_ENABLED:
+        try:
+            on_step(1.0)
+        except Exception:
+            pass
+        if on_done:
+            try:
+                on_done()
+            except Exception:
+                pass
+        return lambda: None
+
+    import time
+    start = time.perf_counter()
+    state = {"cancelled": False, "after_id": None}
+
+    def cancel():
+        state["cancelled"] = True
+        if state["after_id"] is not None:
+            try:
+                widget.after_cancel(state["after_id"])
+            except Exception:
+                pass
+
+    def frame():
+        if state["cancelled"]:
+            return
+        elapsed = (time.perf_counter() - start) * 1000.0
+        t = min(1.0, elapsed / max(1, duration_ms))
+        try:
+            on_step(easing(t))
+        except tk_err():
+            return
+        except Exception:
+            return
+        if t >= 1.0:
+            if on_done:
+                try:
+                    on_done()
+                except Exception:
+                    pass
+            return
+        state["after_id"] = widget.after(FRAME_MS, frame)
+
+    try:
+        frame()
+    except Exception:
+        pass
+    return cancel
+
+
+def tk_err():
+    """Return tkinter.TclError lazily (avoids a hard import at module top)."""
+    import tkinter
+    return tkinter.TclError
 
 
 def score_color(score: int) -> str:

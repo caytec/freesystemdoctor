@@ -38,6 +38,9 @@ _MODE_ICONS = {
 }
 
 
+from ._pro_gate import gate_or_build
+
+
 class AIAgentPage(tk.Frame):
     def __init__(self, parent, app_ref):
         super().__init__(parent, bg=T.BG)
@@ -51,6 +54,9 @@ class AIAgentPage(tk.Frame):
     # ── layout ────────────────────────────────────────────────────────────────
 
     def _build_ui(self):
+        # Pro-feature gate — shows upsell for Free users
+        if gate_or_build(self, "ai_agent", "AI Agent"):
+            return
         hdr = tk.Frame(self, bg=T.ACCENT, height=48)
         hdr.pack(fill="x")
         hdr.pack_propagate(False)

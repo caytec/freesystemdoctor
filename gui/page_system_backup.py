@@ -9,6 +9,9 @@ from .widgets import Card, SectionLabel, ActionButton, apply_treeview_style
 from engine import system_backup as sb
 
 
+from ._pro_gate import gate_or_build
+
+
 class SystemBackupPage(tk.Frame):
     def __init__(self, parent, app_ref):
         super().__init__(parent, bg=T.BG)
@@ -17,6 +20,9 @@ class SystemBackupPage(tk.Frame):
         self._build_ui()
 
     def _build_ui(self):
+        # Pro-feature gate — shows upsell for Free users
+        if gate_or_build(self, "system_backup", "System Backup"):
+            return
         hdr = tk.Frame(self, bg=T.ACCENT, height=48)
         hdr.pack(fill="x")
         hdr.pack_propagate(False)

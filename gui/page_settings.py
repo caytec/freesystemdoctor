@@ -40,6 +40,7 @@ class SettingsPage(tk.Frame):
         self._build_hud_card(body)
         self._build_support_card(body)
         self._build_privacy_card(body)
+        self._build_license_card(body)
         self._build_about_card(body)
 
     def _build_privacy_card(self, parent):
@@ -151,6 +152,180 @@ class SettingsPage(tk.Frame):
         except Exception:
             pass
 
+    def _build_license_card(self, parent):
+        """License status and activation card"""
+        from engine import license_manager as lm
+
+        mgr  = lm.get_manager()
+        tier = mgr.get_tier()
+
+        card = Card(parent)
+        card.pack(fill="x", pady=(0, 12))
+        SectionLabel(card, "📋 License & Pro Features").pack(anchor="w", padx=10, pady=8)
+
+        # ── Tier badge ─────────────────────────────────────────
+        tier_text  = {"free": "Free Edition", "pro": "Pro Edition",
+                      "lifetime": "Lifetime Pro"}
+        tier_color = T.DANGER if tier == "free" else T.SUCCESS
+
+        badge_row = tk.Frame(card, bg=T.PANEL)
+        badge_row.pack(fill="x", padx=10, pady=(0, 4))
+        tk.Label(badge_row, text="Current tier:",
+                 bg=T.PANEL, fg=T.FG2, font=T.FONT_BODY).pack(side="left")
+        tk.Label(badge_row, text=f"  {tier_text.get(tier, tier)}",
+                 bg=T.PANEL, fg=tier_color, font=T.FONT_BOLD).pack(side="left")
+
+        if tier != "free":
+            # ── Pro info row ───────────────────────────────────
+            info_row = tk.Frame(card, bg=T.PANEL)
+            info_row.pack(fill="x", padx=10, pady=(0, 4))
+            tk.Label(info_row, text=f"Email:   {mgr.get_email() or '—'}",
+                     bg=T.PANEL, fg=T.FG2, font=T.FONT_SMALL).pack(anchor="w")
+            exp = (mgr.get_expires() or "")[:10]
+            tk.Label(info_row, text=f"Expires: {exp}",
+                     bg=T.PANEL, fg=T.FG2, font=T.FONT_SMALL).pack(anchor="w")
+            cd = mgr.get_cd_key() or ""
+            tk.Label(info_row, text=f"CD-Key:  {cd}",
+                     bg=T.PANEL, fg=T.FG2, font=T.FONT_SMALL).pack(anchor="w")
+
+            bf = tk.Frame(card, bg=T.PANEL)
+            bf.pack(fill="x", padx=10, pady=(6, 10))
+            ActionButton(bf, text="Sync license", width=120,
+                         command=self._on_license_sync).pack(side="left")
+            ActionButton(bf, text="Deactivate", width=100,
+                         command=self._on_deactivate).pack(side="left", padx=(8, 0))
+
+        else:
+            # ── Free tier — buy + activate ─────────────────────
+            form = tk.Frame(card, bg=T.PANEL)
+            form.pack(fill="x", padx=10, pady=(4, 10))
+
+            # Feature list
+            feats = [
+                "Advanced Scheduler   (unlimited tasks)",
+                "AI Agent             (unlimited API requests)",
+                "Idle Maintenance     (continuous auto-care)",
+                "Deep Clean           (ML junk predictor)",
+                "Turbo Mode           (persistent profiles)",
+                "Performance Profiles (unlimited)",
+                "System Backup        (incremental + scheduled)",
+                "Disk Analyzer        (real-time monitoring)",
+            ]
+            tk.Label(form, text="Pro Edition — $9.99/year (auto-renews) — unlocks:",
+                     bg=T.PANEL, fg=T.HIGHLIGHT, font=T.FONT_BOLD).pack(anchor="w", pady=(0, 4))
+            for f in feats:
+                tk.Label(form, text=f"  • {f}",
+                         bg=T.PANEL, fg=T.FG, font=T.FONT_SMALL).pack(anchor="w")
+
+            tk.Frame(form, bg=T.PANEL, height=10).pack()
+
+            # ─ BUY with Stripe ─
+            tk.Label(form, text="Buy with Stripe (secure card payment):",
+                     bg=T.PANEL, fg=T.FG2, font=T.FONT_SMALL).pack(anchor="w", pady=(0, 4))
+
+            email_row = tk.Frame(form, bg=T.PANEL)
+            email_row.pack(fill="x", pady=(0, 6))
+            tk.Label(email_row, text="Email:", width=8,
+                     bg=T.PANEL, fg=T.FG2, font=T.FONT_SMALL).pack(side="left")
+            self._stripe_email = tk.Entry(email_row, font=T.FONT_BODY, width=36)
+            self._stripe_email.pack(side="left", padx=(0, 8))
+
+            buy_row = tk.Frame(form, bg=T.PANEL)
+            buy_row.pack(fill="x", pady=(0, 12))
+            ActionButton(buy_row, text="Buy Pro — $9.99", width=150,
+                         command=self._on_buy_stripe).pack(side="left")
+            tk.Label(buy_row, text="  Opens Stripe checkout in browser",
+                     bg=T.PANEL, fg=T.FG2, font=T.FONT_SMALL).pack(side="left")
+
+            # ─ Activate CD-key ─
+            tk.Label(form, text="─" * 56,
+                     bg=T.PANEL, fg=T.FG2, font=T.FONT_SMALL).pack(anchor="w")
+            tk.Label(form, text="Already have a CD-key? Enter it below:",
+                     bg=T.PANEL, fg=T.FG2, font=T.FONT_SMALL).pack(anchor="w", pady=(6, 4))
+
+            key_row = tk.Frame(form, bg=T.PANEL)
+            key_row.pack(fill="x", pady=(0, 6))
+            tk.Label(key_row, text="CD-Key:", width=8,
+                     bg=T.PANEL, fg=T.FG2, font=T.FONT_SMALL).pack(side="left")
+            self._cd_key_entry = tk.Entry(key_row, font=T.FONT_BODY, width=24)
+            self._cd_key_entry.insert(0, "FSD-XXXX-XXXX-XXXX-XXXX")
+            self._cd_key_entry.pack(side="left", padx=(0, 8))
+
+            act_row = tk.Frame(form, bg=T.PANEL)
+            act_row.pack(fill="x")
+            ActionButton(act_row, text="Activate CD-Key", width=140,
+                         command=self._on_activate_cd).pack(side="left")
+
+    # ── License handlers ────────────────────────────────────────
+
+    def _on_buy_stripe(self):
+        from engine import license_manager as lm, stripe_checkout
+        email = self._stripe_email.get().strip()
+        if not email or "@" not in email:
+            messagebox.showwarning("Email needed", "Enter a valid email address first.")
+            return
+
+        device_id = lm.get_manager()._device_id()
+
+        def success(cd_key, email_):
+            # Activate locally
+            ok, msg = lm.get_manager().activate(cd_key)
+            # Show result on main thread
+            self.after(0, lambda: messagebox.showinfo(
+                "Pro Activated!",
+                f"Payment successful!\n\n"
+                f"Your CD-Key:\n{cd_key}\n\n"
+                f"{msg}\n\n"
+                f"Restart the app to enable all Pro features."
+            ))
+
+        def error(msg):
+            self.after(0, lambda: messagebox.showerror("Payment error", msg))
+
+        ok = stripe_checkout.begin_checkout(
+            email=email, device_id=device_id,
+            on_success=success, on_error=error,
+        )
+        if ok:
+            messagebox.showinfo(
+                "Browser opened",
+                "Complete your payment in the browser.\n"
+                "Your CD-key will appear automatically once payment is confirmed.\n\n"
+                "Test card: 4242 4242 4242 4242  Exp: 12/26  CVC: 123"
+            )
+
+    def _on_activate_cd(self):
+        from engine import license_manager as lm
+        cd = self._cd_key_entry.get().strip()
+        if not cd or cd == "FSD-XXXX-XXXX-XXXX-XXXX":
+            messagebox.showwarning("CD-Key", "Enter your CD-key first.")
+            return
+        ok, msg = lm.get_manager().activate(cd)
+        if ok:
+            messagebox.showinfo("Activated!", f"{msg}\n\nRestart the app to unlock Pro features.")
+            self._cd_key_entry.delete(0, tk.END)
+        else:
+            messagebox.showerror("Activation failed", msg)
+
+    def _on_license_sync(self):
+        from engine import license_manager as lm
+        mgr = lm.get_manager()
+        if not mgr.get_cd_key():
+            messagebox.showinfo("No license", "No Pro license found.")
+            return
+        cd = mgr.get_cd_key()
+        ok, msg = mgr.activate(cd)
+        if ok:
+            messagebox.showinfo("Synced", msg)
+        else:
+            messagebox.showerror("Sync failed", msg)
+
+    def _on_deactivate(self):
+        from engine import license_manager as lm
+        if messagebox.askyesno("Deactivate", "Remove local Pro license?\n(You can re-activate anytime with your CD-key)"):
+            lm.get_manager().deactivate()
+            messagebox.showinfo("Deactivated", "License removed. Restart the app.")
+
     def _build_support_card(self, parent):
         card = Card(parent)
         card.pack(fill="x", pady=(0, 12))
@@ -195,6 +370,27 @@ class SettingsPage(tk.Frame):
             text="Theme change requires application restart to fully apply.",
             bg=T.PANEL, fg=T.FG2, font=T.FONT_SMALL)
         self._theme_note.pack(anchor="w", padx=10, pady=(0, 8))
+
+        # Animations toggle — independent of Windows performance settings
+        anim_row = tk.Frame(card, bg=T.PANEL)
+        anim_row.pack(fill="x", padx=10, pady=(0, 4))
+        tk.Label(anim_row, text="Smooth animations:", bg=T.PANEL, fg=T.FG,
+                 font=T.FONT_BODY, width=20, anchor="w").pack(side="left")
+        from engine import app_settings as _aset
+        self._anim_var = tk.BooleanVar(value=_aset.get("animations_enabled", True))
+        ToggleSwitch(anim_row, variable=self._anim_var,
+                     command=self._on_anim_toggle).pack(side="left", padx=12)
+        tk.Label(card,
+                 text="Keeps the app smooth & animated even when Windows is set "
+                      "to 'Best performance'. On by default.",
+                 bg=T.PANEL, fg=T.FG2, font=T.FONT_SMALL,
+                 wraplength=560, justify="left").pack(anchor="w", padx=10, pady=(0, 8))
+
+    def _on_anim_toggle(self):
+        from engine import app_settings as _aset
+        on = self._anim_var.get()
+        T.set_animations_enabled(on)
+        _aset.set_and_save("animations_enabled", on)
 
     def _build_autorun_card(self, parent):
         from engine import startup_manager

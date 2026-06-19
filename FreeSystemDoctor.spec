@@ -80,6 +80,13 @@ hidden = [
     'gui.affiliate_banner', 'gui.native_ad_widgets',
     'gui.pro_upsell_smart', 'gui.first_run_dialog',
     'gui.system_hud',
+    # New features: command palette, auto-pilot, health timeline, ask-your-PC
+    'gui.nav_registry', 'gui.command_palette', 'gui._pro_gate',
+    'gui.page_autopilot', 'gui.page_health_timeline', 'gui.page_ai_ask',
+    'engine.health_timeline', 'engine.ai_ask',
+    'engine.license_manager', 'engine.stripe_checkout',
+    'engine.app_settings',
+    'gui.page_performance_guardian', 'engine.performance_guardian',
 ]
 
 a = Analysis(

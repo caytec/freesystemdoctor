@@ -61,22 +61,64 @@ def main():
         print("Install with:  pip install", " ".join(missing))
         sys.exit(1)
 
-    # Windows DPI awareness for crisp text
+    # ──────────────────────────────────────────────────────────
+    # Initialize license manager (Pro/Free tier detection)
+    # ──────────────────────────────────────────────────────────
+    from engine import license_manager as _lm
+    _mgr  = _lm.get_manager()
+    _tier = _mgr.get_tier()
+    print(f"[License] Tier: {_tier}")
+
+    # Windows DPI awareness for crisp text — independent of the system's
+    # "Adjust for best performance" setting. Try Per-Monitor-V2 (sharpest),
+    # then fall back through the older APIs.
     try:
         import ctypes
-        ctypes.windll.shcore.SetProcessDpiAwareness(1)
+        try:
+            # DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2 = -4
+            ctypes.windll.user32.SetProcessDpiAwarenessContext(ctypes.c_void_p(-4))
+        except Exception:
+            try:
+                ctypes.windll.shcore.SetProcessDpiAwareness(2)  # per-monitor
+            except Exception:
+                ctypes.windll.shcore.SetProcessDpiAwareness(1)  # system-aware
     except Exception:
         pass
 
-    # Auto-register startup task on first run (background — don't block UI)
+    # ──────────────────────────────────────────────────────────
+    # Background tasks (license sync, autorun setup, etc)
+    # ──────────────────────────────────────────────────────────
     import threading as _threading
-    def _setup_autorun():
+
+    def _background_tasks():
         try:
             from engine import startup_manager
             startup_manager.register_autorun_on_first_run()
         except Exception:
             pass
-    _threading.Thread(target=_setup_autorun, daemon=True).start()
+        # Non-blocking license sync (validate cached key with server)
+        try:
+            _mgr.sync_background()
+        except Exception:
+            pass
+        # Health-timeline launch snapshot (de-duped to once per day)
+        try:
+            from engine import health_check, system_info, health_timeline
+            health_timeline.record_snapshot(
+                health_check.get_health_scores(),
+                system_info.get_live_metrics(),
+                source="launch")
+        except Exception:
+            pass
+        # Performance Guardian — continuous monitoring (read-only by default;
+        # auto-actions are opt-in via its config).
+        try:
+            from engine import performance_guardian
+            performance_guardian.start()
+        except Exception:
+            pass
+
+    _threading.Thread(target=_background_tasks, daemon=True).start()
 
     # Mark app launch for monetization gating (Pro upsells respect 30 min
     # warm-up before triggering) and retry any pending newsletter submit.
