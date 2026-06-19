@@ -1,7 +1,12 @@
 {
-  "updated": "2026-06-19T02:24:08.102256Z",
-  "count": 28,
+  "updated": "2026-06-19T04:35:35.797733Z",
+  "count": 29,
   "commits": [
+    {
+      "sha": "0a7e6165a95e6e55ae7ff992857c6c48c9a789ab",
+      "date": "2026-06-19T06:35:15+02:00",
+      "msg": "feat(installer): opt-in partner offer page (affiliate, PUP-safe)"
+    },
     {
       "sha": "18ec001695e347bcaa77a6ed9643a50bf018e6ef",
       "date": "2026-06-19T04:21:42+02:00",
