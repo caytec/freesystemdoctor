@@ -901,12 +901,17 @@ class App(tk.Tk):
         # Global Ctrl+K command palette
         self.bind_all("<Control-k>", self._open_palette)
         self.bind_all("<Control-K>", self._open_palette)
-        # First-run welcome for non-technical users (shown once). If it appears,
-        # defer the optional LibreHardwareMonitor prompt to a later launch so the
-        # two dialogs never stack on a brand-new install.
+        # First-run flow (never stacks dialogs):
+        #   welcome  →  interactive tutorial  →  optional LHM prompt
         from .welcome_dialog import maybe_show_welcome
-        if not maybe_show_welcome(self):
-            # Opt-in prompt for LibreHardwareMonitor (only first run, dismissible)
+        if not maybe_show_welcome(self, on_close=self._after_welcome):
+            self._after_welcome()
+
+    def _after_welcome(self):
+        """Runs once the welcome dialog closes (or immediately if it was already
+        seen): start the interactive tour on first run, else the LHM prompt."""
+        from .tutorial import maybe_show_tutorial
+        if not maybe_show_tutorial(self):
             maybe_show_first_run_dialog(self)
 
     # ── styles ─────────────────────────────────────────────────────────────────
@@ -947,6 +952,7 @@ class App(tk.Tk):
         titlebar = tk.Frame(self, bg=T.SIDEBAR, height=48)
         titlebar.pack(fill="x", side="top")
         titlebar.pack_propagate(False)
+        self._titlebar = titlebar   # handle for the interactive tutorial
 
         # Particle canvas behind everything
         particles = _TitleParticles(titlebar, bg=T.SIDEBAR)
@@ -1018,6 +1024,7 @@ class App(tk.Tk):
         (bottom-right of the status bar). Opens aipol.com.pl in the browser."""
         wrap = tk.Frame(parent, bg=T.SIDEBAR, cursor="hand2")
         wrap.pack(side="right", padx=12)
+        self._aipol_brand = wrap   # handle for the interactive tutorial
 
         # Wordmark "logo": a small brand hexagon + company name.
         mark = tk.Canvas(wrap, width=16, height=16, bg=T.SIDEBAR,

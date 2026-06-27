@@ -402,6 +402,26 @@ class SettingsPage(tk.Frame):
                  bg=T.PANEL, fg=T.FG2, font=T.FONT_SMALL,
                  wraplength=560, justify="left").pack(anchor="w", padx=10, pady=(0, 8))
 
+        # Replay the interactive first-run tour
+        tour_row = tk.Frame(card, bg=T.PANEL)
+        tour_row.pack(fill="x", padx=10, pady=(0, 4))
+        tk.Label(tour_row, text="Guided tour:", bg=T.PANEL, fg=T.FG,
+                 font=T.FONT_BODY, width=20, anchor="w").pack(side="left")
+        ActionButton(tour_row, text="Take a tour", command=self._on_take_tour,
+                     width=120).pack(side="left", padx=12)
+        tk.Label(card,
+                 text="Replay the interactive walkthrough that highlights the "
+                      "main parts of the app.",
+                 bg=T.PANEL, fg=T.FG2, font=T.FONT_SMALL,
+                 wraplength=560, justify="left").pack(anchor="w", padx=10, pady=(0, 8))
+
+    def _on_take_tour(self):
+        try:
+            from .tutorial import start_tutorial
+            start_tutorial(self._app)
+        except Exception:
+            pass
+
     def _on_anim_toggle(self):
         from engine import app_settings as _aset
         on = self._anim_var.get()

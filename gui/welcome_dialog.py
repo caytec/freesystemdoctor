@@ -23,9 +23,10 @@ except Exception:  # pragma: no cover
 class WelcomeDialog(tk.Toplevel):
     W, H = 600, 540
 
-    def __init__(self, app):
+    def __init__(self, app, on_close=None):
         super().__init__(app)
         self._app = app
+        self._on_close = on_close
         self.title("Welcome to FreeSystemDoctor")
         self.configure(bg=T.BG)
         self.geometry(f"{self.W}x{self.H}")
@@ -145,6 +146,8 @@ class WelcomeDialog(tk.Toplevel):
 
     # ── actions ─────────────────────────────────────────────────────────────
     def _go(self, page_key):
+        # User dove straight into a tool — don't interrupt with the tour.
+        self._on_close = None
         self._finish()
         try:
             self._app._switch_page(page_key)
@@ -161,10 +164,22 @@ class WelcomeDialog(tk.Toplevel):
             self.destroy()
         except Exception:
             pass
+        # Hand off to whatever should run after the welcome (e.g. the tour).
+        if self._on_close:
+            cb, self._on_close = self._on_close, None
+            try:
+                self._app.after(150, cb)
+            except Exception:
+                pass
 
 
-def maybe_show_welcome(app) -> bool:
-    """Show the welcome dialog once on first run. Returns True if it will show."""
+def maybe_show_welcome(app, on_close=None) -> bool:
+    """Show the welcome dialog once on first run. Returns True if it will show.
+
+    ``on_close`` is invoked after the dialog is dismissed via "Start exploring"
+    (used to chain the interactive tour). It is NOT called if the user dives
+    straight into a tool from a CTA.
+    """
     if app_settings is None:
         return False
     try:
@@ -172,5 +187,5 @@ def maybe_show_welcome(app) -> bool:
             return False
     except Exception:
         return False
-    app.after(700, lambda: WelcomeDialog(app))
+    app.after(700, lambda: WelcomeDialog(app, on_close=on_close))
     return True
