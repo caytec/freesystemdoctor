@@ -783,25 +783,37 @@ class _TitleParticles(tk.Canvas):
             }
             for _ in range(self.N)
         ]
+        # Create each oval ONCE; subsequent frames only move them via coords()
+        # instead of delete-all + recreate (far less canvas churn → smoother).
+        self._oval_ids = []
+        for p in self._particles:
+            color = T.lerp_color(T.SIDEBAR, T.HIGHLIGHT, p["alpha"] * 0.5)
+            r = p["r"]
+            self._oval_ids.append(self.create_oval(
+                p["x"]-r, p["y"]-r, p["x"]+r, p["y"]+r, fill=color, outline=""))
         self._animate()
 
     def _animate(self):
-        import random
-        self.delete("all")
+        # Pause when the titlebar isn't visible (window minimized).
+        try:
+            if not self.winfo_viewable():
+                self.after(500, self._animate)
+                return
+        except tk.TclError:
+            return
         w = max(self.winfo_width(), 1200)
         h = max(self.winfo_height(), 46)
 
-        for p in self._particles:
+        for p, oid in zip(self._particles, self._oval_ids):
             p["x"] = (p["x"] + p["vx"]) % w
             p["y"] = max(0, min(h, p["y"] + p["vy"]))
             if p["y"] <= 0 or p["y"] >= h:
                 p["vy"] *= -1
-
-            alpha = p["alpha"]
-            color = T.lerp_color(T.SIDEBAR, T.HIGHLIGHT, alpha * 0.5)
             r = p["r"]
-            self.create_oval(p["x"]-r, p["y"]-r, p["x"]+r, p["y"]+r,
-                             fill=color, outline="")
+            try:
+                self.coords(oid, p["x"]-r, p["y"]-r, p["x"]+r, p["y"]+r)
+            except tk.TclError:
+                return
 
         self.after(40, self._animate)
 

@@ -71,6 +71,15 @@ class _AnimatedGauge(tk.Canvas):
                          fill=T.FG2, font=T.FONT_MICRO)
 
     def _animate(self):
+        # Pause expensive redraws when Home isn't the visible page (pages are
+        # pack_forget'd, not destroyed) or the window is minimized.
+        try:
+            if not self.winfo_viewable():
+                self._current = self._target   # settle so it's correct on return
+                self.after(300, self._animate)
+                return
+        except tk.TclError:
+            return
         self._glow_phase = (self._glow_phase + 1) % 100
         diff = self._target - self._current
         if abs(diff) > 0.3:
@@ -227,6 +236,13 @@ class _HeroCanvas(tk.Canvas):
         self._animate()
 
     def _animate(self):
+        # Pause the particle web when Home is hidden or the window is minimized.
+        try:
+            if not self.winfo_viewable():
+                self.after(400, self._animate)
+                return
+        except tk.TclError:
+            return
         self.delete("all")
         w = self.winfo_width() or 800
         h = self.winfo_height() or 120
@@ -557,6 +573,13 @@ class HomePage(tk.Frame):
         threading.Thread(target=update_loop, daemon=True).start()
 
     def _apply_metrics(self, cpu: float, ram: float, disk: float, net: float):
+        # Skip all UI redraws when Home isn't the visible page — the sampler
+        # keeps running off-thread, but we don't touch widgets off-screen.
+        try:
+            if not self.winfo_viewable():
+                return
+        except tk.TclError:
+            return
         try:
             self._gauges["cpu"].set_value(cpu)
             self._gauges["ram"].set_value(ram)

@@ -148,15 +148,38 @@ class RealtimeDashboardPage(tk.Frame):
             self._update_loop()
 
     def _update_loop(self):
-        """Periodic UI update."""
+        """Periodic refresh — gathers metrics OFF the UI thread.
+
+        rm.get_current_metrics() calls psutil.cpu_percent(interval=0.5), which
+        blocks for half a second. Running it on the Tk thread froze the whole
+        window every 5s; we now sample in a worker and marshal the result back
+        via after(0, ...) so the UI stays responsive.
+        """
         if not self._monitoring or not self.winfo_exists():
             return
 
-        # Get current metrics
-        metrics = rm.get_current_metrics()
-        peaks = rm.get_peak_metrics(minutes=60)
-        alerts = rm.get_recent_alerts(limit=15)
-        alert_summary = rm.get_alerts_summary()
+        def gather():
+            try:
+                data = (rm.get_current_metrics(), rm.get_peak_metrics(minutes=60),
+                        rm.get_recent_alerts(limit=15), rm.get_alerts_summary(),
+                        rm.get_trend("cpu", minutes=60), rm.get_trend("ram", minutes=60),
+                        rm.get_trend("disk", minutes=60))
+            except Exception:
+                data = None
+            try:
+                self.after(0, lambda: self._apply_metrics(data))
+            except tk.TclError:
+                pass
+
+        threading.Thread(target=gather, daemon=True).start()
+
+    def _apply_metrics(self, data):
+        if not self._monitoring or not self.winfo_exists():
+            return
+        if not data:
+            self.after(5000, self._update_loop)
+            return
+        metrics, peaks, alerts, alert_summary, cpu_trend, ram_trend, disk_trend = data
 
         # Update current metrics
         if metrics:
@@ -173,11 +196,7 @@ class RealtimeDashboardPage(tk.Frame):
             self._disk_bar.set(disk_val)
             self._disk_label.config(text=f"{disk_val:.0f}%")
 
-            # Get trends
-            cpu_trend = rm.get_trend("cpu", minutes=60)
-            ram_trend = rm.get_trend("ram", minutes=60)
-            disk_trend = rm.get_trend("disk", minutes=60)
-
+            # Trends were computed off-thread (cpu_trend/ram_trend/disk_trend)
             trend_char = {"increasing": "↑", "decreasing": "↓", "stable": "→", "unknown": "?"}
             self._cpu_trend.config(text=trend_char.get(cpu_trend, "?"))
             self._ram_trend.config(text=trend_char.get(ram_trend, "?"))
