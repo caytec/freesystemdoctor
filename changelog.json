@@ -1,7 +1,12 @@
 {
-  "updated": "2026-06-19T07:40:29.218225Z",
-  "count": 31,
+  "updated": "2026-06-19T11:29:36.010879Z",
+  "count": 32,
   "commits": [
+    {
+      "sha": "d1595faae3a2ee5484fdeb589d3bac67b1873005",
+      "date": "2026-06-19T13:29:12+02:00",
+      "msg": "feat(brand+fixes): AiPOL SA branding, navy/blue theme, security fixes"
+    },
     {
       "sha": "63685e58b612455f4bab63212ab232b947de4326",
       "date": "2026-06-19T09:40:10+02:00",
