@@ -1,7 +1,12 @@
 {
-  "updated": "2026-06-27T18:43:24.934144Z",
-  "count": 35,
+  "updated": "2026-07-02T20:41:20.744316Z",
+  "count": 36,
   "commits": [
+    {
+      "sha": "ae7a1a0a3ff26f15f924cb8d512b21c170bf1dd9",
+      "date": "2026-07-02T22:40:56+02:00",
+      "msg": "docs: refresh v2.2.0 release notes for launch"
+    },
     {
       "sha": "497a200f6898329624f0320a7ff68b2bfc78b8b8",
       "date": "2026-06-27T20:43:03+02:00",
