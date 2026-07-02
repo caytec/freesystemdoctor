@@ -1,7 +1,12 @@
 {
-  "updated": "2026-06-27T18:25:50.521045Z",
-  "count": 34,
+  "updated": "2026-06-27T18:43:24.934144Z",
+  "count": 35,
   "commits": [
+    {
+      "sha": "497a200f6898329624f0320a7ff68b2bfc78b8b8",
+      "date": "2026-06-27T20:43:03+02:00",
+      "msg": "build: bundle onboarding modules (welcome dialog + tutorial)"
+    },
     {
       "sha": "63a8eeee1c7c2163164168a458d976f5d3cac242",
       "date": "2026-06-27T20:25:29+02:00",
