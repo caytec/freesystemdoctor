@@ -264,7 +264,8 @@ class GameBoosterPage(tk.Frame):
         dlg = tk.Toplevel(self)
         dlg.title("Wybierz proces gry")
         dlg.configure(bg=T.BG)
-        dlg.geometry("640x420")
+        dlg.geometry("640x460")
+        dlg.minsize(520, 340)
         dlg.transient(self)
         dlg.grab_set()
 
@@ -274,8 +275,32 @@ class GameBoosterPage(tk.Frame):
                  bg=T.BG, fg=T.FG, font=T.FONT_BODY,
                  anchor="w").pack(fill="x", padx=14, pady=(14, 6))
 
+        def confirm():
+            sel = tv.selection()
+            if not sel:
+                return
+            row = tv.item(sel[0])
+            name = row["text"]
+            gb.set_detected_process(name)
+            dlg.destroy()
+            messagebox.showinfo(
+                "Wykryto",
+                f"Watchdog będzie OBSERWOWAĆ proces:\n{name}\n\n"
+                f"(detection-only — nie modyfikuje go w żaden sposób)",
+            )
+            self._refresh_status()
+
+        # Buttons are packed to the bottom FIRST so they're always visible,
+        # then the list fills the space above (fixes clipped/unclickable button).
+        btn_row = tk.Frame(dlg, bg=T.BG)
+        btn_row.pack(side="bottom", fill="x", padx=14, pady=12)
+        ActionButton(btn_row, text="✓ Użyj wybranego procesu",
+                     command=confirm).pack(side="left")
+        ActionButton(btn_row, text="Anuluj",
+                     command=dlg.destroy).pack(side="left", padx=8)
+
         cols = ("PID", "Score", "Path")
-        tv = ttk.Treeview(dlg, columns=cols, show="tree headings", height=14)
+        tv = ttk.Treeview(dlg, columns=cols, show="tree headings", height=10)
         apply_treeview_style(tv)
         tv.heading("#0", text="Nazwa procesu", anchor="w")
         tv.heading("PID", text="PID", anchor="w")
@@ -293,30 +318,14 @@ class GameBoosterPage(tk.Frame):
         children = tv.get_children()
         if children:
             tv.selection_set(children[0])
+            tv.focus(children[0])
         tv.pack(fill="both", expand=True, padx=14, pady=4)
 
-        btn_row = tk.Frame(dlg, bg=T.BG)
-        btn_row.pack(fill="x", padx=14, pady=12)
-
-        def confirm():
-            sel = tv.selection()
-            if not sel:
-                return
-            row = tv.item(sel[0])
-            name = row["text"]
-            gb.set_detected_process(name)
-            dlg.destroy()
-            messagebox.showinfo(
-                "Wykryto",
-                f"Watchdog będzie OBSERWOWAĆ proces:\n{name}\n\n"
-                f"(detection-only — nie modyfikuje go w żaden sposób)",
-            )
-            self._refresh_status()
-
-        ActionButton(btn_row, text="✓ Użyj wybranego procesu",
-                     command=confirm).pack(side="left")
-        ActionButton(btn_row, text="Anuluj",
-                     command=dlg.destroy).pack(side="left", padx=8)
+        # Double-click a row, or press Enter, to confirm the selection.
+        tv.bind("<Double-1>", lambda e: confirm())
+        tv.bind("<Return>", lambda e: confirm())
+        dlg.bind("<Return>", lambda e: confirm())
+        tv.focus_set()
 
     def _clear_log(self):
         for child in self._tv.get_children():
