@@ -1,7 +1,12 @@
 {
-  "updated": "2026-07-02T20:41:20.744316Z",
-  "count": 36,
+  "updated": "2026-07-14T12:24:21.748381Z",
+  "count": 37,
   "commits": [
+    {
+      "sha": "8bf6642f0558b6e90074c7b4088c7216a4a8da6d",
+      "date": "2026-07-14T14:23:50+02:00",
+      "msg": "fix(game-booster): process-picker confirm button was clipped/unclickable"
+    },
     {
       "sha": "ae7a1a0a3ff26f15f924cb8d512b21c170bf1dd9",
       "date": "2026-07-02T22:40:56+02:00",
