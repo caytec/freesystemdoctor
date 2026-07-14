@@ -52,9 +52,13 @@ class ApkStaticScannerEngine(private val context: Context) {
                     .toSet()
             }.getOrDefault(emptySet())
 
-            val infos = pm.getInstalledPackages(
-                PackageManager.GET_PERMISSIONS or PackageManager.GET_RECEIVERS,
-            )
+            // Binder transaction can exceed the 1 MB buffer on app-heavy devices
+            // (TransactionTooLargeException / DeadObjectException) — degrade to empty.
+            val infos = runCatching {
+                pm.getInstalledPackages(
+                    PackageManager.GET_PERMISSIONS or PackageManager.GET_RECEIVERS,
+                )
+            }.getOrDefault(emptyList())
             val apps = infos.mapNotNull { info ->
                 val appInfo = info.applicationInfo ?: return@mapNotNull null
                 val isSystem = (appInfo.flags and ApplicationInfo.FLAG_SYSTEM) != 0

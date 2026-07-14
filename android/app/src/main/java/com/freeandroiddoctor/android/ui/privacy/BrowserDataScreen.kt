@@ -70,7 +70,7 @@ fun BrowserDataScreen(viewModel: BrowserDataViewModel = viewModel()) {
         }
         items(entries, key = { it.packageName }) { entry ->
             Card(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().animateItem(),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
                 shape = MaterialTheme.shapes.medium,
             ) {

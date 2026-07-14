@@ -2,6 +2,11 @@ package com.freeandroiddoctor.android.ui.settings
 
 import android.content.Intent
 import android.net.Uri
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -108,11 +113,13 @@ fun SettingsScreen(
                         onCheckedChange = viewModel::setScheduledCleaning,
                     )
                 }
-                if (settings.scheduledCleaning) {
-                    TextButton(
-                        onClick = { onNavigate(ToolRoutes.SCHEDULE) },
-                        modifier = Modifier.align(Alignment.End),
-                    ) {
+                AnimatedVisibility(
+                    visible = settings.scheduledCleaning,
+                    enter = expandVertically() + fadeIn(),
+                    exit = shrinkVertically() + fadeOut(),
+                    modifier = Modifier.align(Alignment.End),
+                ) {
+                    TextButton(onClick = { onNavigate(ToolRoutes.SCHEDULE) }) {
                         Text(stringResource(R.string.settings_schedule_configure))
                         Icon(Icons.Filled.ChevronRight, contentDescription = null)
                     }
@@ -165,7 +172,11 @@ fun SettingsScreen(
                         Text(stringResource(R.string.settings_ai_clear))
                     }
                 }
-                if (hasKey) {
+                AnimatedVisibility(
+                    visible = hasKey,
+                    enter = expandVertically() + fadeIn(),
+                    exit = shrinkVertically() + fadeOut(),
+                ) {
                     Text(
                         stringResource(R.string.perm_granted),
                         color = MaterialTheme.colorScheme.secondary,

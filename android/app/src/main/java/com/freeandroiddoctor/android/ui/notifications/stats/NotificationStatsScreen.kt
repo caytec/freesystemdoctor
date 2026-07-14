@@ -58,7 +58,7 @@ fun NotificationStatsScreen(modifier: Modifier = Modifier) {
                         }.getOrDefault(row.packageName)
                     }
                     Card(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth().animateItem(),
                         colors = CardDefaults.cardColors(
                             containerColor = MaterialTheme.colorScheme.surfaceContainer,
                         ),

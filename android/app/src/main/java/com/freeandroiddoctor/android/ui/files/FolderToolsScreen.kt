@@ -84,8 +84,8 @@ fun FolderToolsScreen(
         }
 
         LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            itemsIndexed(state.emptyFolders) { index, folder ->
-                Appear(index = index) {
+            itemsIndexed(state.emptyFolders, key = { _, folder -> folder.uri.toString() }) { index, folder ->
+                Appear(index = index.coerceAtMost(8), modifier = Modifier.animateItem()) {
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         colors = CardDefaults.cardColors(
@@ -112,8 +112,8 @@ fun FolderToolsScreen(
                     }
                 }
             }
-            itemsIndexed(state.children) { index, entry ->
-                Appear(index = index) {
+            itemsIndexed(state.children, key = { _, entry -> entry.name }) { index, entry ->
+                Appear(index = index.coerceAtMost(8), modifier = Modifier.animateItem()) {
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         colors = CardDefaults.cardColors(

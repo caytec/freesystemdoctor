@@ -36,8 +36,8 @@ class PrivacyAuditViewModel(app: Application) : AndroidViewModel(app) {
 
     fun refreshNetwork() {
         viewModelScope.launch {
-            val snapshot = network.snapshot()
-            _state.value = _state.value.copy(network = snapshot)
+            runCatching { network.snapshot() }
+                .onSuccess { _state.value = _state.value.copy(network = it) }
         }
     }
 
@@ -45,8 +45,10 @@ class PrivacyAuditViewModel(app: Application) : AndroidViewModel(app) {
         if (_state.value.running) return
         _state.value = _state.value.copy(running = true)
         viewModelScope.launch {
-            val report = scanner.scan(includeSystem = _state.value.includeSystem)
-            _state.value = _state.value.copy(report = report, running = false)
+            // Reset `running` even on failure so the spinner never hangs.
+            runCatching { scanner.scan(includeSystem = _state.value.includeSystem) }
+                .onSuccess { _state.value = _state.value.copy(report = it, running = false) }
+                .onFailure { _state.value = _state.value.copy(running = false) }
         }
     }
 }

@@ -4,6 +4,14 @@ import android.app.Activity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -70,15 +78,27 @@ fun SimilarPhotosScreen(
             }
         }
 
-        if (state.scanning) {
-            LinearProgressIndicator(
-                progress = { state.progress?.fraction ?: 0f },
-                modifier = Modifier.fillMaxWidth(),
-            )
-            Text(stringResource(R.string.action_scanning), style = MaterialTheme.typography.bodySmall)
-            com.freeandroiddoctor.android.ui.components.ShimmerList(rows = 4)
+        AnimatedVisibility(
+            visible = state.scanning,
+            enter = expandVertically() + fadeIn(),
+            exit = shrinkVertically() + fadeOut(),
+        ) {
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                val frac by animateFloatAsState(
+                    targetValue = state.progress?.fraction ?: 0f,
+                    animationSpec = tween(400, easing = FastOutSlowInEasing),
+                    label = "scanProgress",
+                )
+                LinearProgressIndicator(progress = { frac }, modifier = Modifier.fillMaxWidth())
+                Text(stringResource(R.string.action_scanning), style = MaterialTheme.typography.bodySmall)
+                com.freeandroiddoctor.android.ui.components.ShimmerList(rows = 4)
+            }
         }
-        if (state.scanned && state.groups.isEmpty() && !state.scanning) {
+        AnimatedVisibility(
+            visible = state.scanned && state.groups.isEmpty() && !state.scanning,
+            enter = expandVertically() + fadeIn(),
+            exit = shrinkVertically() + fadeOut(),
+        ) {
             Text(stringResource(R.string.similar_none))
         }
 

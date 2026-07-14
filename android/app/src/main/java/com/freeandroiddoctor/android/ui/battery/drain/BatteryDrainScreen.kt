@@ -45,7 +45,7 @@ fun BatteryDrainScreen(modifier: Modifier = Modifier) {
             LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 items(rows, key = { it.packageName }) { r ->
                     Card(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth().animateItem(),
                         colors = CardDefaults.cardColors(
                             containerColor = MaterialTheme.colorScheme.surfaceContainer,
                         ),

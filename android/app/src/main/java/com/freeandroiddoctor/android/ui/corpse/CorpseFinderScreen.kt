@@ -98,7 +98,11 @@ fun CorpseFinderScreen(
                 }
                 LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     items(entries, key = { it.folderUri.toString() }) { entry ->
-                        CorpseRow(entry = entry, onDelete = { viewModel.delete(listOf(entry)) })
+                        CorpseRow(
+                            entry = entry,
+                            onDelete = { viewModel.delete(listOf(entry)) },
+                            modifier = Modifier.animateItem(),
+                        )
                     }
                 }
             }
@@ -107,9 +111,13 @@ fun CorpseFinderScreen(
 }
 
 @Composable
-private fun CorpseRow(entry: CorpseEntry, onDelete: () -> Unit) {
+private fun CorpseRow(
+    entry: CorpseEntry,
+    onDelete: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
         shape = MaterialTheme.shapes.medium,
     ) {

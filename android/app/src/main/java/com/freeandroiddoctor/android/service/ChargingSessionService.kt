@@ -18,10 +18,13 @@ import com.freeandroiddoctor.android.engine.battery.ChargingSession
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlin.math.abs
 
 /**
@@ -103,7 +106,13 @@ class ChargingSessionService : Service() {
                 avgCurrentMa = if (currentSamples.isEmpty()) 0 else currentSamples.average().toInt(),
                 estMahAdded = mahIntegral.toInt(),
             )
-            scope.launch { ServiceLocator.chargingSessionEngine.append(session) }
+            // NonCancellable: the write must survive scope.cancel() in onDestroy,
+            // which fires right after stopSelf().
+            scope.launch {
+                withContext(NonCancellable) {
+                    ServiceLocator.chargingSessionEngine.append(session)
+                }
+            }
         }
         stopForeground(STOP_FOREGROUND_REMOVE)
         stopSelf()
@@ -111,6 +120,7 @@ class ChargingSessionService : Service() {
 
     override fun onDestroy() {
         sampler?.cancel()
+        scope.cancel()
         super.onDestroy()
     }
 

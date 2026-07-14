@@ -31,8 +31,9 @@ class AppResourceViewModel(application: Application) : AndroidViewModel(applicat
     fun refresh() {
         viewModelScope.launch {
             _state.value = _state.value.copy(loading = true)
-            val report = engine.report(includeSystem = false, topN = 50)
-            _state.value = ResourceUiState(report = report, loading = false)
+            runCatching { engine.report(includeSystem = false, topN = 50) }
+                .onSuccess { _state.value = ResourceUiState(report = it, loading = false) }
+                .onFailure { _state.value = _state.value.copy(loading = false) }
         }
     }
 

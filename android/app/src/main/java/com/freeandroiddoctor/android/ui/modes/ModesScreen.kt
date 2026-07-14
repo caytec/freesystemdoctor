@@ -53,6 +53,7 @@ fun ModesScreen(viewModel: ModesViewModel = viewModel()) {
             ModeRow(
                 mode = mode,
                 active = state.active?.activeModeId == mode.id,
+                modifier = Modifier.animateItem(),
                 onActivate = { viewModel.activate(mode) },
             )
         }
@@ -62,6 +63,7 @@ fun ModesScreen(viewModel: ModesViewModel = viewModel()) {
                 ModeRow(
                     mode = mode,
                     active = state.active?.activeModeId == mode.id,
+                    modifier = Modifier.animateItem(),
                     onActivate = { viewModel.activate(mode) },
                 )
             }
@@ -115,9 +117,14 @@ private fun ActiveBanner(activeId: String?, onDeactivate: () -> Unit) {
 }
 
 @Composable
-private fun ModeRow(mode: AppMode, active: Boolean, onActivate: () -> Unit) {
+private fun ModeRow(
+    mode: AppMode,
+    active: Boolean,
+    onActivate: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
         shape = MaterialTheme.shapes.medium,
     ) {

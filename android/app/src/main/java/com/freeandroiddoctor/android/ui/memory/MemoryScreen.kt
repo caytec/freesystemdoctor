@@ -1,5 +1,12 @@
 package com.freeandroiddoctor.android.ui.memory
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -75,13 +82,23 @@ fun MemoryScreen(
             ) { Text(stringResource(R.string.memory_free)) }
         }
 
-        state.lastFreedBytes?.let { freed ->
-            item("freed-text") {
-                Text(
-                    stringResource(R.string.memory_freed, ByteFormatter.format(freed)),
-                    color = MaterialTheme.colorScheme.secondary,
-                    style = MaterialTheme.typography.bodyMedium,
-                )
+        item("freed-text") {
+            // AnimatedContent slides the freed-bytes line in instead of popping it.
+            AnimatedContent(
+                targetState = state.lastFreedBytes,
+                transitionSpec = {
+                    slideInVertically(tween(260)) { -it / 2 } + fadeIn(tween(260)) togetherWith
+                        slideOutVertically(tween(180)) { it / 2 } + fadeOut(tween(180))
+                },
+                label = "freedBytes",
+            ) { freed ->
+                if (freed != null) {
+                    Text(
+                        stringResource(R.string.memory_freed, ByteFormatter.format(freed)),
+                        color = MaterialTheme.colorScheme.secondary,
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                }
             }
         }
 
@@ -111,7 +128,7 @@ fun MemoryScreen(
 
         items(state.largeApps, key = { it.packageName }) { app ->
             Card(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().animateItem(),
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.surfaceContainer,
                 ),

@@ -274,6 +274,9 @@ fun ToolsScreen(
         }
 
         // Tool grid
+        // Snapshot the clock once per unlocks change instead of per grid item —
+        // stable input keeps item lambdas skippable during scroll.
+        val now = remember(unlocks) { System.currentTimeMillis() }
         Appear {
             LazyVerticalGrid(
                 columns = GridCells.Adaptive(minSize = 150.dp),
@@ -289,7 +292,6 @@ fun ToolsScreen(
                         }
                     }
                     items(group.tools, key = { it.route }) { tool ->
-                        val now = System.currentTimeMillis()
                         val perToolUnlocked = (unlocks[tool.route] ?: 0L) > now
                         val unlocked = !tool.advanced || advanced || perToolUnlocked
                         ToolCard(tool = tool, locked = !unlocked, modifier = Modifier.animateItem(), onClick = {

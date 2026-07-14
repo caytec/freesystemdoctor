@@ -49,12 +49,14 @@ fun AutoRulesScreen(viewModel: AutoRulesViewModel = viewModel()) {
                 )
             }
         }
-        items(rules, key = { it.id }) { rule -> RuleRow(rule, viewModel) }
+        items(rules, key = { it.id }) { rule ->
+            RuleRow(rule, viewModel, modifier = Modifier.animateItem())
+        }
 
         item { SectionHeader(stringResource(R.string.auto_rules_add)) }
         items(AutoRuleTrigger.values().toList(), key = { "preset_$it" }) { trigger ->
             Card(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().animateItem(),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
                 shape = MaterialTheme.shapes.medium,
             ) {
@@ -81,9 +83,13 @@ fun AutoRulesScreen(viewModel: AutoRulesViewModel = viewModel()) {
 }
 
 @Composable
-private fun RuleRow(rule: AutoRule, viewModel: AutoRulesViewModel) {
+private fun RuleRow(
+    rule: AutoRule,
+    viewModel: AutoRulesViewModel,
+    modifier: Modifier = Modifier,
+) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
         shape = MaterialTheme.shapes.medium,
     ) {

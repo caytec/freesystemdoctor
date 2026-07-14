@@ -38,10 +38,14 @@ class DashboardViewModel : ViewModel() {
     fun refresh() {
         _state.value = _state.value.copy(loading = true)
         viewModelScope.launch {
-            val volume = withContext(Dispatchers.IO) { ServiceLocator.storageEngine.readPrimaryVolume() }
-            val memory = ServiceLocator.memoryEngine.read()
-            val battery = ServiceLocator.batteryEngine.read()
-            val device = ServiceLocator.deviceInfoEngine.read()
+            // Each source degrades to null independently — one failing platform
+            // call must not crash the dashboard or hang the refresh spinner.
+            val volume = runCatching {
+                withContext(Dispatchers.IO) { ServiceLocator.storageEngine.readPrimaryVolume() }
+            }.getOrNull()
+            val memory = runCatching { ServiceLocator.memoryEngine.read() }.getOrNull()
+            val battery = runCatching { ServiceLocator.batteryEngine.read() }.getOrNull()
+            val device = runCatching { ServiceLocator.deviceInfoEngine.read() }.getOrNull()
             val network = runCatching { ServiceLocator.networkPrivacyEngine.snapshot() }.getOrNull()
             val activeMode = runCatching { ServiceLocator.modeStore.activeSnapshotOnce()?.activeModeId }.getOrNull()
             _state.value = DashboardUiState(
@@ -58,14 +62,15 @@ class DashboardViewModel : ViewModel() {
     }
 
     private fun computeHealthScore(
-        volume: VolumeInfo,
-        memory: MemoryInfo,
-        battery: BatteryInfo,
+        volume: VolumeInfo?,
+        memory: MemoryInfo?,
+        battery: BatteryInfo?,
     ): Int {
         // Lower usage and cooler battery score higher; simple transparent heuristic.
-        val storageScore = (1f - volume.usedFraction) * 50f
-        val ramScore = (1f - memory.usedFraction) * 30f
-        val tempPenalty = ((battery.temperatureCelsius - 35f).coerceAtLeast(0f)) * 1.5f
+        // Missing readings contribute their neutral midpoint instead of crashing.
+        val storageScore = (1f - (volume?.usedFraction ?: 0.5f)) * 50f
+        val ramScore = (1f - (memory?.usedFraction ?: 0.5f)) * 30f
+        val tempPenalty = (((battery?.temperatureCelsius ?: 35f) - 35f).coerceAtLeast(0f)) * 1.5f
         return (storageScore + ramScore + 20f - tempPenalty).coerceIn(0f, 100f).toInt()
     }
 }

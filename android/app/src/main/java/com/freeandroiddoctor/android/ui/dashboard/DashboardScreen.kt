@@ -28,6 +28,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
@@ -70,7 +71,10 @@ fun DashboardScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    val cards = buildList<@Composable () -> Unit> {
+    // remember() keyed on state: rebuild the card lambdas only when data actually
+    // changes instead of on every recomposition (parallax scroll recomposes often).
+    val cards = remember(state) {
+        buildList<@Composable () -> Unit> {
         state.volume?.let { v ->
             add {
                 StatCard(
@@ -146,6 +150,7 @@ fun DashboardScreen(
                     modifier = Modifier.bounceClick { onNavigate(ToolRoutes.PRIVACY_AUDIT) },
                 )
             }
+        }
         }
     }
 

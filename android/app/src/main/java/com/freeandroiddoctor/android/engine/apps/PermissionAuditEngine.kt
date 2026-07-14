@@ -25,7 +25,10 @@ class PermissionAuditEngine(private val context: Context) {
     suspend fun audit(includeSystem: Boolean = false): List<AuditedApp> =
         withContext(Dispatchers.IO) {
             val pm = context.packageManager
-            val packages = pm.getInstalledPackages(PackageManager.GET_PERMISSIONS)
+            // Guard against TransactionTooLargeException on devices with many apps.
+            val packages = runCatching {
+                pm.getInstalledPackages(PackageManager.GET_PERMISSIONS)
+            }.getOrDefault(emptyList())
             packages.mapNotNull { info ->
                 val appInfo = info.applicationInfo ?: return@mapNotNull null
                 val isSystem = (appInfo.flags and ApplicationInfo.FLAG_SYSTEM) != 0

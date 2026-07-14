@@ -141,6 +141,7 @@ private fun StrategyScreen(strategy: AppCleanerStrategy, modifier: Modifier = Mo
                             val k = hit.folderUri.toString()
                             selected = if (k in selected) selected - k else selected + k
                         },
+                        modifier = Modifier.animateItem(),
                     )
                 }
             }
@@ -162,9 +163,14 @@ private suspend fun runScan(
 }
 
 @Composable
-private fun HitCard(hit: TargetHit, checked: Boolean, onToggle: () -> Unit) {
+private fun HitCard(
+    hit: TargetHit,
+    checked: Boolean,
+    onToggle: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
         shape = MaterialTheme.shapes.medium,
     ) {

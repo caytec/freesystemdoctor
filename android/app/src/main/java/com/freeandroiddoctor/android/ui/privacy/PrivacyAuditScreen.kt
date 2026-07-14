@@ -85,7 +85,9 @@ fun PrivacyAuditScreen(viewModel: PrivacyAuditViewModel = viewModel()) {
             item {
                 SectionHeader(text = stringResource(R.string.privacy_apps_header, apps.size))
             }
-            items(apps, key = { it.packageName }) { app -> RiskAppRow(app) }
+            items(apps, key = { it.packageName }) { app ->
+                RiskAppRow(app, modifier = Modifier.animateItem())
+            }
         }
     }
 }
@@ -167,14 +169,14 @@ private fun PrivacyDot.color(): Color = when (this) {
 }
 
 @Composable
-private fun RiskAppRow(app: ApkRiskReport) {
+private fun RiskAppRow(app: ApkRiskReport, modifier: Modifier = Modifier) {
     val color = when {
         app.riskScore >= 70 -> BadRed
         app.riskScore >= 40 -> WarnAmber
         else -> GoodGreen
     }
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
         shape = MaterialTheme.shapes.medium,
     ) {

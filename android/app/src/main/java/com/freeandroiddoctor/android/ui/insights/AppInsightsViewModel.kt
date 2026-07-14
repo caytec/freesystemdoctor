@@ -28,12 +28,15 @@ class AppInsightsViewModel : ViewModel() {
     fun load() {
         viewModelScope.launch {
             _state.value = _state.value.copy(loading = true, needsUsageAccess = !permissions.hasUsageAccess())
-            val report = engine.report()
-            _state.value = InsightsUiState(
-                report = report,
-                loading = false,
-                needsUsageAccess = !permissions.hasUsageAccess(),
-            )
+            runCatching { engine.report() }
+                .onSuccess {
+                    _state.value = InsightsUiState(
+                        report = it,
+                        loading = false,
+                        needsUsageAccess = !permissions.hasUsageAccess(),
+                    )
+                }
+                .onFailure { _state.value = _state.value.copy(loading = false) }
         }
     }
 

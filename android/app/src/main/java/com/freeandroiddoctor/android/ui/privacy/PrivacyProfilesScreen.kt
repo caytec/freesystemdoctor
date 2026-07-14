@@ -47,12 +47,22 @@ fun PrivacyProfilesScreen(viewModel: PrivacyProfilesViewModel = viewModel()) {
     ) {
         item { SectionHeader(text = stringResource(R.string.privacy_profiles_builtin)) }
         items(state.builtIn, key = { it.id }) { p ->
-            ProfileRow(profile = p, active = state.activeId == p.id, onPick = viewModel::buildPlan)
+            ProfileRow(
+                profile = p,
+                active = state.activeId == p.id,
+                onPick = viewModel::buildPlan,
+                modifier = Modifier.animateItem(),
+            )
         }
         if (state.custom.isNotEmpty()) {
             item { SectionHeader(text = stringResource(R.string.privacy_profiles_custom)) }
             items(state.custom, key = { it.id }) { p ->
-                ProfileRow(profile = p, active = state.activeId == p.id, onPick = viewModel::buildPlan)
+                ProfileRow(
+                    profile = p,
+                    active = state.activeId == p.id,
+                    onPick = viewModel::buildPlan,
+                    modifier = Modifier.animateItem(),
+                )
             }
         }
     }
@@ -100,9 +110,14 @@ fun PrivacyProfilesScreen(viewModel: PrivacyProfilesViewModel = viewModel()) {
 }
 
 @Composable
-private fun ProfileRow(profile: PrivacyProfile, active: Boolean, onPick: (PrivacyProfile) -> Unit) {
+private fun ProfileRow(
+    profile: PrivacyProfile,
+    active: Boolean,
+    onPick: (PrivacyProfile) -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
         shape = MaterialTheme.shapes.medium,
     ) {

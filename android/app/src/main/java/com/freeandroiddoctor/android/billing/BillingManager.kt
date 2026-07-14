@@ -147,7 +147,7 @@ class BillingManager(
 
     private suspend fun queryEntitlements() {
         var entitled = false
-        runCatching {
+        val queried = runCatching {
             val subs = client.queryPurchasesAsync(
                 QueryPurchasesParams.newBuilder()
                     .setProductType(BillingClient.ProductType.SUBS).build(),
@@ -162,9 +162,14 @@ class BillingManager(
                     acknowledgeIfNeeded(purchase)
                 }
             }
+        }.isSuccess
+        // Only persist the result of a SUCCESSFUL query. A transient failure
+        // (offline, Billing service hiccup) must not strip a paying user of Pro —
+        // keep the cached entitlement until the next successful sync.
+        if (queried) {
+            _isPro.value = entitled
+            proStore.setPro(entitled)
         }
-        _isPro.value = entitled
-        proStore.setPro(entitled)
     }
 
     fun purchase(activity: Activity, product: ProProduct) {

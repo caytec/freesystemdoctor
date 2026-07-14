@@ -24,6 +24,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.isActive
@@ -83,6 +84,7 @@ class AppLockService : Service() {
 
     override fun onDestroy() {
         loop?.cancel()
+        scope.cancel()
         runCatching { unregisterReceiver(screenReceiver) }
         super.onDestroy()
     }
@@ -173,8 +175,10 @@ class AppLockService : Service() {
         private val AUTH_TTL_MS = TimeUnit.SECONDS.toMillis(30)
 
         // Per-package auth grants visible to BiometricPromptActivity.
-        private val authenticated = mutableMapOf<String, Long>()
-        @Synchronized
+        // ConcurrentHashMap: written from the biometric activity (main thread),
+        // read from the polling loop (Dispatchers.Default) — a plain HashMap here
+        // risks corruption/CME under concurrent access.
+        private val authenticated = java.util.concurrent.ConcurrentHashMap<String, Long>()
         fun markAuthenticated(pkg: String) {
             authenticated[pkg] = System.currentTimeMillis()
         }

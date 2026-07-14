@@ -28,14 +28,19 @@ class StorageViewModel : ViewModel() {
         val hasAccess = permissions.hasUsageAccess()
         _state.value = _state.value.copy(loading = true, hasUsageAccess = hasAccess)
         viewModelScope.launch {
-            val volume = engine.readPrimaryVolume()
-            val apps = if (hasAccess) engine.readPerApp() else emptyList()
-            _state.value = StorageUiState(
-                loading = false,
-                hasUsageAccess = hasAccess,
-                volume = volume,
-                apps = apps,
-            )
+            // Never leave loading=true (or crash) if the platform call throws.
+            runCatching {
+                val volume = engine.readPrimaryVolume()
+                val apps = if (hasAccess) engine.readPerApp() else emptyList()
+                _state.value = StorageUiState(
+                    loading = false,
+                    hasUsageAccess = hasAccess,
+                    volume = volume,
+                    apps = apps,
+                )
+            }.onFailure {
+                _state.value = _state.value.copy(loading = false)
+            }
         }
     }
 }

@@ -62,7 +62,10 @@ class StorageAnalyzerEngine(
         val user: UserHandle = Process.myUserHandle()
         val uuid = StorageManager.UUID_DEFAULT
 
-        val apps = pm.getInstalledApplications(PackageManager.GET_META_DATA)
+        // Guard against TransactionTooLargeException on devices with many apps.
+        val apps = runCatching {
+            pm.getInstalledApplications(PackageManager.GET_META_DATA)
+        }.getOrDefault(emptyList())
         val result = ArrayList<AppStorage>(apps.size)
         apps.forEachIndexed { index, app ->
             val isSystem = (app.flags and ApplicationInfo.FLAG_SYSTEM) != 0

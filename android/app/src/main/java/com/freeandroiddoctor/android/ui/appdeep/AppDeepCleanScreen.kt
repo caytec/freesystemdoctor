@@ -94,6 +94,7 @@ fun AppDeepCleanScreen(
                             group = group,
                             selected = state.selected,
                             onToggle = viewModel::toggle,
+                            modifier = Modifier.animateItem(),
                         )
                     }
                 }
@@ -103,9 +104,14 @@ fun AppDeepCleanScreen(
 }
 
 @Composable
-private fun GroupCard(group: AppGroup, selected: Set<String>, onToggle: (DeepHit) -> Unit) {
+private fun GroupCard(
+    group: AppGroup,
+    selected: Set<String>,
+    onToggle: (DeepHit) -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
         shape = MaterialTheme.shapes.medium,
     ) {

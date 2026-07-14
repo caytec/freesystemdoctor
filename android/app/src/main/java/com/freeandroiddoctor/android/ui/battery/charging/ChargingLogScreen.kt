@@ -48,7 +48,7 @@ fun ChargingLogScreen(modifier: Modifier = Modifier) {
             LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 items(sessions, key = { it.startTs }) { s ->
                     Card(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth().animateItem(),
                         colors = CardDefaults.cardColors(
                             containerColor = MaterialTheme.colorScheme.surfaceContainer,
                         ),

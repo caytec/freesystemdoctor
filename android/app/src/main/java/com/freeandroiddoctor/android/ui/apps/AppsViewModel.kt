@@ -27,8 +27,9 @@ class AppsViewModel : ViewModel() {
         _state.value = _state.value.copy(loading = true)
         viewModelScope.launch {
             val s = _state.value
-            val apps = engine.listApps(s.includeSystem, s.sort)
-            _state.value = _state.value.copy(loading = false, apps = apps)
+            runCatching { engine.listApps(s.includeSystem, s.sort) }
+                .onSuccess { _state.value = _state.value.copy(loading = false, apps = it) }
+                .onFailure { _state.value = _state.value.copy(loading = false) }
         }
     }
 
