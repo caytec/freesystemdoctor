@@ -115,17 +115,16 @@ def _run_scheduled_maintenance():
     try:
         if config.get("run_disk_clean"):
             from engine import disk_cleaner
-            items = disk_cleaner.scan_junk()
-            disk_cleaner.clean_items([i for i in items if i.selected][:50])
+            # High-level cleanup with a 24h age guard so in-use files are kept.
+            disk_cleaner.clean_all(min_age_hours=24)
     except Exception:
         pass
 
     try:
         if config.get("run_registry_clean"):
             from engine import registry_cleaner
-            issues = registry_cleaner.scan_registry()
-            if issues:
-                registry_cleaner.fix_issues(issues[:20])
+            # Scans and removes only safe-to-remove registry issues.
+            registry_cleaner.clean_registry()
     except Exception:
         pass
 

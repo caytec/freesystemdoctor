@@ -193,10 +193,56 @@ class OneDriveCleanerPage(tk.Frame):
 
     def _load_data(self):
         def load():
-            quota = oc.get_storage_quota()
-            duplicates = oc.detect_duplicates()
-            old_files = oc.detect_old_files(min_age_days=90)
-            recommendations = oc.get_cleanup_recommendations()
+            # Not signed in → show an empty, honest state instead of crashing.
+            if not oc.is_connected():
+                self.after(0, self._display_data, {}, [], [], [])
+                return
+
+            files = oc.list_files()
+            usage = oc.get_drive_usage()
+            quota = {}
+            if usage:
+                quota = {
+                    "total_gb": usage.get("total", 0) / (1024**3),
+                    "used_gb": usage.get("used", 0) / (1024**3),
+                    "remaining_gb": usage.get("free", 0) / (1024**3),
+                }
+
+            # Adapt find_duplicates() tuples -> the shape _display_data expects.
+            duplicates = []
+            for group, total_size in oc.find_duplicates(files):
+                keep = group[0]["size"] if group else 0
+                duplicates.append({
+                    "name": group[0]["name"] if group else "",
+                    "count": len(group),
+                    "files": group,
+                    "recoverable_size": max(0, total_size - keep),
+                })
+
+            # Old files + a computed days_old field.
+            import datetime as _dt
+            now = _dt.datetime.utcnow()
+            old_files = []
+            for f in oc.find_old_files(files, days=90):
+                days_old = 0
+                try:
+                    mod = _dt.datetime.strptime(
+                        f.get("modified", "")[:10], "%Y-%m-%d")
+                    days_old = (now - mod).days
+                except Exception:
+                    pass
+                old_files.append({**f, "days_old": days_old})
+
+            recommendations = []
+            if duplicates:
+                recommendations.append(
+                    f"{len(duplicates)} duplicate set(s) found — free up space by removing copies.")
+            if old_files:
+                recommendations.append(
+                    f"{len(old_files)} file(s) untouched for 90+ days — consider archiving.")
+            if usage and usage.get("percent_used", 0) > 85:
+                recommendations.append("OneDrive is over 85% full.")
+
             self.after(0, self._display_data, quota, duplicates, old_files, recommendations)
 
         threading.Thread(target=load, daemon=True).start()
