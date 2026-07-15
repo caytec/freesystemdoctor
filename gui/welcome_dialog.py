@@ -70,15 +70,19 @@ class WelcomeDialog(tk.Toplevel):
 
         mode_row = tk.Frame(body, bg=T.BG)
         mode_row.pack(fill="x", pady=(0, 16))
-        self._make_mode_card(mode_row, "simple", "🌱  Simple",
+        self._make_mode_card(mode_row, "simple", "🌱  Simple  ·  recommended",
                              "Only the essential, everyday tools")
         self._make_mode_card(mode_row, "advanced", "🛠  All tools",
                              "Everything, including advanced features")
 
-        current = "advanced"
+        # Default the highlight to Simple so a newcomer who just clicks
+        # "Start exploring" lands in the friendlier view. Persist it now so the
+        # choice applies even if they don't touch the cards.
         if app_settings is not None:
-            current = app_settings.get("ui_mode", "advanced")
-        self._select_mode(current, persist=False)
+            current = app_settings.get("ui_mode", None) or "simple"
+        else:
+            current = "simple"
+        self._select_mode(current, persist=(current == "simple"))
 
         # ── 2. Quick start ──────────────────────────────────────────────────
         tk.Label(body, text="2.  Or jump straight in",

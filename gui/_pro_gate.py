@@ -88,6 +88,17 @@ def gate_or_build(page: tk.Frame, feature_id: str, title: str,
     return True             # caller stops here
 
 
+# Every Pro tool — shown on any upsell wall so users see the full value.
+_ALL_PRO_PERKS = [
+    "🤖  AI Agent — unlimited smart analysis",
+    "📦  System Backup — incremental + one-click restore",
+    "📅  Unlimited schedules, profiles & Turbo presets",
+    "💾  Deep Clean — ML junk predictor, multi-drive",
+    "💤  Continuous idle maintenance",
+    "📊  Real-time Disk Analyzer with trends",
+]
+
+
 def _build_upsell(page: tk.Frame, title: str, desc: str, feats: list[str]):
     # Header bar (matches normal page style)
     hdr = tk.Frame(page, bg=T.ACCENT, height=48)
@@ -95,46 +106,66 @@ def _build_upsell(page: tk.Frame, title: str, desc: str, feats: list[str]):
     hdr.pack_propagate(False)
     tk.Label(hdr, text=title, bg=T.ACCENT, fg=T.FG,
              font=T.FONT_TITLE).pack(side="left", padx=16)
-    tk.Label(hdr, text="Pro feature", bg=T.ACCENT,
+    tk.Label(hdr, text="⭐ Pro feature", bg=T.ACCENT,
              fg=T.HIGHLIGHT, font=T.FONT_SMALL).pack(side="left", padx=4)
 
     body = tk.Frame(page, bg=T.BG)
-    body.pack(fill="both", expand=True, padx=16, pady=16)
+    body.pack(fill="both", expand=True, padx=16, pady=14)
 
-    card = Card(body)
+    card = Card(body, glow=True)
     card.pack(fill="x")
 
-    # Lock icon + headline
-    tk.Label(card, text="🔒  Pro Edition Required",
+    # Headline — value-first, not "you're blocked"
+    tk.Label(card, text="⭐  Unlock this with FreeSystemDoctor Pro",
              bg=T.PANEL, fg=T.HIGHLIGHT,
-             font=("Segoe UI", 15, "bold")).pack(anchor="w", padx=16, pady=(14, 4))
-
+             font=("Segoe UI", 16, "bold")).pack(anchor="w", padx=18, pady=(16, 2))
     tk.Label(card, text=desc,
              bg=T.PANEL, fg=T.FG, font=T.FONT_BODY,
-             wraplength=560, justify="left").pack(anchor="w", padx=16, pady=(0, 10))
+             wraplength=580, justify="left").pack(anchor="w", padx=18, pady=(0, 10))
 
-    # Feature bullets
+    # This feature's specific benefits
     for feat in feats:
         row = tk.Frame(card, bg=T.PANEL)
-        row.pack(fill="x", padx=16, pady=1)
+        row.pack(fill="x", padx=18, pady=1)
         tk.Label(row, text="✓", bg=T.PANEL, fg=T.SUCCESS,
-                 font=T.FONT_SMALL, width=3).pack(side="left")
+                 font=T.FONT_BOLD, width=3).pack(side="left")
         tk.Label(row, text=feat, bg=T.PANEL, fg=T.FG,
                  font=T.FONT_SMALL).pack(side="left")
 
-    tk.Frame(card, bg=T.PANEL, height=12).pack()
+    # "Plus everything else in Pro" — show the whole value
+    tk.Frame(card, bg=T.BORDER, height=1).pack(fill="x", padx=18, pady=(12, 10))
+    tk.Label(card, text="Your Pro key also unlocks everything else:",
+             bg=T.PANEL, fg=T.FG2, font=T.FONT_SMALL).pack(anchor="w", padx=18)
+    perks = tk.Frame(card, bg=T.PANEL)
+    perks.pack(fill="x", padx=18, pady=(4, 4))
+    for i, perk in enumerate(_ALL_PRO_PERKS):
+        tk.Label(perks, text=perk, bg=T.PANEL, fg=T.FG,
+                 font=T.FONT_SMALL, anchor="w").grid(
+                 row=i // 2, column=i % 2, sticky="w", padx=(0, 18), pady=1)
+
+    # Price framing — friendly, low-risk
+    price = tk.Frame(card, bg=T.PANEL)
+    price.pack(fill="x", padx=18, pady=(12, 2))
+    tk.Label(price, text="$9.99", bg=T.PANEL, fg=T.FG,
+             font=("Segoe UI", 22, "bold")).pack(side="left")
+    tk.Label(price, text=" /year", bg=T.PANEL, fg=T.FG2,
+             font=T.FONT_BODY).pack(side="left", pady=(8, 0))
+    tk.Label(price, text="   ·  under $1/month  ·  cancel anytime  ·  works offline",
+             bg=T.PANEL, fg=T.FG2, font=T.FONT_SMALL).pack(side="left", pady=(8, 0))
 
     # CTA buttons
     btn_row = tk.Frame(card, bg=T.PANEL)
-    btn_row.pack(fill="x", padx=16, pady=(0, 16))
-
-    ActionButton(btn_row, text="Buy Pro — $9.99/year", width=180,
+    btn_row.pack(fill="x", padx=18, pady=(10, 6))
+    ActionButton(btn_row, text="⭐  Get Pro — $9.99/year", width=200,
                  command=_open_settings_license).pack(side="left")
-    ActionButton(btn_row, text="Enter CD-Key", width=120,
+    ActionButton(btn_row, text="I have a key", width=120, secondary=True,
                  command=_open_settings_license).pack(side="left", padx=(8, 0))
 
-    tk.Label(btn_row, text="  Already purchased? Go to Settings → License",
-             bg=T.PANEL, fg=T.FG2, font=T.FONT_SMALL).pack(side="left", padx=12)
+    # Reassurance — the core stays free
+    tk.Label(card,
+             text="💙  The 60+ core tools stay free forever. Pro just removes the limits.",
+             bg=T.PANEL, fg=T.FG2, font=T.FONT_SMALL).pack(
+             anchor="w", padx=18, pady=(0, 16))
 
 
 def _open_settings_license():
