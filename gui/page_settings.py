@@ -393,7 +393,7 @@ class SettingsPage(tk.Frame):
                  font=T.FONT_BODY, width=20, anchor="w").pack(side="left")
         from engine import app_settings as _aset2
         self._simple_var = tk.BooleanVar(
-            value=_aset2.get("ui_mode", "advanced") == "simple")
+            value=_aset2.get("ui_mode", "simple") == "simple")
         ToggleSwitch(simple_row, variable=self._simple_var,
                      command=self._on_simple_toggle).pack(side="left", padx=12)
         tk.Label(card,

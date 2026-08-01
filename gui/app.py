@@ -285,7 +285,7 @@ def ui_simple_mode() -> bool:
     """True when the user has chosen the simplified, beginner-friendly view."""
     try:
         from engine import app_settings
-        return app_settings.get("ui_mode", "advanced") == "simple"
+        return app_settings.get("ui_mode", "simple") == "simple"
     except Exception:
         return False
 
@@ -451,6 +451,11 @@ class _SidebarPanel(tk.Frame):
                             command=self._expand_canvas.yview)
         sb.place(relx=1.0, rely=0, relheight=1.0, anchor="ne")
         self._expand_canvas.configure(yscrollcommand=sb.set)
+        # Simple mode: open the flat "essentials" list immediately so novices
+        # never have to dig through categories to reach a tool.
+        if ui_simple_mode():
+            self.after(0, self._show_flat_simple)
+
         self._expand_canvas.bind("<MouseWheel>",
                                   lambda e: self._expand_canvas.yview_scroll(
                                       int(-1*(e.delta/120)), "units"))
@@ -562,6 +567,37 @@ class _SidebarPanel(tk.Frame):
         else:
             self._active_cat = cat_id
             self._show_category(cat_id)
+
+    def _show_flat_simple(self):
+        """Simple mode: ONE flat, always-visible list of the essential tools.
+
+        Removes the 'click a category → wait for the slide-out → click a tool'
+        step entirely: every important tool is one click away, no hunting.
+        Category icons still work as a power-user escape hatch.
+        """
+        for cid, c in self._cat_btns.items():
+            c._active = False
+            c._draw(active=False)
+        for w in self._expand_inner.winfo_children():
+            w.destroy()
+        self._active_cat = ""
+
+        bg = T.lerp_color(T.SIDEBAR, T.ACCENT, 0.3)
+        hdr_bg = T.lerp_color(bg, T.HIGHLIGHT, 0.08)
+        hdr = tk.Frame(self._expand_inner, bg=hdr_bg)
+        hdr.pack(fill="x")
+        tk.Label(hdr, text="ESSENTIALS", bg=hdr_bg, fg=T.HIGHLIGHT,
+                 font=(T.FONT_FAMILY, 8, "bold"), padx=12, pady=8).pack(side="left")
+
+        for cat in _NAV_CATEGORIES:
+            for key, icon, label, PageClass in cat["items"]:
+                if key not in SIMPLE_KEYS:
+                    continue
+                self._add_expand_item(key, icon, label, cat["color"],
+                                      special=(PageClass is None))
+
+        if not self._expanded:
+            self._expand(self.EXPAND_W)
 
     def _show_category(self, cat_id: str):
         # Update category button states
@@ -715,6 +751,13 @@ class _SidebarPanel(tk.Frame):
         self._animate_width(self._expand_w, target_w)
 
     def _collapse(self):
+        # In Simple mode the tool list must never disappear — falling back to
+        # the flat "essentials" list keeps every tool one click away.
+        if ui_simple_mode() and self._active_cat:
+            self._show_flat_simple()
+            return
+        if ui_simple_mode():
+            return
         self._expanded = False
         self._active_cat = ""
         for cid, c in self._cat_btns.items():
@@ -738,14 +781,20 @@ class _SidebarPanel(tk.Frame):
         # Rebuild expand panel to update highlight state
         if self._expanded and self._active_cat:
             self._show_category(self._active_cat)
+        elif self._expanded and ui_simple_mode():
+            self._show_flat_simple()
 
     def get_all_buttons(self) -> dict:
         return self._btns
 
     def refresh_mode(self):
-        """Re-render the open category after a Simple/Advanced mode change."""
-        if self._expanded and self._active_cat:
+        """Re-render the sidebar after a Simple/Advanced mode change."""
+        if ui_simple_mode():
+            self._show_flat_simple()
+        elif self._active_cat:
             self._show_category(self._active_cat)
+        else:
+            self._collapse()
 
 
 def import_math_sin(x):
