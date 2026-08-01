@@ -1,7 +1,12 @@
 {
-  "updated": "2026-07-14T12:24:21.748381Z",
-  "count": 37,
+  "updated": "2026-07-14T13:29:16.699978Z",
+  "count": 38,
   "commits": [
+    {
+      "sha": "61c4d47dbd482b04880a1ff9e40e0aded0621de6",
+      "date": "2026-07-14T15:28:50+02:00",
+      "msg": "test+fix: static call audit — every page/engine calls real functions"
+    },
     {
       "sha": "8bf6642f0558b6e90074c7b4088c7216a4a8da6d",
       "date": "2026-07-14T14:23:50+02:00",
