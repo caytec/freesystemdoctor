@@ -1,7 +1,12 @@
 {
-  "updated": "2026-08-02T19:20:27.158125Z",
-  "count": 41,
+  "updated": "2026-08-02T19:36:53.005022Z",
+  "count": 42,
   "commits": [
+    {
+      "sha": "17a115b5454d1acbe0fa3b085d219b8d4057d1cc",
+      "date": "2026-08-02T21:36:31+02:00",
+      "msg": "feat(ux): visible SIMPLE/ADVANCED switch + goal-based one-click Quick Fix"
+    },
     {
       "sha": "43ae07842c603ec146e4ce626ea611965da05103",
       "date": "2026-08-02T21:20:05+02:00",
