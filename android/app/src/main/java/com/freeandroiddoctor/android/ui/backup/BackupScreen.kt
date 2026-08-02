@@ -7,28 +7,39 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.freeandroiddoctor.android.R
+import com.freeandroiddoctor.android.engine.contacts.SmsBackupEngine
 import com.freeandroiddoctor.android.ui.components.Appear
 import com.freeandroiddoctor.android.ui.components.InfoBanner
 import com.freeandroiddoctor.android.ui.components.PermissionGate
 import com.freeandroiddoctor.android.ui.components.SectionHeader
+
+private const val MIN_PASSPHRASE = 8
 
 @Composable
 fun BackupScreen(
@@ -45,6 +56,32 @@ fun BackupScreen(
         ActivityResultContracts.RequestPermission(),
     ) { viewModel.refresh() }
 
+    // Passphrase captured in the dialog, held only until the file picker returns.
+    var armed by remember { mutableStateOf<Pair<ExportKind, CharArray>?>(null) }
+
+    val createFileLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.CreateDocument(SmsBackupEngine.MIME_TYPE),
+    ) { uri ->
+        val pending = armed
+        armed = null
+        if (uri != null && pending != null) {
+            viewModel.runExport(pending.first, uri, pending.second)
+        } else {
+            pending?.second?.fill(' ')
+        }
+    }
+
+    state.pendingKind?.let { kind ->
+        PassphraseDialog(
+            onDismiss = viewModel::cancelExport,
+            onConfirm = { passphrase ->
+                armed = kind to passphrase
+                viewModel.cancelExport()
+                createFileLauncher.launch(viewModel.suggestedFileName(kind))
+            },
+        )
+    }
+
     Column(
         modifier = modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -60,7 +97,7 @@ fun BackupScreen(
             )
         } else {
             Button(
-                onClick = viewModel::exportContacts,
+                onClick = { viewModel.startExport(ExportKind.CONTACTS) },
                 enabled = !state.working,
                 modifier = Modifier.fillMaxWidth(),
             ) { Text(stringResource(R.string.backup_export_contacts)) }
@@ -102,7 +139,7 @@ fun BackupScreen(
             )
         } else {
             OutlinedButton(
-                onClick = viewModel::exportSms,
+                onClick = { viewModel.startExport(ExportKind.SMS) },
                 enabled = !state.working,
                 modifier = Modifier.fillMaxWidth(),
             ) { Text(stringResource(R.string.backup_export_sms)) }
@@ -118,4 +155,74 @@ fun BackupScreen(
             )
         }
     }
+}
+
+@Composable
+private fun PassphraseDialog(
+    onDismiss: () -> Unit,
+    onConfirm: (CharArray) -> Unit,
+) {
+    var first by remember { mutableStateOf("") }
+    var second by remember { mutableStateOf("") }
+
+    val tooShort = first.isNotEmpty() && first.length < MIN_PASSPHRASE
+    val mismatch = second.isNotEmpty() && first != second
+    val valid = first.length >= MIN_PASSPHRASE && first == second
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(R.string.backup_passphrase_title)) },
+        text = {
+            Column(
+                modifier = Modifier.imePadding(),
+                verticalArrangement = Arrangement.spacedBy(10.dp),
+            ) {
+                Text(
+                    stringResource(R.string.backup_passphrase_desc),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                OutlinedTextField(
+                    value = first,
+                    onValueChange = { first = it },
+                    label = { Text(stringResource(R.string.backup_passphrase_hint)) },
+                    visualTransformation = PasswordVisualTransformation(),
+                    singleLine = true,
+                    isError = tooShort,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                OutlinedTextField(
+                    value = second,
+                    onValueChange = { second = it },
+                    label = { Text(stringResource(R.string.backup_passphrase_repeat)) },
+                    visualTransformation = PasswordVisualTransformation(),
+                    singleLine = true,
+                    isError = mismatch,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                if (tooShort) {
+                    Text(
+                        stringResource(R.string.backup_passphrase_too_short),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.error,
+                    )
+                } else if (mismatch) {
+                    Text(
+                        stringResource(R.string.backup_passphrase_mismatch),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.error,
+                    )
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(
+                onClick = { onConfirm(first.toCharArray()) },
+                enabled = valid,
+            ) { Text(stringResource(R.string.backup_passphrase_continue)) }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) }
+        },
+    )
 }

@@ -115,6 +115,9 @@
 
     <string name="assistant_title">Asystent AI</string>
     <string name="assistant_analyze">Przeanalizuj urządzenie</string>
+    <string name="assistant_consent_title">Udostępnić dane urządzenia do AI?</string>
+    <string name="assistant_consent_body">Aby wygenerować rekomendacje, migawka stanu urządzenia jest wysyłana do wybranego dostawcy AI (pamięć, RAM, bateria oraz nazwy i rozmiary największych aplikacji). Idzie bezpośrednio z Twojego telefonu, Twoim własnym kluczem API — my tego nie widzimy. Żadne pliki, wiadomości ani kontakty nie są wysyłane. Zgodę możesz cofnąć w Ustawieniach.</string>
+    <string name="assistant_consent_accept">Wyślij i analizuj</string>
     <string name="assistant_analyzing">Analizowanie…</string>
     <string name="assistant_no_key">Dodaj klucz API w Ustawieniach, aby włączyć asystenta AI.</string>
     <string name="assistant_intro">Asystent odczytuje lokalny obraz kondycji urządzenia i proponuje usprawnienia. Nic nie jest wysyłane, dopóki nie naciśniesz Analizuj.</string>
@@ -333,16 +336,23 @@
     <string name="memory_largest_apps_loading">Mierzenie rozmiaru aplikacji…</string>
 
     <string name="tool_backup">Kopia kontaktów i SMS</string>
-    <string name="backup_note">Eksportuje dane do folderu Pobrane. Tylko odczyt — nic nie jest zmieniane, usuwane ani wysyłane.</string>
+    <string name="backup_note">Eksportuje dane do pliku zaszyfrowanego hasłem. Miejsce zapisu wybierasz sam. Tylko odczyt — nic nie jest zmieniane, usuwane ani wysyłane.</string>
     <string name="backup_contacts">Kontakty</string>
     <string name="backup_sms">Wiadomości SMS</string>
     <string name="backup_contacts_need">Przyznaj dostęp do kontaktów, aby znaleźć duplikaty i wyeksportować vCard.</string>
     <string name="backup_sms_need">Przyznaj dostęp do SMS, aby wyeksportować wiadomości.</string>
-    <string name="backup_export_contacts">Eksportuj kontakty (.vcf)</string>
-    <string name="backup_export_sms">Eksportuj SMS (.json)</string>
+    <string name="backup_export_contacts">Eksportuj kontakty (szyfrowane)</string>
+    <string name="backup_export_sms">Eksportuj SMS (szyfrowane)</string>
     <string name="backup_duplicates">Możliwe duplikaty kontaktów: %1$d</string>
-    <string name="backup_saved">Zapisano w Pobranych: %1$s</string>
+    <string name="backup_saved">Zapisano: %1$s</string>
     <string name="backup_error">Eksport nie powiódł się.</string>
+    <string name="backup_passphrase_title">Ustaw hasło eksportu</string>
+    <string name="backup_passphrase_desc">Archiwum jest szyfrowane AES-256. Bez tego hasła nikt — również my — go nie odczyta. Nie ma możliwości odzyskania, więc zapisz je bezpiecznie.</string>
+    <string name="backup_passphrase_hint">Hasło (min. 8 znaków)</string>
+    <string name="backup_passphrase_repeat">Powtórz hasło</string>
+    <string name="backup_passphrase_mismatch">Hasła nie są takie same.</string>
+    <string name="backup_passphrase_too_short">Użyj co najmniej 8 znaków.</string>
+    <string name="backup_passphrase_continue">Wybierz plik i eksportuj</string>
 
     <string name="nav_pro">Kup Pro</string>
     <string name="pro_title">FreeAndroidDoctor Pro</string>

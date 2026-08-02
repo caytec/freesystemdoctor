@@ -1,5 +1,6 @@
 package com.freeandroiddoctor.android
 
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -27,6 +28,13 @@ class MainActivity : FragmentActivity() {
         installSplashScreen()
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        // Anti-tapjacking: while our UI is on top, hide untrusted overlay windows
+        // drawn by other apps (SYSTEM_ALERT_WINDOW). Protects sensitive in-app
+        // surfaces (vault unlock, paywall/purchase) from overlay-based click hijack.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            window.setHideOverlayWindows(true)
+        }
 
         // Verify Pro entitlement with Google Play, then resolve ad consent before any ads.
         ServiceLocator.billingManager.connect()

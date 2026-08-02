@@ -157,7 +157,9 @@ class BillingManager(
                     .setProductType(BillingClient.ProductType.INAPP).build(),
             )
             (subs.purchasesList + inApp.purchasesList).forEach { purchase ->
-                if (purchase.purchaseState == Purchase.PurchaseState.PURCHASED) {
+                if (purchase.purchaseState == Purchase.PurchaseState.PURCHASED &&
+                    isVerified(purchase)
+                ) {
                     entitled = true
                     acknowledgeIfNeeded(purchase)
                 }
@@ -190,7 +192,9 @@ class BillingManager(
             scope.launch {
                 var entitled = false
                 purchases.forEach { purchase ->
-                    if (purchase.purchaseState == Purchase.PurchaseState.PURCHASED) {
+                    if (purchase.purchaseState == Purchase.PurchaseState.PURCHASED &&
+                        isVerified(purchase)
+                    ) {
                         entitled = true
                         acknowledgeIfNeeded(purchase)
                     }
@@ -207,6 +211,10 @@ class BillingManager(
             }
         }
     }
+
+    /** Rejects purchases whose payload isn't signed by Google Play (forgery guard). */
+    private fun isVerified(purchase: Purchase): Boolean =
+        PurchaseVerifier.isSignatureValid(purchase.originalJson, purchase.signature)
 
     private suspend fun acknowledgeIfNeeded(purchase: Purchase) {
         if (!purchase.isAcknowledged) {

@@ -27,6 +27,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
@@ -172,6 +173,8 @@ fun MainScaffold() {
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = backStackEntry?.destination?.route
     val dark = MaterialTheme.colorScheme.background.luminance() < 0.5f
+    // Cache the background brush; MainScaffold recomposes on every route change.
+    val backgroundBrush = remember(dark) { appBackgroundBrush(dark) }
     val isLeaf = currentRoute == ROUTE_SETTINGS || currentRoute == ROUTE_PRO ||
         currentRoute?.startsWith("tool/") == true
     val showBottomNav = currentRoute != ROUTE_SETTINGS && currentRoute != ROUTE_PRO
@@ -188,7 +191,7 @@ fun MainScaffold() {
 
     Scaffold(
         containerColor = Color.Transparent,
-        modifier = Modifier.background(appBackgroundBrush(dark)),
+        modifier = Modifier.background(backgroundBrush),
         topBar = {
             CenterAlignedTopAppBar(
                 title = { Text(title) },

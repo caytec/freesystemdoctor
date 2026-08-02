@@ -58,16 +58,36 @@ class ImageCompressionEngine(private val context: Context) {
         context.contentResolver.openInputStream(uri)?.use {
             BitmapFactory.decodeStream(it, null, bounds)
         }
+        // Choose the smallest sample that brings BOTH dimensions to <= maxDimension.
+        // The old `/(sample*2) >= max` condition stopped one step early and could
+        // leave a bitmap ~2× maxDimension — up to ~64 MB ARGB_8888 → OOM on 2-3 GB
+        // devices. inPreferredConfig=RGB_565 halves the decoded footprint; JPEG
+        // output quality is unaffected for photos.
         var sample = 1
         while (bounds.outWidth / (sample * 2) >= maxDimension ||
             bounds.outHeight / (sample * 2) >= maxDimension
         ) {
             sample *= 2
         }
-        val opts = BitmapFactory.Options().apply { inSampleSize = sample }
-        return context.contentResolver.openInputStream(uri)?.use {
-            BitmapFactory.decodeStream(it, null, opts)
+        val opts = BitmapFactory.Options().apply {
+            inSampleSize = sample
+            inPreferredConfig = Bitmap.Config.RGB_565
         }
+        val decoded = context.contentResolver.openInputStream(uri)?.use {
+            BitmapFactory.decodeStream(it, null, opts)
+        } ?: return null
+
+        // Guard: if the source dimensions were unavailable (outWidth <= 0), sampling
+        // couldn't run — downscale in-memory as a fallback before returning.
+        val longest = maxOf(decoded.width, decoded.height)
+        if (longest <= maxDimension) return decoded
+        val ratio = maxDimension.toFloat() / longest
+        return Bitmap.createScaledBitmap(
+            decoded,
+            (decoded.width * ratio).toInt().coerceAtLeast(1),
+            (decoded.height * ratio).toInt().coerceAtLeast(1),
+            true,
+        ).also { if (it !== decoded) decoded.recycle() }
     }
 
     private fun writeToPictures(name: String, bytes: ByteArray) {

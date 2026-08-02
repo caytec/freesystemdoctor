@@ -62,8 +62,8 @@ private val FsdShapes = Shapes(
     extraLarge = RoundedCornerShape(32.dp),
 )
 
-/** Vertical background gradient used behind the whole app. */
-@Composable
+/** Vertical background gradient used behind the whole app. Plain function (no
+ *  composable state) so callers can wrap it in remember() to avoid re-allocating. */
 fun appBackgroundBrush(darkTheme: Boolean): Brush =
     if (darkTheme) {
         Brush.verticalGradient(listOf(NavyDeep, Navy, NavySurface))

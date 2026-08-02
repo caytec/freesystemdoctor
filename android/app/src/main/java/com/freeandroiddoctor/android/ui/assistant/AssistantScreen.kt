@@ -12,6 +12,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AutoAwesome
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -19,6 +20,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -39,6 +41,24 @@ fun AssistantScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     LaunchedEffect(Unit) { viewModel.refreshKey() }
+
+    if (state.askingConsent) {
+        AlertDialog(
+            onDismissRequest = viewModel::onConsentDeclined,
+            title = { Text(stringResource(R.string.assistant_consent_title)) },
+            text = { Text(stringResource(R.string.assistant_consent_body)) },
+            confirmButton = {
+                TextButton(onClick = viewModel::onConsentAccepted) {
+                    Text(stringResource(R.string.assistant_consent_accept))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = viewModel::onConsentDeclined) {
+                    Text(stringResource(R.string.action_cancel))
+                }
+            },
+        )
+    }
 
     Column(
         modifier = modifier

@@ -75,6 +75,14 @@ android {
             "ADMOB_NATIVE_ID",
             "\"${admob("admob.native.id", "ca-app-pub-3940256099942544/2247696110")}\"",
         )
+
+        // Play Console licensing RSA public key (Monetization → Licensing), used by
+        // PurchaseVerifier to reject forged purchases. Supply via the PLAY_PUBLIC_KEY
+        // gradle property or env var; empty by default so a fresh clone still builds
+        // (verification is then skipped in debug, hard-fails closed in release).
+        val playPublicKey = (project.findProperty("PLAY_PUBLIC_KEY") as String?)
+            ?: System.getenv("PLAY_PUBLIC_KEY") ?: ""
+        buildConfigField("String", "PLAY_PUBLIC_KEY", "\"$playPublicKey\"")
     }
 
     signingConfigs {
@@ -158,6 +166,9 @@ android {
 dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.core.splashscreen)
+    // Applies a baseline profile at install time (and lets us ship one later) so
+    // hot code is AOT-compiled — noticeably faster cold start on low-end devices.
+    implementation(libs.androidx.profileinstaller)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.process)
     implementation(libs.androidx.lifecycle.runtime.compose)

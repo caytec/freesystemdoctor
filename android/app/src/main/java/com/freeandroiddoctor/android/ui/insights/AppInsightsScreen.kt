@@ -27,7 +27,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.freeandroiddoctor.android.R
-import com.freeandroiddoctor.android.ui.components.Appear
 import com.freeandroiddoctor.android.ui.components.InfoBanner
 import com.freeandroiddoctor.android.ui.components.PermissionGate
 import com.freeandroiddoctor.android.ui.components.SectionHeader
@@ -44,28 +43,34 @@ fun AppInsightsScreen(
     val state by viewModel.state.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
-    Column(
+    // One LazyColumn for the whole screen: the old version stacked a chart plus two
+    // fixed-height (220dp) nested LazyColumns inside a non-scrolling Column, which
+    // clipped content on small screens and wasted space on tablets. A single lazy
+    // list scales to any content size and only composes visible rows.
+    LazyColumn(
         modifier = modifier.fillMaxSize().padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         if (state.needsUsageAccess) {
-            PermissionGate(
-                message = stringResource(R.string.app_usage_need_access),
-                actionLabel = stringResource(R.string.perm_grant),
-                onAction = {
-                    runCatching { context.startActivity(viewModel.usageAccessIntent()) }
-                },
-            )
+            item("perm") {
+                PermissionGate(
+                    message = stringResource(R.string.app_usage_need_access),
+                    actionLabel = stringResource(R.string.perm_grant),
+                    onAction = {
+                        runCatching { context.startActivity(viewModel.usageAccessIntent()) }
+                    },
+                )
+            }
         }
 
         when {
-            state.loading -> ShimmerList()
-            state.report == null -> Text(stringResource(R.string.empty))
+            state.loading -> item("loading") { ShimmerList() }
+            state.report == null -> item("empty") { Text(stringResource(R.string.empty)) }
             else -> {
                 val report = state.report!!
-                Appear { InfoBanner(stringResource(R.string.app_insights_note)) }
+                item("note") { InfoBanner(stringResource(R.string.app_insights_note)) }
 
-                Appear(index = 1) {
+                item("weekly") {
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         colors = CardDefaults.cardColors(
@@ -92,12 +97,55 @@ fun AppInsightsScreen(
                     }
                 }
 
-                SectionHeader(stringResource(R.string.app_insights_recent))
-                LazyColumn(
-                    verticalArrangement = Arrangement.spacedBy(6.dp),
-                    modifier = Modifier.height(220.dp),
-                ) {
-                    items(report.recentlyInstalled, key = { it.packageName + it.timestamp }) { ev ->
+                item("recent-header") {
+                    SectionHeader(stringResource(R.string.app_insights_recent))
+                }
+                items(report.recentlyInstalled, key = { "rec_" + it.packageName + it.timestamp }) { ev ->
+                    Card(
+                        modifier = Modifier.fillMaxWidth().animateItem(),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                        ),
+                        shape = MaterialTheme.shapes.small,
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth()
+                                .padding(horizontal = 12.dp, vertical = 8.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                        ) {
+                            Column(Modifier.weight(1f)) {
+                                Text(
+                                    ev.label,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                )
+                                Text(
+                                    if (ev.isInstall) {
+                                        stringResource(R.string.app_insights_installed)
+                                    } else {
+                                        stringResource(R.string.app_insights_updated)
+                                    },
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                )
+                            }
+                            Text(
+                                DateFormat.getDateInstance(DateFormat.SHORT)
+                                    .format(Date(ev.timestamp)),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                    }
+                }
+
+                if (report.hiddenApps.isNotEmpty()) {
+                    item("hidden-header") {
+                        SectionHeader(stringResource(R.string.app_insights_hidden))
+                    }
+                    items(report.hiddenApps, key = { "hid_" + it.packageName }) { hidden ->
                         Card(
                             modifier = Modifier.fillMaxWidth().animateItem(),
                             colors = CardDefaults.cardColors(
@@ -105,67 +153,18 @@ fun AppInsightsScreen(
                             ),
                             shape = MaterialTheme.shapes.small,
                         ) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth()
-                                    .padding(horizontal = 12.dp, vertical = 8.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                            ) {
-                                Column(Modifier.weight(1f)) {
-                                    Text(
-                                        ev.label,
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis,
-                                    )
-                                    Text(
-                                        if (ev.isInstall) {
-                                            stringResource(R.string.app_insights_installed)
-                                        } else {
-                                            stringResource(R.string.app_insights_updated)
-                                        },
-                                        style = MaterialTheme.typography.labelSmall,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    )
-                                }
+                            Column(Modifier.padding(horizontal = 12.dp, vertical = 8.dp)) {
                                 Text(
-                                    DateFormat.getDateInstance(DateFormat.SHORT)
-                                        .format(Date(ev.timestamp)),
-                                    style = MaterialTheme.typography.bodySmall,
+                                    hidden.label,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                )
+                                Text(
+                                    hidden.packageName,
+                                    style = MaterialTheme.typography.labelSmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 )
-                            }
-                        }
-                    }
-                }
-
-                if (report.hiddenApps.isNotEmpty()) {
-                    SectionHeader(stringResource(R.string.app_insights_hidden))
-                    LazyColumn(
-                        verticalArrangement = Arrangement.spacedBy(6.dp),
-                        modifier = Modifier.height(220.dp),
-                    ) {
-                        items(report.hiddenApps, key = { it.packageName }) { hidden ->
-                            Card(
-                                modifier = Modifier.fillMaxWidth().animateItem(),
-                                colors = CardDefaults.cardColors(
-                                    containerColor = MaterialTheme.colorScheme.surfaceContainer,
-                                ),
-                                shape = MaterialTheme.shapes.small,
-                            ) {
-                                Column(Modifier.padding(horizontal = 12.dp, vertical = 8.dp)) {
-                                    Text(
-                                        hidden.label,
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis,
-                                    )
-                                    Text(
-                                        hidden.packageName,
-                                        style = MaterialTheme.typography.labelSmall,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    )
-                                }
                             }
                         }
                     }

@@ -32,7 +32,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
@@ -173,7 +173,15 @@ fun ShimmerList(rows: Int = 5, modifier: Modifier = Modifier) {
     }
 }
 
-/** Two soft, slowly drifting accent glows behind the whole app for an alive, immersive feel. */
+/**
+ * Two soft, slowly drifting accent glows behind the whole app for an alive,
+ * immersive feel.
+ *
+ * Perf: the radial [Brush]es are built once per size in [drawWithCache] (each is
+ * expensive to allocate) and the drift is applied with a cheap [translate] each
+ * frame — the previous version re-allocated two gradients 60×/s on every screen,
+ * which cost battery and stole frames from scrolling on low-end GPUs.
+ */
 @Composable
 fun AnimatedBackdrop(modifier: Modifier = Modifier) {
     val transition = rememberInfiniteTransition(label = "backdrop")
@@ -184,27 +192,30 @@ fun AnimatedBackdrop(modifier: Modifier = Modifier) {
         label = "drift",
     )
     Box(
-        modifier.fillMaxSize().drawBehind {
+        modifier.fillMaxSize().drawWithCache {
             val w = size.width
             val h = size.height
-            val c1 = Offset(w * 0.18f, h * (0.12f + 0.10f * drift))
             val r1 = h * 0.42f
-            drawCircle(
-                brush = Brush.radialGradient(
-                    listOf(Coral.copy(alpha = 0.10f), Color.Transparent),
-                    center = c1, radius = r1,
-                ),
-                radius = r1, center = c1,
-            )
-            val c2 = Offset(w * 0.85f, h * (0.9f - 0.10f * drift))
             val r2 = h * 0.4f
-            drawCircle(
-                brush = Brush.radialGradient(
-                    listOf(Violet.copy(alpha = 0.10f), Color.Transparent),
-                    center = c2, radius = r2,
-                ),
-                radius = r2, center = c2,
+            val c1 = Offset(w * 0.18f, h * 0.12f)
+            val c2 = Offset(w * 0.85f, h * 0.9f)
+            val brush1 = Brush.radialGradient(
+                listOf(Coral.copy(alpha = 0.10f), Color.Transparent),
+                center = c1, radius = r1,
             )
+            val brush2 = Brush.radialGradient(
+                listOf(Violet.copy(alpha = 0.10f), Color.Transparent),
+                center = c2, radius = r2,
+            )
+            val amp = h * 0.10f
+            onDrawBehind {
+                translate(top = amp * drift) {
+                    drawCircle(brush = brush1, radius = r1, center = c1)
+                }
+                translate(top = -amp * drift) {
+                    drawCircle(brush = brush2, radius = r2, center = c2)
+                }
+            }
         },
     )
 }

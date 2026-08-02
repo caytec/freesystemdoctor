@@ -7,4 +7,8 @@
     <exclude domain="sharedpref" path="fsd_secure_keys.xml" />
     <exclude domain="sharedpref" path="fsd_cloud_backup_key.xml" />
     <exclude domain="file" path="vault/" />
+    <!-- Entitlement cache: excluded so a backup/restore (or adb backup) can't be
+         used to inject a forged Pro/trial/tool-unlock state. Google Play is the
+         source of truth and re-reconciles on next launch. -->
+    <exclude domain="file" path="datastore/fsd_pro.preferences_pb" />
 </full-backup-content>

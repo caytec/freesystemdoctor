@@ -22,6 +22,8 @@ data class AssistantUiState(
     /** Today's analyses used (free tier is capped; PRO is unlimited). */
     val usageToday: Int = 0,
     val limitReached: Boolean = false,
+    /** True while the one-time data-sharing consent dialog is showing. */
+    val askingConsent: Boolean = false,
 )
 
 class AssistantViewModel : ViewModel() {
@@ -48,6 +50,31 @@ class AssistantViewModel : ViewModel() {
             _state.value = _state.value.copy(error = "missing_key")
             return
         }
+        viewModelScope.launch {
+            // First analysis sends a device snapshot (incl. app names) off-device
+            // to a third-party provider — require explicit one-time consent first.
+            if (!settings.settings.first().aiConsentGiven) {
+                _state.value = _state.value.copy(askingConsent = true)
+                return@launch
+            }
+            runAnalysis()
+        }
+    }
+
+    /** User accepted the data-sharing dialog: persist consent and proceed. */
+    fun onConsentAccepted() {
+        viewModelScope.launch {
+            settings.setAiConsent(true)
+            _state.value = _state.value.copy(askingConsent = false)
+            runAnalysis()
+        }
+    }
+
+    fun onConsentDeclined() {
+        _state.value = _state.value.copy(askingConsent = false)
+    }
+
+    private fun runAnalysis() {
         viewModelScope.launch {
             // Free tier: cap at FREE_DAILY_LIMIT per day. PRO is unlimited.
             val isPro = billing.isPro.value

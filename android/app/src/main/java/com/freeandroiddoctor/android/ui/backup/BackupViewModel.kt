@@ -1,5 +1,6 @@
 package com.freeandroiddoctor.android.ui.backup
 
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.freeandroiddoctor.android.core.di.ServiceLocator
@@ -10,6 +11,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
+/** Which export the user started, so we know what to do once they pick a file. */
+enum class ExportKind { CONTACTS, SMS }
+
 data class BackupUiState(
     val hasContacts: Boolean = false,
     val hasSms: Boolean = false,
@@ -17,6 +21,8 @@ data class BackupUiState(
     val working: Boolean = false,
     val message: String? = null,
     val isError: Boolean = false,
+    /** Non-null while the passphrase sheet is open for the given export. */
+    val pendingKind: ExportKind? = null,
 )
 
 class BackupViewModel : ViewModel() {
@@ -36,42 +42,40 @@ class BackupViewModel : ViewModel() {
 
     private fun loadDuplicates() {
         viewModelScope.launch {
-            _state.update { it.copy(duplicates = contacts.findDuplicates()) }
+            runCatching { contacts.findDuplicates() }
+                .onSuccess { list -> _state.update { it.copy(duplicates = list) } }
         }
     }
 
-    fun exportContacts() {
-        _state.update { it.copy(working = true, message = null) }
+    /** Step 1: user tapped Export — ask for a passphrase before touching any data. */
+    fun startExport(kind: ExportKind) {
+        _state.update { it.copy(pendingKind = kind, message = null, isError = false) }
+    }
+
+    fun cancelExport() {
+        _state.update { it.copy(pendingKind = null) }
+    }
+
+    fun suggestedFileName(kind: ExportKind): String = when (kind) {
+        ExportKind.CONTACTS -> contacts.suggestedFileName()
+        ExportKind.SMS -> sms.suggestedFileName()
+    }
+
+    /**
+     * Step 2: the user picked a destination and set a passphrase. [passphrase] is
+     * wiped by the engine once the archive is written.
+     */
+    fun runExport(kind: ExportKind, target: Uri, passphrase: CharArray) {
+        _state.update { it.copy(working = true, message = null, pendingKind = null) }
         viewModelScope.launch {
-            val result = contacts.exportVCard()
-            _state.update {
-                it.copy(
-                    working = false,
-                    isError = !result.success,
-                    message = if (result.success) {
-                        "${result.fileName} (${result.count})"
-                    } else {
-                        result.error
-                    },
-                )
+            val (ok, label, error) = when (kind) {
+                ExportKind.CONTACTS -> contacts.exportEncrypted(target, passphrase)
+                    .let { Triple(it.success, "${it.fileName} (${it.count})", it.error) }
+                ExportKind.SMS -> sms.exportEncrypted(target, passphrase)
+                    .let { Triple(it.success, "${it.fileName} (${it.count})", it.error) }
             }
-        }
-    }
-
-    fun exportSms() {
-        _state.update { it.copy(working = true, message = null) }
-        viewModelScope.launch {
-            val result = sms.export()
             _state.update {
-                it.copy(
-                    working = false,
-                    isError = !result.success,
-                    message = if (result.success) {
-                        "${result.fileName} (${result.count})"
-                    } else {
-                        result.error
-                    },
-                )
+                it.copy(working = false, isError = !ok, message = if (ok) label else error)
             }
         }
     }

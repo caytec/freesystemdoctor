@@ -33,6 +33,8 @@ data class AppSettings(
     val shizukuSnackbarShown: Boolean = false,
     val scanDepth: ScanDepth = ScanDepth.QUICK,
     val includePhotosInDeepScan: Boolean = false,
+    /** User explicitly agreed to send a device snapshot to the chosen AI provider. */
+    val aiConsentGiven: Boolean = false,
 )
 
 class SettingsRepository(private val context: Context) {
@@ -57,6 +59,7 @@ class SettingsRepository(private val context: Context) {
         val INCLUDE_PHOTOS_DEEP = booleanPreferencesKey("include_photos_deep_scan")
         val CLEAN_COUNT = intPreferencesKey("clean_count")
         val LAST_REVIEW_PROMPT_DATE = stringPreferencesKey("last_review_prompt_date")
+        val AI_CONSENT = booleanPreferencesKey("ai_consent_given")
     }
 
     val settings: Flow<AppSettings> = context.dataStore.data.map { prefs ->
@@ -80,7 +83,13 @@ class SettingsRepository(private val context: Context) {
                 ?.let { runCatching { ScanDepth.valueOf(it) }.getOrNull() }
                 ?: ScanDepth.QUICK,
             includePhotosInDeepScan = prefs[Keys.INCLUDE_PHOTOS_DEEP] ?: false,
+            aiConsentGiven = prefs[Keys.AI_CONSENT] ?: false,
         )
+    }
+
+    /** Records (or revokes) consent to share a device snapshot with an AI provider. */
+    suspend fun setAiConsent(given: Boolean) {
+        context.dataStore.edit { it[Keys.AI_CONSENT] = given }
     }
 
     suspend fun setScanDepth(depth: ScanDepth) {

@@ -52,6 +52,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -113,8 +114,11 @@ fun HealthGauge(
     val arcColor by animateColorAsState(scoreColor(clamped), tween(700), label = "gaugeColor")
     val trackColor = MaterialTheme.colorScheme.surfaceContainerHigh
     val pulse = rememberInfiniteTransition(label = "pulse")
+    // Animate the arc's LAYER alpha, not the gradient colors: pulsing the colors
+    // rebuilt the (expensive) sweepGradient every frame. graphicsLayer alpha is a
+    // cheap GPU op and keeps the same glow effect.
     val glow by pulse.animateFloat(
-        initialValue = 0.85f,
+        initialValue = 0.82f,
         targetValue = 1f,
         animationSpec = infiniteRepeatable(tween(1600), RepeatMode.Reverse),
         label = "glow",
@@ -124,7 +128,13 @@ fun HealthGauge(
         modifier = modifier.size(190.dp),
         contentAlignment = Alignment.Center,
     ) {
-        Canvas(modifier = Modifier.fillMaxWidth().height(190.dp).padding(10.dp)) {
+        Canvas(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(190.dp)
+                .padding(10.dp)
+                .graphicsLayer { alpha = glow },
+        ) {
             val stroke = 20.dp.toPx()
             val inset = stroke / 2f
             val arcSize = Size(size.width - stroke, size.height - stroke)
@@ -142,7 +152,7 @@ fun HealthGauge(
             )
             drawArc(
                 brush = Brush.sweepGradient(
-                    listOf(arcColor.copy(alpha = 0.7f * glow), arcColor, arcColor.copy(alpha = 0.7f * glow)),
+                    listOf(arcColor.copy(alpha = 0.7f), arcColor, arcColor.copy(alpha = 0.7f)),
                 ),
                 startAngle = startAngle,
                 sweepAngle = maxSweep * sweep,

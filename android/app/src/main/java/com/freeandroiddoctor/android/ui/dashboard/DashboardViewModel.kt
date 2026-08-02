@@ -38,26 +38,32 @@ class DashboardViewModel : ViewModel() {
     fun refresh() {
         _state.value = _state.value.copy(loading = true)
         viewModelScope.launch {
-            // Each source degrades to null independently — one failing platform
-            // call must not crash the dashboard or hang the refresh spinner.
-            val volume = runCatching {
-                withContext(Dispatchers.IO) { ServiceLocator.storageEngine.readPrimaryVolume() }
-            }.getOrNull()
-            val memory = runCatching { ServiceLocator.memoryEngine.read() }.getOrNull()
-            val battery = runCatching { ServiceLocator.batteryEngine.read() }.getOrNull()
-            val device = runCatching { ServiceLocator.deviceInfoEngine.read() }.getOrNull()
-            val network = runCatching { ServiceLocator.networkPrivacyEngine.snapshot() }.getOrNull()
-            val activeMode = runCatching { ServiceLocator.modeStore.activeSnapshotOnce()?.activeModeId }.getOrNull()
-            _state.value = DashboardUiState(
-                loading = false,
-                volume = volume,
-                memory = memory,
-                battery = battery,
-                device = device,
-                healthScore = computeHealthScore(volume, memory, battery),
-                networkPrivacy = network,
-                activeModeId = activeMode,
-            )
+            // All reads run on IO (BatteryEngine.read does a registerReceiver +
+            // binder calls; MemoryEngine/DeviceInfo also touch the platform) so the
+            // first frame isn't blocked on the main thread. Each source degrades to
+            // null independently — one failing call can't crash the dashboard or
+            // hang the refresh spinner.
+            val next = withContext(Dispatchers.IO) {
+                val volume = runCatching { ServiceLocator.storageEngine.readPrimaryVolume() }.getOrNull()
+                val memory = runCatching { ServiceLocator.memoryEngine.read() }.getOrNull()
+                val battery = runCatching { ServiceLocator.batteryEngine.read() }.getOrNull()
+                val device = runCatching { ServiceLocator.deviceInfoEngine.read() }.getOrNull()
+                val network = runCatching { ServiceLocator.networkPrivacyEngine.snapshot() }.getOrNull()
+                val activeMode = runCatching {
+                    ServiceLocator.modeStore.activeSnapshotOnce()?.activeModeId
+                }.getOrNull()
+                DashboardUiState(
+                    loading = false,
+                    volume = volume,
+                    memory = memory,
+                    battery = battery,
+                    device = device,
+                    healthScore = computeHealthScore(volume, memory, battery),
+                    networkPrivacy = network,
+                    activeModeId = activeMode,
+                )
+            }
+            _state.value = next
         }
     }
 
