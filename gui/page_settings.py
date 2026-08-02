@@ -435,6 +435,7 @@ class SettingsPage(tk.Frame):
         # Apply immediately so the sidebar updates without a restart.
         try:
             self._app._sidebar.refresh_mode()
+            self._app._mode_switch.refresh()   # keep the titlebar switch in sync
             from .widgets import Toast
             Toast.show(self.winfo_toplevel(),
                        "Simple mode on — showing essential tools" if mode == "simple"

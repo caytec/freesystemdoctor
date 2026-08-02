@@ -35,10 +35,21 @@ def _steps(app):
         dict(target=lambda: getattr(app, "_titlebar", None),
              title="The top bar",
              text="Your app title and a live CPU / RAM / Disk readout always sit here."),
+        dict(target=lambda: getattr(app, "_mode_switch", None),
+             title="SIMPLE or ADVANCED — your choice",
+             text="This switch is always here. SIMPLE shows a short list of "
+                  "one-click fixes; ADVANCED reveals all 60+ individual tools. "
+                  "Nothing is ever lost — flip it anytime."),
         dict(target=lambda: getattr(app, "_sidebar", None),
              title="Your toolbox",
-             text="All tools live here, grouped by category. Click a category "
-                  "icon to slide out its tools, then pick one."),
+             text="Your tools live here. In SIMPLE view they're one flat list — "
+                  "one click each. In ADVANCED they're grouped by category."),
+        dict(target=lambda: getattr(app, "_content_wrapper", None),
+             action=lambda: app._switch_page("quickfix"),
+             title="Quick Fix — one click does the work",
+             text="Each card runs a whole set of Advanced tools for you: Disk "
+                  "Health, Network Health, RAM Boost, Gaming Booster. Every card "
+                  "lists which tools it bundles."),
         dict(target=lambda: getattr(app, "_content_wrapper", None),
              action=lambda: app._switch_page("autopilot"),
              title="1-Click Auto-Pilot",

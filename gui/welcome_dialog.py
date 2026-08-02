@@ -65,8 +65,11 @@ class WelcomeDialog(tk.Toplevel):
         tk.Label(body, text="1.  Choose how much you want to see",
                  bg=T.BG, fg=T.FG, font=T.FONT_H2, anchor="w").pack(fill="x")
         tk.Label(body,
-                 text="New to PC tools? Start Simple — you can switch anytime in Settings.",
-                 bg=T.BG, fg=T.FG2, font=T.FONT_SMALL, anchor="w").pack(fill="x", pady=(2, 8))
+                 text="New to PC tools? Start Simple. You can flip between "
+                      "SIMPLE and ADVANCED anytime with the VIEW switch in the "
+                      "top bar — nothing is ever hidden for good.",
+                 bg=T.BG, fg=T.FG2, font=T.FONT_SMALL, anchor="w",
+                 justify="left", wraplength=540).pack(fill="x", pady=(2, 8))
 
         mode_row = tk.Frame(body, bg=T.BG)
         mode_row.pack(fill="x", pady=(0, 16))

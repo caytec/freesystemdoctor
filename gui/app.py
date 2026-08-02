@@ -74,6 +74,7 @@ from .page_auto_shutdown    import AutoShutdownPage
 from .page_icon_saver       import IconSaverPage
 from .page_browser_autoclean import BrowserAutoCleanPage
 from .page_publisher        import PublisherPage
+from .page_quick_fix       import QuickFixPage
 from .page_credits         import CreditsPage
 from .page_autopilot        import AutoPilotPage
 from .page_performance_guardian import PerformanceGuardianPage
@@ -108,6 +109,7 @@ _NAV_CATEGORIES = [
         "label": "DASHBOARD",    # Pulpit
         "color": T.HIGHLIGHT,
         "items": [
+            ("quickfix",   "✨", "Quick Fix",      QuickFixPage),
             ("home",       "🏠", "Home",           HomePage),
             ("autopilot",  "🚀", "Auto-Pilot",     AutoPilotPage),
             ("guardian",   "🛡",  "Perf. Guardian", PerformanceGuardianPage),
@@ -259,7 +261,7 @@ _NAV_CATEGORIES = [
 # Advanced mode (default) shows everything.
 SIMPLE_KEYS = {
     # Dashboard
-    "home", "autopilot", "guardian", "health", "dashboard",
+    "quickfix", "home", "autopilot", "guardian", "health", "dashboard",
     # AI / Auto
     "ai_ask", "wizard",
     # Performance
@@ -814,6 +816,55 @@ def _safe_pack(widget, **kw):
 
 # ── Animated titlebar particles ────────────────────────────────────────────────
 
+class _ModeSwitch(tk.Frame):
+    """Always-visible SIMPLE / ADVANCED segmented switch in the titlebar.
+
+    Novices need to see that a simpler view exists (and that nothing is hidden
+    forever) without digging into Settings.
+    """
+
+    def __init__(self, parent, on_change=None, **kw):
+        kw.setdefault("bg", T.SIDEBAR)
+        super().__init__(parent, **kw)
+        self._on_change = on_change
+        self._segs: dict[str, tk.Label] = {}
+
+        tk.Label(self, text="VIEW", bg=T.SIDEBAR, fg=T.FG2,
+                 font=T.FONT_MICRO).pack(side="left", padx=(0, 6))
+
+        wrap = tk.Frame(self, bg=T.BORDER)
+        wrap.pack(side="left")
+        for mode, text in (("simple", "SIMPLE"), ("advanced", "ADVANCED")):
+            lbl = tk.Label(wrap, text=text, font=(T.FONT_FAMILY, 8, "bold"),
+                           padx=10, pady=4, cursor="hand2")
+            lbl.pack(side="left", padx=1, pady=1)
+            lbl.bind("<Button-1>", lambda e, m=mode: self._select(m))
+            self._segs[mode] = lbl
+        self._render()
+
+    def _render(self):
+        active = "simple" if ui_simple_mode() else "advanced"
+        for mode, lbl in self._segs.items():
+            on = mode == active
+            lbl.config(bg=T.HIGHLIGHT if on else T.ACCENT,
+                       fg="#ffffff" if on else T.FG2)
+
+    def _select(self, mode: str):
+        if (mode == "simple") == ui_simple_mode():
+            return                      # already active
+        try:
+            from engine import app_settings
+            app_settings.set_and_save("ui_mode", mode)
+        except Exception:
+            pass
+        self._render()
+        if self._on_change:
+            self._on_change(mode)
+
+    def refresh(self):
+        self._render()
+
+
 class _TitleParticles(tk.Canvas):
     """Subtle floating particle effect in the titlebar."""
     N = 18
@@ -1033,6 +1084,10 @@ class App(tk.Tk):
         stats = _LiveStatsStrip(titlebar)
         stats.place(relx=1.0, rely=0, relheight=1, anchor="ne", x=-16)
 
+        # Always-visible SIMPLE / ADVANCED switch (left of the live stats)
+        self._mode_switch = _ModeSwitch(titlebar, on_change=self._on_mode_switched)
+        self._mode_switch.place(relx=1.0, rely=0.5, anchor="e", x=-190)
+
         # Thin bottom border
         tk.Frame(self, bg=T.BORDER, height=1).pack(fill="x", side="top")
 
@@ -1069,6 +1124,19 @@ class App(tk.Tk):
                            lambda e: self._sidebar._collapse())
 
         self._build_pages()
+
+    def _on_mode_switched(self, mode: str):
+        """Re-render the sidebar when the titlebar VIEW switch is used."""
+        try:
+            self._sidebar.refresh_mode()
+        except Exception:
+            pass
+        try:
+            Toast.show(self, "Simple view — the essentials, one click each"
+                       if mode == "simple" else
+                       "Advanced view — every tool, grouped by category", "info")
+        except Exception:
+            pass
 
     def _build_aipol_branding(self, parent):
         """AiPOL SA logo + clickable link + small company note, in the app corner
