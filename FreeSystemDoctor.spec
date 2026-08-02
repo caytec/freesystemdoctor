@@ -82,6 +82,8 @@ hidden = [
     'gui.system_hud',
     # onboarding (imported lazily — pin so PyInstaller bundles them)
     'gui.welcome_dialog', 'gui.tutorial',
+    'gui.page_quick_fix', 'engine.quick_fix',
+    'gui.page_credits', 'engine.credits',
     # New features: command palette, auto-pilot, health timeline, ask-your-PC
     'gui.nav_registry', 'gui.command_palette', 'gui._pro_gate',
     'gui.page_autopilot', 'gui.page_health_timeline', 'gui.page_ai_ask',
