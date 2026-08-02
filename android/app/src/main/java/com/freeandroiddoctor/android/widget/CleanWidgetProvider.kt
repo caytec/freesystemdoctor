@@ -10,9 +10,7 @@ import android.os.StatFs
 import android.widget.RemoteViews
 import com.freeandroiddoctor.android.MainActivity
 import com.freeandroiddoctor.android.R
-import com.freeandroiddoctor.android.core.di.ServiceLocator
 import com.freeandroiddoctor.android.core.util.ByteFormatter
-import kotlin.concurrent.thread
 
 class CleanWidgetProvider : AppWidgetProvider() {
 
@@ -24,29 +22,12 @@ class CleanWidgetProvider : AppWidgetProvider() {
         appWidgetIds.forEach { id -> render(context, appWidgetManager, id) }
     }
 
-    override fun onReceive(context: Context, intent: Intent) {
-        super.onReceive(context, intent)
-        if (intent.action == ACTION_CLEAN) {
-            val pending = goAsync()
-            thread {
-                runCatching { ServiceLocator.junkEngine.cleanAppCache() }
-                renderAll(context)
-                pending.finish()
-            }
-        }
-    }
-
-    private fun renderAll(context: Context) {
-        val manager = AppWidgetManager.getInstance(context)
-        val ids = manager.getAppWidgetIds(ComponentName(context, CleanWidgetProvider::class.java))
-        ids.forEach { render(context, manager, it) }
-    }
-
     private fun render(context: Context, manager: AppWidgetManager, widgetId: Int) {
         val views = RemoteViews(context.packageName, R.layout.widget_clean)
         views.setTextViewText(R.id.widget_free, freeSpaceText(context))
 
-        val cleanIntent = Intent(context, CleanWidgetProvider::class.java).setAction(ACTION_CLEAN)
+        val cleanIntent = Intent(context, CleanActionReceiver::class.java)
+            .setAction(CleanActionReceiver.ACTION_CLEAN)
         val cleanPending = PendingIntent.getBroadcast(
             context, 0, cleanIntent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
@@ -73,7 +54,12 @@ class CleanWidgetProvider : AppWidgetProvider() {
         )
     }
 
-    private companion object {
-        const val ACTION_CLEAN = "com.freeandroiddoctor.android.widget.CLEAN"
+    companion object {
+        internal fun renderAll(context: Context) {
+            val manager = AppWidgetManager.getInstance(context)
+            val ids = manager.getAppWidgetIds(ComponentName(context, CleanWidgetProvider::class.java))
+            val provider = CleanWidgetProvider()
+            ids.forEach { provider.render(context, manager, it) }
+        }
     }
 }

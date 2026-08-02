@@ -1,5 +1,7 @@
 package com.freeandroiddoctor.android.ui.network
 
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -31,7 +33,7 @@ fun SpeedTestScreen(
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     Column(
-        modifier = modifier.fillMaxSize().padding(16.dp),
+        modifier = modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Appear { InfoBanner(stringResource(R.string.speed_note)) }

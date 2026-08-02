@@ -159,7 +159,12 @@ class AppLockService : Service() {
     private inner class ScreenStateReceiver : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             when (intent?.action) {
-                Intent.ACTION_SCREEN_OFF -> { loop?.cancel(); loop = null }
+                Intent.ACTION_SCREEN_OFF -> {
+                    loop?.cancel(); loop = null
+                    // Screen off ends the trust window: every locked app must
+                    // re-authenticate after the device wakes up.
+                    authenticated.clear()
+                }
                 Intent.ACTION_USER_PRESENT, Intent.ACTION_SCREEN_ON -> {
                     if (loop == null || loop?.isActive == false) startPolling()
                 }
@@ -172,7 +177,9 @@ class AppLockService : Service() {
         private const val NOTIFICATION_ID = 4601
         private const val POLL_MS_ACTIVE = 1500L
         private const val POLL_MS_IDLE = 5000L
-        private val AUTH_TTL_MS = TimeUnit.SECONDS.toMillis(30)
+        // Short TTL: long grants let anyone re-open a "locked" app for the
+        // whole window after a single unlock.
+        private val AUTH_TTL_MS = TimeUnit.SECONDS.toMillis(5)
 
         // Per-package auth grants visible to BiometricPromptActivity.
         // ConcurrentHashMap: written from the biometric activity (main thread),

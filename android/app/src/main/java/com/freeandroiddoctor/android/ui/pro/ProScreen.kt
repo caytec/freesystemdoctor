@@ -116,7 +116,7 @@ fun ProScreen(
                         Icons.Filled.Check,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.secondary,
-                        modifier = Modifier.size(20.dp).padding(end = 8.dp),
+                        modifier = Modifier.padding(end = 8.dp).size(20.dp),
                     )
                     Text(stringResource(benefit), style = MaterialTheme.typography.bodyMedium)
                 }

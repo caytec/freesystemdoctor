@@ -97,7 +97,7 @@ fun StorageTreemapScreen(modifier: Modifier = Modifier) {
                     "${current.label} · ${ByteFormatter.format(current.sizeBytes)}",
                     style = MaterialTheme.typography.titleSmall,
                 )
-                Box(modifier = Modifier.fillMaxWidth().height(420.dp)) {
+                Box(modifier = Modifier.fillMaxWidth().weight(1f, fill = true)) {
                     SquarifiedTreemap(
                         root = current,
                         onTap = { node ->

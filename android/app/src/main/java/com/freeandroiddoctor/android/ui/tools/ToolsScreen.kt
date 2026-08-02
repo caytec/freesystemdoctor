@@ -72,6 +72,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -202,8 +203,8 @@ fun ToolsScreen(
     val activity = androidx.compose.ui.platform.LocalContext.current as? android.app.Activity
     val unlockController = LocalUnlockController.current
 
-    var query by remember { mutableStateOf("") }
-    var selectedGroup by remember { mutableIntStateOf(GROUP_ALL) }
+    var query by rememberSaveable { mutableStateOf("") }
+    var selectedGroup by rememberSaveable { mutableIntStateOf(GROUP_ALL) }
     val context = androidx.compose.ui.platform.LocalContext.current
 
     val filteredGroups = remember(query, selectedGroup) {

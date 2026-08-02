@@ -256,9 +256,8 @@ fun MainScaffold() {
                                 Text(
                                     stringResource(dest.labelRes),
                                     maxLines = 1,
-                                    softWrap = false,
-                                    overflow = TextOverflow.Visible,
-                                    fontSize = 10.sp,
+                                    overflow = TextOverflow.Ellipsis,
+                                    style = MaterialTheme.typography.labelSmall,
                                 )
                             },
                             colors = NavigationBarItemDefaults.colors(

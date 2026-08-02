@@ -9,6 +9,8 @@ import androidx.compose.animation.core.spring
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -47,6 +49,7 @@ import com.freeandroiddoctor.android.ui.components.Appear
 import com.freeandroiddoctor.android.ui.components.InfoBanner
 import com.freeandroiddoctor.android.ui.components.StatCard
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun CleanerScreen(
     modifier: Modifier = Modifier,
@@ -131,7 +134,11 @@ fun CleanerScreen(
             }
         }
 
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        // FlowRow: the Polish label for "app cache" alone is >200dp — buttons
+        // must wrap to a second line on narrow phones instead of clipping.
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
             Button(
                 onClick = {
                     ServiceLocator.appOpenAdManager.suppressForMillis(60_000L)

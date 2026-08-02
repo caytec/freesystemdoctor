@@ -58,7 +58,7 @@ fun VaultScreen(
 
     val biometricStatus = remember {
         BiometricManager.from(context).canAuthenticate(
-            BiometricManager.Authenticators.BIOMETRIC_WEAK or
+            BiometricManager.Authenticators.BIOMETRIC_STRONG or
                 BiometricManager.Authenticators.DEVICE_CREDENTIAL,
         )
     }
@@ -153,7 +153,7 @@ private fun promptUnlock(activity: FragmentActivity, vm: VaultViewModel) {
         .setTitle(activity.getString(R.string.app_vault_unlock))
         .setSubtitle(activity.getString(R.string.app_vault_note))
         .setAllowedAuthenticators(
-            BiometricManager.Authenticators.BIOMETRIC_WEAK or
+            BiometricManager.Authenticators.BIOMETRIC_STRONG or
                 BiometricManager.Authenticators.DEVICE_CREDENTIAL,
         )
         .build()

@@ -70,7 +70,7 @@ fun LargeFilesScreen(
 
         if (state.scanning) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                CircularProgressIndicator(modifier = Modifier.size(22.dp).padding(end = 8.dp))
+                CircularProgressIndicator(modifier = Modifier.padding(end = 8.dp).size(22.dp))
                 Text(stringResource(R.string.action_scanning))
             }
             com.freeandroiddoctor.android.ui.components.ShimmerList(rows = 5)

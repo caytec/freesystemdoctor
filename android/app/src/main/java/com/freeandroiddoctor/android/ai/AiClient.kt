@@ -64,7 +64,15 @@ class AiClient(
             client.newCall(request).execute().use { response ->
                 val text = response.body?.string().orEmpty()
                 if (!response.isSuccessful) {
-                    return@withContext AiResult.Error("HTTP ${response.code}: ${text.take(300)}")
+                    // Don't echo the provider's raw error body: some providers
+                    // reflect fragments of the Authorization header in 401 payloads.
+                    val hint = when (response.code) {
+                        401, 403 -> "invalid or expired API key"
+                        429 -> "rate limit exceeded"
+                        in 500..599 -> "provider outage, try again later"
+                        else -> "request rejected"
+                    }
+                    return@withContext AiResult.Error("$providerName: HTTP ${response.code} ($hint)")
                 }
                 val parsed = json.decodeFromString<ChatResponse>(text)
                 val content = parsed.choices.firstOrNull()?.message?.content?.trim()

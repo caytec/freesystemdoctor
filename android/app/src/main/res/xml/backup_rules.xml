@@ -1,4 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- EncryptedSharedPreferences ciphertext is useless (and crash-prone:
+     AEADBadTagException) after restore on a different device because the
+     Keystore master key never leaves the original device — exclude all of it.
+     The vault holds user-hidden files; its index and blobs stay local-only. -->
 <full-backup-content>
     <exclude domain="sharedpref" path="fsd_secure_keys.xml" />
+    <exclude domain="sharedpref" path="fsd_cloud_backup_key.xml" />
+    <exclude domain="file" path="vault/" />
 </full-backup-content>

@@ -1,5 +1,7 @@
 package com.freeandroiddoctor.android.ui.tools
 
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -29,7 +31,7 @@ fun ScheduleScreen(
     val enabled by viewModel.enabled.collectAsStateWithLifecycle()
 
     Column(
-        modifier = modifier.fillMaxSize().padding(16.dp),
+        modifier = modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         Appear { InfoBanner(stringResource(R.string.schedule_note)) }

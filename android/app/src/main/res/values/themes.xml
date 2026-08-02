@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Theme.FreeAndroidDoctor" parent="android:Theme.Material.NoActionBar">
-        <item name="android:windowBackground">@android:color/black</item>
+    <!-- DayNight-aware window background: a hardcoded black here flashes dark
+         for a frame when the app starts in the light theme. -->
+    <style name="Theme.FreeAndroidDoctor" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/window_background</item>
     </style>
 
     <style name="Theme.FreeAndroidDoctor.Splash" parent="Theme.SplashScreen">
