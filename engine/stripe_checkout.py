@@ -99,6 +99,67 @@ class CheckoutSession:
                  "Check your email for the CD-key or contact support.")
 
 
+class CreditsCheckoutSession:
+    """One-time (non-subscription) Stripe payment for a credit pack."""
+
+    POLL_INTERVAL = 3
+    POLL_TIMEOUT  = 600
+
+    def __init__(self, pack_id: str):
+        self.pack_id = pack_id
+        self.session_id: Optional[str] = None
+
+    def start(self, on_success: Callable[[str], None],
+              on_error: Callable[[str], None]) -> bool:
+        try:
+            resp = requests.post(
+                f"{API_URL}/create-credits-checkout",
+                json={"pack_id": self.pack_id},
+                timeout=10,
+            )
+            if resp.status_code == 404:
+                on_error("Credit purchases aren't enabled on the server yet.")
+                return False
+            if resp.status_code != 200:
+                on_error(f"Server error {resp.status_code}: {resp.text}")
+                return False
+
+            data = resp.json()
+            self.session_id = data["session_id"]
+            webbrowser.open(data["checkout_url"])
+            threading.Thread(target=self._poll, args=(on_success, on_error),
+                             daemon=True).start()
+            return True
+        except requests.exceptions.RequestException as e:
+            on_error(f"Cannot reach server: {e}")
+            return False
+
+    def _poll(self, on_success, on_error):
+        start = time.monotonic()
+        while time.monotonic() - start < self.POLL_TIMEOUT:
+            try:
+                resp = requests.get(
+                    f"{API_URL}/credits-status/{self.session_id}", timeout=5)
+                if resp.status_code == 200 and resp.json().get("paid"):
+                    on_success(self.pack_id)
+                    return
+            except Exception:
+                pass
+            time.sleep(self.POLL_INTERVAL)
+        on_error("Payment confirmation timed out (10 min).")
+
+
+def begin_credits_checkout(pack_id: str,
+                           on_success: Optional[Callable[[str], None]] = None,
+                           on_error: Optional[Callable[[str], None]] = None) -> bool:
+    """Buy a credit pack with a one-time card payment. Returns True if the
+    browser was opened."""
+    return CreditsCheckoutSession(pack_id).start(
+        on_success or (lambda _p: None),
+        on_error or (lambda _m: None),
+    )
+
+
 def begin_checkout(
     email: str,
     device_id: str = "*",

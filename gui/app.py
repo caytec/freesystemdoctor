@@ -74,6 +74,7 @@ from .page_auto_shutdown    import AutoShutdownPage
 from .page_icon_saver       import IconSaverPage
 from .page_browser_autoclean import BrowserAutoCleanPage
 from .page_publisher        import PublisherPage
+from .page_credits         import CreditsPage
 from .page_autopilot        import AutoPilotPage
 from .page_performance_guardian import PerformanceGuardianPage
 from .page_health_timeline  import HealthTimelinePage
@@ -244,6 +245,7 @@ _NAV_CATEGORIES = [
         "items": [
             ("themes",     "🎨", "Themes",          ThemeManagerPage),
             ("icons",      "🖥", "Icon Saver",      IconSaverPage),
+            ("credits",    "🎟", "Credits",         CreditsPage),
             ("settings",   "⚙",  "Settings",        SettingsPage),
             ("toolbox",    "🔧", "All Tools (Adv.)", None),
         ],
@@ -277,7 +279,7 @@ SIMPLE_KEYS = {
     # Apps
     "software",
     # General
-    "themes", "settings",
+    "themes", "settings", "credits",
 }
 
 

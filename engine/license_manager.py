@@ -74,6 +74,20 @@ FREE_LIMIT_LABELS: dict[str, str] = {
 # ─────────────────────────────────────────────────────────────
 # LicenseManager
 # ─────────────────────────────────────────────────────────────
+def _credit_unlocked(feature_id: str) -> bool:
+    """True if this single tool was permanently unlocked with credits.
+
+    Imported lazily: engine.credits imports license_manager (for the Pro
+    bypass), so a module-level import here would be circular.
+    """
+    try:
+        from engine import credits
+        with credits._lock:
+            return feature_id in credits._load().get("unlocked", [])
+    except Exception:
+        return False
+
+
 class LicenseManager:
     # SECURITY: default is plain HTTP (the VPS has no TLS on this port). Keys are
     # HMAC-signed + device-bound so a MITM cannot forge a usable key, but set
@@ -107,12 +121,14 @@ class LicenseManager:
         """True if the page may build its normal UI.
 
         Non-Pro features and LIMITED features always build (the limited pages
-        enforce their own quotas inline). Only HARD_LOCKED features are walled
-        off entirely for Free users.
+        enforce their own quotas inline). HARD_LOCKED features open for Pro
+        users, or for anyone who unlocked that single tool with credits.
         """
         if feature_id not in HARD_LOCKED:
             return True
-        return self.is_pro()
+        if self.is_pro():
+            return True
+        return _credit_unlocked(feature_id)
 
     # ── graduated-limit helpers ─────────────────────────────
 
@@ -120,7 +136,9 @@ class LicenseManager:
         """Return 'full', 'limited', or 'locked' for the current tier."""
         if feature_id not in PRO_FEATURES or self.is_pro():
             return "full"
-        return "locked" if feature_id in HARD_LOCKED else "limited"
+        if feature_id in HARD_LOCKED:
+            return "full" if _credit_unlocked(feature_id) else "locked"
+        return "limited"
 
     def effective_limit(self, feature_id: str) -> Optional[int]:
         """Numeric cap for the current tier. None = unlimited (Pro or uncapped)."""

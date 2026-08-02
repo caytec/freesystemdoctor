@@ -84,7 +84,7 @@ def gate_or_build(page: tk.Frame, feature_id: str, title: str,
         "This feature is available in the Pro Edition.",
         ["Advanced functionality", "Priority support", "No limits"],
     ))
-    _build_upsell(page, title, desc, feats)
+    _build_upsell(page, title, desc, feats, feature_id)
     return True             # caller stops here
 
 
@@ -99,7 +99,8 @@ _ALL_PRO_PERKS = [
 ]
 
 
-def _build_upsell(page: tk.Frame, title: str, desc: str, feats: list[str]):
+def _build_upsell(page: tk.Frame, title: str, desc: str, feats: list[str],
+                  feature_id: str = ""):
     # Header bar (matches normal page style)
     hdr = tk.Frame(page, bg=T.ACCENT, height=48)
     hdr.pack(fill="x")
@@ -161,11 +162,87 @@ def _build_upsell(page: tk.Frame, title: str, desc: str, feats: list[str]):
     ActionButton(btn_row, text="I have a key", width=120, secondary=True,
                  command=_open_settings_license).pack(side="left", padx=(8, 0))
 
+    # ── Subscription-free alternative: unlock this one tool with credits ──
+    if feature_id:
+        _build_credits_option(card, page, feature_id, title)
+
     # Reassurance — the core stays free
     tk.Label(card,
              text="💙  The 60+ core tools stay free forever. Pro just removes the limits.",
              bg=T.PANEL, fg=T.FG2, font=T.FONT_SMALL).pack(
              anchor="w", padx=18, pady=(0, 16))
+
+
+def _build_credits_option(card: tk.Frame, page: tk.Frame,
+                          feature_id: str, title: str):
+    """Offer a no-subscription path: spend credits to unlock just this tool."""
+    try:
+        from engine import credits
+    except Exception:
+        return
+    if feature_id not in credits.UNLOCKABLE:
+        return
+
+    tk.Frame(card, bg=T.BORDER, height=1).pack(fill="x", padx=18, pady=(10, 10))
+
+    row = tk.Frame(card, bg=T.PANEL)
+    row.pack(fill="x", padx=18)
+    tk.Label(row, text="🎟  Don't want a subscription?", bg=T.PANEL, fg=T.FG,
+             font=T.FONT_BOLD).pack(anchor="w")
+
+    cost = credits.unlock_cost(feature_id)
+    bal = credits.balance()
+    tk.Label(card,
+             text=f"Unlock {title} permanently for {cost} credits — "
+                  f"you have {bal}. Credits are free to earn, or top up once.",
+             bg=T.PANEL, fg=T.FG2, font=T.FONT_SMALL,
+             wraplength=580, justify="left").pack(anchor="w", padx=18, pady=(2, 8))
+
+    btns = tk.Frame(card, bg=T.PANEL)
+    btns.pack(fill="x", padx=18, pady=(0, 4))
+
+    def do_unlock():
+        from tkinter import messagebox
+        ok, msg = credits.unlock_feature(feature_id)
+        if ok:
+            messagebox.showinfo("Unlocked", msg)
+            _rebuild_page(page)
+        else:
+            if messagebox.askyesno("Not enough credits",
+                                   f"{msg}\n\nOpen the Credits wallet now?"):
+                _open_page("credits")
+
+    if bal >= cost:
+        ActionButton(btns, text=f"🎟  Unlock for {cost} credits", width=190,
+                     command=do_unlock).pack(side="left")
+    else:
+        ActionButton(btns, text=f"Get credits ({bal}/{cost})", width=170,
+                     secondary=True,
+                     command=lambda: _open_page("credits")).pack(side="left")
+
+
+def _rebuild_page(page: tk.Frame):
+    """Re-render a page in place after its feature was unlocked."""
+    try:
+        for w in page.winfo_children():
+            w.destroy()
+        page._pro_gated = False
+        if hasattr(page, "_build_ui"):
+            page._build_ui()
+    except Exception:
+        pass
+
+
+def _open_page(key: str):
+    import tkinter as _tk
+    try:
+        root = _tk._default_root                  # type: ignore
+        if hasattr(root, "_switch_page"):
+            root._switch_page(key)
+        elif hasattr(root, "_app"):
+            root._app._switch_page(key)
+    except Exception:
+        pass
 
 
 def _open_settings_license():
