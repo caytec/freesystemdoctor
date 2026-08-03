@@ -1,7 +1,12 @@
 {
-  "updated": "2026-08-03T01:36:42.099809Z",
-  "count": 46,
+  "updated": "2026-08-03T01:38:26.667708Z",
+  "count": 47,
   "commits": [
+    {
+      "sha": "610993f6cb8790a872c29c52a75b7d6080673970",
+      "date": "2026-08-03T03:38:00+02:00",
+      "msg": "feat(disk): real SMART drive health (model, SSD/HDD, wear, temp, hours)"
+    },
     {
       "sha": "0a65f26f56c626a217ccbb1c26a35a84e392305d",
       "date": "2026-08-03T03:36:21+02:00",
