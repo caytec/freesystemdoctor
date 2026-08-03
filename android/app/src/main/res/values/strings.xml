@@ -811,4 +811,16 @@
     <string name="pro_benefit_privacy_audit">Unlimited privacy audits — no daily cap</string>
     <string name="pro_benefit_modes">Unlimited mode switches + custom modes</string>
     <string name="pro_benefit_auto_rules">Unlimited auto-rules including new-install scanning</string>
+    <!-- Update 15: Metadata (EXIF) stripper -->
+    <string name="tool_metadata">Metadata cleaner</string>
+    <string name="metadata_note">Removes GPS location, device model and timestamps from photos before you share them. Works on copies — your originals stay untouched. 100%% on-device.</string>
+    <string name="metadata_pick">Pick photos to clean</string>
+    <string name="metadata_pick_more">Clean more photos</string>
+    <string name="metadata_progress">Cleaning %1$d of %2$d…</string>
+    <string name="metadata_result_title">Clean copies saved</string>
+    <string name="metadata_result_cleaned">%1$d photos</string>
+    <string name="metadata_result_subtitle">%1$d had a GPS location removed · saved to Pictures/FreeAndroidDoctor/clean</string>
+    <string name="metadata_result_failed">%1$d could not be processed</string>
+    <string name="metadata_removed_location">Location + metadata removed</string>
+    <string name="metadata_removed_meta">Metadata removed</string>
 </resources>

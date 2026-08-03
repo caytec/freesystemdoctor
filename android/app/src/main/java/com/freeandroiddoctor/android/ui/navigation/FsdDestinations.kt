@@ -83,4 +83,7 @@ object ToolRoutes {
     const val BROWSER_DATA = "tool/browser_data"
     const val MODES = "tool/modes"
     const val AUTO_RULES = "tool/auto_rules"
+
+    // Update 15: Metadata (EXIF) stripper
+    const val METADATA = "tool/metadata"
 }

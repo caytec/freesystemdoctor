@@ -49,6 +49,7 @@ import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.NetworkCell
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.LocationOff
 import androidx.compose.material.icons.filled.ShieldMoon
 import androidx.compose.material.icons.filled.TrendingDown
 import androidx.compose.material.icons.filled.Notifications
@@ -178,6 +179,7 @@ private val toolGroups = listOf(
             Tool(R.string.tool_privacy_audit, Icons.Filled.ShieldMoon, ToolRoutes.PRIVACY_AUDIT),
             Tool(R.string.tool_privacy_profiles, Icons.Filled.Security, ToolRoutes.PRIVACY_PROFILES),
             Tool(R.string.tool_browser_data, Icons.Filled.DeleteSweep, ToolRoutes.BROWSER_DATA),
+            Tool(R.string.tool_metadata, Icons.Filled.LocationOff, ToolRoutes.METADATA),
         ),
     ),
     // Update 14: Automation

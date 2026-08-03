@@ -105,6 +105,7 @@ import com.freeandroiddoctor.android.ui.tools.ToolsScreen
 import com.freeandroiddoctor.android.ui.privacy.PrivacyAuditScreen
 import com.freeandroiddoctor.android.ui.privacy.PrivacyProfilesScreen
 import com.freeandroiddoctor.android.ui.privacy.BrowserDataScreen
+import com.freeandroiddoctor.android.ui.metadata.MetadataScreen
 import com.freeandroiddoctor.android.ui.modes.ModesScreen
 import com.freeandroiddoctor.android.ui.automation.AutoRulesScreen
 import com.freeandroiddoctor.android.ui.theme.appBackgroundBrush
@@ -164,6 +165,7 @@ private val toolTitles: Map<String, Int> = mapOf(
     ToolRoutes.BROWSER_DATA to R.string.tool_browser_data,
     ToolRoutes.MODES to R.string.tool_modes,
     ToolRoutes.AUTO_RULES to R.string.tool_auto_rules,
+    ToolRoutes.METADATA to R.string.tool_metadata,
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -359,6 +361,7 @@ fun MainScaffold() {
             composable(ToolRoutes.BROWSER_DATA) { BrowserDataScreen() }
             composable(ToolRoutes.MODES) { ModesScreen() }
             composable(ToolRoutes.AUTO_RULES) { AutoRulesScreen() }
+            composable(ToolRoutes.METADATA) { MetadataScreen() }
         }
         }
     }

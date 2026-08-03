@@ -141,6 +141,9 @@ object ServiceLocator {
     val similarPhotoEngine: SimilarPhotoEngine by lazy { SimilarPhotoEngine(appContext) }
     val blurScreenshotEngine: BlurScreenshotEngine by lazy { BlurScreenshotEngine(appContext) }
     val imageCompressionEngine: ImageCompressionEngine by lazy { ImageCompressionEngine(appContext) }
+    val metadataStripperEngine: com.freeandroiddoctor.android.engine.media.MetadataStripperEngine by lazy {
+        com.freeandroiddoctor.android.engine.media.MetadataStripperEngine(appContext)
+    }
     val wifiAnalyzerEngine: WifiAnalyzerEngine by lazy { WifiAnalyzerEngine(appContext) }
     val speedTestEngine: SpeedTestEngine by lazy { SpeedTestEngine() }
     val contactsEngine: ContactsEngine by lazy { ContactsEngine(appContext) }

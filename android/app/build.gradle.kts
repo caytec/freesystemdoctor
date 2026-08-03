@@ -169,6 +169,8 @@ dependencies {
     // Applies a baseline profile at install time (and lets us ship one later) so
     // hot code is AOT-compiled — noticeably faster cold start on low-end devices.
     implementation(libs.androidx.profileinstaller)
+    // Read/strip photo metadata (EXIF GPS, device, timestamps) fully on-device.
+    implementation(libs.androidx.exifinterface)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.process)
     implementation(libs.androidx.lifecycle.runtime.compose)

@@ -758,4 +758,16 @@
     <string name="pro_benefit_privacy_audit">Nielimitowane audyty prywatności — bez dziennego limitu</string>
     <string name="pro_benefit_modes">Nielimitowane przełączenia trybów + tryby własne</string>
     <string name="pro_benefit_auto_rules">Nielimitowane auto-reguły, w tym skanowanie nowych instalacji</string>
+    <!-- Update 15: Usuwanie metadanych (EXIF) -->
+    <string name="tool_metadata">Czyszczenie metadanych</string>
+    <string name="metadata_note">Usuwa lokalizację GPS, model urządzenia i znaczniki czasu ze zdjęć przed udostępnieniem. Działa na kopiach — oryginały pozostają nietknięte. W 100%% lokalnie.</string>
+    <string name="metadata_pick">Wybierz zdjęcia do wyczyszczenia</string>
+    <string name="metadata_pick_more">Wyczyść kolejne zdjęcia</string>
+    <string name="metadata_progress">Czyszczenie %1$d z %2$d…</string>
+    <string name="metadata_result_title">Zapisano czyste kopie</string>
+    <string name="metadata_result_cleaned">%1$d zdjęć</string>
+    <string name="metadata_result_subtitle">z %1$d usunięto lokalizację GPS · zapisano w Pictures/FreeAndroidDoctor/clean</string>
+    <string name="metadata_result_failed">%1$d nie udało się przetworzyć</string>
+    <string name="metadata_removed_location">Usunięto lokalizację i metadane</string>
+    <string name="metadata_removed_meta">Usunięto metadane</string>
 </resources>
