@@ -105,6 +105,9 @@ object ServiceLocator {
     val storageForecastEngine: StorageForecastEngine by lazy {
         StorageForecastEngine(appContext, storageEngine)
     }
+    val appGrowthEngine: com.freeandroiddoctor.android.engine.forecast.AppGrowthEngine by lazy {
+        com.freeandroiddoctor.android.engine.forecast.AppGrowthEngine(appContext, storageEngine)
+    }
     val cleaningHistoryEngine: CleaningHistoryEngine by lazy { CleaningHistoryEngine(appContext) }
     val appResourceEngine: AppResourceEngine by lazy {
         AppResourceEngine(
@@ -143,6 +146,9 @@ object ServiceLocator {
     val imageCompressionEngine: ImageCompressionEngine by lazy { ImageCompressionEngine(appContext) }
     val metadataStripperEngine: com.freeandroiddoctor.android.engine.media.MetadataStripperEngine by lazy {
         com.freeandroiddoctor.android.engine.media.MetadataStripperEngine(appContext)
+    }
+    val trackerScannerEngine: com.freeandroiddoctor.android.engine.privacy.TrackerScannerEngine by lazy {
+        com.freeandroiddoctor.android.engine.privacy.TrackerScannerEngine(appContext)
     }
     val permissionSnapshotStore: com.freeandroiddoctor.android.data.watchdog.PermissionSnapshotStore by lazy {
         com.freeandroiddoctor.android.data.watchdog.PermissionSnapshotStore(appContext)

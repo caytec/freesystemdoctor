@@ -843,4 +843,27 @@
     <string name="phonehome_bg_pct">%1$d%% in background</string>
     <string name="phonehome_breakdown">Background: %1$s · Foreground: %2$s</string>
     <string name="phonehome_restrict">Manage / restrict background</string>
+    <!-- Update 18: Offline tracker/SDK scanner -->
+    <string name="tool_trackers">Tracker scanner</string>
+    <string name="trackers_note">Detects known advertising, analytics and profiling SDKs embedded in your apps, using a signature list bundled with this app. Nothing is looked up online — your app list never leaves the device.</string>
+    <string name="trackers_scan">Scan apps for trackers</string>
+    <string name="trackers_scanning">Scanning %1$d / %2$d…</string>
+    <string name="trackers_summary_title">Apps containing trackers</string>
+    <string name="trackers_summary_value">%1$d apps</string>
+    <string name="trackers_summary_subtitle">out of %1$d scanned. Detection covers SDKs that register app components — a clean result is not a guarantee.</string>
+    <string name="trackers_top_header">Most widespread trackers</string>
+    <string name="trackers_in_apps">in %1$d apps</string>
+    <string name="trackers_apps_header">Per app</string>
+    <string name="trackers_count">%1$d trackers</string>
+    <string name="trackers_none">No known trackers detected in your installed apps.</string>
+    <string name="trackers_manage">App settings</string>
+    <!-- Update 19: Per-app storage growth trends -->
+    <string name="tool_app_growth">Storage growth</string>
+    <string name="growth_note">Shows which apps are quietly inflating. A small snapshot of per-app sizes is taken once a day and compared over time — stored locally, never uploaded.</string>
+    <string name="growth_gathering_title">Collecting data</string>
+    <string name="growth_gathering_body">At least two daily snapshots are needed before growth can be compared. Come back tomorrow, or take a snapshot now to start.</string>
+    <string name="growth_snapshot_now">Take a snapshot now</string>
+    <string name="growth_header">Biggest changes over %1$d days</string>
+    <string name="growth_stable">No app changed significantly in the last %1$d days.</string>
+    <string name="growth_current">Now: %1$s</string>
 </resources>

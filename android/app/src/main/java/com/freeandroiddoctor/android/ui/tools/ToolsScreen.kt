@@ -53,6 +53,7 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.LocationOff
 import androidx.compose.material.icons.filled.ShieldMoon
 import androidx.compose.material.icons.filled.TrendingDown
+import androidx.compose.material.icons.filled.TrendingUp
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.PhoneAndroid
 import androidx.compose.material.icons.filled.PhotoLibrary
@@ -60,6 +61,7 @@ import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.Timelapse
 import androidx.compose.material.icons.filled.Tune
+import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.Wifi
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -114,6 +116,7 @@ private val toolGroups = listOf(
             Tool(R.string.tool_recycle_bin, Icons.Filled.DeleteSweep, ToolRoutes.RECYCLE_BIN),
             Tool(R.string.tool_hidden_cache, Icons.Filled.Folder, ToolRoutes.HIDDEN_CACHE),
             Tool(R.string.tool_storage_forecast, Icons.Filled.TrendingDown, ToolRoutes.STORAGE_FORECAST),
+            Tool(R.string.tool_app_growth, Icons.Filled.TrendingUp, ToolRoutes.APP_GROWTH),
             Tool(R.string.tool_shredder, Icons.Filled.DeleteForever, ToolRoutes.SHREDDER, advanced = true),
             Tool(R.string.tool_cleaning_history, Icons.Filled.History, ToolRoutes.CLEANING_HISTORY),
             Tool(R.string.tool_corpse_finder, Icons.Filled.DeleteForever, ToolRoutes.CORPSE_FINDER, advanced = true),
@@ -183,6 +186,7 @@ private val toolGroups = listOf(
             Tool(R.string.tool_metadata, Icons.Filled.LocationOff, ToolRoutes.METADATA),
             Tool(R.string.tool_watchdog, Icons.Filled.NewReleases, ToolRoutes.WATCHDOG),
             Tool(R.string.tool_phone_home, Icons.Filled.NetworkCell, ToolRoutes.PHONE_HOME),
+            Tool(R.string.tool_trackers, Icons.Filled.Visibility, ToolRoutes.TRACKERS),
         ),
     ),
     // Update 14: Automation

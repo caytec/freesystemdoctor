@@ -108,6 +108,8 @@ import com.freeandroiddoctor.android.ui.privacy.BrowserDataScreen
 import com.freeandroiddoctor.android.ui.metadata.MetadataScreen
 import com.freeandroiddoctor.android.ui.watchdog.PermissionWatchdogScreen
 import com.freeandroiddoctor.android.ui.phonehome.PhoneHomeScreen
+import com.freeandroiddoctor.android.ui.trackers.TrackerScannerScreen
+import com.freeandroiddoctor.android.ui.growth.AppGrowthScreen
 import com.freeandroiddoctor.android.ui.modes.ModesScreen
 import com.freeandroiddoctor.android.ui.automation.AutoRulesScreen
 import com.freeandroiddoctor.android.ui.theme.appBackgroundBrush
@@ -170,6 +172,8 @@ private val toolTitles: Map<String, Int> = mapOf(
     ToolRoutes.METADATA to R.string.tool_metadata,
     ToolRoutes.WATCHDOG to R.string.tool_watchdog,
     ToolRoutes.PHONE_HOME to R.string.tool_phone_home,
+    ToolRoutes.TRACKERS to R.string.tool_trackers,
+    ToolRoutes.APP_GROWTH to R.string.tool_app_growth,
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -368,6 +372,8 @@ fun MainScaffold() {
             composable(ToolRoutes.METADATA) { MetadataScreen() }
             composable(ToolRoutes.WATCHDOG) { PermissionWatchdogScreen() }
             composable(ToolRoutes.PHONE_HOME) { PhoneHomeScreen() }
+            composable(ToolRoutes.TRACKERS) { TrackerScannerScreen() }
+            composable(ToolRoutes.APP_GROWTH) { AppGrowthScreen() }
         }
         }
     }

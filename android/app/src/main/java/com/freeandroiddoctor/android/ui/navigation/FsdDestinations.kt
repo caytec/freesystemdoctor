@@ -92,4 +92,10 @@ object ToolRoutes {
 
     // Update 17: Phone-home (background network) monitor
     const val PHONE_HOME = "tool/phone_home"
+
+    // Update 18: Offline tracker/SDK scanner
+    const val TRACKERS = "tool/trackers"
+
+    // Update 19: Per-app storage growth trends
+    const val APP_GROWTH = "tool/app_growth"
 }

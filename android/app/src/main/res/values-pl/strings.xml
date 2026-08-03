@@ -790,4 +790,27 @@
     <string name="phonehome_bg_pct">%1$d%% w tle</string>
     <string name="phonehome_breakdown">W tle: %1$s · Na pierwszym planie: %2$s</string>
     <string name="phonehome_restrict">Zarządzaj / ogranicz w tle</string>
+    <!-- Update 18: Skaner trackerów (offline) -->
+    <string name="tool_trackers">Skaner trackerów</string>
+    <string name="trackers_note">Wykrywa znane SDK reklamowe, analityczne i profilujące osadzone w Twoich aplikacjach, na podstawie listy sygnatur dołączonej do tej aplikacji. Nic nie jest sprawdzane online — lista Twoich aplikacji nie opuszcza urządzenia.</string>
+    <string name="trackers_scan">Skanuj aplikacje w poszukiwaniu trackerów</string>
+    <string name="trackers_scanning">Skanowanie %1$d / %2$d…</string>
+    <string name="trackers_summary_title">Aplikacje zawierające trackery</string>
+    <string name="trackers_summary_value">%1$d aplikacji</string>
+    <string name="trackers_summary_subtitle">z %1$d przeskanowanych. Wykrywanie obejmuje SDK rejestrujące komponenty — czysty wynik nie jest gwarancją.</string>
+    <string name="trackers_top_header">Najczęstsze trackery</string>
+    <string name="trackers_in_apps">w %1$d aplikacjach</string>
+    <string name="trackers_apps_header">Wg aplikacji</string>
+    <string name="trackers_count">%1$d trackerów</string>
+    <string name="trackers_none">Nie wykryto znanych trackerów w zainstalowanych aplikacjach.</string>
+    <string name="trackers_manage">Ustawienia aplikacji</string>
+    <!-- Update 19: Trendy wzrostu pamięci per aplikacja -->
+    <string name="tool_app_growth">Wzrost pamięci</string>
+    <string name="growth_note">Pokazuje, które aplikacje po cichu puchną. Raz dziennie zapisywana jest mała migawka rozmiarów aplikacji i porównywana w czasie — lokalnie, nic nie jest wysyłane.</string>
+    <string name="growth_gathering_title">Zbieranie danych</string>
+    <string name="growth_gathering_body">Do porównania wzrostu potrzebne są co najmniej dwie dzienne migawki. Wróć jutro albo zrób migawkę teraz, żeby zacząć.</string>
+    <string name="growth_snapshot_now">Zrób migawkę teraz</string>
+    <string name="growth_header">Największe zmiany w ciągu %1$d dni</string>
+    <string name="growth_stable">Żadna aplikacja nie zmieniła się znacząco w ciągu ostatnich %1$d dni.</string>
+    <string name="growth_current">Teraz: %1$s</string>
 </resources>

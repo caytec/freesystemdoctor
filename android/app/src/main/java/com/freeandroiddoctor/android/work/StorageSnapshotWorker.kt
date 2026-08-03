@@ -30,6 +30,9 @@ class StorageSnapshotWorker(
     override suspend fun doWork(): Result {
         val engine = ServiceLocator.storageForecastEngine
         engine.recordToday()
+        // Same daily cadence feeds the per-app growth trends ("App X grew 2 GB
+        // this week"). Failure here must not fail the free-space forecast.
+        runCatching { ServiceLocator.appGrowthEngine.recordToday() }
         val report = engine.forecast()
         maybeWarn(report)
         return Result.success()
