@@ -183,6 +183,13 @@ def clean_registry(progress_cb=None) -> dict:
 
     Returns ``{"fixed": int, "found": int, "skipped": int}``.
     """
+    # Safety net: let the user roll back the whole thing if anything misbehaves.
+    try:
+        from engine import system_restore
+        system_restore.ensure_checkpoint("registry cleanup")
+    except Exception:
+        pass
+
     try:
         issues = scan_registry(progress_cb=progress_cb)
     except Exception:

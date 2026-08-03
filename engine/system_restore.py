@@ -162,6 +162,57 @@ def create_restore_point(description: str = "FreeSystemDoctor Checkpoint") -> bo
         return False
 
 
+# ── SAFETY NET ────────────────────────────────────────────────────────────────
+# Minimum hours between automatic checkpoints (Windows itself throttles to one
+# per 24h by default; we keep our own guard so we never stall a run repeatedly).
+_AUTO_CP_MIN_HOURS = 12
+
+
+def ensure_checkpoint(reason: str = "maintenance") -> tuple[bool, str]:
+    """Create a restore point BEFORE a risky operation, if appropriate.
+
+    Safety net used by destructive features (registry cleaning, debloat, tweaks,
+    Quick Fix bundles) so the user can always roll back. Honours the
+    ``auto_restore_point`` setting (default ON) and is rate-limited so a burst of
+    operations doesn't create a checkpoint every time.
+
+    Returns (created, message). Never raises — a failed checkpoint must not stop
+    the user's actual request.
+    """
+    try:
+        from engine import app_settings
+        if not app_settings.get("auto_restore_point", True):
+            return False, "Automatic restore points are turned off in Settings."
+
+        last = app_settings.get("last_auto_restore_point", "")
+        if last:
+            try:
+                from datetime import datetime, timedelta
+                when = datetime.fromisoformat(last)
+                if datetime.now() - when < timedelta(hours=_AUTO_CP_MIN_HOURS):
+                    return False, "A recent restore point already exists."
+            except Exception:
+                pass
+    except Exception:
+        pass   # settings unavailable → still attempt the checkpoint
+
+    try:
+        ok = create_restore_point(f"FreeSystemDoctor — before {reason}")
+        if ok:
+            try:
+                from datetime import datetime
+                from engine import app_settings
+                app_settings.set_and_save("last_auto_restore_point",
+                                          datetime.now().isoformat(timespec="seconds"))
+            except Exception:
+                pass
+            return True, "Restore point created."
+        return False, "Could not create a restore point (System Protection may be off)."
+    except Exception as exc:
+        logger.warning("ensure_checkpoint failed: %s", exc)
+        return False, str(exc)
+
+
 def delete_restore_point(sequence_number: int) -> bool:
     """
     Delete a system restore point by sequence number.

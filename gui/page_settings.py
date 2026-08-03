@@ -402,6 +402,23 @@ class SettingsPage(tk.Frame):
                  bg=T.PANEL, fg=T.FG2, font=T.FONT_SMALL,
                  wraplength=560, justify="left").pack(anchor="w", padx=10, pady=(0, 8))
 
+        # Safety: create a restore point before risky operations
+        cp_row = tk.Frame(card, bg=T.PANEL)
+        cp_row.pack(fill="x", padx=10, pady=(0, 4))
+        tk.Label(cp_row, text="Safety checkpoint:", bg=T.PANEL, fg=T.FG,
+                 font=T.FONT_BODY, width=20, anchor="w").pack(side="left")
+        from engine import app_settings as _aset3
+        self._checkpoint_var = tk.BooleanVar(
+            value=_aset3.get("auto_restore_point", True))
+        ToggleSwitch(cp_row, variable=self._checkpoint_var,
+                     command=self._on_checkpoint_toggle).pack(side="left", padx=12)
+        tk.Label(card,
+                 text="Creates a Windows restore point before risky changes "
+                      "(registry cleanup, Quick Fix) so you can always roll back. "
+                      "Recommended.",
+                 bg=T.PANEL, fg=T.FG2, font=T.FONT_SMALL,
+                 wraplength=560, justify="left").pack(anchor="w", padx=10, pady=(0, 8))
+
         # Replay the interactive first-run tour
         tour_row = tk.Frame(card, bg=T.PANEL)
         tour_row.pack(fill="x", padx=10, pady=(0, 4))
@@ -414,6 +431,10 @@ class SettingsPage(tk.Frame):
                       "main parts of the app.",
                  bg=T.PANEL, fg=T.FG2, font=T.FONT_SMALL,
                  wraplength=560, justify="left").pack(anchor="w", padx=10, pady=(0, 8))
+
+    def _on_checkpoint_toggle(self):
+        from engine import app_settings as _aset
+        _aset.set_and_save("auto_restore_point", self._checkpoint_var.get())
 
     def _on_take_tour(self):
         try:

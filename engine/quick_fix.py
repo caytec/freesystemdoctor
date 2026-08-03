@@ -264,6 +264,15 @@ def run_bundle(bundle_id: str, progress_cb: ProgressCB = None) -> dict:
     if not bundle or bundle_id not in _RUNNERS:
         return {"title": bundle_id, "steps": [], "summary": "Unknown action."}
 
+    # Safety net before anything destructive — the user can always roll back.
+    if bundle.get("destructive"):
+        _emit(progress_cb, "Creating a restore point (safety net)…", 2)
+        try:
+            from engine import system_restore
+            system_restore.ensure_checkpoint(bundle["title"])
+        except Exception:
+            pass
+
     try:
         steps = _RUNNERS[bundle_id](progress_cb)
     except Exception as e:                       # belt & braces

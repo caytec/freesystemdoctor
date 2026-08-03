@@ -6,7 +6,9 @@ import json
 from pathlib import Path
 from datetime import datetime, timedelta
 
-_CONFIG_DIR = Path(os.environ.get("TEMP", ".")) / "FreeSystemDoctor"
+# Stored under ~/.fsd — deliberately NOT %TEMP%, which the app's own Turbo Clean
+# wipes (that would silently reset the user's update preferences).
+_CONFIG_DIR = Path(os.path.expanduser("~")) / ".fsd"
 _UPDATE_CONFIG = _CONFIG_DIR / "windows_update_config.json"
 
 
@@ -16,23 +18,52 @@ def _ensure_config_dir():
 
 
 def get_update_status() -> dict:
-    """Get current Windows Update status."""
+    """Get current Windows Update status via the Windows Update Agent.
+
+    Uses the real WUA COM API (Microsoft.Update.Session). The previous
+    implementation queried a WMI class ``Win32_WindowsUpdate`` that does not
+    exist on Windows, so it always reported "System up to date" regardless of
+    reality. Searching contacts Windows Update, so it can take a while.
+
+    Returns {pending_updates, status, last_check, titles}.
+    """
+    script = (
+        "$ErrorActionPreference='Stop';"
+        "$s = New-Object -ComObject Microsoft.Update.Session;"
+        "$r = $s.CreateUpdateSearcher().Search('IsInstalled=0 and IsHidden=0');"
+        "Write-Output ('COUNT=' + $r.Updates.Count);"
+        "foreach ($u in $r.Updates) { Write-Output ('TITLE=' + $u.Title) }"
+    )
     try:
         result = subprocess.run(
-            ["powershell", "-NoProfile", "-Command",
-             "Get-WmiObject -Namespace \"root\\cimv2\" -Class Win32_WindowsUpdate | Select-Object -Property Status,Description"],
-            capture_output=True,
-            text=True,
-            timeout=10, creationflags=0x08000000)
-
-        pending_updates = result.stdout.count("Status")
+            ["powershell", "-NoProfile", "-Command", script],
+            capture_output=True, text=True, timeout=180,
+            creationflags=0x08000000)
+        out = result.stdout or ""
+        count = 0
+        titles: list[str] = []
+        for line in out.splitlines():
+            line = line.strip()
+            if line.startswith("COUNT="):
+                try:
+                    count = int(line.split("=", 1)[1])
+                except ValueError:
+                    count = 0
+            elif line.startswith("TITLE="):
+                titles.append(line.split("=", 1)[1])
+        if "COUNT=" not in out:
+            return {"pending_updates": 0, "status": "Unable to check",
+                    "last_check": _get_last_update_time(), "titles": []}
         return {
-            "pending_updates": pending_updates,
-            "status": "Updates available" if pending_updates > 0 else "System up to date",
+            "pending_updates": count,
+            "status": (f"{count} update(s) available" if count
+                       else "System up to date"),
             "last_check": _get_last_update_time(),
+            "titles": titles,
         }
     except Exception:
-        return {"pending_updates": 0, "status": "Unable to check", "last_check": None}
+        return {"pending_updates": 0, "status": "Unable to check",
+                "last_check": None, "titles": []}
 
 
 def _get_last_update_time() -> str:

@@ -74,6 +74,7 @@ from .page_auto_shutdown    import AutoShutdownPage
 from .page_icon_saver       import IconSaverPage
 from .page_browser_autoclean import BrowserAutoCleanPage
 from .page_publisher        import PublisherPage
+from .page_windows_update  import WindowsUpdatePage
 from .page_quick_fix       import QuickFixPage
 from .page_credits         import CreditsPage
 from .page_autopilot        import AutoPilotPage
@@ -226,6 +227,7 @@ _NAV_CATEGORIES = [
             ("backup",     "📦", "System Backup",   SystemBackupPage),
             ("reg_backup", "💾", "Reg. Backup",     RegistryBackupPage),
             ("drivers",    "🔧", "Drivers",         DriverUpdaterPage),
+            ("winupdate",  "🔄", "Windows Update",  WindowsUpdatePage),
         ],
     },
     # ── Apps & Software ───────────────────────────────────────────────────────
@@ -277,7 +279,7 @@ SIMPLE_KEYS = {
     # Protection
     "protect",
     # Repair
-    "repair", "restore", "backup",
+    "repair", "restore", "backup", "winupdate",
     # Apps
     "software",
     # General
