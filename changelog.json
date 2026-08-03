@@ -1,7 +1,12 @@
 {
-  "updated": "2026-08-03T01:31:52.725172Z",
-  "count": 44,
+  "updated": "2026-08-03T01:34:48.018909Z",
+  "count": 45,
   "commits": [
+    {
+      "sha": "9fd783848bf1a660445fb7d3d31ce4be7a8be2d8",
+      "date": "2026-08-03T03:34:17+02:00",
+      "msg": "feat(debloat): remove preinstalled Windows Store (UWP) apps"
+    },
     {
       "sha": "d870da5f91f255e1bdbbf4f55f0e87dd0da9d8df",
       "date": "2026-08-03T03:31:30+02:00",
