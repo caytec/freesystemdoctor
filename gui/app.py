@@ -74,6 +74,7 @@ from .page_auto_shutdown    import AutoShutdownPage
 from .page_icon_saver       import IconSaverPage
 from .page_browser_autoclean import BrowserAutoCleanPage
 from .page_publisher        import PublisherPage
+from .page_debloat         import DebloatPage
 from .page_windows_update  import WindowsUpdatePage
 from .page_quick_fix       import QuickFixPage
 from .page_credits         import CreditsPage
@@ -237,6 +238,7 @@ _NAV_CATEGORIES = [
         "color": "#18c08f",
         "items": [
             ("software",   "⬇",  "Software",        SoftwarePage),
+            ("debloat",    "🧹", "Debloat Windows", DebloatPage),
             ("action",     "⚠",  "Action Center",   ActionCenterPage),
             ("auto_off",   "⏻",  "Auto-Shutdown",   AutoShutdownPage),
         ],
@@ -281,7 +283,7 @@ SIMPLE_KEYS = {
     # Repair
     "repair", "restore", "backup", "winupdate",
     # Apps
-    "software",
+    "software", "debloat",
     # General
     "themes", "settings", "credits",
 }
