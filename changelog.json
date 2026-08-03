@@ -1,7 +1,12 @@
 {
-  "updated": "2026-08-03T01:34:48.018909Z",
-  "count": 45,
+  "updated": "2026-08-03T01:36:42.099809Z",
+  "count": 46,
   "commits": [
+    {
+      "sha": "0a65f26f56c626a217ccbb1c26a35a84e392305d",
+      "date": "2026-08-03T03:36:21+02:00",
+      "msg": "feat(privacy): Copilot / Recall / Widgets / Bing toggles"
+    },
     {
       "sha": "9fd783848bf1a660445fb7d3d31ce4be7a8be2d8",
       "date": "2026-08-03T03:34:17+02:00",
