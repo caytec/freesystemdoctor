@@ -783,4 +783,11 @@
     <string name="watchdog_new_app">Nowo zainstalowana</string>
     <string name="watchdog_after_update">Dodane po aktualizacji</string>
     <string name="watchdog_newly_granted">Nowo przyznane</string>
+    <!-- Update 17: Monitor phone-home (ruch sieciowy w tle) -->
+    <string name="tool_phone_home">Monitor phone-home</string>
+    <string name="phonehome_note">Pokazuje, które aplikacje wysyłają dane w TLE — gdy z nich nie korzystasz. Duży ruch w tle może oznaczać śledzenie lub niechcianą synchronizację. Na podstawie lokalnych statystyk sieci z ostatnich 7 dni.</string>
+    <string name="phonehome_empty">Żadna aplikacja nie wysłała znaczącej ilości danych w tle w ostatnich 7 dniach.</string>
+    <string name="phonehome_bg_pct">%1$d%% w tle</string>
+    <string name="phonehome_breakdown">W tle: %1$s · Na pierwszym planie: %2$s</string>
+    <string name="phonehome_restrict">Zarządzaj / ogranicz w tle</string>
 </resources>

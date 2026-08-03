@@ -18,6 +18,19 @@ data class DataUsageItem(
     val totalBytes: Long get() = mobileBytes + wifiBytes
 }
 
+/** Foreground vs background bytes for one app — the "phone-home" view. */
+data class PhoneHomeItem(
+    val label: String,
+    val packageName: String,
+    val foregroundBytes: Long,
+    val backgroundBytes: Long,
+) {
+    val totalBytes: Long get() = foregroundBytes + backgroundBytes
+    /** Share of this app's traffic that happened while you weren't using it. */
+    val backgroundFraction: Float get() =
+        if (totalBytes <= 0) 0f else backgroundBytes.toFloat() / totalBytes
+}
+
 /**
  * Per-app mobile + Wi-Fi data usage over a recent window via NetworkStatsManager.
  * Querying other apps' UIDs requires the PACKAGE_USAGE_STATS special access.
@@ -48,6 +61,66 @@ class DataUsageEngine(
             )
             if (item.totalBytes <= 0) null else item
         }.sortedByDescending { it.totalBytes }
+    }
+
+    /**
+     * Per-app foreground vs background traffic (mobile + Wi-Fi) over a recent
+     * window — surfaces apps that "phone home" while you aren't using them.
+     * Only apps with meaningful background traffic are returned, most-background
+     * first. Requires the PACKAGE_USAGE_STATS special access.
+     */
+    suspend fun backgroundActivity(days: Int = 7): List<PhoneHomeItem> =
+        withContext(Dispatchers.IO) {
+            if (!permissions.hasUsageAccess()) return@withContext emptyList()
+            val nsm = context.getSystemService(Context.NETWORK_STATS_SERVICE) as NetworkStatsManager
+            val pm = context.packageManager
+            val end = System.currentTimeMillis()
+            val start = end - TimeUnit.DAYS.toMillis(days.toLong())
+
+            val split = HashMap<Int, LongArray>() // uid -> [fg, bg]
+            for (type in intArrayOf(ConnectivityManager.TYPE_MOBILE, ConnectivityManager.TYPE_WIFI)) {
+                accumulateByState(nsm, type, start, end, split)
+            }
+
+            split.mapNotNull { (uid, fgBg) ->
+                val bg = fgBg[1]
+                if (bg < MIN_BACKGROUND_BYTES) return@mapNotNull null
+                val (label, pkg) = labelAndPackageForUid(pm, uid) ?: return@mapNotNull null
+                PhoneHomeItem(
+                    label = label,
+                    packageName = pkg,
+                    foregroundBytes = fgBg[0],
+                    backgroundBytes = bg,
+                )
+            }.sortedByDescending { it.backgroundBytes }
+        }
+
+    private fun accumulateByState(
+        nsm: NetworkStatsManager,
+        networkType: Int,
+        start: Long,
+        end: Long,
+        into: MutableMap<Int, LongArray>,
+    ) {
+        val stats = runCatching {
+            @Suppress("DEPRECATION")
+            nsm.querySummary(networkType, null, start, end)
+        }.getOrNull() ?: return
+        try {
+            val bucket = NetworkStats.Bucket()
+            while (stats.hasNextBucket()) {
+                stats.getNextBucket(bucket)
+                val bytes = bucket.rxBytes + bucket.txBytes
+                val slot = into.getOrPut(bucket.uid) { LongArray(2) }
+                if (bucket.state == NetworkStats.Bucket.STATE_FOREGROUND) {
+                    slot[0] += bytes
+                } else {
+                    slot[1] += bytes
+                }
+            }
+        } finally {
+            stats.close()
+        }
     }
 
     private fun bytesByUid(
@@ -83,5 +156,10 @@ class DataUsageEngine(
             pm.getApplicationLabel(pm.getApplicationInfo(pkg, 0)).toString()
         }.getOrNull() ?: pkg
         return label to pkg
+    }
+
+    private companion object {
+        /** Ignore trickle traffic (push keep-alive etc.); ~1 MB threshold. */
+        const val MIN_BACKGROUND_BYTES = 1_000_000L
     }
 }

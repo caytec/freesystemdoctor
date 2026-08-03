@@ -107,6 +107,7 @@ import com.freeandroiddoctor.android.ui.privacy.PrivacyProfilesScreen
 import com.freeandroiddoctor.android.ui.privacy.BrowserDataScreen
 import com.freeandroiddoctor.android.ui.metadata.MetadataScreen
 import com.freeandroiddoctor.android.ui.watchdog.PermissionWatchdogScreen
+import com.freeandroiddoctor.android.ui.phonehome.PhoneHomeScreen
 import com.freeandroiddoctor.android.ui.modes.ModesScreen
 import com.freeandroiddoctor.android.ui.automation.AutoRulesScreen
 import com.freeandroiddoctor.android.ui.theme.appBackgroundBrush
@@ -168,6 +169,7 @@ private val toolTitles: Map<String, Int> = mapOf(
     ToolRoutes.AUTO_RULES to R.string.tool_auto_rules,
     ToolRoutes.METADATA to R.string.tool_metadata,
     ToolRoutes.WATCHDOG to R.string.tool_watchdog,
+    ToolRoutes.PHONE_HOME to R.string.tool_phone_home,
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -365,6 +367,7 @@ fun MainScaffold() {
             composable(ToolRoutes.AUTO_RULES) { AutoRulesScreen() }
             composable(ToolRoutes.METADATA) { MetadataScreen() }
             composable(ToolRoutes.WATCHDOG) { PermissionWatchdogScreen() }
+            composable(ToolRoutes.PHONE_HOME) { PhoneHomeScreen() }
         }
         }
     }

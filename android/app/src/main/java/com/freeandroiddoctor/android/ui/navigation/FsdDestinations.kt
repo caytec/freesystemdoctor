@@ -89,4 +89,7 @@ object ToolRoutes {
 
     // Update 16: Permission-change watchdog
     const val WATCHDOG = "tool/watchdog"
+
+    // Update 17: Phone-home (background network) monitor
+    const val PHONE_HOME = "tool/phone_home"
 }

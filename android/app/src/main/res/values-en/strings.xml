@@ -780,4 +780,11 @@
     <string name="watchdog_new_app">Newly installed</string>
     <string name="watchdog_after_update">Added after an update</string>
     <string name="watchdog_newly_granted">Newly granted</string>
+    <!-- Update 17: Phone-home (background network) monitor -->
+    <string name="tool_phone_home">Phone-home monitor</string>
+    <string name="phonehome_note">Shows which apps send data over the network in the BACKGROUND — while you are not using them. High background traffic can mean tracking or unwanted sync. Based on on-device network stats from the last 7 days.</string>
+    <string name="phonehome_empty">No app sent significant background data in the last 7 days.</string>
+    <string name="phonehome_bg_pct">%1$d%% in background</string>
+    <string name="phonehome_breakdown">Background: %1$s · Foreground: %2$s</string>
+    <string name="phonehome_restrict">Manage / restrict background</string>
 </resources>

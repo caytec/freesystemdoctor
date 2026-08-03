@@ -182,6 +182,7 @@ private val toolGroups = listOf(
             Tool(R.string.tool_browser_data, Icons.Filled.DeleteSweep, ToolRoutes.BROWSER_DATA),
             Tool(R.string.tool_metadata, Icons.Filled.LocationOff, ToolRoutes.METADATA),
             Tool(R.string.tool_watchdog, Icons.Filled.NewReleases, ToolRoutes.WATCHDOG),
+            Tool(R.string.tool_phone_home, Icons.Filled.NetworkCell, ToolRoutes.PHONE_HOME),
         ),
     ),
     // Update 14: Automation
