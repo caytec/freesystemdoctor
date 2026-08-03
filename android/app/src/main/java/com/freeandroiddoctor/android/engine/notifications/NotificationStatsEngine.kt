@@ -16,7 +16,7 @@ data class NotificationEvent(val ts: Long, val packageName: String)
 @Serializable
 private data class StatsFile(val events: List<NotificationEvent> = emptyList())
 
-data class AppNotifCount(val packageName: String, val count: Int)
+data class AppNotifCount(val packageName: String, val count: Int, val label: String = packageName)
 
 /**
  * Persists notification post events from [com.freeandroiddoctor.android.service.FsdNotificationListener].
@@ -27,6 +27,7 @@ data class AppNotifCount(val packageName: String, val count: Int)
  */
 class NotificationStatsEngine(context: Context) {
 
+    private val appContext = context.applicationContext
     private val dir = File(context.filesDir, "notif_stats").apply { mkdirs() }
     private val file = File(dir, "stats.json")
     private val json = Json { ignoreUnknownKeys = true }
@@ -59,7 +60,7 @@ class NotificationStatsEngine(context: Context) {
 
     suspend fun topApps(limit: Int = 50): List<AppNotifCount> = withContext(Dispatchers.IO) {
         flush()
-        mutex.withLock {
+        val counts = mutex.withLock {
             val cutoff = System.currentTimeMillis() - TimeUnit.DAYS.toMillis(7)
             readFile().events
                 .filter { it.ts >= cutoff }
@@ -67,7 +68,15 @@ class NotificationStatsEngine(context: Context) {
                 .eachCount()
                 .entries.sortedByDescending { it.value }
                 .take(limit)
-                .map { AppNotifCount(it.key, it.value) }
+                .map { it.key to it.value }
+        }
+        // Resolve labels here (IO) so list-item composition does no binder work.
+        val pm = appContext.packageManager
+        counts.map { (pkg, count) ->
+            val label = runCatching {
+                pm.getApplicationLabel(pm.getApplicationInfo(pkg, 0)).toString()
+            }.getOrDefault(pkg)
+            AppNotifCount(pkg, count, label)
         }
     }
 

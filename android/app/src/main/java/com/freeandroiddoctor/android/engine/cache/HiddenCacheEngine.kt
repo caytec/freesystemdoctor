@@ -5,6 +5,8 @@ import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
 import com.freeandroiddoctor.android.core.result.CleanResult
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
 
 data class HiddenCachePreset(
@@ -68,14 +70,27 @@ class HiddenCacheEngine(private val context: Context) {
      * Walks the granted [androidMediaTree] (typically `Android/media`) and reports the size
      * of each preset folder that exists under it. Folders that aren't present are skipped.
      */
-    suspend fun scan(androidMediaTree: Uri): List<HiddenCacheItem> = withContext(Dispatchers.IO) {
+    // Cache (singleton engine) so re-entering the screen skips the slow SAF sizing.
+    @Volatile private var cache: Pair<Uri, List<HiddenCacheItem>>? = null
+
+    fun invalidate() { cache = null }
+
+    suspend fun scan(
+        androidMediaTree: Uri,
+        force: Boolean = false,
+    ): List<HiddenCacheItem> = withContext(Dispatchers.IO) {
+        if (!force) cache?.let { if (it.first == androidMediaTree) return@withContext it.second }
+        val ctx = currentCoroutineContext()
         val root = DocumentFile.fromTreeUri(context, androidMediaTree) ?: return@withContext emptyList()
         presets.mapNotNull { preset ->
+            // Cancel between presets so navigating away stops the slow SAF sizing.
+            ctx.ensureActive()
             val folder = preset.subPaths.firstNotNullOfOrNull { resolve(root, it) }
                 ?: return@mapNotNull null
             HiddenCacheItem(preset, folder.uri, sizeOf(folder))
         }.filter { it.sizeBytes > 0 }
             .sortedByDescending { it.sizeBytes }
+            .also { cache = androidMediaTree to it }
     }
 
     /** Deletes everything inside [folderUri] but keeps the folder itself. */

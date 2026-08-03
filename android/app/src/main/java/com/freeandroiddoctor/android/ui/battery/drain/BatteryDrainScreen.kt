@@ -28,7 +28,8 @@ import java.util.Locale
 
 @Composable
 fun BatteryDrainScreen(modifier: Modifier = Modifier) {
-    var rows by remember { mutableStateOf<List<DrainEstimate>>(emptyList()) }
+    // null = loading, so the "no data" message doesn't flash before compute() returns.
+    var rows by remember { mutableStateOf<List<DrainEstimate>?>(null) }
     LaunchedEffect(Unit) { rows = ServiceLocator.batteryDrainEngine.compute() }
 
     Column(
@@ -36,14 +37,16 @@ fun BatteryDrainScreen(modifier: Modifier = Modifier) {
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         InfoBanner(stringResource(R.string.battery_drain_note))
-        if (rows.isEmpty()) {
-            Text(
+        val current = rows
+        when {
+            current == null -> com.freeandroiddoctor.android.ui.components.ShimmerList(rows = 5)
+            current.isEmpty() -> Text(
                 stringResource(R.string.battery_drain_empty),
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
-        } else {
+            else -> {
             LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                items(rows, key = { it.packageName }) { r ->
+                items(current, key = { it.packageName }) { r ->
                     Card(
                         modifier = Modifier.fillMaxWidth().animateItem(),
                         colors = CardDefaults.cardColors(
@@ -65,6 +68,7 @@ fun BatteryDrainScreen(modifier: Modifier = Modifier) {
                         }
                     }
                 }
+            }
             }
         }
     }

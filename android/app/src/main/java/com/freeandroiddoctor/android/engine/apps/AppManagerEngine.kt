@@ -12,7 +12,9 @@ import android.provider.Settings
 import com.freeandroiddoctor.android.core.permission.PermissionManager
 import com.freeandroiddoctor.android.core.result.ScanProgress
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
+import kotlin.coroutines.coroutineContext
 
 data class AppListItem(
     val packageName: String,
@@ -42,6 +44,9 @@ class AppManagerEngine(
         val apps = pm.getInstalledApplications(PackageManager.GET_META_DATA)
         val items = ArrayList<AppListItem>(apps.size)
         apps.forEachIndexed { index, app ->
+            // queryStatsForPackage is a blocking binder call with no suspension
+            // point; ensureActive() lets leaving the screen actually cancel the loop.
+            coroutineContext.ensureActive()
             val isSystem = (app.flags and ApplicationInfo.FLAG_SYSTEM) != 0
             if (!includeSystem && isSystem) return@forEachIndexed
             progress(ScanProgress(index + 1, apps.size, app.packageName))

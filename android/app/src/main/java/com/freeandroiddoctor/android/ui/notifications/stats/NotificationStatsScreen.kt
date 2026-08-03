@@ -35,29 +35,27 @@ import com.freeandroiddoctor.android.ui.components.InfoBanner
 @Composable
 fun NotificationStatsScreen(modifier: Modifier = Modifier) {
     val context = LocalContext.current
-    var rows by remember { mutableStateOf<List<AppNotifCount>>(emptyList()) }
+    // null = still loading; distinguishes the load window from a genuinely empty list.
+    var rows by remember { mutableStateOf<List<AppNotifCount>?>(null) }
     LaunchedEffect(Unit) { rows = ServiceLocator.notificationStatsEngine.topApps() }
-    val pm = context.packageManager
 
     Column(
         modifier = modifier.fillMaxSize().padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         InfoBanner(stringResource(R.string.notification_stats_note))
-        if (rows.isEmpty()) {
-            Text(
+        val current = rows
+        when {
+            current == null -> com.freeandroiddoctor.android.ui.components.ShimmerList(rows = 5)
+            current.isEmpty() -> Text(
                 stringResource(R.string.notification_stats_empty),
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
-        } else {
-            LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                items(rows, key = { it.packageName }) { row ->
-                    val label = remember(row.packageName) {
-                        runCatching {
-                            pm.getApplicationLabel(pm.getApplicationInfo(row.packageName, 0)).toString()
-                        }.getOrDefault(row.packageName)
-                    }
-                    Card(
+            else -> {
+                LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    items(current, key = { it.packageName }) { row ->
+                        val label = row.label
+                        Card(
                         modifier = Modifier.fillMaxWidth().animateItem(),
                         colors = CardDefaults.cardColors(
                             containerColor = MaterialTheme.colorScheme.surfaceContainer,
@@ -94,6 +92,7 @@ fun NotificationStatsScreen(modifier: Modifier = Modifier) {
                                 Text(stringResource(R.string.notification_stats_silence))
                             }
                         }
+                    }
                     }
                 }
             }

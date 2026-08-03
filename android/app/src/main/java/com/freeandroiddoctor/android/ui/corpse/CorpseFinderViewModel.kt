@@ -33,7 +33,8 @@ class CorpseFinderViewModel : ViewModel() {
         viewModelScope.launch {
             safStore.treeUri.collect { uri ->
                 _state.value = _state.value.copy(rootUri = uri)
-                if (uri != null) scan()
+                // Auto-scan uses the cached report (no re-walk if nothing changed).
+                if (uri != null) runScan(force = false)
             }
         }
         viewModelScope.launch {
@@ -47,12 +48,15 @@ class CorpseFinderViewModel : ViewModel() {
         viewModelScope.launch { safStore.persist(uri) }
     }
 
-    fun scan() {
+    /** Manual Scan button — always re-walks. */
+    fun scan() = runScan(force = true)
+
+    private fun runScan(force: Boolean) {
         viewModelScope.launch {
             val roots = listOfNotNull(_state.value.rootUri, _state.value.androidMediaUri).distinct()
             if (roots.isEmpty()) return@launch
             _state.value = _state.value.copy(scanning = true)
-            val report = engine.scan(roots)
+            val report = engine.scan(roots, force = force)
             _state.value = _state.value.copy(report = report, scanning = false)
         }
     }
@@ -66,7 +70,8 @@ class CorpseFinderViewModel : ViewModel() {
                 freedBytes = _state.value.freedBytes + result.bytesFreed,
             )
             history.recordClean(CleanSource.CORPSE_FINDER, result.bytesFreed, result.itemsRemoved)
-            scan()
+            engine.invalidate()
+            runScan(force = true)
         }
     }
 }

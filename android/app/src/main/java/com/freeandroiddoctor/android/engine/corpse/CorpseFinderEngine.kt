@@ -6,6 +6,8 @@ import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
 import com.freeandroiddoctor.android.core.result.CleanResult
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
@@ -71,7 +73,17 @@ class CorpseFinderEngine(private val context: Context) {
         mutex.withLock { readLog().packages.toSet() }
     }
 
-    suspend fun scan(roots: List<Uri>): CorpseReport = withContext(Dispatchers.IO) {
+    // In-memory cache (engine is a singleton) so re-entering the screen doesn't
+    // re-pay the slow SAF walk. The manual Scan button passes force=true.
+    @Volatile private var cache: Pair<Set<Uri>, CorpseReport>? = null
+
+    /** Drops the cached report so the next scan re-walks (e.g. after a delete). */
+    fun invalidate() { cache = null }
+
+    suspend fun scan(roots: List<Uri>, force: Boolean = false): CorpseReport = withContext(Dispatchers.IO) {
+        val key = roots.toSet()
+        if (!force) cache?.let { if (it.first == key) return@withContext it.second }
+        val ctx = currentCoroutineContext()
         val pm = context.packageManager
         val installed = installedPackages(pm)
         val recent = recentlyUninstalled()
@@ -82,6 +94,8 @@ class CorpseFinderEngine(private val context: Context) {
             val rootDoc = DocumentFile.fromTreeUri(context, root) ?: return@forEach
             // Two passes: friendly-name children at root, and pkg-named children under Android/{data,media}.
             rootDoc.listFiles().forEach { child ->
+                // Cancel the (slow SAF) walk promptly when the user leaves the screen.
+                ctx.ensureActive()
                 if (!child.isDirectory) return@forEach
                 val name = child.name ?: return@forEach
                 // 1. Friendly-name lookup (e.g. "WhatsApp" → com.whatsapp).
@@ -113,6 +127,7 @@ class CorpseFinderEngine(private val context: Context) {
                     return@forEach
                 }
                 children.forEach { child ->
+                    ctx.ensureActive()
                     if (!child.isDirectory) return@forEach
                     val pkg = child.name ?: return@forEach
                     if (!looksLikePackageName(pkg)) return@forEach
@@ -132,7 +147,7 @@ class CorpseFinderEngine(private val context: Context) {
         CorpseReport(
             entries = out.sortedByDescending { it.sizeBytes },
             androidDataBlocked = blocked,
-        )
+        ).also { cache = key to it }
     }
 
     /** Estimate of leftover bytes for [pkg] across granted SAF roots — used by Pre-Uninstall preview. */

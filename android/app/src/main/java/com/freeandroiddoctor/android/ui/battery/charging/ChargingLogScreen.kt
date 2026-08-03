@@ -30,7 +30,8 @@ import java.util.Locale
 
 @Composable
 fun ChargingLogScreen(modifier: Modifier = Modifier) {
-    var sessions by remember { mutableStateOf<List<ChargingSession>>(emptyList()) }
+    // null = loading, so the empty message doesn't flash before sessions() returns.
+    var sessions by remember { mutableStateOf<List<ChargingSession>?>(null) }
     LaunchedEffect(Unit) { sessions = ServiceLocator.chargingSessionEngine.sessions() }
     val df = remember { DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT) }
 
@@ -39,14 +40,16 @@ fun ChargingLogScreen(modifier: Modifier = Modifier) {
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         InfoBanner(stringResource(R.string.charging_log_note))
-        if (sessions.isEmpty()) {
-            Text(
+        val current = sessions
+        when {
+            current == null -> com.freeandroiddoctor.android.ui.components.ShimmerList(rows = 5)
+            current.isEmpty() -> Text(
                 stringResource(R.string.charging_log_empty),
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
-        } else {
+            else -> {
             LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                items(sessions, key = { it.startTs }) { s ->
+                items(current, key = { it.startTs }) { s ->
                     Card(
                         modifier = Modifier.fillMaxWidth().animateItem(),
                         colors = CardDefaults.cardColors(
@@ -70,6 +73,7 @@ fun ChargingLogScreen(modifier: Modifier = Modifier) {
                         }
                     }
                 }
+            }
             }
         }
     }

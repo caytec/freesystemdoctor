@@ -35,7 +35,7 @@ class AppDeepCleanViewModel : ViewModel() {
         viewModelScope.launch {
             safStore.treeUri.collect { uri ->
                 _state.value = _state.value.copy(rootUri = uri)
-                if (uri != null) scan()
+                if (uri != null) runScan(force = false)
             }
         }
         viewModelScope.launch {
@@ -49,12 +49,14 @@ class AppDeepCleanViewModel : ViewModel() {
         viewModelScope.launch { safStore.persist(uri) }
     }
 
-    fun scan() {
+    fun scan() = runScan(force = true)
+
+    private fun runScan(force: Boolean) {
         viewModelScope.launch {
             val roots = listOfNotNull(_state.value.rootUri, _state.value.androidMediaUri).distinct()
             if (roots.isEmpty()) return@launch
             _state.value = _state.value.copy(scanning = true)
-            val report = engine.scan(roots)
+            val report = engine.scan(roots, force = force)
             // Auto-select SAFE + CAUTIOUS; OPT_IN starts unchecked.
             val preselected = report.perApp.values
                 .flatMap { it.hits }
@@ -89,7 +91,8 @@ class AppDeepCleanViewModel : ViewModel() {
                 freedBytes = _state.value.freedBytes + result.bytesFreed,
             )
             history.recordClean(CleanSource.APP_DEEP_CLEAN, result.bytesFreed, result.itemsRemoved)
-            scan()
+            engine.invalidate()
+            runScan(force = true)
         }
     }
 }

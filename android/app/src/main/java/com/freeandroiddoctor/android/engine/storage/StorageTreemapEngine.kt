@@ -5,6 +5,8 @@ import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
 import com.freeandroiddoctor.android.ui.storage.treemap.TreemapNode
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
 
 /**
@@ -27,10 +29,14 @@ class StorageTreemapEngine(private val context: Context) {
         buildLevel(target, depth = 1)
     }
 
-    private fun buildLevel(folder: DocumentFile, depth: Int): TreemapNode {
+    private suspend fun buildLevel(folder: DocumentFile, depth: Int): TreemapNode {
+        val ctx = currentCoroutineContext()
         val name = folder.name ?: "?"
         val children = runCatching { folder.listFiles() }.getOrNull() ?: emptyArray()
         val mapped = children.map { child ->
+            // Each directory triggers a full recursive sizeOf; check between them so
+            // leaving the screen cancels the (slow) SAF walk instead of freezing.
+            ctx.ensureActive()
             val size = if (child.isDirectory) sizeOf(child) else child.length()
             TreemapNode(
                 label = child.name ?: "?",

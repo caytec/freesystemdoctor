@@ -6,6 +6,8 @@ import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
 import com.freeandroiddoctor.android.core.result.CleanResult
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
 
 data class DeepHit(
@@ -36,7 +38,15 @@ data class AppGroup(
  */
 class AppDeepCleanEngine(private val context: Context) {
 
-    suspend fun scan(roots: List<Uri>): AppDeepReport = withContext(Dispatchers.IO) {
+    // Cache (singleton engine) so re-entering the screen skips the slow SAF walk.
+    @Volatile private var cache: Pair<Set<Uri>, AppDeepReport>? = null
+
+    fun invalidate() { cache = null }
+
+    suspend fun scan(roots: List<Uri>, force: Boolean = false): AppDeepReport = withContext(Dispatchers.IO) {
+        val key = roots.toSet()
+        if (!force) cache?.let { if (it.first == key) return@withContext it.second }
+        val ctx = currentCoroutineContext()
         val pm = context.packageManager
         val installed = installedLabels(pm)
         val perApp = HashMap<String, AppGroup>()
@@ -44,6 +54,7 @@ class AppDeepCleanEngine(private val context: Context) {
         roots.forEach { root ->
             val rootDoc = DocumentFile.fromTreeUri(context, root) ?: return@forEach
             AppExpendablePathsDb.rules.forEach { rule ->
+                ctx.ensureActive()
                 // Skip rules for apps not installed (except generic "media.thumbs").
                 if (rule.packageName != "media.thumbs" && rule.packageName !in installed) return@forEach
                 val doc = resolve(rootDoc, rule.relPath) ?: return@forEach
@@ -66,7 +77,7 @@ class AppDeepCleanEngine(private val context: Context) {
                 .toList()
                 .sortedByDescending { it.second.totalBytes }
                 .toMap(),
-        )
+        ).also { cache = key to it }
     }
 
     suspend fun clean(hits: List<DeepHit>): CleanResult = withContext(Dispatchers.IO) {

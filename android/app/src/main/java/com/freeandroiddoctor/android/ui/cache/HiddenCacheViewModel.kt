@@ -29,7 +29,7 @@ class HiddenCacheViewModel : ViewModel() {
         viewModelScope.launch {
             store.androidMediaTreeUri.collect { uri ->
                 _state.value = _state.value.copy(treeUri = uri)
-                if (uri != null) scan()
+                if (uri != null) runScan(force = false)
             }
         }
     }
@@ -38,11 +38,13 @@ class HiddenCacheViewModel : ViewModel() {
         viewModelScope.launch { store.persistAndroidMedia(uri) }
     }
 
-    fun scan() {
+    fun scan() = runScan(force = true)
+
+    private fun runScan(force: Boolean) {
         val uri = _state.value.treeUri ?: return
         viewModelScope.launch {
             _state.value = _state.value.copy(scanning = true)
-            val items = engine.scan(uri)
+            val items = engine.scan(uri, force = force)
             _state.value = _state.value.copy(items = items, scanning = false)
         }
     }
@@ -58,7 +60,8 @@ class HiddenCacheViewModel : ViewModel() {
                 result.bytesFreed,
                 result.itemsRemoved,
             )
-            scan()
+            engine.invalidate()
+            runScan(force = true)
         }
     }
 }

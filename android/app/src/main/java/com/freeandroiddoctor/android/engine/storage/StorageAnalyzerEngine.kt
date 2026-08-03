@@ -10,7 +10,9 @@ import android.os.storage.StorageManager
 import com.freeandroiddoctor.android.core.permission.PermissionManager
 import com.freeandroiddoctor.android.core.result.ScanProgress
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
+import kotlin.coroutines.coroutineContext
 
 data class VolumeInfo(
     val totalBytes: Long,
@@ -68,6 +70,7 @@ class StorageAnalyzerEngine(
         }.getOrDefault(emptyList())
         val result = ArrayList<AppStorage>(apps.size)
         apps.forEachIndexed { index, app ->
+            coroutineContext.ensureActive()
             val isSystem = (app.flags and ApplicationInfo.FLAG_SYSTEM) != 0
             if (!includeSystem && isSystem) return@forEachIndexed
             progress(ScanProgress(index + 1, apps.size, app.packageName))
