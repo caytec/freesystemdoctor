@@ -104,6 +104,8 @@ class StartupInsightsPage(tk.Frame):
 
         ActionButton(btn_row, text="Disable Selected",
                      command=self._on_disable).pack(side="left", padx=(0, 6))
+        ActionButton(btn_row, text="⏱  Delay Selected",
+                     command=self._on_delay).pack(side="left", padx=(0, 6))
         ActionButton(btn_row, text="Refresh Scan",
                      command=self._on_refresh).pack(side="left")
 
@@ -161,6 +163,45 @@ class StartupInsightsPage(tk.Frame):
                              tags=(tag,))
 
         self._status.config(text=f"Total startup items: {len(entries) + len(links)} ({len(links)} shortcuts)")
+
+    def _on_delay(self):
+        """Delay selected apps instead of disabling them — they still launch,
+        just after the desktop has settled (Advanced SystemCare-style)."""
+        from engine import startup_manager as sm
+
+        selection = self._tree.selection()
+        if not selection:
+            messagebox.showwarning("No Selection",
+                                   "Select the app(s) you want to start later.")
+            return
+        if not messagebox.askyesno(
+                "Delay startup apps",
+                f"Start {len(selection)} app(s) 2 minutes after you sign in "
+                f"instead of immediately?\n\n"
+                f"They still run — your desktop just becomes usable sooner. "
+                f"Reversible from Task Scheduler or by re-enabling the entry."):
+            return
+
+        entries = {e.name: e for e in sm.get_startup_entries()}
+        delayed, failed = 0, []
+        for name in selection:
+            entry = entries.get(name)
+            if not entry:
+                failed.append(f"{name}: not found among startup entries")
+                continue
+            ok, msg = sm.set_startup_delay(entry, minutes=2)
+            if ok:
+                delayed += 1
+            else:
+                failed.append(f"{name}: {msg}")
+
+        if failed:
+            messagebox.showwarning(
+                "Finished with issues",
+                f"Delayed {delayed} app(s).\n\n" + "\n".join(failed[:6]))
+        else:
+            messagebox.showinfo("Done", f"Delayed {delayed} app(s) by 2 minutes.")
+        self._on_refresh()
 
     def _on_disable(self):
         selection = self._tree.selection()

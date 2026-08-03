@@ -74,6 +74,8 @@ from .page_auto_shutdown    import AutoShutdownPage
 from .page_icon_saver       import IconSaverPage
 from .page_browser_autoclean import BrowserAutoCleanPage
 from .page_publisher        import PublisherPage
+from .page_speed_test      import SpeedTestPage
+from .page_duplicates      import DuplicatesPage
 from .page_debloat         import DebloatPage
 from .page_windows_update  import WindowsUpdatePage
 from .page_quick_fix       import QuickFixPage
@@ -175,6 +177,7 @@ _NAV_CATEGORIES = [
         "items": [
             ("disk_analyzer","📁","Disk Analyzer",  DiskAnalyzerPage),
             ("space_hogs",  "🗂","Space Hogs",      SpaceHogsPage),
+            ("duplicates", "🗂", "Duplicate Files", DuplicatesPage),
             ("empty",      "📂", "Empty Folders",   EmptyFolderFinderPage),
             ("browser_hist","🌐","Browser History", BrowserHistoryPage),
             ("browser_auto","🔄","Browser Auto-Clean", BrowserAutoCleanPage),
@@ -202,6 +205,7 @@ _NAV_CATEGORIES = [
             ("internet",   "🌐", "Net Booster",     InternetBoosterPage),
             ("dns_lock",   "🔐", "DNS Protector",   DnsProtectorPage),
             ("network",    "🔒", "Network Sec.",    NetworkSecurityPage),
+            ("speedtest",  "📶", "Speed Test",      SpeedTestPage),
         ],
     },
     # ── Protection & Privacy ──────────────────────────────────────────────────
@@ -273,11 +277,11 @@ SIMPLE_KEYS = {
     # Gaming
     "game",
     # Cleaning
-    "disk_analyzer", "space_hogs", "browser_auto",
+    "disk_analyzer", "space_hogs", "duplicates", "browser_auto",
     # Disk
     "disk_opt", "defrag",
     # Network
-    "internet",
+    "internet", "speedtest",
     # Protection
     "protect",
     # Repair

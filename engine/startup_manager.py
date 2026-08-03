@@ -306,3 +306,78 @@ def get_startup_entries_with_impact() -> list[StartupEntry]:
     for e in entries:
         e.impact = assess_impact(e)
     return entries
+
+
+# ── Delayed startup ───────────────────────────────────────────────────────────
+# Windows has no native "start this app N minutes late" switch. We reproduce what
+# Advanced SystemCare calls "smart startup delay": the Run entry is disabled and
+# replaced by a Scheduled Task that fires at logon with a delay. Fully reversible.
+
+_DELAY_TASK_PREFIX = "FSD_Delayed_"
+
+
+def _delay_task_name(app_name: str) -> str:
+    safe = "".join(c for c in app_name if c.isalnum() or c in "-_")[:40]
+    return f"{_DELAY_TASK_PREFIX}{safe}"
+
+
+def set_startup_delay(entry: "StartupEntry", minutes: int = 2) -> tuple[bool, str]:
+    """Delay a startup program by *minutes* after logon.
+
+    Creates a scheduled task that launches the same command with a delay, then
+    disables the original Run entry so the app doesn't also start immediately.
+    """
+    if minutes < 1 or minutes > 30:
+        return False, "Delay must be between 1 and 30 minutes."
+    if not entry.command:
+        return False, "This entry has no command to launch."
+
+    task = _delay_task_name(entry.name)
+    delay = f"{minutes // 60:02d}:{minutes % 60:02d}"   # HH:MM for /DELAY
+
+    ok, out = _run_schtasks(
+        "/create", "/tn", task, "/tr", entry.command,
+        "/sc", "ONLOGON", "/delay", f"00{delay}" if len(delay) == 5 else delay,
+        "/rl", "LIMITED", "/f",
+    )
+    if not ok:
+        return False, f"Could not create the delayed task: {out[:160]}"
+
+    # Disable the original so it doesn't ALSO run at logon.
+    try:
+        if entry.source.endswith("Run") and entry.reg_path:
+            disable_registry_entry(entry)
+        elif entry.folder_path:
+            disable_folder_entry(entry)
+    except Exception:
+        pass
+
+    return True, f"{entry.name} will now start {minutes} min after logon."
+
+
+def remove_startup_delay(app_name: str) -> tuple[bool, str]:
+    """Remove the delayed-start task for an app (the original entry stays as-is)."""
+    ok, out = _run_schtasks("/delete", "/tn", _delay_task_name(app_name), "/f")
+    if ok:
+        return True, f"Delay removed for {app_name}."
+    return False, out[:160] or "No delayed task found."
+
+
+def get_delayed_startups() -> list[dict]:
+    """List apps currently configured to start late. [{name, task}]"""
+    try:
+        r = subprocess.run(["schtasks", "/query", "/fo", "csv", "/nh"],
+                           capture_output=True, text=True, timeout=30,
+                           creationflags=0x08000000)
+        out = r.stdout or ""
+    except Exception:
+        return []
+
+    found = []
+    for line in out.splitlines():
+        if _DELAY_TASK_PREFIX not in line:
+            continue
+        task = line.split(",")[0].strip('" ')
+        base = task.replace("\\", "/").split("/")[-1]
+        found.append({"name": base.replace(_DELAY_TASK_PREFIX, ""), "task": base})
+    return found
