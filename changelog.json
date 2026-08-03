@@ -1,7 +1,12 @@
 {
-  "updated": "2026-08-02T19:36:53.005022Z",
-  "count": 42,
+  "updated": "2026-08-02T19:45:15.382818Z",
+  "count": 43,
   "commits": [
+    {
+      "sha": "be41cba4f094006fc60d35334d363b467f4ff07f",
+      "date": "2026-08-02T21:44:51+02:00",
+      "msg": "build: bundle Quick Fix + credits modules in the frozen app"
+    },
     {
       "sha": "17a115b5454d1acbe0fa3b085d219b8d4057d1cc",
       "date": "2026-08-02T21:36:31+02:00",
