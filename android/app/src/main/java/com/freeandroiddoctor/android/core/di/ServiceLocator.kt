@@ -144,6 +144,14 @@ object ServiceLocator {
     val metadataStripperEngine: com.freeandroiddoctor.android.engine.media.MetadataStripperEngine by lazy {
         com.freeandroiddoctor.android.engine.media.MetadataStripperEngine(appContext)
     }
+    val permissionSnapshotStore: com.freeandroiddoctor.android.data.watchdog.PermissionSnapshotStore by lazy {
+        com.freeandroiddoctor.android.data.watchdog.PermissionSnapshotStore(appContext)
+    }
+    val permissionWatchdogEngine: com.freeandroiddoctor.android.engine.watchdog.PermissionWatchdogEngine by lazy {
+        com.freeandroiddoctor.android.engine.watchdog.PermissionWatchdogEngine(
+            appContext, permissionSnapshotStore,
+        )
+    }
     val wifiAnalyzerEngine: WifiAnalyzerEngine by lazy { WifiAnalyzerEngine(appContext) }
     val speedTestEngine: SpeedTestEngine by lazy { SpeedTestEngine() }
     val contactsEngine: ContactsEngine by lazy { ContactsEngine(appContext) }

@@ -770,4 +770,17 @@
     <string name="metadata_result_failed">%1$d nie udało się przetworzyć</string>
     <string name="metadata_removed_location">Usunięto lokalizację i metadane</string>
     <string name="metadata_removed_meta">Usunięto metadane</string>
+    <!-- Update 16: Watchdog zmian uprawnień -->
+    <string name="tool_watchdog">Strażnik uprawnień</string>
+    <string name="watchdog_note">Śledzi, które aplikacje z czasem uzyskują wrażliwe uprawnienia. Uruchamiaj co jakiś czas — apka powie Ci, gdy aktualizacja po cichu dodaje dostęp do lokalizacji, kontaktów, mikrofonu itp. W 100%% lokalnie.</string>
+    <string name="watchdog_scan">Sprawdź zmiany uprawnień</string>
+    <string name="watchdog_scanning">Skanowanie zainstalowanych aplikacji…</string>
+    <string name="watchdog_baseline_title">Zapisano punkt odniesienia</string>
+    <string name="watchdog_baseline_body">Zapisano uprawnienia %1$d aplikacji. Uruchom ponownie później, aby zobaczyć zmiany.</string>
+    <string name="watchdog_none_title">Brak nowych uprawnień</string>
+    <string name="watchdog_none_body">Żadna z %1$d aplikacji nie uzyskała wrażliwych uprawnień od ostatniego sprawdzenia.</string>
+    <string name="watchdog_changes">Aplikacje z nowymi uprawnieniami: %1$d</string>
+    <string name="watchdog_new_app">Nowo zainstalowana</string>
+    <string name="watchdog_after_update">Dodane po aktualizacji</string>
+    <string name="watchdog_newly_granted">Nowo przyznane</string>
 </resources>

@@ -767,4 +767,17 @@
     <string name="metadata_result_failed">%1$d could not be processed</string>
     <string name="metadata_removed_location">Location + metadata removed</string>
     <string name="metadata_removed_meta">Metadata removed</string>
+    <!-- Update 16: Permission-change watchdog -->
+    <string name="tool_watchdog">Permission watchdog</string>
+    <string name="watchdog_note">Tracks which apps gain sensitive permissions over time. Run it periodically — the app tells you when an update quietly adds Location, Contacts, Microphone or similar access. 100%% on-device.</string>
+    <string name="watchdog_scan">Check for permission changes</string>
+    <string name="watchdog_scanning">Scanning installed apps…</string>
+    <string name="watchdog_baseline_title">Baseline saved</string>
+    <string name="watchdog_baseline_body">Recorded permissions for %1$d apps. Run this again later to see what changes.</string>
+    <string name="watchdog_none_title">No new permissions</string>
+    <string name="watchdog_none_body">None of your %1$d apps gained sensitive permissions since the last check.</string>
+    <string name="watchdog_changes">Apps with new permissions: %1$d</string>
+    <string name="watchdog_new_app">Newly installed</string>
+    <string name="watchdog_after_update">Added after an update</string>
+    <string name="watchdog_newly_granted">Newly granted</string>
 </resources>

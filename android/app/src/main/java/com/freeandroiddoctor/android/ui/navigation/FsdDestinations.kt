@@ -86,4 +86,7 @@ object ToolRoutes {
 
     // Update 15: Metadata (EXIF) stripper
     const val METADATA = "tool/metadata"
+
+    // Update 16: Permission-change watchdog
+    const val WATCHDOG = "tool/watchdog"
 }
