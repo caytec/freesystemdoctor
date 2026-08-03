@@ -291,3 +291,101 @@ def clean_browser_privacy(items: list[dict], progress_cb=None) -> tuple[int, int
         freed += _delete_dir(item["path"])
         count += 1
     return freed, count
+
+
+# ── Modern Windows AI / telemetry surface (Copilot, Recall, Widgets, Bing) ────
+# Competitors (O&O ShutUp10++) added these in 2026; the classic telemetry
+# toggles above don't cover them. Each entry is fully reversible.
+#
+#   key: (label, description, hive, path, value_name, disabled_value, enabled_value)
+
+AI_PRIVACY_TWEAKS: dict[str, tuple] = {
+    "copilot": (
+        "Windows Copilot",
+        "Removes the Copilot button and disables the assistant",
+        winreg.HKEY_CURRENT_USER,
+        r"Software\Policies\Microsoft\Windows\WindowsCopilot",
+        "TurnOffWindowsCopilot", 1, 0,
+    ),
+    "recall": (
+        "Recall (screen snapshots)",
+        "Stops Windows from periodically saving snapshots of your screen",
+        winreg.HKEY_CURRENT_USER,
+        r"Software\Policies\Microsoft\Windows\WindowsAI",
+        "DisableAIDataAnalysis", 1, 0,
+    ),
+    "bing_search": (
+        "Bing web results in Start",
+        "Keeps Start menu searches local instead of sending them to Bing",
+        winreg.HKEY_CURRENT_USER,
+        r"Software\Policies\Microsoft\Windows\Explorer",
+        "DisableSearchBoxSuggestions", 1, 0,
+    ),
+    "widgets": (
+        "Widgets / news feed",
+        "Disables the taskbar widgets and news panel",
+        winreg.HKEY_LOCAL_MACHINE,
+        r"SOFTWARE\Policies\Microsoft\Dsh",
+        "AllowNewsAndInterests", 0, 1,
+    ),
+    "ads_start": (
+        "Suggested apps & ads in Start",
+        "Stops Windows suggesting apps and showing promotional tiles",
+        winreg.HKEY_CURRENT_USER,
+        r"Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager",
+        "SystemPaneSuggestionsEnabled", 0, 1,
+    ),
+    "tailored": (
+        "Tailored experiences",
+        "Stops Microsoft using your diagnostic data for personalised tips/ads",
+        winreg.HKEY_CURRENT_USER,
+        r"Software\Microsoft\Windows\CurrentVersion\Privacy",
+        "TailoredExperiencesWithDiagnosticDataEnabled", 0, 1,
+    ),
+    "feedback": (
+        "Feedback requests",
+        "Stops Windows asking for feedback",
+        winreg.HKEY_CURRENT_USER,
+        r"Software\Microsoft\Siuf\Rules",
+        "NumberOfSIUFInPeriod", 0, 1,
+    ),
+}
+
+
+def get_ai_privacy_status() -> dict:
+    """Return {key: {'label','description','disabled': bool}} for each tweak."""
+    out = {}
+    for key, (label, desc, hive, path, name, off_val, _on) in AI_PRIVACY_TWEAKS.items():
+        current = _rr(hive, path, name, None)
+        out[key] = {
+            "label": label,
+            "description": desc,
+            "disabled": current == off_val,
+        }
+    return out
+
+
+def set_ai_privacy(key: str, disable: bool) -> bool:
+    """Apply (disable=True) or revert (disable=False) one AI/telemetry tweak."""
+    entry = AI_PRIVACY_TWEAKS.get(key)
+    if not entry:
+        return False
+    _label, _desc, hive, path, name, off_val, on_val = entry
+    return _rw(hive, path, name, winreg.REG_DWORD,
+               off_val if disable else on_val)
+
+
+def apply_all_ai_privacy(disable: bool = True, progress_cb=None) -> dict:
+    """Apply every AI/telemetry tweak at once. Returns {applied, failed}."""
+    applied = failed = 0
+    for key, entry in AI_PRIVACY_TWEAKS.items():
+        if progress_cb:
+            try:
+                progress_cb(entry[0])
+            except Exception:
+                pass
+        if set_ai_privacy(key, disable):
+            applied += 1
+        else:
+            failed += 1
+    return {"applied": applied, "failed": failed}

@@ -40,10 +40,77 @@ class ProtectPage(tk.Frame):
         left.pack(side="left", fill="both", expand=True, padx=(0, 8))
         self._build_system_protection(left)
 
-        # Right: Browser protection
+        # Right: Browser protection + modern AI/telemetry privacy
         right = tk.Frame(body, bg=T.BG)
         right.pack(side="left", fill="both", expand=True)
         self._build_browser_protection(right)
+        self._build_ai_privacy(right)
+
+    # ── Modern Windows AI / telemetry privacy ────────────────────────────────
+
+    def _build_ai_privacy(self, parent):
+        """Copilot / Recall / Widgets / Bing toggles — the 2026 privacy surface
+        the classic telemetry switches don't cover."""
+        from engine import privacy_cleaner as pc
+
+        card = Card(parent)
+        card.pack(fill="x", pady=(8, 0))
+        SectionLabel(card, "🤖 AI & tracking (Windows 11)").pack(
+            anchor="w", padx=12, pady=(10, 2))
+        tk.Label(card,
+                 text="Turn off Copilot, Recall screen snapshots, Bing search "
+                      "and ad suggestions. Every switch is reversible.",
+                 bg=T.PANEL, fg=T.FG2, font=T.FONT_SMALL, anchor="w",
+                 justify="left", wraplength=380).pack(anchor="w", padx=12, pady=(0, 6))
+
+        self._ai_vars = {}
+        try:
+            status = pc.get_ai_privacy_status()
+        except Exception:
+            status = {}
+
+        for key, info in status.items():
+            row = tk.Frame(card, bg=T.PANEL)
+            row.pack(fill="x", padx=12, pady=2)
+            var = tk.BooleanVar(value=info.get("disabled", False))
+            self._ai_vars[key] = var
+            ToggleSwitch(row, variable=var,
+                         command=lambda k=key: self._on_ai_toggle(k)).pack(side="left")
+            tk.Label(row, text=info.get("label", key), bg=T.PANEL, fg=T.FG,
+                     font=T.FONT_SMALL, anchor="w").pack(side="left", padx=8)
+
+        btn = tk.Frame(card, bg=T.PANEL)
+        btn.pack(fill="x", padx=12, pady=(8, 12))
+        ActionButton(btn, text="🔒  Disable all", width=140,
+                     command=lambda: self._apply_all_ai(True)).pack(side="left")
+        ActionButton(btn, text="Restore defaults", width=140, secondary=True,
+                     command=lambda: self._apply_all_ai(False)).pack(side="left",
+                                                                     padx=(8, 0))
+
+    def _on_ai_toggle(self, key: str):
+        from engine import privacy_cleaner as pc
+        want_disabled = self._ai_vars[key].get()
+        if not pc.set_ai_privacy(key, want_disabled):
+            self._ai_vars[key].set(not want_disabled)
+            messagebox.showerror(
+                "Could not apply",
+                "Registry change failed — try running as administrator.")
+        elif key in ("copilot", "widgets", "bing_search"):
+            messagebox.showinfo("Sign out to finish",
+                                "Sign out (or restart Explorer) for this change "
+                                "to take full effect.")
+
+    def _apply_all_ai(self, disable: bool):
+        from engine import privacy_cleaner as pc
+        res = pc.apply_all_ai_privacy(disable)
+        for key, var in self._ai_vars.items():
+            var.set(disable)
+        messagebox.showinfo(
+            "Privacy updated",
+            f"{res.get('applied', 0)} setting(s) "
+            f"{'disabled' if disable else 'restored'}"
+            + (f", {res['failed']} failed (admin rights may be required)."
+               if res.get("failed") else "."))
 
     # ── System protection ─────────────────────────────────────────────────────
 
