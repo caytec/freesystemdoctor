@@ -307,3 +307,62 @@ def get_drive_health(letter: str) -> dict:
         result["status"] = "error"
         logger.exception("get_drive_health failed for %s: %s", letter, exc)
     return result
+
+
+def get_smart_health() -> list[dict]:
+    """Physical-drive health from Windows Storage + SMART reliability counters.
+
+    Complements get_drive_health() (which only runs chkdsk on the FILESYSTEM).
+    This reports the DRIVE itself: model, SSD/HDD, Windows' health verdict and —
+    where the drive exposes them — wear level, temperature, power-on hours and
+    read errors. Counters are commonly unavailable on consumer SATA drives; we
+    return None for those rather than inventing a number.
+
+    Returns a list of dicts:
+        {model, media_type, size_gb, health, wear_pct, temp_c, hours, read_errors}
+    """
+    script = (
+        "Get-PhysicalDisk | ForEach-Object { "
+        "$d=$_; $c = $d | Get-StorageReliabilityCounter -ErrorAction SilentlyContinue; "
+        "[PSCustomObject]@{ Model=$d.FriendlyName; Health=$d.HealthStatus; "
+        "Media=$d.MediaType; SizeGB=[math]::Round($d.Size/1GB); Wear=$c.Wear; "
+        "Temp=$c.Temperature; Hours=$c.PowerOnHours; ReadErr=$c.ReadErrorsTotal } "
+        "} | ConvertTo-Json -Compress"
+    )
+    try:
+        rc, out = _run_powershell(script, timeout=90)
+        if rc != 0 or not out.strip():
+            return []
+        start = out.find("[")
+        if start == -1:
+            start = out.find("{")
+        if start == -1:
+            return []
+        import json as _json
+        data = _json.loads(out[start:])
+        if isinstance(data, dict):
+            data = [data]
+    except Exception as exc:
+        logger.debug("get_smart_health failed: %s", exc)
+        return []
+
+    drives = []
+    for d in data:
+        health = d.get("Health")
+        # Windows returns either a string or an enum number (0=Healthy)
+        if isinstance(health, int):
+            health = {0: "Healthy", 1: "Warning", 2: "Unhealthy"}.get(health, "Unknown")
+        media = d.get("Media")
+        if isinstance(media, int):
+            media = {3: "HDD", 4: "SSD", 5: "SCM"}.get(media, "Unknown")
+        drives.append({
+            "model": (d.get("Model") or "Unknown").strip(),
+            "media_type": media or "Unknown",
+            "size_gb": d.get("SizeGB") or 0,
+            "health": health or "Unknown",
+            "wear_pct": d.get("Wear"),
+            "temp_c": d.get("Temp"),
+            "hours": d.get("Hours"),
+            "read_errors": d.get("ReadErr"),
+        })
+    return drives

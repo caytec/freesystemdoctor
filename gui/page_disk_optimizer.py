@@ -96,6 +96,26 @@ class DiskOptimizerPage(tk.Frame):
 
         def scan():
             try:
+                # Physical drive health (SMART) first — the "will my disk die?" answer
+                smart = do.get_smart_health()
+                if smart:
+                    self._update_output("\n── Drive health (SMART) ──\n")
+                    for d in smart:
+                        extras = []
+                        if isinstance(d.get("wear_pct"), (int, float)):
+                            extras.append(f"{max(0, 100 - d['wear_pct'])}% life left")
+                        if d.get("temp_c"):
+                            extras.append(f"{d['temp_c']}°C")
+                        if d.get("hours"):
+                            extras.append(f"{d['hours']} h powered on")
+                        if d.get("read_errors"):
+                            extras.append(f"{d['read_errors']} read errors")
+                        tail = ("  (" + ", ".join(extras) + ")") if extras else ""
+                        self._update_output(
+                            f"  {d['model']} — {d['media_type']}, {d['size_gb']} GB "
+                            f"→ {d['health']}{tail}\n")
+                    self._update_output("\n── Volumes ──\n")
+
                 drives = do.get_drives()
                 for drive in drives:
                     rec = drive.get("recommendation", "ok")
