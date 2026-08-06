@@ -74,6 +74,7 @@ from .page_auto_shutdown    import AutoShutdownPage
 from .page_icon_saver       import IconSaverPage
 from .page_browser_autoclean import BrowserAutoCleanPage
 from .page_publisher        import PublisherPage
+from .page_deep_optimize   import DeepOptimizePage
 from .page_speed_test      import SpeedTestPage
 from .page_duplicates      import DuplicatesPage
 from .page_debloat         import DebloatPage
@@ -154,6 +155,7 @@ _NAV_CATEGORIES = [
             ("profiles",   "🎯", "Perf. Profiles",  PerformanceProfilesPage),
             ("svc_opt",    "⚙",  "Service Optim.",  ServiceOptimizerPage),
             ("startup",    "🚀", "Startup Insights",StartupInsightsPage),
+            ("deep_opt",   "🔬", "Deep Optimize",   DeepOptimizePage),
         ],
     },
     # ── Gaming ────────────────────────────────────────────────────────────────
