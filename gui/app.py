@@ -1009,6 +1009,7 @@ class App(tk.Tk):
         self._restore_window_geometry()
         self._setup_styles()
         self._build_ui()
+        self._fade_in_window()
         # Restore the last page the user had open (falls back to home)
         self._switch_page(self._restore_last_page())
         self._hud = SystemHud(self)
@@ -1029,6 +1030,30 @@ class App(tk.Tk):
         from .tutorial import maybe_show_tutorial
         if not maybe_show_tutorial(self):
             maybe_show_first_run_dialog(self)
+
+    def _fade_in_window(self):
+        """Smooth window fade-in on launch (350 ms). Alpha is restored to
+        fully opaque even if anything goes wrong mid-animation."""
+        if not T.animations_enabled():
+            return
+        try:
+            self.attributes("-alpha", 0.0)
+        except tk.TclError:
+            return
+
+        def step(t):
+            try:
+                self.attributes("-alpha", min(1.0, t))
+            except tk.TclError:
+                pass
+
+        def done():
+            try:
+                self.attributes("-alpha", 1.0)
+            except tk.TclError:
+                pass
+
+        T.animate(self, 350, step, on_done=done, easing=T.ease_out_cubic)
 
     # ── styles ─────────────────────────────────────────────────────────────────
 
@@ -1278,29 +1303,63 @@ class App(tk.Tk):
         self._update_breadcrumb(name)
         self._reveal_page()
 
+    _SLIDE_PX = 14  # rise-settle distance for the incoming page
+
     def _reveal_page(self):
-        """Smooth top-down reveal on page switch. A BG-coloured overlay frame
-        retracts from full height to zero with ease-out timing, so the new page
-        appears to drop into place. Page child layouts are untouched."""
+        """Modern dual-motion page transition:
+
+        1. WIPE — a BG-coloured overlay retracts top→down with a glowing
+           accent edge at the retracting boundary (like a light bar sweeping
+           the new page into view).
+        2. RISE-SETTLE — the incoming page starts a few px lower and eases
+           up into its final position.
+
+        Both honour the global animations toggle and swallow TclError so a
+        mid-animation page switch can never break navigation.
+        """
+        page = self._pages.get(self._active_page)
+        if not T.animations_enabled():
+            if page is not None:
+                try:
+                    page.pack_configure(pady=0)
+                except tk.TclError:
+                    pass
+            return
         try:
             cover = tk.Frame(self._content_wrapper, bg=T.BG)
+            # soft glow strip + crisp accent line at the retracting edge
+            tk.Frame(cover, bg=T.HIGHLIGHT, height=2
+                     ).pack(side="bottom", fill="x")
+            tk.Frame(cover, bg=T.lerp_color(T.BG, T.HIGHLIGHT, 0.22), height=8
+                     ).pack(side="bottom", fill="x")
             cover.place(relx=0, rely=0, relwidth=1, relheight=1)
             cover.lift()
         except tk.TclError:
             return
 
+        slide = self._SLIDE_PX
+
         def step(t):
-            # t: 0→1 eased; retract height 1→0
             try:
-                cover.place_configure(relheight=max(0.0, 1.0 - t))
+                cover.place_configure(relheight=max(0.001, 1.0 - t))
             except tk.TclError:
                 pass
+            if page is not None:
+                try:
+                    page.pack_configure(pady=(int(slide * (1.0 - t)), 0))
+                except tk.TclError:
+                    pass
 
         def done():
             try:
                 cover.destroy()
             except tk.TclError:
                 pass
+            if page is not None:
+                try:
+                    page.pack_configure(pady=0)
+                except tk.TclError:
+                    pass
 
         T.animate(self, T.TRANSITION_MS, step, on_done=done,
                   easing=T.ease_out_cubic)
@@ -1406,7 +1465,22 @@ class App(tk.Tk):
             self._hud.destroy()
         except Exception:
             pass
-        self.destroy()
+        if not T.animations_enabled():
+            self.destroy()
+            return
+        # Quick fade-out (150 ms) — destroy() is guaranteed via on_done even
+        # if an alpha step fails mid-way.
+        def step(t):
+            try:
+                self.attributes("-alpha", max(0.0, 1.0 - t))
+            except tk.TclError:
+                pass
+
+        try:
+            T.animate(self, 150, step, on_done=self.destroy,
+                      easing=T.ease_out_cubic)
+        except Exception:
+            self.destroy()
 
     @classmethod
     def run(cls):
