@@ -1,7 +1,12 @@
 {
-  "updated": "2026-08-06T23:16:41.576271Z",
-  "count": 52,
+  "updated": "2026-08-06T23:26:10.088438Z",
+  "count": 53,
   "commits": [
+    {
+      "sha": "2df63bbfbbdbfd7dc10777cab422b5bdce9ec061",
+      "date": "2026-08-07T01:18:53+02:00",
+      "msg": "feat(boost): Ultimate Boost — one click, every layer, measured proof"
+    },
     {
       "sha": "1b5a1d31039ca7716d8185f1e678228a2f7e1fa6",
       "date": "2026-08-07T01:04:27+02:00",
