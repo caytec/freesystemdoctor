@@ -1,7 +1,27 @@
 {
-  "updated": "2026-08-03T17:44:59.551017Z",
-  "count": 48,
+  "updated": "2026-08-06T23:16:41.576271Z",
+  "count": 52,
   "commits": [
+    {
+      "sha": "1b5a1d31039ca7716d8185f1e678228a2f7e1fa6",
+      "date": "2026-08-07T01:04:27+02:00",
+      "msg": "feat(gpu): GPU Boost page — full GPU potential (HAGS, PCIe link, MPO, NV max perf)"
+    },
+    {
+      "sha": "5df2271c09729c6efef43b15ef6d4448a1f03c21",
+      "date": "2026-08-07T00:56:34+02:00",
+      "msg": "feat(cpu): deep CPU tuning — EPP, boost policy, C-states, 0.5ms timer, P-core scheduling"
+    },
+    {
+      "sha": "f23e9de7b0de02f595f78db417b479fe299f3776",
+      "date": "2026-08-07T00:29:54+02:00",
+      "msg": "feat(deep-optimize): kernel-level tuning no mainstream optimizer offers"
+    },
+    {
+      "sha": "5416b22836b9d15cf94dfe95bd56e16638e1a82a",
+      "date": "2026-08-06T22:39:28+02:00",
+      "msg": "feat(game-booster): real FPS/latency wins (MMCSS, core parking, per-game GPU)"
+    },
     {
       "sha": "5ec9115e21c94d11765fa329a8d587d499af344c",
       "date": "2026-08-03T19:44:29+02:00",
