@@ -75,6 +75,7 @@ from .page_icon_saver       import IconSaverPage
 from .page_browser_autoclean import BrowserAutoCleanPage
 from .page_publisher        import PublisherPage
 from .page_deep_optimize   import DeepOptimizePage
+from .page_gpu_boost       import GpuBoostPage
 from .page_speed_test      import SpeedTestPage
 from .page_duplicates      import DuplicatesPage
 from .page_debloat         import DebloatPage
@@ -165,6 +166,7 @@ _NAV_CATEGORIES = [
         "color": "#ff5c5c",
         "items": [
             ("game",       "🎮", "Game Booster",   GameBoosterPage),
+            ("gpu_boost",  "🎯", "GPU Boost",      GpuBoostPage),
             ("deep_clean", "💾", "Deep Clean",     DeepCleanPage),
             ("app_prio",   "⚡", "App Priority",   AppPrioritizerPage),
             ("app_freeze", "❄",  "App Freezer",    AppFreezerPage),
