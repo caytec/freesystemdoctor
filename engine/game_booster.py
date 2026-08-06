@@ -581,6 +581,179 @@ def get_watchdog_observation() -> dict:
 
 # ── BIG GREEN BUTTON — SAFE PROFILE ──────────────────────────────────────────
 
+def apply_mmcss_tuning() -> tuple[bool, str]:
+    """Free the CPU/network reservation Windows keeps for multimedia.
+
+    By default the Multimedia Class Scheduler reserves 20% of CPU
+    (SystemResponsiveness=20) and throttles networking outside multimedia.
+    Both are well-documented FPS/latency limiters. Registry only — the game
+    process is never touched, so this stays anti-cheat safe.
+    """
+    if not _WINREG:
+        return False, "Brak winreg"
+    path = r"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile"
+    state = _read_state()
+    backups = state.setdefault("mmcss_backup", {})
+    try:
+        with winreg.CreateKey(winreg.HKEY_LOCAL_MACHINE, path) as k:
+            for name, value in (("SystemResponsiveness", 0),
+                                ("NetworkThrottlingIndex", 0xFFFFFFFF)):
+                if name not in backups:
+                    try:
+                        backups[name] = winreg.QueryValueEx(k, name)[0]
+                    except OSError:
+                        backups[name] = None
+                winreg.SetValueEx(k, name, 0, winreg.REG_DWORD, value)
+        # Games task profile — top scheduling priority for game threads
+        with winreg.CreateKey(winreg.HKEY_LOCAL_MACHINE,
+                              path + r"\Tasks\Games") as k:
+            winreg.SetValueEx(k, "GPU Priority", 0, winreg.REG_DWORD, 8)
+            winreg.SetValueEx(k, "Priority", 0, winreg.REG_DWORD, 6)
+            winreg.SetValueEx(k, "Scheduling Category", 0, winreg.REG_SZ, "High")
+            winreg.SetValueEx(k, "SFIO Priority", 0, winreg.REG_SZ, "High")
+        _write_state(state)
+        return True, "MMCSS: rezerwacja CPU zdjeta, siec bez throttlingu"
+    except PermissionError:
+        return False, "MMCSS: wymaga uprawnien administratora"
+    except Exception as e:
+        return False, f"MMCSS: {e}"
+
+
+def disable_core_parking() -> tuple[bool, str]:
+    """Stop Windows parking CPU cores and let boost run aggressively."""
+    ok = 0
+    sub = "54533251-82be-4824-96c1-47b60b740d00"
+    for setting, value in (
+        ("0cc5b647-c1df-4637-891a-dec35c318583", "100"),   # min cores unparked
+        ("be337238-0d82-4146-a960-4f3749d470c7", "2"),     # boost: aggressive
+    ):
+        rc, _ = _run(["powercfg", "-setacvalueindex", "scheme_current",
+                      sub, setting, value], timeout=8)
+        ok += 1 if rc == 0 else 0
+    _run(["powercfg", "-setactive", "scheme_current"], timeout=8)
+    return ok > 0, (f"CPU: core parking off, boost aggressive ({ok}/2)"
+                    if ok else "CPU: nie udalo sie zmienic ustawien")
+
+
+def apply_game_exe_tweaks(exe_path: str | None = None) -> tuple[bool, str]:
+    """Force high-performance GPU and disable fullscreen optimizations FOR the
+    game executable.
+
+    These are per-path Windows *preferences* in the user's own registry — the
+    game file and its process are never modified, so it remains anti-cheat safe.
+    """
+    if not _WINREG:
+        return False, "Brak winreg"
+    if not exe_path:
+        running = find_running_game()
+        exe_path = (running or {}).get("exe") or ""
+    if not exe_path or not os.path.isfile(exe_path):
+        return False, "Nie wykryto pliku gry (uruchom gre lub wybierz proces)"
+
+    done = []
+    try:
+        with winreg.CreateKey(
+                winreg.HKEY_CURRENT_USER,
+                r"Software\Microsoft\DirectX\UserGpuPreferences") as k:
+            winreg.SetValueEx(k, exe_path, 0, winreg.REG_SZ, "GpuPreference=2;")
+        done.append("GPU: high performance")
+    except Exception:
+        pass
+    try:
+        with winreg.CreateKey(
+                winreg.HKEY_CURRENT_USER,
+                r"Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers") as k:
+            winreg.SetValueEx(k, exe_path, 0, winreg.REG_SZ,
+                              "~ DISABLEDXMAXIMIZEDWINDOWEDMODE")
+        done.append("fullscreen optimizations off")
+    except Exception:
+        pass
+
+    if not done:
+        return False, "Nie udalo sie zapisac preferencji dla gry"
+    state = _read_state()
+    state["game_exe_tweaked"] = exe_path
+    _write_state(state)
+    return True, f"{os.path.basename(exe_path)}: " + ", ".join(done)
+
+
+def clear_standby_memory() -> tuple[bool, str]:
+    """Flush the standby (cached) memory list — removes stutter caused by
+    Windows evicting cache while a game streams assets."""
+    try:
+        import ctypes
+        from ctypes import wintypes
+
+        SE_PRIVILEGE_ENABLED = 0x00000002
+        TOKEN_ADJUST_PRIVILEGES = 0x0020
+        TOKEN_QUERY = 0x0008
+
+        class LUID(ctypes.Structure):
+            _fields_ = [("LowPart", wintypes.DWORD), ("HighPart", wintypes.LONG)]
+
+        class LUID_AND_ATTRIBUTES(ctypes.Structure):
+            _fields_ = [("Luid", LUID), ("Attributes", wintypes.DWORD)]
+
+        class TOKEN_PRIVILEGES(ctypes.Structure):
+            _fields_ = [("PrivilegeCount", wintypes.DWORD),
+                        ("Privileges", LUID_AND_ATTRIBUTES * 1)]
+
+        adv = ctypes.WinDLL("advapi32", use_last_error=True)
+        token = wintypes.HANDLE()
+        adv.OpenProcessToken(ctypes.windll.kernel32.GetCurrentProcess(),
+                             TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY,
+                             ctypes.byref(token))
+        luid = LUID()
+        if not adv.LookupPrivilegeValueW(None, "SeProfileSingleProcessPrivilege",
+                                         ctypes.byref(luid)):
+            return False, "Standby: brak uprawnien"
+        tp = TOKEN_PRIVILEGES(1, (LUID_AND_ATTRIBUTES * 1)(
+            LUID_AND_ATTRIBUTES(luid, SE_PRIVILEGE_ENABLED)))
+        adv.AdjustTokenPrivileges(token, False, ctypes.byref(tp), 0, None, None)
+
+        # SystemMemoryListInformation = 80, MemoryPurgeStandbyList = 4
+        command = ctypes.c_int(4)
+        status = ctypes.windll.ntdll.NtSetSystemInformation(
+            80, ctypes.byref(command), ctypes.sizeof(command))
+        if status == 0:
+            return True, "Standby memory wyczyszczona (mniej mikro-przyciec)"
+        return False, "Standby: wymaga uprawnien administratora"
+    except Exception as e:
+        return False, f"Standby: {e}"
+
+
+def revert_mmcss_and_gpu() -> int:
+    """Undo MMCSS + per-game tweaks. Returns how many items were restored."""
+    if not _WINREG:
+        return 0
+    restored = 0
+    state = _read_state()
+    path = r"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile"
+    for name, old in (state.get("mmcss_backup") or {}).items():
+        try:
+            with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, path, 0,
+                                winreg.KEY_SET_VALUE) as k:
+                if old is None:
+                    winreg.DeleteValue(k, name)
+                else:
+                    winreg.SetValueEx(k, name, 0, winreg.REG_DWORD, int(old))
+            restored += 1
+        except Exception:
+            pass
+    exe = state.get("game_exe_tweaked")
+    if exe:
+        for sub in (r"Software\Microsoft\DirectX\UserGpuPreferences",
+                    r"Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers"):
+            try:
+                with winreg.OpenKey(winreg.HKEY_CURRENT_USER, sub, 0,
+                                    winreg.KEY_SET_VALUE) as k:
+                    winreg.DeleteValue(k, exe)
+                restored += 1
+            except Exception:
+                pass
+    return restored
+
+
 def apply_all_safe(progress_cb=None) -> dict:
     """
     Apply every ANTI-CHEAT SAFE optimization.
@@ -599,6 +772,10 @@ def apply_all_safe(progress_cb=None) -> dict:
         ("Visual effects: performance",  set_visual_effects_performance),
         ("Kill background bloat",        lambda: (True, f"Zabito {kill_background_bloat()[0]} procesów (gra/AC pominięte)")),
         ("Trim pamięci (poza grą)",      trim_memory_before_launch),
+        ("MMCSS: CPU/sieć bez limitu",   apply_mmcss_tuning),
+        ("CPU: core parking off",        disable_core_parking),
+        ("GPU + fullscreen dla gry",     apply_game_exe_tweaks),
+        ("Standby memory clear",         clear_standby_memory),
     ]
 
     total = len(steps)
@@ -686,6 +863,9 @@ def revert_all() -> dict:
             except Exception:
                 pass
         results["Registry restore"] = (True, f"Klucze: {restored}")
+
+    n = revert_mmcss_and_gpu()
+    results["MMCSS / GPU"] = (True, f"Przywrócono {n} ustawień")
 
     release_timer_resolution()
     results["Timer"] = (True, "Timer zwolniony")
