@@ -76,6 +76,7 @@ from .page_browser_autoclean import BrowserAutoCleanPage
 from .page_publisher        import PublisherPage
 from .page_deep_optimize   import DeepOptimizePage
 from .page_gpu_boost       import GpuBoostPage
+from .page_ultimate_boost  import UltimateBoostPage
 from .page_speed_test      import SpeedTestPage
 from .page_duplicates      import DuplicatesPage
 from .page_debloat         import DebloatPage
@@ -165,6 +166,7 @@ _NAV_CATEGORIES = [
         "label": "GAMING",
         "color": "#ff5c5c",
         "items": [
+            ("ultimate",   "🚀", "Ultimate Boost", UltimateBoostPage),
             ("game",       "🎮", "Game Booster",   GameBoosterPage),
             ("gpu_boost",  "🎯", "GPU Boost",      GpuBoostPage),
             ("deep_clean", "💾", "Deep Clean",     DeepCleanPage),
@@ -279,7 +281,7 @@ SIMPLE_KEYS = {
     # Performance
     "care", "speedup", "turbo",
     # Gaming
-    "game",
+    "ultimate", "game",
     # Cleaning
     "disk_analyzer", "space_hogs", "duplicates", "browser_auto",
     # Disk
