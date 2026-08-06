@@ -263,6 +263,14 @@ def optimize_cpu(progress_cb: Optional[Callable[[str], None]] = None) -> list[st
     _set_proc_value(active_scheme, SETTING_PERFINCPOLICY, 2)   # 2 = Rocket
     _set_proc_value(active_scheme, SETTING_PERFINCTHRESHOLD, 10)
 
+    # 5b. Energy-Performance Preference → 0, turbo boost policy → 100%
+    _step("Setting Energy-Performance Preference to 0 (always prefer speed)")
+    _powercfg("/setacvalueindex", active_scheme, SUB_PROCESSOR, "PERFEPP", "0")
+    _powercfg("/setdcvalueindex", active_scheme, SUB_PROCESSOR, "PERFEPP", "0")
+    _step("Unlocking full turbo boost range (boost policy 100%)")
+    _powercfg("/setacvalueindex", active_scheme, SUB_PROCESSOR, "PERFBOOSTPOL", "100")
+    _powercfg("/setdcvalueindex", active_scheme, SUB_PROCESSOR, "PERFBOOSTPOL", "100")
+
     # Apply scheme changes
     _powercfg("/setactive", active_scheme)
 
@@ -336,3 +344,333 @@ def restore_defaults(progress_cb: Optional[Callable[[str], None]] = None) -> lis
     _save_state({"optimized": False, "restore": {}, "changes": []})
     _step("Restore complete.")
     return changes
+
+
+# ---------------------------------------------------------------------------
+# DEEP CPU tweaks — squeeze the last few percent the basic pass leaves behind
+# ---------------------------------------------------------------------------
+# These use powercfg SETTING ALIASES, which address hidden settings without
+# needing to un-hide them first. Each is applied to the CURRENTLY ACTIVE
+# scheme, backed up per-tweak, and individually revertible.
+
+KERNEL_KEY = r"SYSTEM\CurrentControlSet\Control\Session Manager\kernel"
+
+
+def _query_alias(alias: str) -> tuple[Optional[int], Optional[int]]:
+    """Read current AC/DC index of a processor setting alias. (None, None)
+    if the alias doesn't exist on this Windows build / CPU."""
+    # /qh also lists HIDDEN settings — /q silently omits them
+    rc, out = _powercfg("/qh", "SCHEME_CURRENT", "SUB_PROCESSOR", alias)
+    if rc != 0:
+        return None, None
+    ac = dc = None
+    for line in out.splitlines():
+        low = line.lower()
+        if "ac power setting index" in low:
+            try:
+                ac = int(line.split(":")[-1].strip(), 16)
+            except ValueError:
+                pass
+        elif "dc power setting index" in low:
+            try:
+                dc = int(line.split(":")[-1].strip(), 16)
+            except ValueError:
+                pass
+    return ac, dc
+
+
+def _set_alias(alias: str, value: int, dc: bool = True) -> bool:
+    ok, _ = _powercfg("/setacvalueindex", "SCHEME_CURRENT", "SUB_PROCESSOR",
+                      alias, str(value))
+    if dc:
+        _powercfg("/setdcvalueindex", "SCHEME_CURRENT", "SUB_PROCESSOR",
+                  alias, str(value))
+    _powercfg("/setactive", "SCHEME_CURRENT")
+    return ok == 0
+
+
+def _deep_backup(key: str, value) -> None:
+    state = _load_state()
+    state.setdefault("deep_backups", {})
+    if key not in state["deep_backups"]:
+        state["deep_backups"][key] = value
+        _save_state(state)
+
+
+def _deep_restore(key):
+    return (_load_state().get("deep_backups") or {}).get(key)
+
+
+# ── live CPU snapshot (proof, not promises) ─────────────────────────────────
+
+def get_cpu_snapshot() -> dict:
+    """Model, core count, base clock and the REAL current speed including
+    turbo — '% Processor Performance' goes above 100% when boosting, which
+    lets us show the actual MHz the CPU is running at right now."""
+    script = (
+        "$c = Get-CimInstance Win32_Processor | Select-Object -First 1; "
+        "Write-Output ('NAME=' + $c.Name); "
+        "Write-Output ('CORES=' + $c.NumberOfCores); "
+        "Write-Output ('THREADS=' + $c.NumberOfLogicalProcessors); "
+        "Write-Output ('BASE=' + $c.MaxClockSpeed); "
+        "try { $p = (Get-Counter '\\Processor Information(_Total)\\% Processor Performance' "
+        "-SampleInterval 1 -MaxSamples 2 -ErrorAction Stop).CounterSamples | "
+        "Measure-Object CookedValue -Average; "
+        "Write-Output ('PERF=' + [math]::Round($p.Average,1)) } catch { Write-Output 'PERF=0' }"
+    )
+    rc, out = _run(["powershell", "-NoProfile", "-Command", script], timeout=30)
+    snap = {"ok": rc == 0, "name": "", "cores": 0, "threads": 0,
+            "base_mhz": 0, "perf_pct": 0.0, "current_mhz": 0}
+    for line in out.splitlines():
+        k, _, v = line.strip().partition("=")
+        v = v.strip()
+        try:
+            if k == "NAME":
+                snap["name"] = v
+            elif k == "CORES":
+                snap["cores"] = int(v)
+            elif k == "THREADS":
+                snap["threads"] = int(v)
+            elif k == "BASE":
+                snap["base_mhz"] = int(v)
+            elif k == "PERF":
+                snap["perf_pct"] = float(v)
+        except ValueError:
+            continue
+    if snap["base_mhz"] and snap["perf_pct"]:
+        snap["current_mhz"] = int(snap["base_mhz"] * snap["perf_pct"] / 100)
+    snap["hybrid"] = _is_hybrid_cpu(snap["name"])
+    return snap
+
+
+def _is_hybrid_cpu(name: str) -> bool:
+    """P-core/E-core CPUs where the scheduling-policy tweak matters."""
+    n = (name or "").lower()
+    return any(t in n for t in ("12th gen", "13th gen", "14th gen",
+                                "core ultra", "core(tm) ultra"))
+
+
+# ── timer resolution (0.5 ms) ───────────────────────────────────────────────
+
+def get_timer_resolution() -> dict:
+    """Current/min kernel timer resolution in ms via NtQueryTimerResolution."""
+    try:
+        import ctypes
+        ntdll = ctypes.WinDLL("ntdll")
+        mn, mx, cur = (ctypes.c_ulong() for _ in range(3))
+        ntdll.NtQueryTimerResolution(ctypes.byref(mn), ctypes.byref(mx),
+                                     ctypes.byref(cur))
+        glob = _reg_read(winreg.HKEY_LOCAL_MACHINE, KERNEL_KEY,
+                         "GlobalTimerResolutionRequests", 0)
+        return {"ok": True,
+                "current_ms": cur.value / 10000.0,
+                "best_ms": mx.value / 10000.0,
+                "global_flag": glob == 1}
+    except Exception as exc:
+        logger.debug("get_timer_resolution: %s", exc)
+        return {"ok": False, "current_ms": 15.625, "best_ms": 0.5,
+                "global_flag": False}
+
+
+def request_max_timer_resolution() -> bool:
+    """Ask the kernel for its finest timer (usually 0.5 ms). Held for as long
+    as FreeSystemDoctor is running — exactly how TimerResolution.exe works."""
+    try:
+        import ctypes
+        ntdll = ctypes.WinDLL("ntdll")
+        mn, mx, cur = (ctypes.c_ulong() for _ in range(3))
+        ntdll.NtQueryTimerResolution(ctypes.byref(mn), ctypes.byref(mx),
+                                     ctypes.byref(cur))
+        ntdll.NtSetTimerResolution(mx, ctypes.c_bool(True), ctypes.byref(cur))
+        return True
+    except Exception as exc:
+        logger.debug("request_max_timer_resolution: %s", exc)
+        return False
+
+
+def release_timer_resolution() -> bool:
+    try:
+        import ctypes
+        ntdll = ctypes.WinDLL("ntdll")
+        cur = ctypes.c_ulong()
+        ntdll.NtSetTimerResolution(ctypes.c_ulong(0), ctypes.c_bool(False),
+                                   ctypes.byref(cur))
+        return True
+    except Exception:
+        return False
+
+
+# ── deep tweak catalogue ────────────────────────────────────────────────────
+
+def get_deep_tweaks() -> list[dict]:
+    """Declarative list driving the UI: id, name, desc, impact, risk, state.
+    Rows whose powercfg alias doesn't exist on this machine are omitted."""
+    tweaks: list[dict] = []
+
+    epp_ac, _ = _query_alias("PERFEPP")
+    if epp_ac is not None:
+        tweaks.append({
+            "id": "epp",
+            "name": "Energy-Performance Preference → 0 (max performance)",
+            "desc": "Modern CPUs pick their own clocks (HWP). EPP is the "
+                    "0-100 hint Windows sends them — 0 tells the CPU to always "
+                    "choose speed over efficiency. High Performance plans "
+                    "don't always set this.",
+            "impact": "CPU ramps to turbo instantly and holds it",
+            "risk": "low", "reboot": False,
+            "optimized": epp_ac == 0,
+        })
+
+    bp_ac, _ = _query_alias("PERFBOOSTPOL")
+    if bp_ac is not None:
+        tweaks.append({
+            "id": "boost_pol",
+            "name": "Turbo boost policy → 100%",
+            "desc": "How much of the available turbo range Windows lets the "
+                    "CPU use. 100% removes the OS-side ceiling on boost "
+                    "clocks entirely.",
+            "impact": "Full turbo range unlocked",
+            "risk": "low", "reboot": False,
+            "optimized": bp_ac == 100,
+        })
+
+    sp_ac, _ = _query_alias("SCHEDPOLICY")
+    if sp_ac is not None:
+        tweaks.append({
+            "id": "hetero",
+            "name": "Prefer P-cores (hybrid CPU scheduling)",
+            "desc": "On hybrid CPUs (Intel 12th-gen+/Core Ultra) Windows "
+                    "sometimes lands demanding threads on slow E-cores. "
+                    "This tells the scheduler to prefer performance cores. "
+                    "Harmless on non-hybrid CPUs.",
+            "impact": "Heavy threads stay on fast cores",
+            "risk": "low", "reboot": False,
+            "optimized": sp_ac == 2,
+        })
+
+    idle_ac, _ = _query_alias("IDLEDISABLE")
+    if idle_ac is not None:
+        tweaks.append({
+            "id": "idle_disable",
+            "name": "Disable CPU idle states (C-states)",
+            "desc": "The CPU never sleeps between instructions — zero "
+                    "wake-up latency, the last word in responsiveness. "
+                    "SIGNIFICANT heat and power cost; desktops with good "
+                    "cooling only, never laptops on battery.",
+            "impact": "Zero idle-exit latency (extreme)",
+            "risk": "high", "reboot": False,
+            "optimized": idle_ac == 1,
+        })
+
+    tr = get_timer_resolution()
+    tweaks.append({
+        "id": "timer_res",
+        "name": "0.5 ms kernel timer resolution",
+        "desc": "Windows' default 15.6 ms tick makes sleeps and frame pacing "
+                "coarse. This requests the finest timer (held while "
+                "FreeSystemDoctor runs) and sets the Win11 flag that makes "
+                "such requests system-wide again.",
+        "impact": "Smoother frame pacing, tighter input timing",
+        "risk": "low", "reboot": True,
+        "optimized": tr["ok"] and tr["current_ms"] <= 1.01 and tr["global_flag"],
+    })
+
+    return tweaks
+
+
+def apply_deep_tweak(tweak_id: str) -> tuple[bool, str]:
+    try:
+        if tweak_id == "epp":
+            ac, dcv = _query_alias("PERFEPP")
+            _deep_backup("PERFEPP", [ac, dcv])
+            ok = _set_alias("PERFEPP", 0)
+            return ok, ("EPP set to 0 — CPU now always prefers speed"
+                        if ok else "powercfg refused (run as administrator)")
+        if tweak_id == "boost_pol":
+            ac, dcv = _query_alias("PERFBOOSTPOL")
+            _deep_backup("PERFBOOSTPOL", [ac, dcv])
+            ok = _set_alias("PERFBOOSTPOL", 100)
+            return ok, ("Turbo boost policy at 100% — full boost range"
+                        if ok else "powercfg refused (run as administrator)")
+        if tweak_id == "hetero":
+            ac, dcv = _query_alias("SCHEDPOLICY")
+            _deep_backup("SCHEDPOLICY", [ac, dcv])
+            ac2, dcv2 = _query_alias("SHORTSCHEDPOLICY")
+            if ac2 is not None:
+                _deep_backup("SHORTSCHEDPOLICY", [ac2, dcv2])
+                _set_alias("SHORTSCHEDPOLICY", 2)
+            ok = _set_alias("SCHEDPOLICY", 2)
+            return ok, ("Scheduler now prefers performance cores"
+                        if ok else "powercfg refused (run as administrator)")
+        if tweak_id == "idle_disable":
+            ac, dcv = _query_alias("IDLEDISABLE")
+            _deep_backup("IDLEDISABLE", [ac, dcv])
+            ok = _set_alias("IDLEDISABLE", 1, dc=False)  # never on battery
+            return ok, ("C-states disabled (AC power only) — watch your temps"
+                        if ok else "powercfg refused (run as administrator)")
+        if tweak_id == "timer_res":
+            live = request_max_timer_resolution()
+            glob = _reg_read(winreg.HKEY_LOCAL_MACHINE, KERNEL_KEY,
+                             "GlobalTimerResolutionRequests", None)
+            _deep_backup("GlobalTimerResolutionRequests",
+                         int(glob) if glob is not None else None)
+            reg = _reg_write(winreg.HKEY_LOCAL_MACHINE, KERNEL_KEY,
+                             "GlobalTimerResolutionRequests", 1)
+            if live:
+                return True, ("0.5 ms timer active now"
+                              + ("; system-wide flag set (reboot to apply)"
+                                 if reg else "; system-wide flag needs admin"))
+            return reg, ("System-wide flag set (reboot to apply)"
+                         if reg else "Access denied — run as administrator")
+        return False, "Unknown tweak"
+    except Exception as exc:
+        logger.exception("apply_deep_tweak(%s)", tweak_id)
+        return False, str(exc)
+
+
+def revert_deep_tweak(tweak_id: str) -> tuple[bool, str]:
+    try:
+        alias_map = {"epp": "PERFEPP", "boost_pol": "PERFBOOSTPOL",
+                     "hetero": "SCHEDPOLICY", "idle_disable": "IDLEDISABLE"}
+        if tweak_id in alias_map:
+            alias = alias_map[tweak_id]
+            saved = _deep_restore(alias)
+            # sensible Windows defaults when no backup exists
+            defaults = {"PERFEPP": 33, "PERFBOOSTPOL": 100,
+                        "SCHEDPOLICY": 5, "IDLEDISABLE": 0}
+            ac = saved[0] if saved and saved[0] is not None else defaults[alias]
+            dcv = saved[1] if saved and saved[1] is not None else ac
+            ok, _ = _powercfg("/setacvalueindex", "SCHEME_CURRENT",
+                              "SUB_PROCESSOR", alias, str(ac))
+            _powercfg("/setdcvalueindex", "SCHEME_CURRENT", "SUB_PROCESSOR",
+                      alias, str(dcv))
+            _powercfg("/setactive", "SCHEME_CURRENT")
+            if tweak_id == "hetero":
+                saved2 = _deep_restore("SHORTSCHEDPOLICY")
+                if saved2 and saved2[0] is not None:
+                    _powercfg("/setacvalueindex", "SCHEME_CURRENT",
+                              "SUB_PROCESSOR", "SHORTSCHEDPOLICY", str(saved2[0]))
+                    if saved2[1] is not None:
+                        _powercfg("/setdcvalueindex", "SCHEME_CURRENT",
+                                  "SUB_PROCESSOR", "SHORTSCHEDPOLICY",
+                                  str(saved2[1]))
+                    _powercfg("/setactive", "SCHEME_CURRENT")
+            return ok == 0, f"{alias} restored to AC={ac}, DC={dcv}"
+        if tweak_id == "timer_res":
+            release_timer_resolution()
+            saved = _deep_restore("GlobalTimerResolutionRequests")
+            if saved is None:
+                try:
+                    with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, KERNEL_KEY,
+                                        0, winreg.KEY_SET_VALUE) as k:
+                        winreg.DeleteValue(k, "GlobalTimerResolutionRequests")
+                except Exception:
+                    pass
+            else:
+                _reg_write(winreg.HKEY_LOCAL_MACHINE, KERNEL_KEY,
+                           "GlobalTimerResolutionRequests", int(saved))
+            return True, "Timer resolution released and flag restored"
+        return False, "Unknown tweak"
+    except Exception as exc:
+        logger.exception("revert_deep_tweak(%s)", tweak_id)
+        return False, str(exc)

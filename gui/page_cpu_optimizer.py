@@ -27,12 +27,49 @@ class CpuOptimizerPage(tk.Frame):
         tk.Label(hdr, text="Remove throttle, max out CPU performance",
                  bg=T.ACCENT, fg=T.FG2, font=T.FONT_SMALL).pack(side="left", padx=4)
 
-        body = tk.Frame(self, bg=T.BG)
-        body.pack(fill="both", expand=True, padx=16, pady=12)
+        outer = tk.Frame(self, bg=T.BG)
+        outer.pack(fill="both", expand=True)
+        canvas = tk.Canvas(outer, bg=T.BG, highlightthickness=0)
+        sb = tk.Scrollbar(outer, orient="vertical", command=canvas.yview)
+        body = tk.Frame(canvas, bg=T.BG)
+        body.bind("<Configure>",
+                  lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
+        canvas.create_window((0, 0), window=body, anchor="nw", width=880)
+        canvas.configure(yscrollcommand=sb.set)
+        canvas.pack(side="left", fill="both", expand=True, padx=16, pady=12)
+        sb.pack(side="right", fill="y")
 
+        self._build_snapshot_card(body)
         self._build_status_card(body)
         self._build_actions_card(body)
+        self._build_deep_card(body)
         self._build_log_card(body)
+
+    def _build_snapshot_card(self, parent):
+        card = Card(parent, glow=True)
+        card.pack(fill="x", pady=(0, 10))
+
+        head = tk.Frame(card, bg=T.PANEL)
+        head.pack(fill="x", padx=12, pady=(10, 2))
+        SectionLabel(head, "⚡ Live CPU speed — proof, not promises").pack(side="left")
+        ActionButton(head, text="Measure", width=110,
+                     command=self._measure_snapshot).pack(side="right")
+
+        row = tk.Frame(card, bg=T.PANEL)
+        row.pack(fill="x", padx=12, pady=(4, 4))
+        self._snap_mhz = tk.Label(row, text="—", bg=T.PANEL, fg=T.HIGHLIGHT,
+                                  font=("Segoe UI", 28, "bold"))
+        self._snap_mhz.pack(side="left")
+        tk.Label(row, text=" MHz now", bg=T.PANEL, fg=T.FG2,
+                 font=T.FONT_BODY).pack(side="left", pady=(14, 0))
+        self._snap_turbo = tk.Label(row, text="", bg=T.PANEL, fg=T.FG2,
+                                    font=T.FONT_SMALL)
+        self._snap_turbo.pack(side="left", padx=20, pady=(14, 0))
+
+        self._snap_name = tk.Label(card, text="Click Measure to read your CPU.",
+                                   bg=T.PANEL, fg=T.FG2, font=T.FONT_SMALL,
+                                   anchor="w")
+        self._snap_name.pack(fill="x", padx=12, pady=(0, 10))
 
     def _build_status_card(self, parent):
         card = Card(parent)
@@ -70,6 +107,8 @@ class CpuOptimizerPage(tk.Frame):
             "  • Disables CPU core parking (all cores stay active)\n"
             "  • Sets performance boost mode to AGGRESSIVE\n"
             "  • Sets performance increase policy to ROCKET (instant ramp-up)\n"
+            "  • Energy-Performance Preference → 0 (CPU always prefers speed)\n"
+            "  • Unlocks the full turbo boost range (boost policy 100%)\n"
             "  • Disables Windows Power Throttling for all processes\n"
             "  • Boosts foreground process scheduler priority"
         )
@@ -91,6 +130,71 @@ class CpuOptimizerPage(tk.Frame):
                      command=self._on_restore).pack(side="left", padx=(0, 8))
         ActionButton(btns, text="Refresh",
                      command=self._refresh_status).pack(side="left")
+
+    def _build_deep_card(self, parent):
+        card = Card(parent)
+        card.pack(fill="x", pady=(0, 10))
+        SectionLabel(card, "🔥 Deep CPU tweaks — the last few percent").pack(
+            anchor="w", padx=12, pady=(10, 2))
+        tk.Label(card,
+                 text="Hidden power settings Windows doesn't show. Each one is "
+                      "backed up first and individually revertible. Risky items "
+                      "are marked in red.",
+                 bg=T.PANEL, fg=T.FG2, font=T.FONT_SMALL, anchor="w",
+                 justify="left", wraplength=780).pack(fill="x", padx=12)
+        self._deep_host = tk.Frame(card, bg=T.PANEL)
+        self._deep_host.pack(fill="x", padx=12, pady=(6, 12))
+        tk.Label(self._deep_host, text="Reading current settings…",
+                 bg=T.PANEL, fg=T.FG2, font=T.FONT_SMALL).pack(anchor="w")
+
+    def _render_deep(self, tweaks):
+        risk_color = {"low": T.SUCCESS, "medium": T.WARNING, "high": T.DANGER}
+        for w in self._deep_host.winfo_children():
+            w.destroy()
+        if not tweaks:
+            tk.Label(self._deep_host, text="No deep tweaks available on this system.",
+                     bg=T.PANEL, fg=T.FG2, font=T.FONT_SMALL).pack(anchor="w")
+            return
+        for t in tweaks:
+            row = tk.Frame(self._deep_host, bg=T.PANEL)
+            row.pack(fill="x", pady=4)
+
+            top = tk.Frame(row, bg=T.PANEL)
+            top.pack(fill="x")
+            state = t.get("optimized")
+            tk.Label(top, text="●" if state else "○", bg=T.PANEL,
+                     fg=T.SUCCESS if state else T.FG2,
+                     font=(T.FONT_FAMILY, 12)).pack(side="left", padx=(0, 6))
+            tk.Label(top, text=t["name"], bg=T.PANEL, fg=T.FG,
+                     font=T.FONT_BOLD).pack(side="left")
+            tk.Label(top, text=f"  [{t['risk']} risk]", bg=T.PANEL,
+                     fg=risk_color.get(t["risk"], T.FG2),
+                     font=T.FONT_MICRO).pack(side="left")
+            if t.get("reboot"):
+                tk.Label(top, text="  reboot for full effect", bg=T.PANEL,
+                         fg=T.FG2, font=T.FONT_MICRO).pack(side="left")
+
+            btns = tk.Frame(top, bg=T.PANEL)
+            btns.pack(side="right")
+            if state:
+                tk.Label(btns, text="✓ active", bg=T.PANEL, fg=T.SUCCESS,
+                         font=T.FONT_SMALL).pack(side="left", padx=(0, 8))
+                ActionButton(btns, text="Revert", width=90, secondary=True,
+                             command=lambda i=t["id"]: self._deep_revert(i)
+                             ).pack(side="left")
+            else:
+                ActionButton(btns, text="Apply", width=90,
+                             danger=(t["risk"] == "high"),
+                             command=lambda i=t["id"], n=t["name"],
+                             r=t["risk"]: self._deep_apply(i, n, r)
+                             ).pack(side="left")
+
+            tk.Label(row, text=t["desc"], bg=T.PANEL, fg=T.FG2,
+                     font=T.FONT_SMALL, anchor="w", justify="left",
+                     wraplength=760).pack(fill="x", padx=(22, 0))
+            tk.Label(row, text=f"→ {t['impact']}", bg=T.PANEL,
+                     fg=T.lerp_color(T.FG2, T.HIGHLIGHT, 0.5),
+                     font=T.FONT_MICRO, anchor="w").pack(fill="x", padx=(22, 0))
 
     def _build_log_card(self, parent):
         card = Card(parent)
@@ -188,5 +292,100 @@ class CpuOptimizerPage(tk.Frame):
 
         threading.Thread(target=work, daemon=True).start()
 
+    # ── Live snapshot ─────────────────────────────────────────────────────
+    def _measure_snapshot(self):
+        self._snap_name.config(text="Measuring (about 2 seconds)…")
+
+        def work():
+            try:
+                s = cpu.get_cpu_snapshot()
+                self.after(0, self._show_snapshot, s)
+            except Exception as e:
+                self.after(0, self._log_line, f"Snapshot error: {e}")
+
+        threading.Thread(target=work, daemon=True).start()
+
+    def _show_snapshot(self, s: dict):
+        if not s.get("ok") or not s.get("base_mhz"):
+            self._snap_name.config(text="Could not read CPU counters.")
+            return
+        mhz = s.get("current_mhz") or s["base_mhz"]
+        pct = s.get("perf_pct", 0)
+        self._snap_mhz.config(
+            text=f"{mhz:,}",
+            fg=T.SUCCESS if pct >= 100 else T.HIGHLIGHT)
+        turbo = (f"turbo +{pct - 100:.0f}% over base" if pct > 100
+                 else f"{pct:.0f}% of base clock")
+        self._snap_turbo.config(
+            text=f"base {s['base_mhz']:,} MHz   ·   {turbo}")
+        hybrid = "  ·  hybrid P/E cores" if s.get("hybrid") else ""
+        self._snap_name.config(
+            text=f"{s['name']}  ·  {s['cores']} cores / "
+                 f"{s['threads']} threads{hybrid}")
+
+    # ── Deep tweaks ───────────────────────────────────────────────────────
+    def _refresh_deep(self):
+        def work():
+            try:
+                tweaks = cpu.get_deep_tweaks()
+                self.after(0, self._render_deep, tweaks)
+            except Exception as e:
+                self.after(0, self._log_line, f"Deep tweaks error: {e}")
+
+        threading.Thread(target=work, daemon=True).start()
+
+    def _deep_apply(self, tweak_id: str, name: str, risk: str):
+        if self._busy:
+            return
+        warn = ""
+        if tweak_id == "idle_disable":
+            warn = ("\n\n⚠ EXTREME: the CPU never idles — expect significantly "
+                    "higher temperatures and power draw. Desktops with good "
+                    "cooling only. Applied on AC power only, never battery.")
+        if not messagebox.askyesno(
+                f"Apply: {name}?",
+                f"Apply this tweak?{warn}\n\nBacked up first — you can revert "
+                f"it from this page at any time."):
+            return
+        self._busy = True
+        self._log_line(f"─── APPLY: {name} ───")
+
+        def work():
+            try:
+                if risk == "high":
+                    try:
+                        from engine import system_restore
+                        system_restore.ensure_checkpoint(f"CPU tweak: {name}")
+                    except Exception:
+                        pass
+                ok, msg = cpu.apply_deep_tweak(tweak_id)
+                self.after(0, self._log_line, ("  ✓ " if ok else "  ✗ ") + msg)
+                self.after(0, self._refresh_deep)
+            except Exception as e:
+                self.after(0, self._log_line, f"  ✗ Error: {e}")
+            finally:
+                self._busy = False
+
+        threading.Thread(target=work, daemon=True).start()
+
+    def _deep_revert(self, tweak_id: str):
+        if self._busy:
+            return
+        self._busy = True
+
+        def work():
+            try:
+                ok, msg = cpu.revert_deep_tweak(tweak_id)
+                self.after(0, self._log_line, ("  ✓ " if ok else "  ✗ ") + msg)
+                self.after(0, self._refresh_deep)
+            except Exception as e:
+                self.after(0, self._log_line, f"  ✗ Error: {e}")
+            finally:
+                self._busy = False
+
+        threading.Thread(target=work, daemon=True).start()
+
     def on_activate(self):
         self._refresh_status()
+        self._refresh_deep()
+        self._measure_snapshot()
