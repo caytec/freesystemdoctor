@@ -115,4 +115,10 @@ object ToolRoutes {
 
     // Update 2.1.0: Shizuku Turbo (optional privileged actions)
     const val TURBO = "tool/turbo"
+
+    // Organizer: auto-grouped app categories + pinned home-screen shortcuts
+    const val ORGANIZER = "tool/organizer"
 }
+
+/** Intent extra a pinned category shortcut carries back into [com.freeandroiddoctor.android.MainActivity]. */
+const val ORGANIZER_CATEGORY_EXTRA = "organizer_category"

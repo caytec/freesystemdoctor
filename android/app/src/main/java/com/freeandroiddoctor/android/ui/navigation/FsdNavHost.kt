@@ -29,6 +29,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -122,9 +123,16 @@ import com.freeandroiddoctor.android.ui.regression.RegressionScreen
 import com.freeandroiddoctor.android.ui.turbo.TurboScreen
 import com.freeandroiddoctor.android.ui.modes.ModesScreen
 import com.freeandroiddoctor.android.ui.automation.AutoRulesScreen
+import com.freeandroiddoctor.android.ui.organizer.OrganizerScreen
 import com.freeandroiddoctor.android.ui.theme.appBackgroundBrush
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
+
+/** Optional query arg so a pinned category shortcut can deep-link straight into it. */
+private const val ROUTE_ORGANIZER = "${ToolRoutes.ORGANIZER}?category={category}"
 
 private val toolTitles: Map<String, Int> = mapOf(
+    ROUTE_ORGANIZER to R.string.tool_organizer,
     ToolRoutes.DUPLICATES to R.string.tool_duplicates,
     ToolRoutes.LARGE_FILES to R.string.tool_large_files,
     ToolRoutes.STORAGE_TYPES to R.string.tool_storage_types,
@@ -195,7 +203,7 @@ private val toolTitles: Map<String, Int> = mapOf(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScaffold() {
+fun MainScaffold(pendingOrganizerCategory: String? = null) {
     val navController = rememberNavController()
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = backStackEntry?.destination?.route
@@ -325,6 +333,11 @@ fun MainScaffold() {
         },
     ) { innerPadding ->
         AnimatedBackdrop()
+        LaunchedEffect(pendingOrganizerCategory) {
+            pendingOrganizerCategory?.let {
+                navController.navigate("${ToolRoutes.ORGANIZER}?category=$it")
+            }
+        }
         UnlockSheetHost(navigateToPro = { navController.navigate(ROUTE_PRO) }) {
         NavHost(
             navController = navController,
@@ -420,6 +433,18 @@ fun MainScaffold() {
             composable(ToolRoutes.PERFORMANCE) { PerformanceScreen() }
             composable(ToolRoutes.REGRESSION) { RegressionScreen() }
             composable(ToolRoutes.TURBO) { TurboScreen() }
+            composable(
+                route = ROUTE_ORGANIZER,
+                arguments = listOf(
+                    navArgument("category") {
+                        type = NavType.StringType
+                        nullable = true
+                        defaultValue = null
+                    },
+                ),
+            ) { backStackEntry ->
+                OrganizerScreen(initialCategory = backStackEntry.arguments?.getString("category"))
+            }
         }
         }
     }

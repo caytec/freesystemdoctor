@@ -965,4 +965,21 @@
     <string name="turbo_failed">To polecenie się nie powiodło.</string>
     <string name="turbo_failed_detail">To polecenie się nie powiodło: %1$s</string>
     <string name="turbo_footer">Shizuku daje dostęp na poziomie powłoki, dlatego lista poleceń, które ta aplikacja może uruchomić, jest stała i walidowana. Jeśli Shizuku będzie niedostępne, powyższe funkcje po prostu znikną i nic więcej się nie zmieni.</string>
+    <!-- Organizer: automatyczne grupowanie apek na kategorie + skróty na pulpit -->
+    <string name="tool_organizer">Organizer</string>
+    <string name="organizer_note">Grupuje Twoje aplikacje w foldery na podstawie tego, co każda z nich sama deklaruje — część trafi do „Inne", bo większość aplikacji nie deklaruje kategorii. Zmień folder dowolnej aplikacji sam przez menu ⋮. Żadna aplikacja nie ma dostępu do układu Twojego prawdziwego pulpitu, dlatego te foldery żyją tutaj — przypnij kategorię jako skrót poniżej, żeby mieć do niej bliżej z pulpitu.</string>
+    <string name="organizer_app_count">%1$d aplikacji</string>
+    <string name="organizer_pin">Przypnij ten folder na pulpit</string>
+    <string name="organizer_pin_unsupported">Twój launcher nie obsługuje przypinania skrótów z aplikacji.</string>
+    <string name="organizer_change_category">Zmień folder</string>
+    <string name="organizer_reset_category">Przywróć automatyczny</string>
+    <string name="organizer_cat_games">Gry</string>
+    <string name="organizer_cat_social">Społecznościowe i komunikatory</string>
+    <string name="organizer_cat_photo_video">Zdjęcia i wideo</string>
+    <string name="organizer_cat_music_audio">Muzyka i audio</string>
+    <string name="organizer_cat_news">Wiadomości</string>
+    <string name="organizer_cat_maps">Mapy i nawigacja</string>
+    <string name="organizer_cat_productivity">Produktywność</string>
+    <string name="organizer_cat_tools">Narzędzia</string>
+    <string name="organizer_cat_other">Inne</string>
 </resources>

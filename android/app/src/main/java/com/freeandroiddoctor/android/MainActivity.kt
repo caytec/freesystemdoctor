@@ -24,6 +24,7 @@ import com.freeandroiddoctor.android.ads.ConsentManager
 import com.freeandroiddoctor.android.core.di.ServiceLocator
 import com.freeandroiddoctor.android.data.settings.AppSettings
 import com.freeandroiddoctor.android.ui.navigation.MainScaffold
+import com.freeandroiddoctor.android.ui.navigation.ORGANIZER_CATEGORY_EXTRA
 import com.freeandroiddoctor.android.ui.onboarding.OnboardingScreen
 import com.freeandroiddoctor.android.ui.onboarding.TutorialScreen
 import com.freeandroiddoctor.android.ui.theme.FsdTheme
@@ -72,6 +73,8 @@ class MainActivity : FragmentActivity() {
             var tutorialComplete by remember { mutableStateOf(false) }
             var onboardingComplete by remember { mutableStateOf(false) }
             val scope = rememberCoroutineScope()
+            // Set when this activity was launched from a pinned Organizer category shortcut.
+            val pendingOrganizerCategory = remember { intent.getStringExtra(ORGANIZER_CATEGORY_EXTRA) }
 
             val systemDark = isSystemInDarkTheme()
             val useDark = if (settings.followSystem) systemDark else settings.darkTheme
@@ -87,7 +90,7 @@ class MainActivity : FragmentActivity() {
                             })
                         }
                         settings.onboardingDone || onboardingComplete -> {
-                            MainScaffold()
+                            MainScaffold(pendingOrganizerCategory = pendingOrganizerCategory)
                             WhatsNewHost()
                         }
                         else -> {

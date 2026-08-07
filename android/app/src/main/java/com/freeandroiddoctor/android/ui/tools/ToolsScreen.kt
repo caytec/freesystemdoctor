@@ -152,6 +152,7 @@ private val toolGroups = listOf(
             Tool(R.string.tool_cloud_backup, Icons.Filled.CloudUpload, ToolRoutes.CLOUD_BACKUP, advanced = true),
             Tool(R.string.tool_app_deep_clean, Icons.Filled.CleaningServices, ToolRoutes.APP_DEEP_CLEAN, advanced = true),
             Tool(R.string.tool_app_cleaners, Icons.Filled.CleaningServices, ToolRoutes.APP_CLEANERS_HUB, advanced = true),
+            Tool(R.string.tool_organizer, Icons.Filled.Folder, ToolRoutes.ORGANIZER),
         ),
     ),
     ToolGroup(

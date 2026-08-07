@@ -64,6 +64,7 @@ import com.freeandroiddoctor.android.engine.media.MediaStoreCategoryEngine
 import com.freeandroiddoctor.android.engine.media.SimilarPhotoEngine
 import com.freeandroiddoctor.android.engine.memory.MemoryEngine
 import com.freeandroiddoctor.android.engine.network.SpeedTestEngine
+import com.freeandroiddoctor.android.engine.organizer.AppOrganizerEngine
 import com.freeandroiddoctor.android.engine.network.WifiAnalyzerEngine
 import com.freeandroiddoctor.android.engine.storage.StorageAnalyzerEngine
 import com.freeandroiddoctor.android.engine.system.ClipboardCleanerEngine
@@ -95,6 +96,7 @@ object ServiceLocator {
     val appManagerEngine: AppManagerEngine by lazy {
         AppManagerEngine(appContext, permissionManager)
     }
+    val appOrganizerEngine: AppOrganizerEngine by lazy { AppOrganizerEngine(appContext) }
     val junkEngine: JunkScannerEngine by lazy { JunkScannerEngine(appContext) }
     val trashEngine: TrashEngine by lazy { TrashEngine(appContext) }
     val hiddenCacheEngine: HiddenCacheEngine by lazy { HiddenCacheEngine(appContext) }

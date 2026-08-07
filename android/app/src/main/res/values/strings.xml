@@ -1018,4 +1018,21 @@
     <string name="turbo_failed">That command did not succeed.</string>
     <string name="turbo_failed_detail">That command did not succeed: %1$s</string>
     <string name="turbo_footer">Shizuku grants shell-level access, so we keep the list of commands this app can run fixed and validated. If Shizuku is ever unavailable, every feature above simply disappears and nothing else changes.</string>
+    <!-- Organizer: auto-grouped app categories + pinned home-screen shortcuts -->
+    <string name="tool_organizer">Organizer</string>
+    <string name="organizer_note">Groups your apps into folders based on what each app declares itself to be — some will land in "Other" since most apps don\'t declare a category. Change any app\'s folder yourself with the ⋮ menu. Android gives no app a way to touch your real home screen\'s layout, so these folders live here; pin a category as a shortcut below to get one tap closer from your home screen.</string>
+    <string name="organizer_app_count">%1$d apps</string>
+    <string name="organizer_pin">Pin this folder to home screen</string>
+    <string name="organizer_pin_unsupported">Your home screen launcher doesn\'t support pinning shortcuts from apps.</string>
+    <string name="organizer_change_category">Change folder</string>
+    <string name="organizer_reset_category">Reset to automatic</string>
+    <string name="organizer_cat_games">Games</string>
+    <string name="organizer_cat_social">Social &amp; messaging</string>
+    <string name="organizer_cat_photo_video">Photo &amp; video</string>
+    <string name="organizer_cat_music_audio">Music &amp; audio</string>
+    <string name="organizer_cat_news">News</string>
+    <string name="organizer_cat_maps">Maps &amp; navigation</string>
+    <string name="organizer_cat_productivity">Productivity</string>
+    <string name="organizer_cat_tools">Tools</string>
+    <string name="organizer_cat_other">Other</string>
 </resources>

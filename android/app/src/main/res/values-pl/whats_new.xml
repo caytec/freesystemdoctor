@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="whats_new_title">Co nowego w 2.2</string>
+    <string name="whats_new_title">Co nowego w 2.3</string>
     <string name="whats_new_dismiss">Rozumiem</string>
     <string-array name="whats_new_items">
-        <item>NOWE: Krótki samouczek przy pierwszym uruchomieniu pokazuje układ apki — bez próśb o uprawnienia, sama wycieczka</item>
-        <item>Płynniej wszędzie: kaskadowe wejścia kart, dotykowa reakcja przycisków i animowane przejścia ładowanie→treść w całym zestawie narzędzi</item>
-        <item>Żywszy dolny pasek — zaznaczona zakładka teraz płynnie się przesuwa zamiast skakać</item>
-        <item>Łagodniejsze przejście z ekranu powitalnego do apki</item>
-        <item>Naprawiony błąd formatowania, gdzie długie napisy na przyciskach (jak „Odinstaluj") łamały się na pojedyncze znaki na wąskich kartach</item>
+        <item>NOWE: Organizer — automatycznie grupuje Twoje aplikacje w foldery (Gry, Społecznościowe, Zdjęcia i wideo i więcej) na podstawie tego, co każda aplikacja sama o sobie deklaruje</item>
+        <item>Każdy folder możesz przypiąć jako skrót jednym dotknięciem na prawdziwy pulpit</item>
+        <item>Folder dowolnej aplikacji można zmienić ręcznie, jeśli automat się pomyli</item>
+        <item>Uczciwie od podstaw: żadna aplikacja — łącznie z naszą — nie może odczytać ani przestawić układu Twojego prawdziwego pulpitu, więc zbudowaliśmy najbliższą rzecz, jaka jest naprawdę możliwa, zamiast to udawać</item>
     </string-array>
 </resources>

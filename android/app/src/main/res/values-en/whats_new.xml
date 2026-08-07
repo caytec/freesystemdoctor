@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="whats_new_title">What\'s new in 2.2</string>
+    <string name="whats_new_title">What\'s new in 2.3</string>
     <string name="whats_new_dismiss">Got it</string>
     <string-array name="whats_new_items">
-        <item>NEW: A short first-run walkthrough shows how the app is laid out — no permission prompts, just the tour</item>
-        <item>Smoother throughout: staggered card entrances, tactile press feedback, and animated loading-to-content transitions across the whole toolset</item>
-        <item>A livelier bottom bar — the selected tab now eases into place instead of snapping</item>
-        <item>A softer handoff from the launch splash screen into the app</item>
-        <item>Fixed a formatting bug where long button labels (like "Uninstall") could break into single characters on narrow cards</item>
+        <item>NEW: Organizer — automatically groups your apps into folders (Games, Social, Photo &amp; Video, and more) based on what each app actually declares itself to be</item>
+        <item>Every folder can be pinned as a one-tap shortcut on your real home screen</item>
+        <item>Any app\'s folder can be changed by hand if the automatic grouping guesses wrong</item>
+        <item>Honest by design: no app — ours included — can read or rearrange your home screen\'s actual layout, so we built the closest thing that\'s actually possible instead of faking it</item>
     </string-array>
 </resources>
