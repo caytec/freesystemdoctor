@@ -1,7 +1,12 @@
 {
-  "updated": "2026-08-06T23:26:10.088438Z",
-  "count": 53,
+  "updated": "2026-08-06T23:36:29.810711Z",
+  "count": 54,
   "commits": [
+    {
+      "sha": "a13e9371e33145b483bb8be70d3f5554f2f26b30",
+      "date": "2026-08-07T01:35:45+02:00",
+      "msg": "feat(gui): smooth modern transitions — dual-motion page reveal, window fade"
+    },
     {
       "sha": "2df63bbfbbdbfd7dc10777cab422b5bdce9ec061",
       "date": "2026-08-07T01:18:53+02:00",
