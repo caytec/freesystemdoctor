@@ -14,6 +14,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -71,6 +73,7 @@ private const val DEFAULT_VISIBLE_ROWS = 5
  * sits under a "review to confirm" subhead with a chevron that deep-links to the engine's own
  * destructive screen. Pure-numeric rows (clipboard, empty folders) stay non-interactive.
  */
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun CleaningReportCard(
     report: CleaningReport,
@@ -214,20 +217,19 @@ fun CleaningReportCard(
             }
 
             // Actions
-            Row(
+            FlowRow(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(start = 12.dp, end = 12.dp, bottom = 12.dp),
-                horizontalArrangement = Arrangement.End,
-                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End),
+                verticalArrangement = Arrangement.spacedBy(0.dp),
             ) {
                 TextButton(onClick = onDismiss) {
-                    Text(stringResource(R.string.cleaner_report_done))
+                    Text(stringResource(R.string.cleaner_report_done), maxLines = 1)
                 }
                 if (onCleanMedia != null) {
-                    Spacer(Modifier.width(8.dp))
                     Button(onClick = onCleanMedia) {
-                        Text(stringResource(R.string.cleaner_report_clean_media))
+                        Text(stringResource(R.string.cleaner_report_clean_media), maxLines = 1)
                     }
                 }
             }

@@ -5,6 +5,8 @@ import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -34,6 +36,7 @@ import com.freeandroiddoctor.android.ui.components.Appear
 import com.freeandroiddoctor.android.ui.components.InfoBanner
 import com.freeandroiddoctor.android.ui.components.ShimmerList
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun TrashScreen(
     modifier: Modifier = Modifier,
@@ -52,7 +55,10 @@ fun TrashScreen(
     ) {
         Appear { InfoBanner(stringResource(R.string.recycle_bin_note)) }
 
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
             Button(
                 enabled = state.selected.isNotEmpty(),
                 onClick = {
@@ -61,7 +67,7 @@ fun TrashScreen(
                         launcher.launch(IntentSenderRequest.Builder(it).build())
                     }
                 },
-            ) { Text(stringResource(R.string.recycle_bin_restore)) }
+            ) { Text(stringResource(R.string.recycle_bin_restore), maxLines = 1) }
             OutlinedButton(
                 enabled = state.selected.isNotEmpty(),
                 onClick = {
@@ -70,11 +76,11 @@ fun TrashScreen(
                         launcher.launch(IntentSenderRequest.Builder(it).build())
                     }
                 },
-            ) { Text(stringResource(R.string.recycle_bin_delete)) }
+            ) { Text(stringResource(R.string.recycle_bin_delete), maxLines = 1) }
             OutlinedButton(
                 enabled = state.items.isNotEmpty(),
                 onClick = viewModel::selectAll,
-            ) { Text(stringResource(R.string.select_all)) }
+            ) { Text(stringResource(R.string.select_all), maxLines = 1) }
         }
 
         when {

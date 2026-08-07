@@ -88,17 +88,17 @@ fun AppsScreen(
                                 color = MaterialTheme.colorScheme.primary,
                             )
                         }
-                        Row(
+                        FlowRow(
                             modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.End,
-                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End),
+                            verticalArrangement = Arrangement.spacedBy(0.dp),
                         ) {
                             TextButton(onClick = {
                                 context.startActivity(viewModel.appDetailsIntent(app.packageName))
-                            }) { Text(stringResource(R.string.apps_details)) }
+                            }) { Text(stringResource(R.string.apps_details), maxLines = 1) }
                             OutlinedButton(onClick = {
                                 context.startActivity(viewModel.uninstallIntent(app.packageName))
-                            }) { Text(stringResource(R.string.apps_uninstall)) }
+                            }) { Text(stringResource(R.string.apps_uninstall), maxLines = 1) }
                         }
                     }
                 }

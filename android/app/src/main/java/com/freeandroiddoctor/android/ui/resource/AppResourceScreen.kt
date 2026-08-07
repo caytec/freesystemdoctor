@@ -4,6 +4,8 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -115,6 +117,7 @@ fun AppResourceScreen(
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun ResourceRow(
     row: AppResourceRow,
@@ -176,13 +179,20 @@ private fun ResourceRow(
                     else DateFormat.getDateInstance(DateFormat.SHORT).format(Date(row.lastUsed)),
                 )
             }
-            Row(
+            FlowRow(
                 modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
                 horizontalArrangement = Arrangement.spacedBy(6.dp),
+                verticalArrangement = Arrangement.spacedBy(0.dp),
             ) {
-                TextButton(onClick = onSettings) { Text(stringResource(R.string.app_resource_action_settings)) }
-                TextButton(onClick = onStop) { Text(stringResource(R.string.app_resource_action_stop)) }
-                TextButton(onClick = onUninstall) { Text(stringResource(R.string.app_resource_action_uninstall)) }
+                TextButton(onClick = onSettings) {
+                    Text(stringResource(R.string.app_resource_action_settings), maxLines = 1)
+                }
+                TextButton(onClick = onStop) {
+                    Text(stringResource(R.string.app_resource_action_stop), maxLines = 1)
+                }
+                TextButton(onClick = onUninstall) {
+                    Text(stringResource(R.string.app_resource_action_uninstall), maxLines = 1)
+                }
             }
         }
     }
