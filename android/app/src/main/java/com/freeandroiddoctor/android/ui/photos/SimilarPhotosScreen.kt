@@ -62,7 +62,7 @@ fun SimilarPhotosScreen(
                 subtitle = stringResource(R.string.similar_groups, state.groups.size),
             )
         }
-        InfoBanner(stringResource(R.string.similar_note))
+        Appear(index = 1) { InfoBanner(stringResource(R.string.similar_note)) }
 
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Button(onClick = viewModel::scan, enabled = !state.scanning) {

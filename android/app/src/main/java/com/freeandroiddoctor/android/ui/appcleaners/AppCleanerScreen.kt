@@ -12,7 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -41,6 +41,7 @@ import com.freeandroiddoctor.android.engine.appcleaners.strategies.TelegramClean
 import com.freeandroiddoctor.android.engine.appcleaners.strategies.TikTokCleaner
 import com.freeandroiddoctor.android.engine.appcleaners.strategies.WhatsAppCleaner
 import com.freeandroiddoctor.android.engine.appdeep.Safety
+import com.freeandroiddoctor.android.ui.components.Appear
 import com.freeandroiddoctor.android.ui.components.InfoBanner
 import kotlinx.coroutines.launch
 
@@ -133,16 +134,18 @@ private fun StrategyScreen(strategy: AppCleanerStrategy, modifier: Modifier = Mo
             ) { Text(stringResource(R.string.app_deep_clean_run)) }
 
             LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                items(hits, key = { it.folderUri.toString() }) { hit ->
-                    HitCard(
-                        hit = hit,
-                        checked = hit.folderUri.toString() in selected,
-                        onToggle = {
-                            val k = hit.folderUri.toString()
-                            selected = if (k in selected) selected - k else selected + k
-                        },
-                        modifier = Modifier.animateItem(),
-                    )
+                itemsIndexed(hits, key = { _, hit -> hit.folderUri.toString() }) { index, hit ->
+                    Appear(index = index) {
+                        HitCard(
+                            hit = hit,
+                            checked = hit.folderUri.toString() in selected,
+                            onToggle = {
+                                val k = hit.folderUri.toString()
+                                selected = if (k in selected) selected - k else selected + k
+                            },
+                            modifier = Modifier.animateItem(),
+                        )
+                    }
                 }
             }
         }

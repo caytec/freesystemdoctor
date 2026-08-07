@@ -49,6 +49,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.freeandroiddoctor.android.BuildConfig
 import com.freeandroiddoctor.android.R
 import com.freeandroiddoctor.android.ai.AiProvider
+import com.freeandroiddoctor.android.ui.components.Appear
 import com.freeandroiddoctor.android.ui.components.GlassCard
 import com.freeandroiddoctor.android.ui.components.SectionHeader
 import com.freeandroiddoctor.android.ui.navigation.ToolRoutes
@@ -77,199 +78,211 @@ fun SettingsScreen(
     ) {
         // ── Appearance ────────────────────────────────────────────
         SectionHeader(stringResource(R.string.settings_appearance))
-        GlassCard {
-            Column(
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
-                verticalArrangement = Arrangement.spacedBy(4.dp),
-            ) {
-                PreferenceRow(
-                    title = stringResource(R.string.settings_theme),
+        Appear(index = 0) {
+            GlassCard {
+                Column(
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
                 ) {
-                    Switch(
-                        checked = settings.darkTheme,
-                        onCheckedChange = viewModel::setDarkTheme,
-                        enabled = !settings.followSystem,
-                    )
-                }
-                PreferenceRow(
-                    title = stringResource(R.string.settings_follow_system),
-                    subtitle = stringResource(R.string.settings_follow_system_desc),
-                ) {
-                    Switch(
-                        checked = settings.followSystem,
-                        onCheckedChange = viewModel::setFollowSystem,
-                    )
+                    PreferenceRow(
+                        title = stringResource(R.string.settings_theme),
+                    ) {
+                        Switch(
+                            checked = settings.darkTheme,
+                            onCheckedChange = viewModel::setDarkTheme,
+                            enabled = !settings.followSystem,
+                        )
+                    }
+                    PreferenceRow(
+                        title = stringResource(R.string.settings_follow_system),
+                        subtitle = stringResource(R.string.settings_follow_system_desc),
+                    ) {
+                        Switch(
+                            checked = settings.followSystem,
+                            onCheckedChange = viewModel::setFollowSystem,
+                        )
+                    }
                 }
             }
         }
 
         // ── Cleaning ──────────────────────────────────────────────
         SectionHeader(stringResource(R.string.settings_cleaning))
-        GlassCard {
-            Column(
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
-                verticalArrangement = Arrangement.spacedBy(4.dp),
-            ) {
-                PreferenceRow(
-                    title = stringResource(R.string.tool_schedule),
-                    subtitle = stringResource(R.string.schedule_note),
+        Appear(index = 1) {
+            GlassCard {
+                Column(
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
                 ) {
-                    Switch(
-                        checked = settings.scheduledCleaning,
-                        onCheckedChange = viewModel::setScheduledCleaning,
-                    )
-                }
-                AnimatedVisibility(
-                    visible = settings.scheduledCleaning,
-                    enter = expandVertically() + fadeIn(),
-                    exit = shrinkVertically() + fadeOut(),
-                    modifier = Modifier.align(Alignment.End),
-                ) {
-                    TextButton(onClick = { onNavigate(ToolRoutes.SCHEDULE) }) {
-                        Text(stringResource(R.string.settings_schedule_configure))
-                        Icon(Icons.Filled.ChevronRight, contentDescription = null)
+                    PreferenceRow(
+                        title = stringResource(R.string.tool_schedule),
+                        subtitle = stringResource(R.string.schedule_note),
+                    ) {
+                        Switch(
+                            checked = settings.scheduledCleaning,
+                            onCheckedChange = viewModel::setScheduledCleaning,
+                        )
                     }
-                }
-                PreferenceRow(title = stringResource(R.string.settings_advanced)) {
-                    Switch(
-                        checked = settings.advancedMode,
-                        onCheckedChange = viewModel::setAdvancedMode,
-                    )
+                    AnimatedVisibility(
+                        visible = settings.scheduledCleaning,
+                        enter = expandVertically() + fadeIn(),
+                        exit = shrinkVertically() + fadeOut(),
+                        modifier = Modifier.align(Alignment.End),
+                    ) {
+                        TextButton(onClick = { onNavigate(ToolRoutes.SCHEDULE) }) {
+                            Text(stringResource(R.string.settings_schedule_configure))
+                            Icon(Icons.Filled.ChevronRight, contentDescription = null)
+                        }
+                    }
+                    PreferenceRow(title = stringResource(R.string.settings_advanced)) {
+                        Switch(
+                            checked = settings.advancedMode,
+                            onCheckedChange = viewModel::setAdvancedMode,
+                        )
+                    }
                 }
             }
         }
 
         // ── AI Assistant ──────────────────────────────────────────
         SectionHeader(stringResource(R.string.settings_ai_provider))
-        GlassCard {
-            Column(
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-            ) {
-                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    AiProvider.entries.forEach { provider ->
-                        FilterChip(
-                            selected = settings.aiProvider == provider,
-                            onClick = { viewModel.setProvider(provider) },
-                            label = { Text(provider.displayName) },
-                            leadingIcon = if (settings.aiProvider == provider) {
-                                { Icon(Icons.Filled.AutoAwesome, contentDescription = null) }
-                            } else null,
+        Appear(index = 2) {
+            GlassCard {
+                Column(
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                ) {
+                    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        AiProvider.entries.forEach { provider ->
+                            FilterChip(
+                                selected = settings.aiProvider == provider,
+                                onClick = { viewModel.setProvider(provider) },
+                                label = { Text(provider.displayName) },
+                                leadingIcon = if (settings.aiProvider == provider) {
+                                    { Icon(Icons.Filled.AutoAwesome, contentDescription = null) }
+                                } else null,
+                            )
+                        }
+                    }
+                    OutlinedTextField(
+                        value = keyInput,
+                        onValueChange = { keyInput = it },
+                        label = { Text(stringResource(R.string.settings_ai_key_hint)) },
+                        visualTransformation = PasswordVisualTransformation(),
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true,
+                    )
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Button(
+                            onClick = {
+                                viewModel.saveKey(keyInput)
+                                keyInput = ""
+                            },
+                            enabled = keyInput.isNotBlank(),
+                        ) { Text(stringResource(R.string.settings_ai_save)) }
+                        OutlinedButton(onClick = viewModel::clearKey, enabled = hasKey) {
+                            Text(stringResource(R.string.settings_ai_clear))
+                        }
+                    }
+                    AnimatedVisibility(
+                        visible = hasKey,
+                        enter = expandVertically() + fadeIn(),
+                        exit = shrinkVertically() + fadeOut(),
+                    ) {
+                        Text(
+                            stringResource(R.string.perm_granted),
+                            color = MaterialTheme.colorScheme.secondary,
+                            style = MaterialTheme.typography.bodyMedium,
                         )
                     }
-                }
-                OutlinedTextField(
-                    value = keyInput,
-                    onValueChange = { keyInput = it },
-                    label = { Text(stringResource(R.string.settings_ai_key_hint)) },
-                    visualTransformation = PasswordVisualTransformation(),
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true,
-                )
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Button(
-                        onClick = {
-                            viewModel.saveKey(keyInput)
-                            keyInput = ""
-                        },
-                        enabled = keyInput.isNotBlank(),
-                    ) { Text(stringResource(R.string.settings_ai_save)) }
-                    OutlinedButton(onClick = viewModel::clearKey, enabled = hasKey) {
-                        Text(stringResource(R.string.settings_ai_clear))
-                    }
-                }
-                AnimatedVisibility(
-                    visible = hasKey,
-                    enter = expandVertically() + fadeIn(),
-                    exit = shrinkVertically() + fadeOut(),
-                ) {
-                    Text(
-                        stringResource(R.string.perm_granted),
-                        color = MaterialTheme.colorScheme.secondary,
-                        style = MaterialTheme.typography.bodyMedium,
-                    )
                 }
             }
         }
 
         // ── Monitoring ────────────────────────────────────────────
         SectionHeader(stringResource(R.string.settings_monitoring))
-        GlassCard {
-            Column(
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
-            ) {
-                PreferenceRow(
-                    title = stringResource(R.string.monitor_toggle),
-                    subtitle = stringResource(R.string.monitor_desc),
+        Appear(index = 3) {
+            GlassCard {
+                Column(
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
                 ) {
-                    Switch(
-                        checked = settings.monitorEnabled,
-                        onCheckedChange = viewModel::setMonitorEnabled,
-                    )
+                    PreferenceRow(
+                        title = stringResource(R.string.monitor_toggle),
+                        subtitle = stringResource(R.string.monitor_desc),
+                    ) {
+                        Switch(
+                            checked = settings.monitorEnabled,
+                            onCheckedChange = viewModel::setMonitorEnabled,
+                        )
+                    }
                 }
             }
         }
 
         // ── Power-user mode (Shizuku) ─────────────────────────────
         SectionHeader(stringResource(R.string.settings_shizuku_section))
-        GlassCard {
-            Column(
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                PreferenceRow(
-                    title = stringResource(R.string.settings_shizuku_toggle),
-                    subtitle = stringResource(R.string.settings_shizuku_desc),
+        Appear(index = 4) {
+            GlassCard {
+                Column(
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
-                    Switch(
-                        checked = settings.shizukuEnabled,
-                        onCheckedChange = viewModel::setShizukuEnabled,
+                    PreferenceRow(
+                        title = stringResource(R.string.settings_shizuku_toggle),
+                        subtitle = stringResource(R.string.settings_shizuku_desc),
+                    ) {
+                        Switch(
+                            checked = settings.shizukuEnabled,
+                            onCheckedChange = viewModel::setShizukuEnabled,
+                        )
+                    }
+                    val status = viewModel.shizukuStatusLabel()
+                    Text(
+                        status,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
-                val status = viewModel.shizukuStatusLabel()
-                Text(
-                    status,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
             }
         }
 
         // ── About & Legal ─────────────────────────────────────────
         SectionHeader(stringResource(R.string.settings_about))
-        GlassCard {
-            Column(
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                Text(
-                    stringResource(R.string.settings_about_body),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
+        Appear(index = 5) {
+            GlassCard {
+                Column(
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     Text(
-                        stringResource(R.string.settings_version),
-                        style = MaterialTheme.typography.bodyMedium,
-                    )
-                    Text(
-                        BuildConfig.VERSION_NAME,
+                        stringResource(R.string.settings_about_body),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
-                }
-                TextButton(
-                    onClick = {
-                        context.startActivity(
-                            Intent(Intent.ACTION_VIEW, Uri.parse(PRIVACY_POLICY_URL))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text(
+                            stringResource(R.string.settings_version),
+                            style = MaterialTheme.typography.bodyMedium,
                         )
-                    },
-                ) {
-                    Text(stringResource(R.string.settings_privacy_policy))
+                        Text(
+                            BuildConfig.VERSION_NAME,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                    TextButton(
+                        onClick = {
+                            context.startActivity(
+                                Intent(Intent.ACTION_VIEW, Uri.parse(PRIVACY_POLICY_URL))
+                            )
+                        },
+                    ) {
+                        Text(stringResource(R.string.settings_privacy_policy))
+                    }
                 }
             }
         }

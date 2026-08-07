@@ -1,5 +1,12 @@
 package com.freeandroiddoctor.android.ui.performance
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -7,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -27,6 +33,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.freeandroiddoctor.android.R
 import com.freeandroiddoctor.android.core.util.ByteFormatter
 import com.freeandroiddoctor.android.engine.performance.Bottleneck
+import com.freeandroiddoctor.android.ui.components.Appear
 import com.freeandroiddoctor.android.ui.components.InfoBanner
 import com.freeandroiddoctor.android.ui.components.ShimmerList
 import com.freeandroiddoctor.android.ui.components.StatCard
@@ -48,78 +55,89 @@ fun PerformanceScreen(
     ) {
         item("note") { InfoBanner(stringResource(R.string.perf_note)) }
 
-        val report = state.report
-        if (state.loading || report == null) {
-            item("loading") { ShimmerList(rows = 5) }
-        } else {
-            item("summary") {
-                StatCard(
-                    title = stringResource(R.string.perf_summary_title),
-                    value = if (report.healthy) {
-                        stringResource(R.string.perf_summary_healthy)
-                    } else {
-                        stringResource(R.string.perf_summary_issues, report.bottlenecks.size)
-                    },
-                    subtitle = report.thermalHeadroom?.let {
-                        stringResource(R.string.perf_headroom, (it * 100).toInt())
-                    } ?: stringResource(R.string.perf_headroom_unavailable),
-                    accent = if (report.healthy) GoodGreen else WarnAmber,
-                )
-            }
-
-            if (report.bottlenecks.isEmpty()) {
-                item("clean") {
-                    Text(
-                        stringResource(R.string.perf_nothing_found),
-                        color = GoodGreen,
-                        style = MaterialTheme.typography.bodyMedium,
-                    )
-                }
-            } else {
-                items(report.bottlenecks, key = { it.kind.name }) { b ->
-                    BottleneckCard(b, modifier = Modifier.animateItem())
-                }
-            }
-
-            // Cache reclamation is storage, never speed — the copy says so explicitly.
-            item("cache") {
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceContainer,
-                    ),
-                    shape = MaterialTheme.shapes.medium,
-                ) {
-                    Column(Modifier.padding(14.dp)) {
-                        Text(
-                            stringResource(R.string.perf_cache_title),
-                            style = MaterialTheme.typography.titleSmall,
+        item("body") {
+            val report = state.report
+            val showLoading = state.loading || report == null
+            AnimatedContent(
+                targetState = showLoading,
+                transitionSpec = {
+                    slideInVertically(tween(260)) { -it / 2 } + fadeIn(tween(260)) togetherWith
+                        slideOutVertically(tween(180)) { it / 2 } + fadeOut(tween(180))
+                },
+                label = "perfBody",
+            ) { loading ->
+                if (loading) {
+                    ShimmerList(rows = 5)
+                } else {
+                    val r = requireNotNull(state.report)
+                    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                        StatCard(
+                            title = stringResource(R.string.perf_summary_title),
+                            value = if (r.healthy) {
+                                stringResource(R.string.perf_summary_healthy)
+                            } else {
+                                stringResource(R.string.perf_summary_issues, r.bottlenecks.size)
+                            },
+                            subtitle = r.thermalHeadroom?.let {
+                                stringResource(R.string.perf_headroom, (it * 100).toInt())
+                            } ?: stringResource(R.string.perf_headroom_unavailable),
+                            accent = if (r.healthy) GoodGreen else WarnAmber,
                         )
-                        Text(
-                            stringResource(
-                                R.string.perf_cache_body,
-                                ByteFormatter.format(report.reclaimableCacheBytes),
-                            ),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(top = 4.dp),
-                        )
-                        OutlinedButton(
-                            onClick = viewModel::reclaimCache,
-                            enabled = !state.reclaiming,
-                            modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
-                        ) { Text(stringResource(R.string.perf_cache_action)) }
 
-                        state.lastReclaimedBytes?.let { freed ->
+                        if (r.bottlenecks.isEmpty()) {
                             Text(
-                                stringResource(
-                                    R.string.perf_cache_result,
-                                    ByteFormatter.format(freed),
-                                ),
+                                stringResource(R.string.perf_nothing_found),
+                                color = GoodGreen,
                                 style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.secondary,
-                                modifier = Modifier.padding(top = 6.dp),
                             )
+                        } else {
+                            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                                r.bottlenecks.forEachIndexed { index, b ->
+                                    Appear(index = index) { BottleneckCard(b) }
+                                }
+                            }
+                        }
+
+                        // Cache reclamation is storage, never speed — the copy says so explicitly.
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                            ),
+                            shape = MaterialTheme.shapes.medium,
+                        ) {
+                            Column(Modifier.padding(14.dp)) {
+                                Text(
+                                    stringResource(R.string.perf_cache_title),
+                                    style = MaterialTheme.typography.titleSmall,
+                                )
+                                Text(
+                                    stringResource(
+                                        R.string.perf_cache_body,
+                                        ByteFormatter.format(r.reclaimableCacheBytes),
+                                    ),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier.padding(top = 4.dp),
+                                )
+                                OutlinedButton(
+                                    onClick = viewModel::reclaimCache,
+                                    enabled = !state.reclaiming,
+                                    modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+                                ) { Text(stringResource(R.string.perf_cache_action)) }
+
+                                state.lastReclaimedBytes?.let { freed ->
+                                    Text(
+                                        stringResource(
+                                            R.string.perf_cache_result,
+                                            ByteFormatter.format(freed),
+                                        ),
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = MaterialTheme.colorScheme.secondary,
+                                        modifier = Modifier.padding(top = 6.dp),
+                                    )
+                                }
+                            }
                         }
                     }
                 }

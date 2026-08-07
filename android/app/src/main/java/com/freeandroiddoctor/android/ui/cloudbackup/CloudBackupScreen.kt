@@ -140,28 +140,36 @@ fun CloudBackupScreen(
         }
 
         state.estimate?.let {
-            Text(
-                stringResource(R.string.cloud_backup_estimate, ByteFormatter.format(it.sizeBytes)),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.primary,
-            )
-            Text(
-                stringResource(R.string.restore_manifest, it.entries.joinToString()),
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
+            Appear {
+                Column {
+                    Text(
+                        stringResource(R.string.cloud_backup_estimate, ByteFormatter.format(it.sizeBytes)),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.primary,
+                    )
+                    Text(
+                        stringResource(R.string.restore_manifest, it.entries.joinToString()),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            }
         }
         state.lastResult?.let {
-            Text(
-                stringResource(R.string.cloud_backup_done, it),
-                color = MaterialTheme.colorScheme.secondary,
-            )
+            Appear {
+                Text(
+                    stringResource(R.string.cloud_backup_done, it),
+                    color = MaterialTheme.colorScheme.secondary,
+                )
+            }
         }
         state.error?.let {
-            Text(
-                stringResource(R.string.cloud_backup_failed, it),
-                color = MaterialTheme.colorScheme.error,
-            )
+            Appear {
+                Text(
+                    stringResource(R.string.cloud_backup_failed, it),
+                    color = MaterialTheme.colorScheme.error,
+                )
+            }
         }
 
         Text(

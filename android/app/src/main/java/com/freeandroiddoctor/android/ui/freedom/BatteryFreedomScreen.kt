@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.freeandroiddoctor.android.R
+import com.freeandroiddoctor.android.ui.components.Appear
 import com.freeandroiddoctor.android.ui.components.InfoBanner
 import com.freeandroiddoctor.android.ui.components.ShimmerList
 import com.freeandroiddoctor.android.ui.components.StatCard
@@ -88,33 +89,35 @@ fun BatteryFreedomScreen(
                     )
                 }
             } else {
-                items(report.unrestricted, key = { it.packageName }) { app ->
-                    Card(
-                        modifier = Modifier.fillMaxWidth().animateItem(),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceContainer,
-                        ),
-                        shape = MaterialTheme.shapes.medium,
-                    ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth().padding(14.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically,
+                itemsIndexed(report.unrestricted, key = { _, app -> app.packageName }) { index, app ->
+                    Appear(index = index) {
+                        Card(
+                            modifier = Modifier.fillMaxWidth().animateItem(),
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                            ),
+                            shape = MaterialTheme.shapes.medium,
                         ) {
-                            Text(
-                                app.label,
-                                style = MaterialTheme.typography.titleSmall,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                                modifier = Modifier.weight(1f).padding(end = 8.dp),
-                            )
-                            TextButton(onClick = {
-                                runCatching {
-                                    context.startActivity(
-                                        viewModel.appDetailsIntent(app.packageName),
-                                    )
-                                }
-                            }) { Text(stringResource(R.string.freedom_fix)) }
+                            Row(
+                                modifier = Modifier.fillMaxWidth().padding(14.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                Text(
+                                    app.label,
+                                    style = MaterialTheme.typography.titleSmall,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                    modifier = Modifier.weight(1f).padding(end = 8.dp),
+                                )
+                                TextButton(onClick = {
+                                    runCatching {
+                                        context.startActivity(
+                                            viewModel.appDetailsIntent(app.packageName),
+                                        )
+                                    }
+                                }) { Text(stringResource(R.string.freedom_fix)) }
+                            }
                         }
                     }
                 }

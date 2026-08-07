@@ -1,5 +1,12 @@
 package com.freeandroiddoctor.android.ui.battery.health
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -42,40 +49,55 @@ fun BatteryHealthScreen(modifier: Modifier = Modifier) {
         InfoBanner(stringResource(R.string.battery_health_note))
 
         val r = report
-        when {
-            r == null -> Text(stringResource(R.string.loading))
-            r.measuredCapacityMah == null -> Text(
-                stringResource(R.string.battery_health_not_enough_data),
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            else -> {
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
-                    shape = MaterialTheme.shapes.medium,
-                ) {
-                    Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                        Text(
-                            stringResource(R.string.battery_health_percent, r.healthPercent ?: 0),
-                            style = MaterialTheme.typography.headlineSmall,
-                            color = MaterialTheme.colorScheme.primary,
-                        )
-                        Text(
-                            "${stringResource(R.string.battery_health_capacity)}: ${r.measuredCapacityMah} mAh",
-                            style = MaterialTheme.typography.bodyMedium,
-                        )
-                        r.referenceCapacityMah?.let { ref ->
+        val phase = when {
+            r == null -> "loading"
+            r.measuredCapacityMah == null -> "empty"
+            else -> "content"
+        }
+        AnimatedContent(
+            targetState = phase,
+            transitionSpec = {
+                slideInVertically(tween(260)) { -it / 2 } + fadeIn(tween(260)) togetherWith
+                    slideOutVertically(tween(180)) { it / 2 } + fadeOut(tween(180))
+            },
+            label = "batteryHealthPhase",
+        ) { targetPhase ->
+            when (targetPhase) {
+                "loading" -> Text(stringResource(R.string.loading))
+                "empty" -> Text(
+                    stringResource(R.string.battery_health_not_enough_data),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                else -> {
+                    val rr = r!!
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+                        shape = MaterialTheme.shapes.medium,
+                    ) {
+                        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                             Text(
-                                "${stringResource(R.string.battery_health_design)}: $ref mAh",
+                                stringResource(R.string.battery_health_percent, rr.healthPercent ?: 0),
+                                style = MaterialTheme.typography.headlineSmall,
+                                color = MaterialTheme.colorScheme.primary,
+                            )
+                            Text(
+                                "${stringResource(R.string.battery_health_capacity)}: ${rr.measuredCapacityMah} mAh",
+                                style = MaterialTheme.typography.bodyMedium,
+                            )
+                            rr.referenceCapacityMah?.let { ref ->
+                                Text(
+                                    "${stringResource(R.string.battery_health_design)}: $ref mAh",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                )
+                            }
+                            Text(
+                                stringResource(R.string.battery_health_sample_count, rr.sampleCount),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
                         }
-                        Text(
-                            stringResource(R.string.battery_health_sample_count, r.sampleCount),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
                     }
                 }
             }

@@ -1,6 +1,9 @@
 package com.freeandroiddoctor.android.ui.navigation
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -258,8 +261,28 @@ fun MainScaffold() {
                         val selected = destination?.hierarchy?.any { it.route == dest.route } == true
                         val iconScale by animateFloatAsState(
                             targetValue = if (selected) 1.15f else 1f,
-                            animationSpec = tween(260),
+                            animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
                             label = "navIcon",
+                        )
+                        // A single animated color per item (not an instant selected/unselected
+                        // swap) so the icon+label crossfade smoothly as selection moves between
+                        // tabs, instead of popping.
+                        val tint by animateColorAsState(
+                            targetValue = if (selected) {
+                                MaterialTheme.colorScheme.primary
+                            } else {
+                                MaterialTheme.colorScheme.onSurfaceVariant
+                            },
+                            animationSpec = tween(220),
+                            label = "navTint",
+                        )
+                        val indicatorAlpha by animateFloatAsState(
+                            targetValue = if (selected) 0.16f else 0f,
+                            animationSpec = spring(
+                                dampingRatio = Spring.DampingRatioMediumBouncy,
+                                stiffness = Spring.StiffnessLow,
+                            ),
+                            label = "navIndicator",
                         )
                         NavigationBarItem(
                             selected = selected,
@@ -288,9 +311,11 @@ fun MainScaffold() {
                                 )
                             },
                             colors = NavigationBarItemDefaults.colors(
-                                selectedIconColor = MaterialTheme.colorScheme.primary,
-                                selectedTextColor = MaterialTheme.colorScheme.primary,
-                                indicatorColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.16f),
+                                selectedIconColor = tint,
+                                unselectedIconColor = tint,
+                                selectedTextColor = tint,
+                                unselectedTextColor = tint,
+                                indicatorColor = MaterialTheme.colorScheme.primary.copy(alpha = indicatorAlpha),
                             ),
                         )
                     }

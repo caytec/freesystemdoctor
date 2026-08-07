@@ -1,5 +1,12 @@
 package com.freeandroiddoctor.android.ui.lock
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -94,41 +101,50 @@ fun AppLockScreen(
             modifier = Modifier.padding(top = 8.dp),
         )
 
-        if (state.loading) {
-            ShimmerList()
-        } else {
-            LazyColumn(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                items(state.apps, key = { it.packageName }) { app ->
-                    Card(
-                        modifier = Modifier.fillMaxWidth().animateItem(),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceContainer,
-                        ),
-                        shape = MaterialTheme.shapes.small,
-                    ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth()
-                                .padding(horizontal = 12.dp, vertical = 6.dp),
-                            verticalAlignment = Alignment.CenterVertically,
+        AnimatedContent(
+            targetState = state.loading,
+            transitionSpec = {
+                slideInVertically(tween(260)) { -it / 2 } + fadeIn(tween(260)) togetherWith
+                    slideOutVertically(tween(180)) { it / 2 } + fadeOut(tween(180))
+            },
+            label = "appLockLoading",
+        ) { loading ->
+            if (loading) {
+                ShimmerList()
+            } else {
+                LazyColumn(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    items(state.apps, key = { it.packageName }) { app ->
+                        Card(
+                            modifier = Modifier.fillMaxWidth().animateItem(),
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                            ),
+                            shape = MaterialTheme.shapes.small,
                         ) {
-                            Checkbox(
-                                checked = app.packageName in locked,
-                                onCheckedChange = { viewModel.toggle(app.packageName) },
-                            )
-                            Column(Modifier.weight(1f).padding(start = 6.dp)) {
-                                Text(
-                                    app.label,
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
+                            Row(
+                                modifier = Modifier.fillMaxWidth()
+                                    .padding(horizontal = 12.dp, vertical = 6.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                Checkbox(
+                                    checked = app.packageName in locked,
+                                    onCheckedChange = { viewModel.toggle(app.packageName) },
                                 )
-                                Text(
-                                    app.packageName,
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                )
+                                Column(Modifier.weight(1f).padding(start = 6.dp)) {
+                                    Text(
+                                        app.label,
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis,
+                                    )
+                                    Text(
+                                        app.packageName,
+                                        style = MaterialTheme.typography.labelSmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis,
+                                    )
+                                }
                             }
                         }
                     }

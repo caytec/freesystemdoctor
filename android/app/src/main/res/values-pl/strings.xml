@@ -141,6 +141,19 @@
     <string name="settings_privacy_policy">Polityka prywatności</string>
     <string name="settings_version">Wersja</string>
 
+    <!-- Samouczek pierwszego uruchomienia (raz, przed ekranem uprawnień) -->
+    <string name="tutorial_welcome_title">Witaj w FreeAndroidDoctor</string>
+    <string name="tutorial_welcome_body">Krótkie, 5-krokowe wprowadzenie do układu apki — ta część nie wymaga żadnych uprawnień.</string>
+    <string name="tutorial_tabs_title">Pięć zakładek, pięć zadań</string>
+    <string name="tutorial_tabs_body">Dolny pasek to Twoja mapa. Oto co robi każda zakładka.</string>
+    <string name="tutorial_quick_clean_title">Czyszczenie jednym dotknięciem</string>
+    <string name="tutorial_quick_clean_body">Dodaj kafelek szybkich ustawień lub widżet na pulpicie, żeby czyścić cache bez otwierania apki.</string>
+    <string name="tutorial_privacy_title">Twoje prywatne rzeczy, naprawdę prywatne</string>
+    <string name="tutorial_privacy_body">Sejf ukrywa pliki za biometrią, Blokada aplikacji chroni wybrane apki, a Tryby łączą oba na sytuacje jak praca czy sen.</string>
+    <string name="tutorial_turbo_title">Wydajność, uczciwie</string>
+    <string name="tutorial_turbo_body">Zakładka Narzędzia ma realną diagnozę hamulców i opcjonalny tryb Turbo dla telefonów sparowanych z Shizuku.</string>
+    <string name="tutorial_start">Zaczynajmy</string>
+
     <string name="onboarding_title">Witaj</string>
     <string name="onboarding_subtitle">FreeAndroidDoctor czyści i dba o telefon bez roota. Część funkcji wymaga specjalnego dostępu.</string>
     <string name="perm_usage_access">Dostęp do statystyk użycia</string>

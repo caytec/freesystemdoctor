@@ -124,12 +124,14 @@ fun ProScreen(
         }
 
         if (isPro) {
-            Text(
-                stringResource(R.string.pro_thanks),
-                color = MaterialTheme.colorScheme.secondary,
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(top = 8.dp),
-            )
+            Appear {
+                Text(
+                    stringResource(R.string.pro_thanks),
+                    color = MaterialTheme.colorScheme.secondary,
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(top = 8.dp),
+                )
+            }
         } else {
             products.forEach { product ->
                 Appear {
@@ -192,11 +194,13 @@ fun ProScreen(
                 )
             }
             if (trialGranted || trialActive) {
-                Text(
-                    stringResource(R.string.pro_trial_active),
-                    color = MaterialTheme.colorScheme.secondary,
-                    style = MaterialTheme.typography.bodyMedium,
-                )
+                Appear {
+                    Text(
+                        stringResource(R.string.pro_trial_active),
+                        color = MaterialTheme.colorScheme.secondary,
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                }
             }
 
             // Legacy 24h global unlock — grandfathered, hidden when trial available.
@@ -207,11 +211,13 @@ fun ProScreen(
                 )
             }
             if (rewardGranted) {
-                Text(
-                    stringResource(R.string.pro_unlock_ad_done),
-                    color = MaterialTheme.colorScheme.secondary,
-                    style = MaterialTheme.typography.bodyMedium,
-                )
+                Appear {
+                    Text(
+                        stringResource(R.string.pro_unlock_ad_done),
+                        color = MaterialTheme.colorScheme.secondary,
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                }
             }
         }
     }

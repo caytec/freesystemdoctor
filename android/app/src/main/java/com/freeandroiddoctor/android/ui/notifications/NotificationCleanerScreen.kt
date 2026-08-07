@@ -9,7 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -33,6 +33,7 @@ import com.freeandroiddoctor.android.R
 import com.freeandroiddoctor.android.service.ActiveNotification
 import com.freeandroiddoctor.android.service.FsdNotificationListener
 
+import com.freeandroiddoctor.android.ui.components.Appear
 import com.freeandroiddoctor.android.ui.components.PermissionGate
 
 @Composable
@@ -86,37 +87,39 @@ fun NotificationCleanerScreen(modifier: Modifier = Modifier) {
             onRefresh = { refresh() },
         ) {
         LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            items(items, key = { it.key }) { n ->
-                Card(
-                    modifier = Modifier.fillMaxWidth().animateItem(),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceContainer,
-                    ),
-                    shape = MaterialTheme.shapes.small,
-                ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth().padding(horizontal = 14.dp, vertical = 10.dp),
-                        verticalAlignment = Alignment.CenterVertically,
+            itemsIndexed(items, key = { _, n -> n.key }) { index, n ->
+                Appear(index = index) {
+                    Card(
+                        modifier = Modifier.fillMaxWidth().animateItem(),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                        ),
+                        shape = MaterialTheme.shapes.small,
                     ) {
-                        Column(Modifier.weight(1f)) {
-                            Text(
-                                n.title,
-                                style = MaterialTheme.typography.titleSmall,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                            )
-                            Text(
-                                n.text,
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                maxLines = 2,
-                                overflow = TextOverflow.Ellipsis,
-                            )
+                        Row(
+                            modifier = Modifier.fillMaxWidth().padding(horizontal = 14.dp, vertical = 10.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Column(Modifier.weight(1f)) {
+                                Text(
+                                    n.title,
+                                    style = MaterialTheme.typography.titleSmall,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                )
+                                Text(
+                                    n.text,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    maxLines = 2,
+                                    overflow = TextOverflow.Ellipsis,
+                                )
+                            }
+                            TextButton(onClick = {
+                                FsdNotificationListener.instance?.dismiss(n.key)
+                                refresh()
+                            }) { Text(stringResource(R.string.notif_dismiss)) }
                         }
-                        TextButton(onClick = {
-                            FsdNotificationListener.instance?.dismiss(n.key)
-                            refresh()
-                        }) { Text(stringResource(R.string.notif_dismiss)) }
                     }
                 }
             }

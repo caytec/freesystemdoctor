@@ -1,12 +1,18 @@
 package com.freeandroiddoctor.android.ui.regression
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -25,11 +31,14 @@ import com.freeandroiddoctor.android.R
 import com.freeandroiddoctor.android.core.util.ByteFormatter
 import com.freeandroiddoctor.android.engine.performance.Regression
 import com.freeandroiddoctor.android.engine.performance.RegressionReport
+import com.freeandroiddoctor.android.ui.components.Appear
 import com.freeandroiddoctor.android.ui.components.InfoBanner
 import com.freeandroiddoctor.android.ui.components.ShimmerList
 import com.freeandroiddoctor.android.ui.theme.GoodGreen
 import java.text.DateFormat
 import java.util.Date
+
+private enum class RegressionScreenState { LOADING, GATHERING, CLEAN, CONTENT }
 
 @Composable
 fun RegressionScreen(
@@ -45,66 +54,84 @@ fun RegressionScreen(
     ) {
         item("note") { InfoBanner(stringResource(R.string.regress_note)) }
 
-        val report = state.report
-        when {
-            state.loading || report == null -> item("loading") { ShimmerList(rows = 4) }
+        item("body") {
+            val report = state.report
+            val screenState = when {
+                state.loading || report == null -> RegressionScreenState.LOADING
+                report.state == RegressionReport.State.GATHERING -> RegressionScreenState.GATHERING
+                report.regressions.isEmpty() -> RegressionScreenState.CLEAN
+                else -> RegressionScreenState.CONTENT
+            }
+            AnimatedContent(
+                targetState = screenState,
+                transitionSpec = {
+                    slideInVertically(tween(260)) { -it / 2 } + fadeIn(tween(260)) togetherWith
+                        slideOutVertically(tween(180)) { it / 2 } + fadeOut(tween(180))
+                },
+                label = "regressionState",
+            ) { s ->
+                when (s) {
+                    RegressionScreenState.LOADING -> ShimmerList(rows = 4)
 
-            report.state == RegressionReport.State.GATHERING -> item("gathering") {
-                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceContainer,
-                        ),
-                        shape = MaterialTheme.shapes.medium,
-                    ) {
-                        Column(Modifier.padding(16.dp)) {
-                            Text(
-                                stringResource(R.string.regress_gathering_title),
-                                style = MaterialTheme.typography.titleSmall,
-                            )
-                            Text(
-                                stringResource(
-                                    R.string.regress_gathering_body,
-                                    report.snapshotCount,
+                    RegressionScreenState.GATHERING -> {
+                        val r = requireNotNull(state.report)
+                        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                            Card(
+                                modifier = Modifier.fillMaxWidth(),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = MaterialTheme.colorScheme.surfaceContainer,
                                 ),
-                                style = MaterialTheme.typography.bodyMedium,
+                                shape = MaterialTheme.shapes.medium,
+                            ) {
+                                Column(Modifier.padding(16.dp)) {
+                                    Text(
+                                        stringResource(R.string.regress_gathering_title),
+                                        style = MaterialTheme.typography.titleSmall,
+                                    )
+                                    Text(
+                                        stringResource(
+                                            R.string.regress_gathering_body,
+                                            r.snapshotCount,
+                                        ),
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        modifier = Modifier.padding(top = 4.dp),
+                                    )
+                                }
+                            }
+                            OutlinedButton(
+                                onClick = viewModel::sampleNow,
+                                modifier = Modifier.fillMaxWidth(),
+                            ) { Text(stringResource(R.string.regress_sample_now)) }
+                        }
+                    }
+
+                    RegressionScreenState.CLEAN -> {
+                        val r = requireNotNull(state.report)
+                        Text(
+                            stringResource(R.string.regress_none, r.snapshotCount),
+                            color = GoodGreen,
+                            style = MaterialTheme.typography.bodyMedium,
+                        )
+                    }
+
+                    RegressionScreenState.CONTENT -> {
+                        val r = requireNotNull(state.report)
+                        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                            Text(
+                                stringResource(R.string.regress_header, r.regressions.size),
+                                style = MaterialTheme.typography.titleMedium,
+                            )
+                            r.regressions.forEachIndexed { index, reg ->
+                                Appear(index = index) { RegressionCard(reg) }
+                            }
+                            Text(
+                                stringResource(R.string.regress_disclaimer),
+                                style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.padding(top = 4.dp),
                             )
                         }
                     }
-                    OutlinedButton(
-                        onClick = viewModel::sampleNow,
-                        modifier = Modifier.fillMaxWidth(),
-                    ) { Text(stringResource(R.string.regress_sample_now)) }
-                }
-            }
-
-            report.regressions.isEmpty() -> item("clean") {
-                Text(
-                    stringResource(R.string.regress_none, report.snapshotCount),
-                    color = GoodGreen,
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-            }
-
-            else -> {
-                item("header") {
-                    Text(
-                        stringResource(R.string.regress_header, report.regressions.size),
-                        style = MaterialTheme.typography.titleMedium,
-                    )
-                }
-                items(report.regressions, key = { it.packageName }) { r ->
-                    RegressionCard(r, modifier = Modifier.animateItem())
-                }
-                item("disclaimer") {
-                    Text(
-                        stringResource(R.string.regress_disclaimer),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
                 }
             }
         }

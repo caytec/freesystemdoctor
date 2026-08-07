@@ -1,5 +1,12 @@
 package com.freeandroiddoctor.android.ui.system
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -41,12 +48,21 @@ fun ClipboardScreen(modifier: Modifier = Modifier) {
                 Text(stringResource(R.string.clipboard_clear))
             }
         }
-        if (cleared) {
-            Text(
-                stringResource(R.string.clipboard_done),
-                color = MaterialTheme.colorScheme.secondary,
-                style = MaterialTheme.typography.bodyMedium,
-            )
+        AnimatedContent(
+            targetState = cleared,
+            transitionSpec = {
+                slideInVertically(tween(260)) { -it / 2 } + fadeIn(tween(260)) togetherWith
+                    slideOutVertically(tween(180)) { it / 2 } + fadeOut(tween(180))
+            },
+            label = "clipboardCleared",
+        ) { done ->
+            if (done) {
+                Text(
+                    stringResource(R.string.clipboard_done),
+                    color = MaterialTheme.colorScheme.secondary,
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            }
         }
     }
 }

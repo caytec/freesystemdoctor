@@ -58,7 +58,7 @@ fun PhotoReviewScreen(
         modifier = modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        InfoBanner(stringResource(R.string.photoreview_note))
+        Appear { InfoBanner(stringResource(R.string.photoreview_note)) }
 
         Button(onClick = viewModel::scan, enabled = !state.scanning) {
             Text(stringResource(R.string.action_scan))

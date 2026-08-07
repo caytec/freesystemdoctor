@@ -26,6 +26,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.freeandroiddoctor.android.R
 import com.freeandroiddoctor.android.core.util.ByteFormatter
 
+import com.freeandroiddoctor.android.ui.components.Appear
 import com.freeandroiddoctor.android.ui.components.PermissionGate
 
 @Composable
@@ -65,40 +66,42 @@ fun DataUsageScreen(
             onRefresh = { viewModel.load() },
         ) {
         LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            itemsIndexed(state.items, key = { _, item -> item.packageName ?: item.label }) { _, item ->
-                Card(
-                    modifier = Modifier.fillMaxWidth().animateItem(),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceContainer,
-                    ),
-                    shape = MaterialTheme.shapes.small,
-                ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth().padding(horizontal = 14.dp, vertical = 12.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically,
+            itemsIndexed(state.items, key = { _, item -> item.packageName ?: item.label }) { index, item ->
+                Appear(index = index) {
+                    Card(
+                        modifier = Modifier.fillMaxWidth().animateItem(),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                        ),
+                        shape = MaterialTheme.shapes.small,
                     ) {
-                        Column(Modifier.weight(1f)) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth().padding(horizontal = 14.dp, vertical = 12.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Column(Modifier.weight(1f)) {
+                                Text(
+                                    item.label,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                )
+                                Text(
+                                    stringResource(
+                                        R.string.data_usage_breakdown,
+                                        ByteFormatter.format(item.mobileBytes),
+                                        ByteFormatter.format(item.wifiBytes),
+                                    ),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                )
+                            }
                             Text(
-                                item.label,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                            )
-                            Text(
-                                stringResource(
-                                    R.string.data_usage_breakdown,
-                                    ByteFormatter.format(item.mobileBytes),
-                                    ByteFormatter.format(item.wifiBytes),
-                                ),
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                ByteFormatter.format(item.totalBytes),
+                                color = MaterialTheme.colorScheme.primary,
+                                style = MaterialTheme.typography.titleSmall,
                             )
                         }
-                        Text(
-                            ByteFormatter.format(item.totalBytes),
-                            color = MaterialTheme.colorScheme.primary,
-                            style = MaterialTheme.typography.titleSmall,
-                        )
                     }
                 }
             }

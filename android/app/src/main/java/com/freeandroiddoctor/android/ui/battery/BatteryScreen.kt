@@ -91,18 +91,20 @@ fun BatteryScreen(
             }
         }
 
-        InfoBanner(stringResource(R.string.battery_no_wear))
+        Appear(index = 2) { InfoBanner(stringResource(R.string.battery_no_wear)) }
 
-        if (!ignoring.value) {
-            OutlinedButton(onClick = {
-                runCatching { context.startActivity(viewModel.ignoreBatteryIntent()) }
-            }) { Text(stringResource(R.string.tweak_battery)) }
-        } else {
-            Text(
-                stringResource(R.string.battery_opt_ignored),
-                color = MaterialTheme.colorScheme.secondary,
-                style = MaterialTheme.typography.bodyMedium,
-            )
+        Appear(index = 3) {
+            if (!ignoring.value) {
+                OutlinedButton(onClick = {
+                    runCatching { context.startActivity(viewModel.ignoreBatteryIntent()) }
+                }) { Text(stringResource(R.string.tweak_battery)) }
+            } else {
+                Text(
+                    stringResource(R.string.battery_opt_ignored),
+                    color = MaterialTheme.colorScheme.secondary,
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            }
         }
     }
 }

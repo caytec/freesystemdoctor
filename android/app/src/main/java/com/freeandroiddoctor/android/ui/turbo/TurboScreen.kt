@@ -1,5 +1,12 @@
 package com.freeandroiddoctor.android.ui.turbo
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,6 +29,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.freeandroiddoctor.android.R
 import com.freeandroiddoctor.android.core.shizuku.ShizukuManager
+import com.freeandroiddoctor.android.ui.components.Appear
 import com.freeandroiddoctor.android.ui.components.InfoBanner
 import com.freeandroiddoctor.android.ui.components.OnResume
 import com.freeandroiddoctor.android.ui.theme.BadRed
@@ -42,54 +50,69 @@ fun TurboScreen(
     ) {
         InfoBanner(stringResource(R.string.turbo_note))
 
-        when (state.status) {
-            ShizukuManager.Status.Unavailable -> SetupCard(
-                title = stringResource(R.string.turbo_unavailable_title),
-                body = stringResource(R.string.turbo_unavailable_body),
-            )
-
-            ShizukuManager.Status.Denied -> {
-                SetupCard(
-                    title = stringResource(R.string.turbo_denied_title),
-                    body = stringResource(R.string.turbo_denied_body),
-                )
-                Button(
-                    onClick = viewModel::requestPermission,
-                    modifier = Modifier.fillMaxWidth(),
-                ) { Text(stringResource(R.string.turbo_grant)) }
-            }
-
-            ShizukuManager.Status.Granted -> {
-                ActionCard(
-                    title = stringResource(R.string.turbo_trim_title),
-                    body = stringResource(R.string.turbo_trim_body),
-                    button = stringResource(R.string.turbo_trim_action),
-                    enabled = state.running == null,
-                    onClick = { viewModel.run(TurboAction.TRIM_CACHES) },
-                )
-                ActionCard(
-                    title = stringResource(R.string.turbo_anim_title),
-                    body = stringResource(R.string.turbo_anim_body),
-                    button = stringResource(R.string.turbo_anim_action),
-                    enabled = state.running == null,
-                    onClick = { viewModel.run(TurboAction.FAST_ANIMATIONS) },
-                    // Every privileged change must be reversible, and visibly so.
-                    revertLabel = stringResource(R.string.turbo_anim_revert),
-                    onRevert = { viewModel.run(TurboAction.NORMAL_ANIMATIONS) },
+        AnimatedContent(
+            targetState = state.status,
+            transitionSpec = {
+                slideInVertically(tween(260)) { -it / 2 } + fadeIn(tween(260)) togetherWith
+                    slideOutVertically(tween(180)) { it / 2 } + fadeOut(tween(180))
+            },
+            label = "turboStatus",
+        ) { status ->
+            when (status) {
+                ShizukuManager.Status.Unavailable -> SetupCard(
+                    title = stringResource(R.string.turbo_unavailable_title),
+                    body = stringResource(R.string.turbo_unavailable_body),
                 )
 
-                state.lastSucceeded?.let { ok ->
-                    Text(
-                        if (ok) {
-                            stringResource(R.string.turbo_done)
-                        } else {
-                            state.lastMessage?.let {
-                                stringResource(R.string.turbo_failed_detail, it)
-                            } ?: stringResource(R.string.turbo_failed)
-                        },
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = if (ok) GoodGreen else BadRed,
+                ShizukuManager.Status.Denied -> Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    SetupCard(
+                        title = stringResource(R.string.turbo_denied_title),
+                        body = stringResource(R.string.turbo_denied_body),
                     )
+                    Button(
+                        onClick = viewModel::requestPermission,
+                        modifier = Modifier.fillMaxWidth(),
+                    ) { Text(stringResource(R.string.turbo_grant)) }
+                }
+
+                ShizukuManager.Status.Granted -> Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Appear(index = 0) {
+                        ActionCard(
+                            title = stringResource(R.string.turbo_trim_title),
+                            body = stringResource(R.string.turbo_trim_body),
+                            button = stringResource(R.string.turbo_trim_action),
+                            enabled = state.running == null,
+                            onClick = { viewModel.run(TurboAction.TRIM_CACHES) },
+                        )
+                    }
+                    Appear(index = 1) {
+                        ActionCard(
+                            title = stringResource(R.string.turbo_anim_title),
+                            body = stringResource(R.string.turbo_anim_body),
+                            button = stringResource(R.string.turbo_anim_action),
+                            enabled = state.running == null,
+                            onClick = { viewModel.run(TurboAction.FAST_ANIMATIONS) },
+                            // Every privileged change must be reversible, and visibly so.
+                            revertLabel = stringResource(R.string.turbo_anim_revert),
+                            onRevert = { viewModel.run(TurboAction.NORMAL_ANIMATIONS) },
+                        )
+                    }
+
+                    state.lastSucceeded?.let { ok ->
+                        Appear {
+                            Text(
+                                if (ok) {
+                                    stringResource(R.string.turbo_done)
+                                } else {
+                                    state.lastMessage?.let {
+                                        stringResource(R.string.turbo_failed_detail, it)
+                                    } ?: stringResource(R.string.turbo_failed)
+                                },
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = if (ok) GoodGreen else BadRed,
+                            )
+                        }
+                    }
                 }
             }
         }

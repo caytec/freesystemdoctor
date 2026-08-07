@@ -35,6 +35,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.freeandroiddoctor.android.R
 
+import com.freeandroiddoctor.android.ui.components.Appear
 import com.freeandroiddoctor.android.ui.components.PermissionGate
 import com.freeandroiddoctor.android.ui.components.UninstallPreviewSheet
 import java.text.DateFormat
@@ -89,50 +90,52 @@ fun RarelyUsedScreen(
         )
 
         LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            itemsIndexed(state.apps, key = { _, app -> app.packageName }) { _, app ->
-                Card(
-                    modifier = Modifier.fillMaxWidth().animateItem(),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceContainer,
-                    ),
-                    shape = MaterialTheme.shapes.small,
-                ) {
-                    Column(Modifier.padding(12.dp)) {
-                        Text(
-                            app.label,
-                            style = MaterialTheme.typography.titleSmall,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                        )
-                        Text(
-                            if (app.neverUsed) {
-                                stringResource(R.string.rarely_used_never)
-                            } else {
-                                stringResource(
-                                    R.string.rarely_used_last,
-                                    DateFormat.getDateInstance().format(Date(app.lastUsed)),
-                                )
-                            },
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                        FlowRow(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(4.dp),
-                            verticalArrangement = Arrangement.spacedBy(4.dp),
-                        ) {
-                            TextButton(onClick = {
-                                context.startActivity(viewModel.appDetailsIntent(app.packageName))
-                            }) { Text(stringResource(R.string.apps_details)) }
-                            TextButton(onClick = { forceStop(context, app.packageName) }) {
-                                Text(stringResource(R.string.rarely_used_force_stop))
+            itemsIndexed(state.apps, key = { _, app -> app.packageName }) { index, app ->
+                Appear(index = index) {
+                    Card(
+                        modifier = Modifier.fillMaxWidth().animateItem(),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                        ),
+                        shape = MaterialTheme.shapes.small,
+                    ) {
+                        Column(Modifier.padding(12.dp)) {
+                            Text(
+                                app.label,
+                                style = MaterialTheme.typography.titleSmall,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                            )
+                            Text(
+                                if (app.neverUsed) {
+                                    stringResource(R.string.rarely_used_never)
+                                } else {
+                                    stringResource(
+                                        R.string.rarely_used_last,
+                                        DateFormat.getDateInstance().format(Date(app.lastUsed)),
+                                    )
+                                },
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                            FlowRow(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                                verticalArrangement = Arrangement.spacedBy(4.dp),
+                            ) {
+                                TextButton(onClick = {
+                                    context.startActivity(viewModel.appDetailsIntent(app.packageName))
+                                }) { Text(stringResource(R.string.apps_details)) }
+                                TextButton(onClick = { forceStop(context, app.packageName) }) {
+                                    Text(stringResource(R.string.rarely_used_force_stop))
+                                }
+                                TextButton(onClick = { openAppDetails(context, app.packageName) }) {
+                                    Text(stringResource(R.string.rarely_used_restrict_bg))
+                                }
+                                OutlinedButton(onClick = {
+                                    previewSheet.requestUninstall(app.packageName)
+                                }) { Text(stringResource(R.string.apps_uninstall)) }
                             }
-                            TextButton(onClick = { openAppDetails(context, app.packageName) }) {
-                                Text(stringResource(R.string.rarely_used_restrict_bg))
-                            }
-                            OutlinedButton(onClick = {
-                                previewSheet.requestUninstall(app.packageName)
-                            }) { Text(stringResource(R.string.apps_uninstall)) }
                         }
                     }
                 }

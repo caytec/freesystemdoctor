@@ -1,6 +1,13 @@
 package com.freeandroiddoctor.android.ui.storage
 
 import android.content.Context
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -63,52 +70,63 @@ fun StorageScreen(
             }
         }
 
-        if (!state.hasUsageAccess) {
-            Appear(index = 1) {
-                PermissionGate(
-                    message = stringResource(R.string.storage_need_usage_access),
-                    actionLabel = stringResource(R.string.perm_grant),
-                    onAction = { openUsageAccess(context) },
-                )
-            }
-        } else {
-            SectionHeader(stringResource(R.string.storage_breakdown))
-            if (state.apps.isEmpty()) {
-                com.freeandroiddoctor.android.ui.components.ShimmerList(rows = 6)
-            }
-            com.freeandroiddoctor.android.ui.components.Refreshable(
-                isRefreshing = false,
-                onRefresh = { viewModel.load() },
-            ) {
-            LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                itemsIndexed(state.apps, key = { _, app -> app.packageName }) { _, app ->
-                    Card(
-                        modifier = Modifier.fillMaxWidth().animateItem(),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceContainer,
-                        ),
-                        shape = MaterialTheme.shapes.small,
+        AnimatedContent(
+            targetState = state.hasUsageAccess,
+            transitionSpec = {
+                slideInVertically(tween(260)) { -it / 2 } + fadeIn(tween(260)) togetherWith
+                    slideOutVertically(tween(180)) { it / 2 } + fadeOut(tween(180))
+            },
+            label = "storageAccessState",
+        ) { hasAccess ->
+            if (!hasAccess) {
+                Appear(index = 1) {
+                    PermissionGate(
+                        message = stringResource(R.string.storage_need_usage_access),
+                        actionLabel = stringResource(R.string.perm_grant),
+                        onAction = { openUsageAccess(context) },
+                    )
+                }
+            } else {
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    SectionHeader(stringResource(R.string.storage_breakdown))
+                    if (state.apps.isEmpty()) {
+                        com.freeandroiddoctor.android.ui.components.ShimmerList(rows = 6)
+                    }
+                    com.freeandroiddoctor.android.ui.components.Refreshable(
+                        isRefreshing = false,
+                        onRefresh = { viewModel.load() },
                     ) {
-                        Column(Modifier.padding(12.dp)) {
-                            Text(app.label, style = MaterialTheme.typography.titleMedium)
-                            Text(
-                                ByteFormatter.format(app.totalBytes),
-                                color = MaterialTheme.colorScheme.primary,
-                            )
-                            Text(
-                                stringResource(
-                                    R.string.storage_app_size,
-                                    ByteFormatter.format(app.appBytes),
-                                    ByteFormatter.format(app.dataBytes),
-                                    ByteFormatter.format(app.cacheBytes),
-                                ),
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            )
+                        LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                            itemsIndexed(state.apps, key = { _, app -> app.packageName }) { _, app ->
+                                Card(
+                                    modifier = Modifier.fillMaxWidth().animateItem(),
+                                    colors = CardDefaults.cardColors(
+                                        containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                                    ),
+                                    shape = MaterialTheme.shapes.small,
+                                ) {
+                                    Column(Modifier.padding(12.dp)) {
+                                        Text(app.label, style = MaterialTheme.typography.titleMedium)
+                                        Text(
+                                            ByteFormatter.format(app.totalBytes),
+                                            color = MaterialTheme.colorScheme.primary,
+                                        )
+                                        Text(
+                                            stringResource(
+                                                R.string.storage_app_size,
+                                                ByteFormatter.format(app.appBytes),
+                                                ByteFormatter.format(app.dataBytes),
+                                                ByteFormatter.format(app.cacheBytes),
+                                            ),
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        )
+                                    }
+                                }
+                            }
                         }
                     }
                 }
-            }
             }
         }
     }

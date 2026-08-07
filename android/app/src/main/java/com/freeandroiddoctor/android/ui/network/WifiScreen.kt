@@ -28,6 +28,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.freeandroiddoctor.android.R
 
+import com.freeandroiddoctor.android.ui.components.Appear
 import com.freeandroiddoctor.android.ui.components.PermissionGate
 
 @Composable
@@ -61,36 +62,38 @@ fun WifiScreen(
 
         LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             itemsIndexed(state.networks, key = { _, net -> net.ssid }) { index, net ->
-                Card(
-                    modifier = Modifier.fillMaxWidth().animateItem(),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceContainer,
-                    ),
-                    shape = MaterialTheme.shapes.small,
-                ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth().padding(horizontal = 14.dp, vertical = 12.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically,
+                Appear(index = index) {
+                    Card(
+                        modifier = Modifier.fillMaxWidth().animateItem(),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                        ),
+                        shape = MaterialTheme.shapes.small,
                     ) {
-                        Column(Modifier.weight(1f)) {
-                            Text(
-                                net.ssid,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                            )
-                            Text(
-                                stringResource(
-                                    R.string.wifi_detail,
-                                    net.band,
-                                    net.channel,
-                                    if (net.secured) "🔒" else "open",
-                                ),
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            )
+                        Row(
+                            modifier = Modifier.fillMaxWidth().padding(horizontal = 14.dp, vertical = 12.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Column(Modifier.weight(1f)) {
+                                Text(
+                                    net.ssid,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                )
+                                Text(
+                                    stringResource(
+                                        R.string.wifi_detail,
+                                        net.band,
+                                        net.channel,
+                                        if (net.secured) "🔒" else "open",
+                                    ),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                )
+                            }
+                            SignalBars(level = net.signalLevel, animated = index == 0)
                         }
-                        SignalBars(level = net.signalLevel, animated = index == 0)
                     }
                 }
             }

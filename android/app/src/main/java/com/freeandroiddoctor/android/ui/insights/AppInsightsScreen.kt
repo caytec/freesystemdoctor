@@ -10,7 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.freeandroiddoctor.android.R
+import com.freeandroiddoctor.android.ui.components.Appear
 import com.freeandroiddoctor.android.ui.components.InfoBanner
 import com.freeandroiddoctor.android.ui.components.PermissionGate
 import com.freeandroiddoctor.android.ui.components.SectionHeader
@@ -100,43 +101,48 @@ fun AppInsightsScreen(
                 item("recent-header") {
                     SectionHeader(stringResource(R.string.app_insights_recent))
                 }
-                items(report.recentlyInstalled, key = { "rec_" + it.packageName + it.timestamp }) { ev ->
-                    Card(
-                        modifier = Modifier.fillMaxWidth().animateItem(),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceContainer,
-                        ),
-                        shape = MaterialTheme.shapes.small,
-                    ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth()
-                                .padding(horizontal = 12.dp, vertical = 8.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween,
+                itemsIndexed(
+                    report.recentlyInstalled,
+                    key = { _, it -> "rec_" + it.packageName + it.timestamp },
+                ) { index, ev ->
+                    Appear(index = index) {
+                        Card(
+                            modifier = Modifier.fillMaxWidth().animateItem(),
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                            ),
+                            shape = MaterialTheme.shapes.small,
                         ) {
-                            Column(Modifier.weight(1f)) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth()
+                                    .padding(horizontal = 12.dp, vertical = 8.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                            ) {
+                                Column(Modifier.weight(1f)) {
+                                    Text(
+                                        ev.label,
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis,
+                                    )
+                                    Text(
+                                        if (ev.isInstall) {
+                                            stringResource(R.string.app_insights_installed)
+                                        } else {
+                                            stringResource(R.string.app_insights_updated)
+                                        },
+                                        style = MaterialTheme.typography.labelSmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    )
+                                }
                                 Text(
-                                    ev.label,
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                )
-                                Text(
-                                    if (ev.isInstall) {
-                                        stringResource(R.string.app_insights_installed)
-                                    } else {
-                                        stringResource(R.string.app_insights_updated)
-                                    },
-                                    style = MaterialTheme.typography.labelSmall,
+                                    DateFormat.getDateInstance(DateFormat.SHORT)
+                                        .format(Date(ev.timestamp)),
+                                    style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 )
                             }
-                            Text(
-                                DateFormat.getDateInstance(DateFormat.SHORT)
-                                    .format(Date(ev.timestamp)),
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            )
                         }
                     }
                 }
@@ -145,26 +151,28 @@ fun AppInsightsScreen(
                     item("hidden-header") {
                         SectionHeader(stringResource(R.string.app_insights_hidden))
                     }
-                    items(report.hiddenApps, key = { "hid_" + it.packageName }) { hidden ->
-                        Card(
-                            modifier = Modifier.fillMaxWidth().animateItem(),
-                            colors = CardDefaults.cardColors(
-                                containerColor = MaterialTheme.colorScheme.surfaceContainer,
-                            ),
-                            shape = MaterialTheme.shapes.small,
-                        ) {
-                            Column(Modifier.padding(horizontal = 12.dp, vertical = 8.dp)) {
-                                Text(
-                                    hidden.label,
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                )
-                                Text(
-                                    hidden.packageName,
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                )
+                    itemsIndexed(report.hiddenApps, key = { _, hidden -> "hid_" + hidden.packageName }) { index, hidden ->
+                        Appear(index = index) {
+                            Card(
+                                modifier = Modifier.fillMaxWidth().animateItem(),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                                ),
+                                shape = MaterialTheme.shapes.small,
+                            ) {
+                                Column(Modifier.padding(horizontal = 12.dp, vertical = 8.dp)) {
+                                    Text(
+                                        hidden.label,
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis,
+                                    )
+                                    Text(
+                                        hidden.packageName,
+                                        style = MaterialTheme.typography.labelSmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    )
+                                }
                             }
                         }
                     }

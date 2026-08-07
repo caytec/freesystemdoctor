@@ -151,34 +151,36 @@ fun CleaningHistoryScreen(viewModel: CleaningHistoryViewModel = viewModel()) {
         val records = ui.summary?.records.orEmpty()
         val dateFmt = remember { SimpleDateFormat("MMM d, HH:mm", Locale.getDefault()) }
         val visible = if (isPro) records else records.take(5)
-        visible.forEach { rec ->
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceContainer,
-                ),
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth().padding(12.dp),
-                    verticalAlignment = Alignment.CenterVertically,
+        visible.forEachIndexed { index, rec ->
+            Appear(index = index) {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                    ),
                 ) {
-                    Column(Modifier.weight(1f)) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(12.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Column(Modifier.weight(1f)) {
+                            Text(
+                                dateFmt.format(Date(rec.timestamp)),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                            Text(
+                                rec.source.replace('_', ' ').lowercase(Locale.getDefault())
+                                    .replaceFirstChar { it.uppercase() },
+                                style = MaterialTheme.typography.bodyMedium,
+                            )
+                        }
                         Text(
-                            dateFmt.format(Date(rec.timestamp)),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                        Text(
-                            rec.source.replace('_', ' ').lowercase(Locale.getDefault())
-                                .replaceFirstChar { it.uppercase() },
-                            style = MaterialTheme.typography.bodyMedium,
+                            ByteFormatter.format(rec.bytesFreed),
+                            style = MaterialTheme.typography.titleSmall,
+                            color = MaterialTheme.colorScheme.primary,
                         )
                     }
-                    Text(
-                        ByteFormatter.format(rec.bytesFreed),
-                        style = MaterialTheme.typography.titleSmall,
-                        color = MaterialTheme.colorScheme.primary,
-                    )
                 }
             }
         }

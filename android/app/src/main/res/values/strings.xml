@@ -149,6 +149,19 @@
     <string name="settings_privacy_policy">Privacy policy</string>
     <string name="settings_version">Version</string>
 
+    <!-- First-run tutorial (shown once, before the permissions screen) -->
+    <string name="tutorial_welcome_title">Welcome to FreeAndroidDoctor</string>
+    <string name="tutorial_welcome_body">A quick, 5-step tour of how the app is laid out — no permissions needed for this part.</string>
+    <string name="tutorial_tabs_title">Five tabs, five jobs</string>
+    <string name="tutorial_tabs_body">The bottom bar is your map. Here\'s what each tab does.</string>
+    <string name="tutorial_quick_clean_title">Clean in one tap</string>
+    <string name="tutorial_quick_clean_body">Add the Quick Settings tile or the home-screen widget to clean cache without opening the app.</string>
+    <string name="tutorial_privacy_title">Your private stuff, actually private</string>
+    <string name="tutorial_privacy_body">Vault hides files behind biometrics, App Lock guards chosen apps, and Modes bundle both for situations like work or sleep.</string>
+    <string name="tutorial_turbo_title">Performance, honestly</string>
+    <string name="tutorial_turbo_body">Tools tab has real bottleneck diagnosis, and an optional Turbo mode for phones paired with Shizuku.</string>
+    <string name="tutorial_start">Let\'s go</string>
+
     <!-- Permissions / onboarding -->
     <string name="onboarding_title">Welcome</string>
     <string name="onboarding_subtitle">FreeAndroidDoctor cleans and maintains your phone without root. Some features need special access.</string>

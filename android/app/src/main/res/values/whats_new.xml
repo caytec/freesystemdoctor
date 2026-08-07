@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="whats_new_title">What\'s new in 2.1</string>
+    <string name="whats_new_title">What\'s new in 2.2</string>
     <string name="whats_new_dismiss">Got it</string>
     <string-array name="whats_new_items">
-        <item>NEW: Performance — finds what genuinely slows the device: thermal throttling, storage pressure, background talkers, poor deep sleep</item>
-        <item>NEW: What slowed my phone? — keeps a daily health record and shows which app install lines up with things getting worse</item>
-        <item>NEW: Turbo (Shizuku, optional) — trim every app\'s cache and halve animation speed, with a one-tap revert</item>
-        <item>Reclaim other apps\' caches without Shizuku, straight through the platform</item>
-        <item>HONEST FIX: Android 14 blocks any app from clearing another app\'s processes. Our "free RAM" button was doing nothing on modern phones, so it now explains that instead of showing a made-up number</item>
-        <item>Game Boost now reports what actually happened (Do Not Disturb, cache) and no longer runs twice per tap</item>
-        <item>Modes now really apply notification snoozing and app locking instead of only listing them</item>
+        <item>NEW: A short first-run walkthrough shows how the app is laid out — no permission prompts, just the tour</item>
+        <item>Smoother throughout: staggered card entrances, tactile press feedback, and animated loading-to-content transitions across the whole toolset</item>
+        <item>A livelier bottom bar — the selected tab now eases into place instead of snapping</item>
+        <item>A softer handoff from the launch splash screen into the app</item>
+        <item>Fixed a formatting bug where long button labels (like "Uninstall") could break into single characters on narrow cards</item>
     </string-array>
 </resources>

@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -27,6 +27,7 @@ import com.freeandroiddoctor.android.R
 import com.freeandroiddoctor.android.core.util.ByteFormatter
 import com.freeandroiddoctor.android.engine.forecast.AppGrowth
 import com.freeandroiddoctor.android.engine.forecast.GrowthReport
+import com.freeandroiddoctor.android.ui.components.Appear
 import com.freeandroiddoctor.android.ui.components.InfoBanner
 import com.freeandroiddoctor.android.ui.components.ShimmerList
 
@@ -91,8 +92,10 @@ fun AppGrowthScreen(
                         style = MaterialTheme.typography.titleMedium,
                     )
                 }
-                items(report.growth, key = { it.packageName }) { g ->
-                    GrowthCard(g, modifier = Modifier.animateItem())
+                itemsIndexed(report.growth, key = { _, g -> g.packageName }) { index, g ->
+                    Appear(index = index) {
+                        GrowthCard(g, modifier = Modifier.animateItem())
+                    }
                 }
             }
         }

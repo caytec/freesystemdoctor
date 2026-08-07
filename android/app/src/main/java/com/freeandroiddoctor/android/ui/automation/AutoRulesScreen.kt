@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AssistChip
@@ -29,6 +29,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.freeandroiddoctor.android.R
 import com.freeandroiddoctor.android.data.automation.AutoRule
 import com.freeandroiddoctor.android.data.automation.AutoRuleTrigger
+import com.freeandroiddoctor.android.ui.components.Appear
 import com.freeandroiddoctor.android.ui.components.SectionHeader
 
 @Composable
@@ -49,33 +50,37 @@ fun AutoRulesScreen(viewModel: AutoRulesViewModel = viewModel()) {
                 )
             }
         }
-        items(rules, key = { it.id }) { rule ->
-            RuleRow(rule, viewModel, modifier = Modifier.animateItem())
+        itemsIndexed(rules, key = { _, rule -> rule.id }) { index, rule ->
+            Appear(index = index) {
+                RuleRow(rule, viewModel, modifier = Modifier.animateItem())
+            }
         }
 
         item { SectionHeader(stringResource(R.string.auto_rules_add)) }
-        items(AutoRuleTrigger.values().toList(), key = { "preset_$it" }) { trigger ->
-            Card(
-                modifier = Modifier.fillMaxWidth().animateItem(),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
-                shape = MaterialTheme.shapes.medium,
-            ) {
-                Row(
-                    modifier = Modifier.padding(14.dp),
-                    verticalAlignment = Alignment.CenterVertically,
+        itemsIndexed(AutoRuleTrigger.values().toList(), key = { _, trigger -> "preset_$trigger" }) { index, trigger ->
+            Appear(index = index) {
+                Card(
+                    modifier = Modifier.fillMaxWidth().animateItem(),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+                    shape = MaterialTheme.shapes.medium,
                 ) {
-                    Column(Modifier.weight(1f)) {
-                        Text(text = trigger.localize(), style = MaterialTheme.typography.titleSmall)
-                        Text(
-                            text = trigger.localizeDescription(),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    Row(
+                        modifier = Modifier.padding(14.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Column(Modifier.weight(1f)) {
+                            Text(text = trigger.localize(), style = MaterialTheme.typography.titleSmall)
+                            Text(
+                                text = trigger.localizeDescription(),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                        AssistChip(
+                            onClick = { viewModel.addPreset(trigger) },
+                            label = { Text(stringResource(R.string.action_add)) },
                         )
                     }
-                    AssistChip(
-                        onClick = { viewModel.addPreset(trigger) },
-                        label = { Text(stringResource(R.string.action_add)) },
-                    )
                 }
             }
         }

@@ -3,6 +3,13 @@ package com.freeandroiddoctor.android.ui.notifications.stats
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,7 +17,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -30,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import com.freeandroiddoctor.android.R
 import com.freeandroiddoctor.android.core.di.ServiceLocator
 import com.freeandroiddoctor.android.engine.notifications.AppNotifCount
+import com.freeandroiddoctor.android.ui.components.Appear
 import com.freeandroiddoctor.android.ui.components.InfoBanner
 
 @Composable
@@ -45,54 +53,70 @@ fun NotificationStatsScreen(modifier: Modifier = Modifier) {
     ) {
         InfoBanner(stringResource(R.string.notification_stats_note))
         val current = rows
-        when {
-            current == null -> com.freeandroiddoctor.android.ui.components.ShimmerList(rows = 5)
-            current.isEmpty() -> Text(
-                stringResource(R.string.notification_stats_empty),
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            else -> {
-                LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    items(current, key = { it.packageName }) { row ->
-                        val label = row.label
-                        Card(
-                        modifier = Modifier.fillMaxWidth().animateItem(),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceContainer,
-                        ),
-                        shape = MaterialTheme.shapes.medium,
-                    ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth().padding(14.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                        ) {
-                            Column(Modifier.weight(1f)) {
-                                Text(label, style = MaterialTheme.typography.titleSmall)
-                                Text(
-                                    stringResource(R.string.notification_stats_count, row.count),
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                )
-                            }
-                            OutlinedButton(onClick = {
-                                val intent = Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
-                                    putExtra(Settings.EXTRA_APP_PACKAGE, row.packageName)
-                                    flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                                }
-                                runCatching { context.startActivity(intent) }
-                                    .onFailure {
-                                        val fallback = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-                                            data = Uri.parse("package:${row.packageName}")
-                                            flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        val stateKey = when {
+            current == null -> "loading"
+            current.isEmpty() -> "empty"
+            else -> "content"
+        }
+        AnimatedContent(
+            targetState = stateKey,
+            transitionSpec = {
+                slideInVertically(tween(260)) { -it / 2 } + fadeIn(tween(260)) togetherWith
+                    slideOutVertically(tween(180)) { it / 2 } + fadeOut(tween(180))
+            },
+            label = "notificationStatsState",
+        ) { key ->
+            when (key) {
+                "loading" -> com.freeandroiddoctor.android.ui.components.ShimmerList(rows = 5)
+                "empty" -> Text(
+                    stringResource(R.string.notification_stats_empty),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                else -> {
+                    LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        itemsIndexed(current.orEmpty(), key = { _, row -> row.packageName }) { index, row ->
+                            val label = row.label
+                            Appear(index = index) {
+                                Card(
+                                    modifier = Modifier.fillMaxWidth().animateItem(),
+                                    colors = CardDefaults.cardColors(
+                                        containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                                    ),
+                                    shape = MaterialTheme.shapes.medium,
+                                ) {
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth().padding(14.dp),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                    ) {
+                                        Column(Modifier.weight(1f)) {
+                                            Text(label, style = MaterialTheme.typography.titleSmall)
+                                            Text(
+                                                stringResource(R.string.notification_stats_count, row.count),
+                                                style = MaterialTheme.typography.bodySmall,
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                            )
                                         }
-                                        context.startActivity(fallback)
+                                        OutlinedButton(onClick = {
+                                            val intent = Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
+                                                putExtra(Settings.EXTRA_APP_PACKAGE, row.packageName)
+                                                flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                                            }
+                                            runCatching { context.startActivity(intent) }
+                                                .onFailure {
+                                                    val fallback = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                                                        data = Uri.parse("package:${row.packageName}")
+                                                        flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                                                    }
+                                                    context.startActivity(fallback)
+                                                }
+                                        }) {
+                                            Text(stringResource(R.string.notification_stats_silence))
+                                        }
                                     }
-                            }) {
-                                Text(stringResource(R.string.notification_stats_silence))
+                                }
                             }
                         }
-                    }
                     }
                 }
             }

@@ -106,30 +106,32 @@ fun MetadataScreen(
                     color = MaterialTheme.colorScheme.error,
                 )
             }
-            state.outcomes.filter { it.success }.take(50).forEach { o ->
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceContainer,
-                    ),
-                    shape = MaterialTheme.shapes.small,
-                ) {
-                    Column(Modifier.padding(horizontal = 12.dp, vertical = 8.dp)) {
-                        Text(
-                            o.originalName,
-                            style = MaterialTheme.typography.bodyMedium,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                        )
-                        Text(
-                            if (o.hadLocation) {
-                                stringResource(R.string.metadata_removed_location)
-                            } else {
-                                stringResource(R.string.metadata_removed_meta)
-                            },
-                            style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.secondary,
-                        )
+            state.outcomes.filter { it.success }.take(50).forEachIndexed { index, o ->
+                Appear(index = index) {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                        ),
+                        shape = MaterialTheme.shapes.small,
+                    ) {
+                        Column(Modifier.padding(horizontal = 12.dp, vertical = 8.dp)) {
+                            Text(
+                                o.originalName,
+                                style = MaterialTheme.typography.bodyMedium,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                            )
+                            Text(
+                                if (o.hadLocation) {
+                                    stringResource(R.string.metadata_removed_location)
+                                } else {
+                                    stringResource(R.string.metadata_removed_meta)
+                                },
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.secondary,
+                            )
+                        }
                     }
                 }
             }

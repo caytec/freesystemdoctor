@@ -29,6 +29,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.freeandroiddoctor.android.R
 import com.freeandroiddoctor.android.core.util.ByteFormatter
 import com.freeandroiddoctor.android.engine.privacy.ApkInspection
+import com.freeandroiddoctor.android.ui.components.Appear
 import com.freeandroiddoctor.android.ui.components.InfoBanner
 import com.freeandroiddoctor.android.ui.components.StatCard
 
@@ -47,7 +48,7 @@ fun ApkInspectScreen(
         modifier = modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        InfoBanner(stringResource(R.string.apkinspect_note))
+        Appear { InfoBanner(stringResource(R.string.apkinspect_note)) }
 
         Button(
             onClick = {
@@ -79,7 +80,7 @@ fun ApkInspectScreen(
             )
         }
 
-        state.inspection?.let { Result(it) }
+        state.inspection?.let { Appear(index = 1) { Result(it) } }
     }
 }
 
@@ -147,12 +148,14 @@ private fun Result(apk: ApkInspection) {
             horizontalArrangement = Arrangement.spacedBy(6.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
-            apk.trackers.forEach { t ->
-                AssistChip(
-                    onClick = {},
-                    enabled = false,
-                    label = { Text(t.name, style = MaterialTheme.typography.labelSmall) },
-                )
+            apk.trackers.forEachIndexed { index, t ->
+                Appear(index = index) {
+                    AssistChip(
+                        onClick = {},
+                        enabled = false,
+                        label = { Text(t.name, style = MaterialTheme.typography.labelSmall) },
+                    )
+                }
             }
         }
     }
@@ -168,12 +171,14 @@ private fun Result(apk: ApkInspection) {
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
     } else {
-        apk.dangerousPermissions.forEach { p ->
-            Text(
-                "• $p",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
+        apk.dangerousPermissions.forEachIndexed { index, p ->
+            Appear(index = index) {
+                Text(
+                    "• $p",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
         }
     }
 }

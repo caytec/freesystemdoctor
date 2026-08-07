@@ -3,6 +3,13 @@ package com.freeandroiddoctor.android.ui.storage.treemap
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import com.freeandroiddoctor.android.R
 import com.freeandroiddoctor.android.core.di.ServiceLocator
 import com.freeandroiddoctor.android.core.util.ByteFormatter
+import com.freeandroiddoctor.android.ui.components.Appear
 import com.freeandroiddoctor.android.ui.components.InfoBanner
 import com.freeandroiddoctor.android.ui.components.ShimmerList
 import kotlinx.coroutines.launch
@@ -68,7 +76,7 @@ fun StorageTreemapScreen(modifier: Modifier = Modifier) {
         modifier = modifier.fillMaxSize().padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        InfoBanner(stringResource(R.string.storage_treemap_note))
+        Appear { InfoBanner(stringResource(R.string.storage_treemap_note)) }
 
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Button(onClick = { pick.launch(null) }) {
@@ -82,35 +90,53 @@ fun StorageTreemapScreen(modifier: Modifier = Modifier) {
         }
 
         val current = stack.lastOrNull()?.first
-        when {
-            loading -> ShimmerList()
-            rootUri == null || current == null -> Text(
-                stringResource(R.string.storage_treemap_grant),
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            current.children.isEmpty() -> Text(
-                "${current.label} · ${ByteFormatter.format(current.sizeBytes)}",
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            else -> {
-                Text(
-                    "${current.label} · ${ByteFormatter.format(current.sizeBytes)}",
-                    style = MaterialTheme.typography.titleSmall,
+        val treemapState = when {
+            loading -> "loading"
+            rootUri == null || current == null -> "grant"
+            current.children.isEmpty() -> "empty"
+            else -> "content"
+        }
+        AnimatedContent(
+            targetState = treemapState,
+            transitionSpec = {
+                slideInVertically(tween(260)) { -it / 2 } + fadeIn(tween(260)) togetherWith
+                    slideOutVertically(tween(180)) { it / 2 } + fadeOut(tween(180))
+            },
+            label = "storageTreemapState",
+        ) { s ->
+            when (s) {
+                "loading" -> ShimmerList()
+                "grant" -> Text(
+                    stringResource(R.string.storage_treemap_grant),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
-                Box(modifier = Modifier.fillMaxWidth().weight(1f, fill = true)) {
-                    SquarifiedTreemap(
-                        root = current,
-                        onTap = { node ->
-                            // Drill in if the tapped node has children.
-                            if (node.children.isNotEmpty()) {
-                                val parentUri = stack.last().second
-                                scope.launch {
-                                    val deeper = ServiceLocator.storageTreemapEngine.expand(parentUri, node)
-                                    stack = stack + (deeper to parentUri)
-                                }
-                            }
-                        },
-                    )
+                "empty" -> Text(
+                    "${current?.label} · ${ByteFormatter.format(current?.sizeBytes ?: 0L)}",
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                else -> {
+                    val node = current!!
+                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Text(
+                            "${node.label} · ${ByteFormatter.format(node.sizeBytes)}",
+                            style = MaterialTheme.typography.titleSmall,
+                        )
+                        Box(modifier = Modifier.fillMaxWidth().weight(1f, fill = true)) {
+                            SquarifiedTreemap(
+                                root = node,
+                                onTap = { tapped ->
+                                    // Drill in if the tapped node has children.
+                                    if (tapped.children.isNotEmpty()) {
+                                        val parentUri = stack.last().second
+                                        scope.launch {
+                                            val deeper = ServiceLocator.storageTreemapEngine.expand(parentUri, tapped)
+                                            stack = stack + (deeper to parentUri)
+                                        }
+                                    }
+                                },
+                            )
+                        }
+                    }
                 }
             }
         }

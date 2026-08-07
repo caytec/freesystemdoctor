@@ -2,6 +2,13 @@ package com.freeandroiddoctor.android.ui.cache
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -65,43 +72,58 @@ fun HiddenCacheScreen(
             )
         }
 
-        when {
-            state.scanning -> ShimmerList()
-            state.treeUri == null -> Text(
-                stringResource(R.string.hidden_cache_grant),
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            state.items.isEmpty() -> Text(
-                stringResource(R.string.empty),
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            else -> LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                items(state.items, key = { it.preset.packageName }) { item ->
-                    Card(
-                        modifier = Modifier.fillMaxWidth().animateItem(),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceContainer,
-                        ),
-                        shape = MaterialTheme.shapes.medium,
-                    ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth().padding(14.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween,
+        val hiddenCacheState = when {
+            state.scanning -> "scanning"
+            state.treeUri == null -> "grant"
+            state.items.isEmpty() -> "empty"
+            else -> "list"
+        }
+        AnimatedContent(
+            targetState = hiddenCacheState,
+            transitionSpec = {
+                slideInVertically(tween(260)) { -it / 2 } + fadeIn(tween(260)) togetherWith
+                    slideOutVertically(tween(180)) { it / 2 } + fadeOut(tween(180))
+            },
+            label = "hiddenCacheState",
+        ) { s ->
+            when (s) {
+                "scanning" -> ShimmerList()
+                "grant" -> Text(
+                    stringResource(R.string.hidden_cache_grant),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                "empty" -> Text(
+                    stringResource(R.string.empty),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                else -> LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    items(state.items, key = { it.preset.packageName }) { item ->
+                        Card(
+                            modifier = Modifier.fillMaxWidth().animateItem(),
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                            ),
+                            shape = MaterialTheme.shapes.medium,
                         ) {
-                            Column(Modifier.weight(1f)) {
-                                Text(
-                                    item.preset.label,
-                                    style = MaterialTheme.typography.titleSmall,
-                                )
-                                Text(
-                                    ByteFormatter.format(item.sizeBytes),
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                )
-                            }
-                            OutlinedButton(onClick = { viewModel.clean(item) }) {
-                                Text(stringResource(R.string.action_delete))
+                            Row(
+                                modifier = Modifier.fillMaxWidth().padding(14.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                            ) {
+                                Column(Modifier.weight(1f)) {
+                                    Text(
+                                        item.preset.label,
+                                        style = MaterialTheme.typography.titleSmall,
+                                    )
+                                    Text(
+                                        ByteFormatter.format(item.sizeBytes),
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    )
+                                }
+                                OutlinedButton(onClick = { viewModel.clean(item) }) {
+                                    Text(stringResource(R.string.action_delete))
+                                }
                             }
                         }
                     }

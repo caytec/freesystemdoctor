@@ -1,5 +1,12 @@
 package com.freeandroiddoctor.android.ui.phonehome
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -56,23 +63,37 @@ fun PhoneHomeScreen(
             return@Column
         }
 
-        when {
-            state.loading -> ShimmerList(rows = 6)
-            state.items.isEmpty() -> Text(
-                stringResource(R.string.phonehome_empty),
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            else -> LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                items(state.items, key = { it.packageName }) { item ->
-                    PhoneHomeCard(
-                        item = item,
-                        onManage = {
-                            runCatching {
-                                context.startActivity(viewModel.appDetailsIntent(item.packageName))
-                            }
-                        },
-                        modifier = Modifier.animateItem(),
-                    )
+        val phase = when {
+            state.loading -> 0
+            state.items.isEmpty() -> 1
+            else -> 2
+        }
+        AnimatedContent(
+            targetState = phase,
+            transitionSpec = {
+                slideInVertically(tween(260)) { -it / 2 } + fadeIn(tween(260)) togetherWith
+                    slideOutVertically(tween(180)) { it / 2 } + fadeOut(tween(180))
+            },
+            label = "phoneHomeState",
+        ) { p ->
+            when (p) {
+                0 -> ShimmerList(rows = 6)
+                1 -> Text(
+                    stringResource(R.string.phonehome_empty),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                else -> LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    items(state.items, key = { it.packageName }) { item ->
+                        PhoneHomeCard(
+                            item = item,
+                            onManage = {
+                                runCatching {
+                                    context.startActivity(viewModel.appDetailsIntent(item.packageName))
+                                }
+                            },
+                            modifier = Modifier.animateItem(),
+                        )
+                    }
                 }
             }
         }

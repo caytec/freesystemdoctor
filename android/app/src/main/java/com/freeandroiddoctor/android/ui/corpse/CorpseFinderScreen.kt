@@ -2,6 +2,13 @@ package com.freeandroiddoctor.android.ui.corpse
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -31,6 +38,7 @@ import com.freeandroiddoctor.android.R
 import com.freeandroiddoctor.android.core.util.ByteFormatter
 import com.freeandroiddoctor.android.engine.corpse.CorpseEntry
 import com.freeandroiddoctor.android.engine.corpse.CorpseRisk
+import com.freeandroiddoctor.android.ui.components.Appear
 import com.freeandroiddoctor.android.ui.components.InfoBanner
 import com.freeandroiddoctor.android.ui.components.ShimmerList
 
@@ -48,7 +56,7 @@ fun CorpseFinderScreen(
         modifier = modifier.fillMaxSize().padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        InfoBanner(stringResource(R.string.corpse_finder_note))
+        Appear { InfoBanner(stringResource(R.string.corpse_finder_note)) }
 
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Button(onClick = { pickRoot.launch(null) }) {
@@ -70,39 +78,54 @@ fun CorpseFinderScreen(
         }
 
         if (state.report.androidDataBlocked) {
-            InfoBanner(stringResource(R.string.corpse_finder_scan_blocked_android_data))
+            Appear(index = 1) { InfoBanner(stringResource(R.string.corpse_finder_scan_blocked_android_data)) }
         }
 
         val entries = state.report.entries
-        when {
-            state.scanning -> ShimmerList()
-            state.rootUri == null -> Text(
-                stringResource(R.string.storage_treemap_grant),
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            entries.isEmpty() -> Text(
-                stringResource(R.string.corpse_finder_empty),
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            else -> {
-                Text(
-                    stringResource(
-                        R.string.corpse_finder_count,
-                        entries.size,
-                        ByteFormatter.format(state.report.totalBytes),
-                    ),
-                    style = MaterialTheme.typography.titleSmall,
+        val corpseState = when {
+            state.scanning -> "scanning"
+            state.rootUri == null -> "grant"
+            entries.isEmpty() -> "empty"
+            else -> "list"
+        }
+        AnimatedContent(
+            targetState = corpseState,
+            transitionSpec = {
+                slideInVertically(tween(260)) { -it / 2 } + fadeIn(tween(260)) togetherWith
+                    slideOutVertically(tween(180)) { it / 2 } + fadeOut(tween(180))
+            },
+            label = "corpseFinderState",
+        ) { s ->
+            when (s) {
+                "scanning" -> ShimmerList()
+                "grant" -> Text(
+                    stringResource(R.string.storage_treemap_grant),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
-                Button(onClick = viewModel::deleteAll) {
-                    Text(stringResource(R.string.corpse_finder_delete_all))
-                }
-                LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    items(entries, key = { it.folderUri.toString() }) { entry ->
-                        CorpseRow(
-                            entry = entry,
-                            onDelete = { viewModel.delete(listOf(entry)) },
-                            modifier = Modifier.animateItem(),
-                        )
+                "empty" -> Text(
+                    stringResource(R.string.corpse_finder_empty),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                else -> Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Text(
+                        stringResource(
+                            R.string.corpse_finder_count,
+                            entries.size,
+                            ByteFormatter.format(state.report.totalBytes),
+                        ),
+                        style = MaterialTheme.typography.titleSmall,
+                    )
+                    Button(onClick = viewModel::deleteAll) {
+                        Text(stringResource(R.string.corpse_finder_delete_all))
+                    }
+                    LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        items(entries, key = { it.folderUri.toString() }) { entry ->
+                            CorpseRow(
+                                entry = entry,
+                                onDelete = { viewModel.delete(listOf(entry)) },
+                                modifier = Modifier.animateItem(),
+                            )
+                        }
                     }
                 }
             }

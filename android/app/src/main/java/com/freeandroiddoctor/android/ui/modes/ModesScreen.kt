@@ -1,5 +1,12 @@
 package com.freeandroiddoctor.android.ui.modes
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -73,43 +80,52 @@ fun ModesScreen(viewModel: ModesViewModel = viewModel()) {
 
 @Composable
 private fun ActiveBanner(activeId: String?, onDeactivate: () -> Unit) {
-    if (activeId == null) {
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
-            shape = MaterialTheme.shapes.medium,
-        ) {
-            Text(
-                text = stringResource(R.string.modes_none_active),
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.padding(16.dp),
-            )
-        }
-    } else {
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.14f),
-            ),
-            shape = MaterialTheme.shapes.medium,
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(16.dp),
-                verticalAlignment = Alignment.CenterVertically,
+    AnimatedContent(
+        targetState = activeId,
+        transitionSpec = {
+            slideInVertically(tween(260)) { -it / 2 } + fadeIn(tween(260)) togetherWith
+                slideOutVertically(tween(180)) { it / 2 } + fadeOut(tween(180))
+        },
+        label = "activeMode",
+    ) { id ->
+        if (id == null) {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+                shape = MaterialTheme.shapes.medium,
             ) {
-                Column(Modifier.weight(1f)) {
-                    Text(
-                        text = stringResource(R.string.modes_active_label),
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                    Text(
-                        text = activeId.localizeMode(),
-                        style = MaterialTheme.typography.titleMedium,
-                    )
-                }
-                OutlinedButton(onClick = onDeactivate) {
-                    Text(stringResource(R.string.modes_deactivate))
+                Text(
+                    text = stringResource(R.string.modes_none_active),
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.padding(16.dp),
+                )
+            }
+        } else {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.14f),
+                ),
+                shape = MaterialTheme.shapes.medium,
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Column(Modifier.weight(1f)) {
+                        Text(
+                            text = stringResource(R.string.modes_active_label),
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                        Text(
+                            text = id.localizeMode(),
+                            style = MaterialTheme.typography.titleMedium,
+                        )
+                    }
+                    OutlinedButton(onClick = onDeactivate) {
+                        Text(stringResource(R.string.modes_deactivate))
+                    }
                 }
             }
         }

@@ -28,6 +28,7 @@ import com.freeandroiddoctor.android.engine.appcleaners.strategies.DiscordCleane
 import com.freeandroiddoctor.android.engine.appcleaners.strategies.TelegramCleaner
 import com.freeandroiddoctor.android.engine.appcleaners.strategies.TikTokCleaner
 import com.freeandroiddoctor.android.engine.appcleaners.strategies.WhatsAppCleaner
+import com.freeandroiddoctor.android.ui.components.Appear
 import com.freeandroiddoctor.android.ui.components.InfoBanner
 import com.freeandroiddoctor.android.ui.components.bounceClick
 import com.freeandroiddoctor.android.ui.navigation.ToolRoutes
@@ -63,23 +64,25 @@ fun AppCleanersHubScreen(onOpen: (String) -> Unit, modifier: Modifier = Modifier
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         InfoBanner(stringResource(R.string.app_cleaners_hub_note))
-        entries.forEach { entry ->
+        entries.forEachIndexed { index, entry ->
             val isInstalled = entry.strategy.packageName in installed
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .bounceClick(enabled = isInstalled) { onOpen(entry.route) },
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
-                shape = MaterialTheme.shapes.medium,
-            ) {
-                Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    Text(stringResource(entry.titleRes), style = MaterialTheme.typography.titleMedium)
-                    Text(
-                        if (isInstalled) entry.strategy.packageName
-                        else stringResource(R.string.app_cleaner_install_required, entry.strategy.packageName),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
+            Appear(index = index) {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .bounceClick(enabled = isInstalled) { onOpen(entry.route) },
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+                    shape = MaterialTheme.shapes.medium,
+                ) {
+                    Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                        Text(stringResource(entry.titleRes), style = MaterialTheme.typography.titleMedium)
+                        Text(
+                            if (isInstalled) entry.strategy.packageName
+                            else stringResource(R.string.app_cleaner_install_required, entry.strategy.packageName),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
                 }
             }
         }

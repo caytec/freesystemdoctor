@@ -87,10 +87,12 @@ fun AssistantScreen(
         }
 
         if (state.analyzing) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                CircularProgressIndicator(modifier = Modifier.size(22.dp))
-                Spacer(Modifier.size(10.dp))
-                Text(stringResource(R.string.assistant_analyzing))
+            Appear {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    CircularProgressIndicator(modifier = Modifier.size(22.dp))
+                    Spacer(Modifier.size(10.dp))
+                    Text(stringResource(R.string.assistant_analyzing))
+                }
             }
         }
 
@@ -106,7 +108,7 @@ fun AssistantScreen(
         }
 
         state.error?.takeIf { it != "missing_key" }?.let { err ->
-            Text(err, color = MaterialTheme.colorScheme.error)
+            Appear { Text(err, color = MaterialTheme.colorScheme.error) }
         }
 
         if (state.limitReached) {
@@ -114,11 +116,13 @@ fun AssistantScreen(
                 InfoBanner(stringResource(R.string.assistant_limit_reached, AssistantViewModel.FREE_DAILY_LIMIT))
             }
         } else if (state.usageToday in 1 until AssistantViewModel.FREE_DAILY_LIMIT) {
-            Text(
-                stringResource(R.string.assistant_usage_today, state.usageToday, AssistantViewModel.FREE_DAILY_LIMIT),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
+            Appear {
+                Text(
+                    stringResource(R.string.assistant_usage_today, state.usageToday, AssistantViewModel.FREE_DAILY_LIMIT),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
         }
     }
 }

@@ -14,7 +14,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
@@ -136,39 +136,41 @@ fun MemoryScreen(
             }
         }
 
-        items(state.largeApps, key = { it.packageName }) { app ->
-            Card(
-                modifier = Modifier.fillMaxWidth().animateItem(),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceContainer,
-                ),
-                shape = MaterialTheme.shapes.medium,
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth().padding(start = 14.dp, end = 4.dp, top = 6.dp, bottom = 6.dp),
-                    verticalAlignment = Alignment.CenterVertically,
+        itemsIndexed(state.largeApps, key = { _, app -> app.packageName }) { index, app ->
+            Appear(index = index) {
+                Card(
+                    modifier = Modifier.fillMaxWidth().animateItem(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                    ),
+                    shape = MaterialTheme.shapes.medium,
                 ) {
-                    Column(modifier = Modifier.weight(1f).padding(vertical = 8.dp)) {
-                        Text(app.label, style = MaterialTheme.typography.titleSmall)
-                        Text(
-                            app.packageName,
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                        if (app.totalBytes > 0) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(start = 14.dp, end = 4.dp, top = 6.dp, bottom = 6.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Column(modifier = Modifier.weight(1f).padding(vertical = 8.dp)) {
+                            Text(app.label, style = MaterialTheme.typography.titleSmall)
                             Text(
-                                ByteFormatter.format(app.totalBytes),
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.primary,
+                                app.packageName,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                            if (app.totalBytes > 0) {
+                                Text(
+                                    ByteFormatter.format(app.totalBytes),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.primary,
+                                )
+                            }
+                        }
+                        IconButton(onClick = { uninstallSheet.requestUninstall(app.packageName) }) {
+                            Icon(
+                                Icons.Filled.Delete,
+                                contentDescription = stringResource(R.string.apps_uninstall),
+                                tint = MaterialTheme.colorScheme.error,
                             )
                         }
-                    }
-                    IconButton(onClick = { uninstallSheet.requestUninstall(app.packageName) }) {
-                        Icon(
-                            Icons.Filled.Delete,
-                            contentDescription = stringResource(R.string.apps_uninstall),
-                            tint = MaterialTheme.colorScheme.error,
-                        )
                     }
                 }
             }

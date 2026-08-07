@@ -1,5 +1,12 @@
 package com.freeandroiddoctor.android.ui.forecast
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -51,32 +58,48 @@ fun StorageForecastScreen(
     ) {
         Appear { InfoBanner(stringResource(R.string.storage_forecast_note)) }
 
-        when {
-            state.loading -> ShimmerList()
-            state.result == null -> Text(stringResource(R.string.empty))
-            else -> {
-                val result = state.result!!
-                Appear(index = 1) { BigNumberCard(result) }
-                if (result.snapshots.size >= 2) {
-                    Appear(index = 2) { TrendChart(result.snapshots) }
+        val forecastState = when {
+            state.loading -> "loading"
+            state.result == null -> "empty"
+            else -> "content"
+        }
+        AnimatedContent(
+            targetState = forecastState,
+            transitionSpec = {
+                slideInVertically(tween(260)) { -it / 2 } + fadeIn(tween(260)) togetherWith
+                    slideOutVertically(tween(180)) { it / 2 } + fadeOut(tween(180))
+            },
+            label = "storageForecastState",
+        ) { s ->
+            when (s) {
+                "loading" -> ShimmerList()
+                "empty" -> Text(stringResource(R.string.empty))
+                else -> {
+                    val result = state.result!!
+                    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                        Appear(index = 1) { BigNumberCard(result) }
+                        if (result.snapshots.size >= 2) {
+                            Appear(index = 2) { TrendChart(result.snapshots) }
+                        }
+                        Appear(index = 3) {
+                            OutlinedButton(
+                                onClick = {
+                                    runCatching {
+                                        val intent = context.packageManager
+                                            .getLaunchIntentForPackage(context.packageName)
+                                        intent?.let { context.startActivity(it) }
+                                    }
+                                },
+                                modifier = Modifier.fillMaxWidth(),
+                            ) { Text(stringResource(R.string.storage_forecast_open_cleaner)) }
+                        }
+                        Text(
+                            stringResource(R.string.storage_forecast_disclaimer),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
                 }
-                Appear(index = 3) {
-                    OutlinedButton(
-                        onClick = {
-                            runCatching {
-                                val intent = context.packageManager
-                                    .getLaunchIntentForPackage(context.packageName)
-                                intent?.let { context.startActivity(it) }
-                            }
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                    ) { Text(stringResource(R.string.storage_forecast_open_cleaner)) }
-                }
-                Text(
-                    stringResource(R.string.storage_forecast_disclaimer),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
             }
         }
     }

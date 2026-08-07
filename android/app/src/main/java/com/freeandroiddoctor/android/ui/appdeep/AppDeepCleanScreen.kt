@@ -2,6 +2,13 @@ package com.freeandroiddoctor.android.ui.appdeep
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -11,7 +18,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -33,6 +40,7 @@ import com.freeandroiddoctor.android.core.util.ByteFormatter
 import com.freeandroiddoctor.android.engine.appdeep.AppGroup
 import com.freeandroiddoctor.android.engine.appdeep.DeepHit
 import com.freeandroiddoctor.android.engine.appdeep.Safety
+import com.freeandroiddoctor.android.ui.components.Appear
 import com.freeandroiddoctor.android.ui.components.InfoBanner
 import com.freeandroiddoctor.android.ui.components.ShimmerList
 
@@ -72,36 +80,54 @@ fun AppDeepCleanScreen(
         }
 
         val groups = state.report.perApp.values.toList()
-        when {
-            state.scanning -> ShimmerList()
-            state.rootUri == null -> Text(
-                stringResource(R.string.storage_treemap_grant),
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            groups.isEmpty() -> Text(
-                stringResource(R.string.app_deep_clean_empty),
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            else -> {
-                if (state.selected.isNotEmpty()) {
-                    Button(onClick = viewModel::cleanSelected) {
-                        Text(stringResource(R.string.app_deep_clean_run))
+        val screenState = when {
+            state.scanning -> AppDeepCleanUiState.SCANNING
+            state.rootUri == null -> AppDeepCleanUiState.NEED_ROOT
+            groups.isEmpty() -> AppDeepCleanUiState.EMPTY
+            else -> AppDeepCleanUiState.CONTENT
+        }
+        AnimatedContent(
+            targetState = screenState,
+            transitionSpec = {
+                slideInVertically(tween(260)) { -it / 2 } + fadeIn(tween(260)) togetherWith
+                    slideOutVertically(tween(180)) { it / 2 } + fadeOut(tween(180))
+            },
+            label = "appDeepCleanState",
+        ) { s ->
+            when (s) {
+                AppDeepCleanUiState.SCANNING -> ShimmerList()
+                AppDeepCleanUiState.NEED_ROOT -> Text(
+                    stringResource(R.string.storage_treemap_grant),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                AppDeepCleanUiState.EMPTY -> Text(
+                    stringResource(R.string.app_deep_clean_empty),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                AppDeepCleanUiState.CONTENT -> Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    if (state.selected.isNotEmpty()) {
+                        Button(onClick = viewModel::cleanSelected) {
+                            Text(stringResource(R.string.app_deep_clean_run))
+                        }
                     }
-                }
-                LazyColumn(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                    items(groups, key = { it.packageName }) { group ->
-                        GroupCard(
-                            group = group,
-                            selected = state.selected,
-                            onToggle = viewModel::toggle,
-                            modifier = Modifier.animateItem(),
-                        )
+                    LazyColumn(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                        itemsIndexed(groups, key = { _, item -> item.packageName }) { index, group ->
+                            Appear(index = index, modifier = Modifier.animateItem()) {
+                                GroupCard(
+                                    group = group,
+                                    selected = state.selected,
+                                    onToggle = viewModel::toggle,
+                                )
+                            }
+                        }
                     }
                 }
             }
         }
     }
 }
+
+private enum class AppDeepCleanUiState { SCANNING, NEED_ROOT, EMPTY, CONTENT }
 
 @Composable
 private fun GroupCard(

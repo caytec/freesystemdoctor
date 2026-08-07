@@ -146,13 +146,15 @@ fun BackupScreen(
         }
 
         state.message?.let {
-            Text(
-                if (state.isError) stringResource(R.string.backup_error)
-                else stringResource(R.string.backup_saved, it),
-                color = if (state.isError) MaterialTheme.colorScheme.error
-                else MaterialTheme.colorScheme.secondary,
-                style = MaterialTheme.typography.bodyMedium,
-            )
+            Appear {
+                Text(
+                    if (state.isError) stringResource(R.string.backup_error)
+                    else stringResource(R.string.backup_saved, it),
+                    color = if (state.isError) MaterialTheme.colorScheme.error
+                    else MaterialTheme.colorScheme.secondary,
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            }
         }
     }
 }

@@ -203,42 +203,44 @@ fun GameBoostScreen(viewModel: GameBoostViewModel = viewModel()) {
         }
 
         val visibleGames = if (ui.showAllApps) ui.allApps else ui.games
-        visibleGames.forEach { game ->
+        visibleGames.forEachIndexed { index, game ->
             val isBoosted = game.packageName in boosted
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .bounceClick { viewModel.boostAndLaunch(game.packageName) },
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceContainer,
-                ),
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth().padding(12.dp),
-                    verticalAlignment = Alignment.CenterVertically,
+            Appear(index = index) {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .bounceClick { viewModel.boostAndLaunch(game.packageName) },
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                    ),
                 ) {
-                    Icon(
-                        Icons.Filled.Bolt,
-                        contentDescription = null,
-                        tint = if (isBoosted) MaterialTheme.colorScheme.primary
-                        else MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                    Spacer(Modifier.width(8.dp))
-                    Text(
-                        game.label,
-                        style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier.weight(1f),
-                    )
-                    IconButton(onClick = { viewModel.togglePackage(game.packageName) }) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(12.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
                         Icon(
-                            if (isBoosted) Icons.Filled.Stop else Icons.Filled.PlayArrow,
-                            contentDescription = stringResource(
-                                if (isBoosted) R.string.game_boost_remove_profile
-                                else R.string.game_boost_add_profile,
-                            ),
-                            tint = if (isBoosted) MaterialTheme.colorScheme.error
-                            else MaterialTheme.colorScheme.primary,
+                            Icons.Filled.Bolt,
+                            contentDescription = null,
+                            tint = if (isBoosted) MaterialTheme.colorScheme.primary
+                            else MaterialTheme.colorScheme.onSurfaceVariant,
                         )
+                        Spacer(Modifier.width(8.dp))
+                        Text(
+                            game.label,
+                            style = MaterialTheme.typography.bodyMedium,
+                            modifier = Modifier.weight(1f),
+                        )
+                        IconButton(onClick = { viewModel.togglePackage(game.packageName) }) {
+                            Icon(
+                                if (isBoosted) Icons.Filled.Stop else Icons.Filled.PlayArrow,
+                                contentDescription = stringResource(
+                                    if (isBoosted) R.string.game_boost_remove_profile
+                                    else R.string.game_boost_add_profile,
+                                ),
+                                tint = if (isBoosted) MaterialTheme.colorScheme.error
+                                else MaterialTheme.colorScheme.primary,
+                            )
+                        }
                     }
                 }
             }

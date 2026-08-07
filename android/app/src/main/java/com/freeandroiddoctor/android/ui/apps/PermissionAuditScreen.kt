@@ -1,6 +1,5 @@
 package com.freeandroiddoctor.android.ui.apps
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -25,6 +24,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.freeandroiddoctor.android.R
 
 import com.freeandroiddoctor.android.ui.components.InfoBanner
+import com.freeandroiddoctor.android.ui.components.bounceClick
 
 @Composable
 fun PermissionAuditScreen(
@@ -47,7 +47,7 @@ fun PermissionAuditScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .animateItem()
-                        .clickable { context.startActivity(viewModel.appDetailsIntent(app.packageName)) },
+                        .bounceClick { context.startActivity(viewModel.appDetailsIntent(app.packageName)) },
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.surfaceContainer,
                     ),

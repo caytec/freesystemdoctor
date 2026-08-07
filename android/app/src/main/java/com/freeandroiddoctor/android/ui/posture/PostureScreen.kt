@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -29,6 +29,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.freeandroiddoctor.android.R
 import com.freeandroiddoctor.android.engine.privacy.PostureCheck
 import com.freeandroiddoctor.android.engine.privacy.PowerfulApp
+import com.freeandroiddoctor.android.ui.components.Appear
 import com.freeandroiddoctor.android.ui.components.InfoBanner
 import com.freeandroiddoctor.android.ui.components.ShimmerList
 import com.freeandroiddoctor.android.ui.components.StatCard
@@ -80,8 +81,8 @@ fun PostureScreen(
                     style = MaterialTheme.typography.titleMedium,
                 )
             }
-            items(report.checks, key = { it.id.name }) { check ->
-                CheckRow(check)
+            itemsIndexed(report.checks, key = { _, check -> check.id.name }) { index, check ->
+                Appear(index = index) { CheckRow(check) }
             }
 
             item("powerHeader") {
@@ -107,15 +108,20 @@ fun PostureScreen(
                     )
                 }
             } else {
-                items(report.powerfulApps, key = { it.packageName + it.kind.name }) { app ->
-                    PowerfulAppRow(
-                        app = app,
-                        onManage = {
-                            runCatching {
-                                context.startActivity(viewModel.appDetailsIntent(app.packageName))
-                            }
-                        },
-                    )
+                itemsIndexed(
+                    report.powerfulApps,
+                    key = { _, app -> app.packageName + app.kind.name },
+                ) { index, app ->
+                    Appear(index = index) {
+                        PowerfulAppRow(
+                            app = app,
+                            onManage = {
+                                runCatching {
+                                    context.startActivity(viewModel.appDetailsIntent(app.packageName))
+                                }
+                            },
+                        )
+                    }
                 }
             }
         }

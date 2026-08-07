@@ -103,14 +103,18 @@ fun RestoreWizardScreen(
         ) { Text(stringResource(R.string.restore_decrypt)) }
 
         if (state.error != null) {
-            Text(
-                stringResource(R.string.restore_wrong_passphrase),
-                color = MaterialTheme.colorScheme.error,
-            )
+            Appear {
+                Text(
+                    stringResource(R.string.restore_wrong_passphrase),
+                    color = MaterialTheme.colorScheme.error,
+                )
+            }
         }
         state.entries?.let { entries ->
-            Text(stringResource(R.string.restore_manifest, entries.joinToString()))
-            // v1: read-only preview. Actual selective import per section will land in Update 10.
+            Appear {
+                Text(stringResource(R.string.restore_manifest, entries.joinToString()))
+                // v1: read-only preview. Actual selective import per section will land in Update 10.
+            }
         }
     }
 }

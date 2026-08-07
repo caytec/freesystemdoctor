@@ -19,6 +19,7 @@ enum class ScanDepth { QUICK, DEEP }
 
 data class AppSettings(
     val onboardingDone: Boolean = false,
+    val tutorialDone: Boolean = false,
     val darkTheme: Boolean = true,
     val followSystem: Boolean = false,
     val aiProvider: AiProvider = AiProvider.GROQ,
@@ -41,6 +42,7 @@ class SettingsRepository(private val context: Context) {
 
     private object Keys {
         val ONBOARDING_DONE = booleanPreferencesKey("onboarding_done")
+        val TUTORIAL_DONE = booleanPreferencesKey("tutorial_done")
         val DARK_THEME = booleanPreferencesKey("dark_theme")
         val FOLLOW_SYSTEM = booleanPreferencesKey("follow_system")
         val AI_PROVIDER = stringPreferencesKey("ai_provider")
@@ -65,6 +67,7 @@ class SettingsRepository(private val context: Context) {
     val settings: Flow<AppSettings> = context.dataStore.data.map { prefs ->
         AppSettings(
             onboardingDone = prefs[Keys.ONBOARDING_DONE] ?: false,
+            tutorialDone = prefs[Keys.TUTORIAL_DONE] ?: false,
             darkTheme = prefs[Keys.DARK_THEME] ?: true,
             followSystem = prefs[Keys.FOLLOW_SYSTEM] ?: false,
             aiProvider = prefs[Keys.AI_PROVIDER]
@@ -102,6 +105,10 @@ class SettingsRepository(private val context: Context) {
 
     suspend fun setOnboardingDone(done: Boolean) {
         context.dataStore.edit { it[Keys.ONBOARDING_DONE] = done }
+    }
+
+    suspend fun setTutorialDone(done: Boolean) {
+        context.dataStore.edit { it[Keys.TUTORIAL_DONE] = done }
     }
 
     suspend fun setDarkTheme(enabled: Boolean) {

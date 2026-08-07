@@ -28,6 +28,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.freeandroiddoctor.android.R
 import com.freeandroiddoctor.android.core.util.ByteFormatter
 
+import com.freeandroiddoctor.android.ui.components.Appear
 import com.freeandroiddoctor.android.ui.components.InfoBanner
 
 @Composable
@@ -42,13 +43,15 @@ fun CompressScreen(
         modifier = modifier.fillMaxSize().padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        InfoBanner(stringResource(R.string.compress_note))
+        Appear { InfoBanner(stringResource(R.string.compress_note)) }
         if (state.savedTotal > 0) {
-            Text(
-                stringResource(R.string.compress_saved, ByteFormatter.format(state.savedTotal)),
-                color = MaterialTheme.colorScheme.secondary,
-                style = MaterialTheme.typography.bodyMedium,
-            )
+            Appear(index = 1) {
+                Text(
+                    stringResource(R.string.compress_saved, ByteFormatter.format(state.savedTotal)),
+                    color = MaterialTheme.colorScheme.secondary,
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            }
         }
 
         LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
