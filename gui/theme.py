@@ -1,7 +1,7 @@
-"""Central colour / font constants — AiPOL SA corporate AI navy/blue theme.
+"""Central colour / font constants — deep navy / electric blue theme.
 
-Palette aligned with AiPOL SA (aipol.com.pl): deep navy backgrounds with an
-electric-blue primary accent and a teal secondary accent.
+Deep navy backgrounds with an electric-blue primary accent and a teal
+secondary accent. See kajetankupaj.pl.
 """
 
 # ── Backgrounds ───────────────────────────────────────────────────────────────
@@ -11,10 +11,10 @@ ACCENT  = "#1a2640"   # header / elevated panels
 SIDEBAR = "#070c18"   # sidebar (deepest navy)
 
 # ── Brand colours ─────────────────────────────────────────────────────────────
-HIGHLIGHT     = "#2f6bff"   # electric blue — AiPOL primary accent
+HIGHLIGHT     = "#2f6bff"   # electric blue — primary accent
 HIGHLIGHT_END = "#1e50d8"   # gradient end (deeper blue)
 SCAN_GLOW     = "#5b86ff"   # bright blue for glow effects
-PURPLE        = "#19c3c3"   # secondary accent — teal (AiPOL)
+PURPLE        = "#19c3c3"   # secondary accent — teal
 PURPLE_END    = "#0f9a9a"   # teal gradient end
 
 # ── Semantic colours ──────────────────────────────────────────────────────────
@@ -194,6 +194,83 @@ def tk_err():
     """Return tkinter.TclError lazily (avoids a hard import at module top)."""
     import tkinter
     return tkinter.TclError
+
+
+def stagger_in(widgets, step_ms: int = None, pack_kw: dict = None):
+    """Reveal a list of already-packed widgets one after another.
+
+    A list that appears all at once reads as static; one that arrives in
+    sequence reads as being assembled, and it gives the eye an order to follow.
+    Widgets are unpacked immediately and re-packed on a timer, so call this
+    right after building them.
+    """
+    if not widgets:
+        return
+    step_ms = STAGGER_MS if step_ms is None else step_ms
+    pack_kw = pack_kw or {"fill": "x", "pady": 4}
+    if not ANIMATIONS_ENABLED:
+        return
+    host = widgets[0]
+    for w in widgets:
+        try:
+            w.pack_forget()
+        except Exception:
+            return
+
+    def show(idx):
+        if idx >= len(widgets):
+            return
+        w = widgets[idx]
+        try:
+            if w.winfo_exists():
+                w.pack(**pack_kw)
+        except Exception:
+            return
+        try:
+            host.after(step_ms, lambda: show(idx + 1))
+        except Exception:
+            pass
+
+    try:
+        host.after(1, lambda: show(0))
+    except Exception:
+        for w in widgets:
+            try:
+                w.pack(**pack_kw)
+            except Exception:
+                pass
+
+
+def count_up(label, value, fmt="{:,.0f}", duration_ms: int = 700,
+             start_value: float = 0.0):
+    """Animate a Label's text from `start_value` up to `value`.
+
+    Numbers that roll into place read as a result being computed, where a
+    number that simply appears reads as a number that was always there. Used
+    for the measured-gain figures (MB freed, MHz, DPC %).
+
+    `fmt` is applied to every intermediate value, so pass a format that suits
+    the magnitude — e.g. "{:,.0f}" for MB, "{:.2f}" for percentages.
+    """
+    try:
+        target = float(value)
+    except (TypeError, ValueError):
+        return lambda: None
+
+    def step(t):
+        try:
+            label.config(text=fmt.format(start_value + (target - start_value) * t))
+        except Exception:
+            pass
+
+    def done():
+        try:
+            label.config(text=fmt.format(target))
+        except Exception:
+            pass
+
+    return animate(label, duration_ms, step, on_done=done,
+                   easing=ease_out_cubic)
 
 
 def score_color(score: int) -> str:

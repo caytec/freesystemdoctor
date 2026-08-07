@@ -15,7 +15,7 @@ Windows 10/11 (64-bit). Runs as administrator.
 **Onboarding & usability**
 - **👋 First-run welcome + interactive tutorial** — a guided, spotlight walkthrough that highlights the main parts of the app for new users. Replay anytime from Settings → Take a tour.
 - **🌱 Simple mode** — show only the essential, everyday tools; switch to Advanced anytime.
-- **Cleaner, more readable UI** — new **AiPOL SA** navy/blue theme, larger labels, higher-contrast text, plain-language menus (fully English).
+- **Cleaner, more readable UI** — new **Kajetan Kupaj** navy/blue theme, larger labels, higher-contrast text, plain-language menus (fully English).
 
 **New power tools**
 - **🚀 1-Click Auto-Pilot** — clean RAM, temp files, Recycle Bin & DNS, then re-score health, in one click.
@@ -41,4 +41,4 @@ Compare against `SHA256SUMS.txt`.
 ## Links
 - Website: https://freesystemdoctor.com.pl
 - Source & issues: https://github.com/caytec/freesystemdoctor
-- Made by **AiPOL SA** — https://aipol.com.pl
+- Made by **Kajetan Kupaj** — https://kajetankupaj.pl

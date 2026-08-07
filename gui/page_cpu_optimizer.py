@@ -311,9 +311,8 @@ class CpuOptimizerPage(tk.Frame):
             return
         mhz = s.get("current_mhz") or s["base_mhz"]
         pct = s.get("perf_pct", 0)
-        self._snap_mhz.config(
-            text=f"{mhz:,}",
-            fg=T.SUCCESS if pct >= 100 else T.HIGHLIGHT)
+        self._snap_mhz.config(fg=T.SUCCESS if pct >= 100 else T.HIGHLIGHT)
+        T.count_up(self._snap_mhz, mhz, fmt="{:,.0f}", duration_ms=750)
         turbo = (f"turbo +{pct - 100:.0f}% over base" if pct > 100
                  else f"{pct:.0f}% of base clock")
         self._snap_turbo.config(

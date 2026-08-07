@@ -191,19 +191,23 @@ class UltimateBoostPage(tk.Frame):
         if "ram_freed_mb" in g:
             freed = g["ram_freed_mb"]
             val, sub = self._score_ram
-            val.config(text=(f"+{freed:,} MB" if freed > 0 else f"{freed:,} MB"),
-                       fg=T.SUCCESS if freed > 0 else T.FG2)
+            val.config(fg=T.SUCCESS if freed > 0 else T.FG2)
+            T.count_up(val, freed,
+                       fmt=("+{:,.0f} MB" if freed > 0 else "{:,.0f} MB"),
+                       duration_ms=800)
             sub.config(text="more available RAM")
         if "timer_after_ms" in g:
             val, sub = self._score_timer
-            val.config(text=f"{g['timer_after_ms']:.2g} ms",
-                       fg=T.SUCCESS if g["timer_after_ms"] <= 1.01
+            val.config(fg=T.SUCCESS if g["timer_after_ms"] <= 1.01
                        else T.HIGHLIGHT)
+            T.count_up(val, g["timer_after_ms"], fmt="{:.2f} ms",
+                       duration_ms=650, start_value=g["timer_before_ms"])
             sub.config(text=f"was {g['timer_before_ms']:.2f} ms")
         if "dpc_after_pct" in g:
             val, sub = self._score_dpc
-            val.config(text=f"{g['dpc_after_pct']:.2f}%",
-                       fg=T.SUCCESS if g["dpc_after_pct"] < 1.5 else T.WARNING)
+            val.config(fg=T.SUCCESS if g["dpc_after_pct"] < 1.5 else T.WARNING)
+            T.count_up(val, g["dpc_after_pct"], fmt="{:.2f}%",
+                       duration_ms=650, start_value=g["dpc_before_pct"])
             sub.config(text=f"was {g['dpc_before_pct']:.2f}%")
 
         self._refresh_state()

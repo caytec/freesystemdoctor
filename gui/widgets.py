@@ -102,27 +102,84 @@ class PageHeader(tk.Frame):
         kw.setdefault("height", self.HEIGHT)
         super().__init__(parent, **kw)
         self.pack_propagate(False)
+        self._color = color
+        self._bg = bg
 
-        # Left accent strip
-        tk.Frame(self, bg=color, width=4).pack(side="left", fill="y")
+        # Colour wash behind the content: strongest at the accent strip,
+        # fading out to the right so the header has depth without a texture.
+        self._wash = tk.Canvas(self, bg=bg, highlightthickness=0,
+                               height=self.HEIGHT)
+        self._wash.place(x=0, y=0, relwidth=1, relheight=1)
+        self._wash.bind("<Configure>", lambda e: self._draw_wash())
 
-        # Optional icon
+        # Left accent strip, brightest at the top
+        strip = tk.Canvas(self, width=4, bg=bg, highlightthickness=0)
+        strip.pack(side="left", fill="y")
+        strip.bind("<Configure>",
+                   lambda e, c=strip: self._draw_strip(c))
+
         if icon:
             tk.Label(self, text=icon, bg=bg, fg=color,
                      font=(T.FONT_FAMILY, 18), padx=8).pack(side="left")
 
-        # Title
         tk.Label(self, text=title, bg=bg, fg=T.FG,
                  font=T.FONT_TITLE).pack(side="left", padx=(8 if not icon else 0, 0))
 
-        # Subtitle
         if subtitle:
             tk.Label(self, text=subtitle, bg=bg, fg=T.FG2,
                      font=T.FONT_SMALL).pack(side="left", padx=(10, 0))
 
-        # Thin bottom border
-        tk.Frame(self, bg=T.lerp_color(T.BORDER, color, 0.25),
-                 height=1).place(relx=0, rely=1.0, relwidth=1, anchor="sw")
+        # Bottom border, fading from the accent colour into the panel edge
+        self._edge = tk.Canvas(self, height=2, bg=bg, highlightthickness=0)
+        self._edge.place(relx=0, rely=1.0, relwidth=1, anchor="sw")
+        self._edge.bind("<Configure>", lambda e: self._draw_edge())
+
+    def _draw_wash(self):
+        c = self._wash
+        try:
+            c.delete("all")
+            w = c.winfo_width() or 800
+            h = self.HEIGHT
+            # Fade the accent tint out over the first ~55% of the width.
+            steps = 26
+            span = int(w * 0.55) or 1
+            for i in range(steps):
+                t = i / steps
+                col = T.lerp_color(T.lerp_color(self._bg, self._color, 0.10),
+                                   self._bg, t)
+                c.create_rectangle(int(span * t), 0,
+                                   int(span * (t + 1 / steps)) + 1, h,
+                                   fill=col, outline="")
+            c.lower()
+        except tk.TclError:
+            pass
+
+    def _draw_strip(self, c):
+        try:
+            c.delete("all")
+            h = c.winfo_height() or self.HEIGHT
+            for i in range(h):
+                t = i / max(1, h)
+                col = T.lerp_color(T.lighten(self._color, 0.30),
+                                   T.darken(self._color, 0.25), t)
+                c.create_line(0, i, 4, i, fill=col)
+        except tk.TclError:
+            pass
+
+    def _draw_edge(self):
+        c = self._edge
+        try:
+            c.delete("all")
+            w = c.winfo_width() or 800
+            steps = 30
+            for i in range(steps):
+                t = i / steps
+                col = T.lerp_color(T.lerp_color(self._color, T.BORDER, 0.35),
+                                   T.BORDER, t)
+                c.create_rectangle(int(w * t), 0, int(w * (t + 1 / steps)) + 1,
+                                   2, fill=col, outline="")
+        except tk.TclError:
+            pass
 
 
 # ── Section label ─────────────────────────────────────────────────────────────

@@ -65,10 +65,10 @@ def _steps(app):
              title="Status & view mode",
              text="Status messages and tips show along the bottom. Prefer fewer "
                   "options? Turn on Simple mode in Settings → Appearance."),
-        dict(target=lambda: getattr(app, "_aipol_brand", None),
-             title="Made by AiPOL SA",
-             text="FreeSystemDoctor is brought to you by AiPOL SA. "
-                  "Click the corner logo to visit aipol.com.pl."),
+        dict(target=lambda: getattr(app, "_author_brand", None),
+             title="Made by Kajetan Kupaj",
+             text="FreeSystemDoctor is built by Kajetan Kupaj. "
+                  "Click the corner logo to visit kajetankupaj.pl."),
         dict(target=None,
              title="You're all set!",
              text="That's it. You can replay this tour anytime from "

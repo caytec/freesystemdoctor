@@ -1,5 +1,6 @@
 """Main application window — premium sidebar navigation with glassmorphism design."""
 
+import math
 import webbrowser
 import tkinter as tk
 from tkinter import ttk
@@ -11,10 +12,10 @@ from .widgets import StatusBar, SidebarButton, apply_treeview_style, Toast
 
 KOFI_URL = "https://ko-fi.com/F1F51O3A4A"
 
-# AiPOL SA — company branding shown in the app corner.
-AIPOL_URL  = "https://aipol.com.pl"
-AIPOL_NAME = "AiPOL SA"
-AIPOL_NOTE = "AI software solutions"
+# Author branding shown in the app corner.
+BRAND_URL  = "https://kajetankupaj.pl"
+BRAND_NAME = "Kajetan Kupaj"
+BRAND_NOTE = "software & AI"
 
 # ── Page imports ───────────────────────────────────────────────────────────────
 from .page_care             import CarePage
@@ -1137,7 +1138,7 @@ class App(tk.Tk):
         # ── Status bar ─────────────────────────────────────────────────────────
         self._status = StatusBar(self)
         self._status.pack(fill="x", side="bottom")
-        self._build_aipol_branding(self._status)
+        self._build_author_branding(self._status)
         tk.Frame(self, bg=T.BORDER, height=1).pack(fill="x", side="bottom")
 
         # ── Body ───────────────────────────────────────────────────────────────
@@ -1181,62 +1182,98 @@ class App(tk.Tk):
         except Exception:
             pass
 
-    def _build_aipol_branding(self, parent):
-        """AiPOL SA logo + clickable link + small company note, in the app corner
-        (bottom-right of the status bar). Opens aipol.com.pl in the browser."""
+    def _build_author_branding(self, parent):
+        """Author credit in the app corner (bottom-right of the status bar).
+
+        The hexagon mark breathes gently and the whole block eases to the
+        accent colour on hover, so it reads as a link without shouting.
+        Opens kajetankupaj.pl in the browser.
+        """
         wrap = tk.Frame(parent, bg=T.SIDEBAR, cursor="hand2")
         wrap.pack(side="right", padx=12)
-        self._aipol_brand = wrap   # handle for the interactive tutorial
+        self._author_brand = wrap   # handle for the interactive tutorial
 
-        # Wordmark "logo": a small brand hexagon + company name.
-        mark = tk.Canvas(wrap, width=16, height=16, bg=T.SIDEBAR,
+        mark = tk.Canvas(wrap, width=18, height=18, bg=T.SIDEBAR,
                          highlightthickness=0)
-        mark.pack(side="left", padx=(0, 5))
-        mark.create_polygon(8, 1, 15, 5, 15, 12, 8, 16, 1, 12, 1, 5,
-                            fill=T.lerp_color(T.SIDEBAR, T.HIGHLIGHT, 0.30),
-                            outline=T.HIGHLIGHT)
-        mark.create_text(8, 8, text="A", fill=T.HIGHLIGHT,
-                         font=(T.FONT_FAMILY, 8, "bold"))
+        mark.pack(side="left", padx=(0, 6))
 
-        name_lbl = tk.Label(wrap, text=AIPOL_NAME, bg=T.SIDEBAR, fg=T.FG,
+        name_lbl = tk.Label(wrap, text=BRAND_NAME, bg=T.SIDEBAR, fg=T.FG,
                             font=(T.FONT_FAMILY, 9, "bold"))
         name_lbl.pack(side="left")
         sep_lbl = tk.Label(wrap, text="·", bg=T.SIDEBAR, fg=T.FG2,
                            font=T.FONT_SMALL)
         sep_lbl.pack(side="left", padx=4)
-        link_lbl = tk.Label(wrap, text="aipol.com.pl", bg=T.SIDEBAR,
+        link_lbl = tk.Label(wrap, text="kajetankupaj.pl", bg=T.SIDEBAR,
                             fg=T.HIGHLIGHT, font=T.FONT_SMALL)
         link_lbl.pack(side="left")
-        note_lbl = tk.Label(wrap, text=f"· {AIPOL_NOTE}", bg=T.SIDEBAR,
+        note_lbl = tk.Label(wrap, text=f"· {BRAND_NOTE}", bg=T.SIDEBAR,
                             fg=T.FG2, font=T.FONT_MICRO)
         note_lbl.pack(side="left", padx=(4, 0))
 
         widgets = [wrap, mark, name_lbl, sep_lbl, link_lbl, note_lbl]
+        hover = {"t": 0.0, "anim": None}
+
+        def _draw_mark(glow: float):
+            """Hexagon whose fill and ring brighten with `glow` (0..1)."""
+            try:
+                mark.delete("all")
+                fill = T.lerp_color(T.SIDEBAR, T.HIGHLIGHT, 0.22 + 0.30 * glow)
+                ring = T.lerp_color(T.HIGHLIGHT, "#ffffff", 0.35 * glow)
+                mark.create_polygon(9, 1, 17, 5.5, 17, 13.5, 9, 18,
+                                    1, 13.5, 1, 5.5,
+                                    fill=fill, outline=ring)
+                mark.create_text(9, 9, text="K",
+                                 fill=T.lerp_color(T.HIGHLIGHT, "#ffffff",
+                                                   0.5 * glow),
+                                 font=(T.FONT_FAMILY, 8, "bold"))
+            except tk.TclError:
+                pass
+
+        _draw_mark(0.0)
+
+        def _breathe(phase: int = 0):
+            """Slow idle pulse — stops while hovered and when off-screen."""
+            try:
+                if not wrap.winfo_exists():
+                    return
+                if T.animations_enabled() and wrap.winfo_viewable() \
+                        and hover["t"] <= 0.01:
+                    _draw_mark(0.18 * (1 + math.sin(phase / 16.0)) / 2)
+                wrap.after(90, lambda: _breathe(phase + 1))
+            except tk.TclError:
+                pass
+
+        def _animate_hover(target: float):
+            start = hover["t"]
+            if abs(target - start) < 0.01:
+                return
+
+            def step(t):
+                hover["t"] = start + (target - start) * t
+                g = hover["t"]
+                try:
+                    link_lbl.config(fg=T.lerp_color(T.HIGHLIGHT, "#ffffff",
+                                                    0.35 * g))
+                    name_lbl.config(fg=T.lerp_color(T.FG, T.HIGHLIGHT, g))
+                    note_lbl.config(fg=T.lerp_color(T.FG2, T.FG, g))
+                except tk.TclError:
+                    return
+                _draw_mark(g)
+
+            T.animate(wrap, 180, step, easing=T.ease_out_cubic)
 
         def _open(_e=None):
             try:
-                webbrowser.open(AIPOL_URL)
+                webbrowser.open(BRAND_URL)
             except Exception:
-                pass
-
-        def _enter(_e=None):
-            try:
-                link_lbl.config(fg=T.lighten(T.HIGHLIGHT, 0.2))
-                name_lbl.config(fg=T.HIGHLIGHT)
-            except tk.TclError:
-                pass
-
-        def _leave(_e=None):
-            try:
-                link_lbl.config(fg=T.HIGHLIGHT)
-                name_lbl.config(fg=T.FG)
-            except tk.TclError:
                 pass
 
         for w in widgets:
             w.bind("<Button-1>", _open)
-            w.bind("<Enter>", _enter)
-            w.bind("<Leave>", _leave)
+            w.bind("<Enter>", lambda _e: _animate_hover(1.0))
+            w.bind("<Leave>", lambda _e: _animate_hover(0.0))
+
+        _breathe()
 
     def _build_pages(self):
         def make(PageClass):

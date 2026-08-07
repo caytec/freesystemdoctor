@@ -82,7 +82,9 @@ class RamMasterPage(tk.Frame):
 
         self._comp = {}
 
-    def _draw_bar(self):
+    def _draw_bar(self, grow: float = 1.0):
+        """Render the stacked bar. `grow` (0..1) scales every segment so the
+        bar can sweep out from the left when new numbers arrive."""
         c = self._bar
         c.delete("all")
         comp = self._comp
@@ -98,13 +100,26 @@ class RamMasterPage(tk.Frame):
             val = comp.get(key)
             if not val:
                 continue
-            seg_w = max(1, int(w * (val / total)))
-            c.create_rectangle(x, 0, x + seg_w, h, fill=colour, outline="")
-            if seg_w > 54:
+            seg_w = max(1, int(w * (val / total) * grow))
+            # Vertical shading gives the segment body instead of a flat block.
+            for i in range(h):
+                t = i / h
+                c.create_line(x, i, x + seg_w, i,
+                              fill=T.lerp_color(T.lighten(colour, 0.18),
+                                                T.darken(colour, 0.22), t))
+            if seg_w > 54 and grow > 0.75:
                 c.create_text(x + seg_w // 2, h // 2,
                               text=f"{val:,} MB", fill="#0a1020",
                               font=(T.FONT_FAMILY, 8, "bold"))
             x += seg_w
+        # Leading edge highlight while the bar is still sweeping out.
+        if grow < 0.995 and x > 2:
+            c.create_line(x, 0, x, h, fill=T.lighten(T.HIGHLIGHT, 0.5), width=2)
+
+    def _animate_bar(self):
+        T.animate(self._bar, 620, lambda t: self._draw_bar(t),
+                  on_done=lambda: self._draw_bar(1.0),
+                  easing=T.ease_out_cubic)
 
     def _render_legend(self):
         for w in self._legend.winfo_children():
@@ -162,16 +177,20 @@ class RamMasterPage(tk.Frame):
         total = rep.get("total_freed_mb", 0)
         head = tk.Frame(self._results, bg=T.PANEL)
         head.pack(fill="x", pady=(4, 6))
-        tk.Label(head, text=f"+{total:,} MB", bg=T.PANEL,
-                 fg=T.SUCCESS if total > 0 else T.FG2,
-                 font=(T.FONT_FAMILY, 20, "bold")).pack(side="left")
+        total_lbl = tk.Label(head, text="+0 MB", bg=T.PANEL,
+                             fg=T.SUCCESS if total > 0 else T.FG2,
+                             font=(T.FONT_FAMILY, 20, "bold"))
+        total_lbl.pack(side="left")
+        T.count_up(total_lbl, total, fmt="+{:,.0f} MB", duration_ms=800)
         tk.Label(head, text=f"  freed  ·  {rep.get('before_mb', 0):,} → "
                             f"{rep.get('after_mb', 0):,} MB available",
                  bg=T.PANEL, fg=T.FG2, font=T.FONT_SMALL).pack(side="left",
                                                                pady=(8, 0))
+        rows = []
         for s in rep.get("stages", []):
             row = tk.Frame(self._results, bg=T.PANEL)
             row.pack(fill="x", pady=1)
+            rows.append(row)
             ok = s["ok"]
             tk.Label(row, text="✓" if ok else "✗", bg=T.PANEL,
                      fg=T.SUCCESS if ok else T.FG2,
@@ -186,6 +205,8 @@ class RamMasterPage(tk.Frame):
             else:
                 tk.Label(row, text=s["msg"][:60], bg=T.PANEL, fg=T.WARNING,
                          font=T.FONT_MICRO, anchor="w").pack(side="left")
+        # Stages land one after another, matching the order they ran in.
+        T.stagger_in(rows, step_ms=70, pack_kw={"fill": "x", "pady": 1})
 
     # ── auto policy ─────────────────────────────────────────────────────────
     def _build_policy(self, parent):
@@ -287,9 +308,11 @@ class RamMasterPage(tk.Frame):
                      text="No memory tweaks available on this system.",
                      bg=T.PANEL, fg=T.FG2, font=T.FONT_SMALL).pack(anchor="w")
             return
+        rows = []
         for t in tweaks:
             row = tk.Frame(self._tweak_host, bg=T.PANEL)
             row.pack(fill="x", pady=4)
+            rows.append(row)
             top = tk.Frame(row, bg=T.PANEL)
             top.pack(fill="x")
             state = t.get("optimized")
@@ -328,6 +351,7 @@ class RamMasterPage(tk.Frame):
             tk.Label(row, text=f"→ {t['impact']}", bg=T.PANEL,
                      fg=T.lerp_color(T.FG2, T.HIGHLIGHT, 0.5),
                      font=T.FONT_MICRO, anchor="w").pack(fill="x", padx=(22, 0))
+        T.stagger_in(rows, step_ms=45)
 
     # ── actions ─────────────────────────────────────────────────────────────
     def _clean(self, level: str):
@@ -419,8 +443,11 @@ class RamMasterPage(tk.Frame):
         threading.Thread(target=work, daemon=True).start()
 
     def _apply_composition(self, comp: dict):
+        first = not self._comp
         self._comp = comp
-        self._draw_bar()
+        # Sweep the bar out the first time; afterwards just redraw so periodic
+        # refreshes don't make the page twitch.
+        self._animate_bar() if first else self._draw_bar()
         self._render_legend()
 
     def _refresh_tweaks(self):

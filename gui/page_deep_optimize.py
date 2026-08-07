@@ -104,9 +104,11 @@ class DeepOptimizePage(tk.Frame):
             w.destroy()
         self._rows.clear()
 
+        rows = []
         for t in tweaks:
             row = tk.Frame(self._tweak_host, bg=T.PANEL)
             row.pack(fill="x", pady=4)
+            rows.append(row)
 
             top = tk.Frame(row, bg=T.PANEL)
             top.pack(fill="x")
@@ -145,6 +147,7 @@ class DeepOptimizePage(tk.Frame):
                      fg=T.lerp_color(T.FG2, T.HIGHLIGHT, 0.5),
                      font=T.FONT_MICRO, anchor="w").pack(fill="x", padx=(22, 0))
             self._rows[t["id"]] = row
+        T.stagger_in(rows, step_ms=45)
 
     # ── component store ─────────────────────────────────────────────────────
     def _build_component_store(self, parent):
@@ -193,8 +196,8 @@ class DeepOptimizePage(tk.Frame):
             return
         pct = r["dpc_time_pct"]
         self._dpc_val.config(
-            text=f"{pct:.2f}",
             fg=T.SUCCESS if pct < 1.5 else T.WARNING if pct < 3 else T.DANGER)
+        T.count_up(self._dpc_val, pct, fmt="{:.2f}", duration_ms=700)
         self._dpc_extra.config(
             text=f"{r['dpcs_per_sec']:,} DPCs/sec   ·   "
                  f"{r['interrupt_time_pct']:.2f}% interrupt time")

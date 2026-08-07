@@ -87,9 +87,11 @@ class GpuBoostPage(tk.Frame):
         risk_color = {"low": T.SUCCESS, "medium": T.WARNING, "high": T.DANGER}
         for w in self._host.winfo_children():
             w.destroy()
+        rows = []
         for t in tweaks:
             row = tk.Frame(self._host, bg=T.PANEL)
             row.pack(fill="x", pady=4)
+            rows.append(row)
 
             top = tk.Frame(row, bg=T.PANEL)
             top.pack(fill="x")
@@ -127,6 +129,7 @@ class GpuBoostPage(tk.Frame):
             tk.Label(row, text=f"→ {t['impact']}", bg=T.PANEL,
                      fg=T.lerp_color(T.FG2, T.HIGHLIGHT, 0.5),
                      font=T.FONT_MICRO, anchor="w").pack(fill="x", padx=(22, 0))
+        T.stagger_in(rows, step_ms=45)
 
     # ── actions ──────────────────────────────────────────────────────────────
     def _measure(self):
@@ -147,7 +150,8 @@ class GpuBoostPage(tk.Frame):
             self._gpu_name.config(text="Could not detect a GPU.")
             return
         if s.get("clock_mhz") is not None:
-            self._clock.config(text=f"{s['clock_mhz']:,}")
+            T.count_up(self._clock, s["clock_mhz"], fmt="{:,.0f}",
+                       duration_ms=750)
             bits = []
             if s.get("clock_max_mhz"):
                 bits.append(f"max {s['clock_max_mhz']:,} MHz")
