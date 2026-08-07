@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 740" role="img" aria-label="App vault mockup">
+  <defs>
+    <linearGradient id="bg5" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%"  stop-color="#0F1B2D"/>
+      <stop offset="100%" stop-color="#0A1320"/>
+    </linearGradient>
+    <linearGradient id="lock" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%"  stop-color="#FF6F61"/>
+      <stop offset="100%" stop-color="#9C7BFF"/>
+    </linearGradient>
+    <radialGradient id="halo" cx="0.5" cy="0.3" r="0.6">
+      <stop offset="0%"  stop-color="#FF6F61" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#FF6F61" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="360" height="740" rx="36" fill="url(#bg5)"/>
+  <circle cx="180" cy="220" r="220" fill="url(#halo)"/>
+  <rect x="160" y="14" width="40" height="6" rx="3" fill="#0A1320"/>
+
+  <text x="24" y="64" font-family="sans-serif" font-size="20" font-weight="700" fill="#ECEFF4" data-i18n="vault.title">App vault</text>
+  <text x="336" y="64" font-family="sans-serif" font-size="14" fill="#FF6F61" text-anchor="end">PRO</text>
+
+  <!-- Banner -->
+  <rect x="20" y="92" width="320" height="80" rx="14" fill="#9C7BFF" fill-opacity="0.10" stroke="#9C7BFF" stroke-width="1"/>
+  <text x="40" y="124" font-family="sans-serif" font-size="12" font-weight="600" fill="#9C7BFF" data-i18n="vault.banner_title">Encrypted on-device sandbox</text>
+  <text x="40" y="148" font-family="sans-serif" font-size="11" fill="#A7B4C7" data-i18n="vault.banner_body1">AES/GCM with an Android Keystore key.</text>
+  <text x="40" y="162" font-family="sans-serif" font-size="11" fill="#A7B4C7" data-i18n="vault.banner_body2">Nothing leaves this device.</text>
+
+  <!-- Biometric prompt mockup -->
+  <g transform="translate(180 280)">
+    <circle r="74" fill="none" stroke="url(#lock)" stroke-width="3" stroke-dasharray="4 5"/>
+    <circle r="58" fill="#16263D"/>
+    <!-- lock icon (geometric) -->
+    <rect x="-22" y="-6" width="44" height="36" rx="6" fill="url(#lock)"/>
+    <path d="M -14 -6 V -16 a 14 14 0 0 1 28 0 V -6" fill="none" stroke="url(#lock)" stroke-width="4"/>
+    <circle cx="0" cy="12" r="4" fill="#0A1320"/>
+  </g>
+  <text x="180" y="392" font-family="sans-serif" font-size="14" font-weight="700" fill="#ECEFF4" text-anchor="middle" data-i18n="vault.locked">Locked</text>
+  <text x="180" y="412" font-family="sans-serif" font-size="11" fill="#A7B4C7" text-anchor="middle" data-i18n="vault.locked_sub">Authenticate to view contents.</text>
+
+  <!-- Action buttons -->
+  <rect x="20" y="442" width="320" height="56" rx="18" fill="url(#lock)"/>
+  <text x="180" y="476" font-family="sans-serif" font-size="15" font-weight="700" fill="#0A1320" text-anchor="middle" data-i18n="vault.unlock">Unlock with biometrics</text>
+
+  <rect x="20" y="510" width="320" height="48" rx="14" fill="#16263D"/>
+  <text x="180" y="540" font-family="sans-serif" font-size="13" fill="#ECEFF4" text-anchor="middle" data-i18n="vault.add_file">+ Add file (encrypted)</text>
+
+  <!-- Disclaimer -->
+  <text x="180" y="600" font-family="sans-serif" font-size="10" fill="#A7B4C7" text-anchor="middle" data-i18n="vault.disclaimer1">Key bound to this device — reset wipes vault.</text>
+  <text x="180" y="618" font-family="sans-serif" font-size="10" fill="#A7B4C7" text-anchor="middle" data-i18n="vault.disclaimer2">Back up sensitive files externally.</text>
+
+  <rect x="20" y="664" width="320" height="56" rx="20" fill="#16263D"/>
+  <g font-family="sans-serif" font-size="10" fill="#A7B4C7" text-anchor="middle">
+    <text x="60" y="710" data-i18n="nav.dashboard">Dashboard</text>
+    <text x="124" y="710" data-i18n="nav.cleaner">Clean</text>
+    <text x="188" y="710" data-i18n="nav.storage">Storage</text>
+    <text x="252" y="710" data-i18n="nav.apps">Apps</text>
+    <circle cx="316" cy="688" r="4" fill="#FF6F61"/>
+    <text x="316" y="710" fill="#FF6F61" data-i18n="nav.tools">Tools</text>
+  </g>
+</svg>

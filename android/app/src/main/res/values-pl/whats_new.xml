@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_title">Co nowego w 2.3</string>
+    <string name="whats_new_dismiss">Rozumiem</string>
+    <string-array name="whats_new_items">
+        <item>NOWE: Organizer — automatycznie grupuje Twoje aplikacje w foldery (Gry, Społecznościowe, Zdjęcia i wideo i więcej) na podstawie tego, co każda aplikacja sama o sobie deklaruje</item>
+        <item>Każdy folder możesz przypiąć jako skrót jednym dotknięciem na prawdziwy pulpit</item>
+        <item>Folder dowolnej aplikacji można zmienić ręcznie, jeśli automat się pomyli</item>
+        <item>Uczciwie od podstaw: żadna aplikacja — łącznie z naszą — nie może odczytać ani przestawić układu Twojego prawdziwego pulpitu, więc zbudowaliśmy najbliższą rzecz, jaka jest naprawdę możliwa, zamiast to udawać</item>
+    </string-array>
+</resources>

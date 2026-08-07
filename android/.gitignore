@@ -1,0 +1,16 @@
+.gradle/
+build/
+local.properties
+*.iml
+.idea/
+captures/
+.cxx/
+.kotlin/
+
+# Release signing — never commit keys or passwords
+keystore.properties
+*.jks
+*.keystore
+
+# AdMob unit IDs — kept out of git to avoid policy strikes on credential leakage.
+admob.properties

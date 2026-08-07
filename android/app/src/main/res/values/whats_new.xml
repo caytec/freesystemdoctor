@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_title">What\'s new in 2.3</string>
+    <string name="whats_new_dismiss">Got it</string>
+    <string-array name="whats_new_items">
+        <item>NEW: Organizer — automatically groups your apps into folders (Games, Social, Photo &amp; Video, and more) based on what each app actually declares itself to be</item>
+        <item>Every folder can be pinned as a one-tap shortcut on your real home screen</item>
+        <item>Any app\'s folder can be changed by hand if the automatic grouping guesses wrong</item>
+        <item>Honest by design: no app — ours included — can read or rearrange your home screen\'s actual layout, so we built the closest thing that\'s actually possible instead of faking it</item>
+    </string-array>
+</resources>

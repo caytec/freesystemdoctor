@@ -1,0 +1,165 @@
+package com.freeandroiddoctor.android.engine.network
+
+import android.app.usage.NetworkStats
+import android.app.usage.NetworkStatsManager
+import android.content.Context
+import android.net.ConnectivityManager
+import com.freeandroiddoctor.android.core.permission.PermissionManager
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.util.concurrent.TimeUnit
+
+data class DataUsageItem(
+    val label: String,
+    val mobileBytes: Long,
+    val wifiBytes: Long,
+    val packageName: String? = null,
+) {
+    val totalBytes: Long get() = mobileBytes + wifiBytes
+}
+
+/** Foreground vs background bytes for one app — the "phone-home" view. */
+data class PhoneHomeItem(
+    val label: String,
+    val packageName: String,
+    val foregroundBytes: Long,
+    val backgroundBytes: Long,
+) {
+    val totalBytes: Long get() = foregroundBytes + backgroundBytes
+    /** Share of this app's traffic that happened while you weren't using it. */
+    val backgroundFraction: Float get() =
+        if (totalBytes <= 0) 0f else backgroundBytes.toFloat() / totalBytes
+}
+
+/**
+ * Per-app mobile + Wi-Fi data usage over a recent window via NetworkStatsManager.
+ * Querying other apps' UIDs requires the PACKAGE_USAGE_STATS special access.
+ */
+class DataUsageEngine(
+    private val context: Context,
+    private val permissions: PermissionManager,
+) {
+
+    suspend fun usage(days: Int = 30): List<DataUsageItem> = withContext(Dispatchers.IO) {
+        if (!permissions.hasUsageAccess()) return@withContext emptyList()
+        val nsm = context.getSystemService(Context.NETWORK_STATS_SERVICE) as NetworkStatsManager
+        val pm = context.packageManager
+        val end = System.currentTimeMillis()
+        val start = end - TimeUnit.DAYS.toMillis(days.toLong())
+
+        val mobile = bytesByUid(nsm, ConnectivityManager.TYPE_MOBILE, start, end)
+        val wifi = bytesByUid(nsm, ConnectivityManager.TYPE_WIFI, start, end)
+
+        val uids = (mobile.keys + wifi.keys)
+        uids.mapNotNull { uid ->
+            val (label, pkg) = labelAndPackageForUid(pm, uid) ?: return@mapNotNull null
+            val item = DataUsageItem(
+                label = label,
+                mobileBytes = mobile[uid] ?: 0L,
+                wifiBytes = wifi[uid] ?: 0L,
+                packageName = pkg,
+            )
+            if (item.totalBytes <= 0) null else item
+        }.sortedByDescending { it.totalBytes }
+    }
+
+    /**
+     * Per-app foreground vs background traffic (mobile + Wi-Fi) over a recent
+     * window — surfaces apps that "phone home" while you aren't using them.
+     * Only apps with meaningful background traffic are returned, most-background
+     * first. Requires the PACKAGE_USAGE_STATS special access.
+     */
+    suspend fun backgroundActivity(days: Int = 7): List<PhoneHomeItem> =
+        withContext(Dispatchers.IO) {
+            if (!permissions.hasUsageAccess()) return@withContext emptyList()
+            val nsm = context.getSystemService(Context.NETWORK_STATS_SERVICE) as NetworkStatsManager
+            val pm = context.packageManager
+            val end = System.currentTimeMillis()
+            val start = end - TimeUnit.DAYS.toMillis(days.toLong())
+
+            val split = HashMap<Int, LongArray>() // uid -> [fg, bg]
+            for (type in intArrayOf(ConnectivityManager.TYPE_MOBILE, ConnectivityManager.TYPE_WIFI)) {
+                accumulateByState(nsm, type, start, end, split)
+            }
+
+            split.mapNotNull { (uid, fgBg) ->
+                val bg = fgBg[1]
+                if (bg < MIN_BACKGROUND_BYTES) return@mapNotNull null
+                val (label, pkg) = labelAndPackageForUid(pm, uid) ?: return@mapNotNull null
+                PhoneHomeItem(
+                    label = label,
+                    packageName = pkg,
+                    foregroundBytes = fgBg[0],
+                    backgroundBytes = bg,
+                )
+            }.sortedByDescending { it.backgroundBytes }
+        }
+
+    private fun accumulateByState(
+        nsm: NetworkStatsManager,
+        networkType: Int,
+        start: Long,
+        end: Long,
+        into: MutableMap<Int, LongArray>,
+    ) {
+        val stats = runCatching {
+            @Suppress("DEPRECATION")
+            nsm.querySummary(networkType, null, start, end)
+        }.getOrNull() ?: return
+        try {
+            val bucket = NetworkStats.Bucket()
+            while (stats.hasNextBucket()) {
+                stats.getNextBucket(bucket)
+                val bytes = bucket.rxBytes + bucket.txBytes
+                val slot = into.getOrPut(bucket.uid) { LongArray(2) }
+                if (bucket.state == NetworkStats.Bucket.STATE_FOREGROUND) {
+                    slot[0] += bytes
+                } else {
+                    slot[1] += bytes
+                }
+            }
+        } finally {
+            stats.close()
+        }
+    }
+
+    private fun bytesByUid(
+        nsm: NetworkStatsManager,
+        networkType: Int,
+        start: Long,
+        end: Long,
+    ): Map<Int, Long> {
+        val result = HashMap<Int, Long>()
+        val stats = runCatching {
+            @Suppress("DEPRECATION")
+            nsm.querySummary(networkType, null, start, end)
+        }.getOrNull() ?: return result
+        try {
+            val bucket = NetworkStats.Bucket()
+            while (stats.hasNextBucket()) {
+                stats.getNextBucket(bucket)
+                result[bucket.uid] = (result[bucket.uid] ?: 0L) + bucket.rxBytes + bucket.txBytes
+            }
+        } finally {
+            stats.close()
+        }
+        return result
+    }
+
+    private fun labelAndPackageForUid(
+        pm: android.content.pm.PackageManager,
+        uid: Int,
+    ): Pair<String, String>? {
+        val packages = pm.getPackagesForUid(uid) ?: return null
+        val pkg = packages.firstOrNull() ?: return null
+        val label = runCatching {
+            pm.getApplicationLabel(pm.getApplicationInfo(pkg, 0)).toString()
+        }.getOrNull() ?: pkg
+        return label to pkg
+    }
+
+    private companion object {
+        /** Ignore trickle traffic (push keep-alive etc.); ~1 MB threshold. */
+        const val MIN_BACKGROUND_BYTES = 1_000_000L
+    }
+}

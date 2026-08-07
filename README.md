@@ -1,37 +1,102 @@
-# FreeSystemDoctor
+# FreeAndroidDoctor
 
-> Darmowy, open-source optymalizator Windows. 62 moduły silnika. 45 narzędzi w GUI. Zero reklam, zero subskrypcji.
+> Polska aplikacja do czyszczenia, audytu prywatności i optymalizacji telefonu z Androidem. Wszystko działa lokalnie — bez kont, bez śledzenia, bez kompromisów.
 
-[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-[![Platform](https://img.shields.io/badge/platform-Windows%2010%2F11-blue.svg)]()
-[![Download](https://img.shields.io/badge/download-25%20MB-blue.svg)](dist/FreeSystemDoctor.exe)
+[![Android 8.0+](https://img.shields.io/badge/Android-8.0%2B-3DDC84?logo=android&logoColor=white)](https://github.com/caytec/FreeAndroidDoctor/releases)
+[![Version](https://img.shields.io/badge/version-2.0.0-green)](https://github.com/caytec/FreeAndroidDoctor/releases/latest)
+[![Download APK](https://img.shields.io/badge/Download-APK%204MB-4ade80?logo=android&logoColor=white)](https://github.com/caytec/FreeAndroidDoctor/releases/latest/download/FreeAndroidDoctor-free.apk)
 
-🌐 **Strona projektu:** [caytec.github.io/freesystemdoctor](https://caytec.github.io/freesystemdoctor) · [Changelog](https://caytec.github.io/freesystemdoctor/changelog.html)
+🌐 **Strona projektu:** [caytec.github.io/FreeAndroidDoctor](https://caytec.github.io/FreeAndroidDoctor) · [Polityka prywatności](https://caytec.github.io/FreeAndroidDoctor/privacy-android.html)
 
-## Pobierz
+## 🚀 Pobierz teraz
 
-➡️ **[`dist/FreeSystemDoctor.exe`](dist/FreeSystemDoctor.exe?raw=1)** — 25 MB, x64, Windows 10/11
+📥 **[Pobierz najnowszą wersję (APK, 4 MB)](https://github.com/caytec/FreeAndroidDoctor/releases/latest)**
 
-Pojedynczy plik. Bez instalatora. Bez kont. Uruchom i działa.
+Wymagania: Android 8.0+ · 15 MB miejsca · brak konta wymagany
 
-## Co to jest
+## 🎯 Co potrafi
 
-Aplikacja Windows z 45 modułami narzędzi:
+### 🧹 Inteligentne czyszczenie
+Automatyczne wykrywanie cache, duplikatów zdjęć, pozostałości po odinstalowanych aplikacjach (CorpseFinder), śmieciowych plików logów. Odzyskaj kilka GB w minutę.
 
-- **Czyszczenie:** śmieci, rejestr, duplikaty, puste foldery, duże pliki
-- **Optymalizacja:** RAM, sieć (TCP/DNS), autostart, usługi, profile wydajności
-- **Prywatność:** ślady przeglądarek, shredder DOD 5220.22-M, drive wipe
-- **Bezpieczeństwo:** Defender, firewall, ochrona kamerki
-- **Monitoring:** real-time CPU/RAM/Dysk, hardware monitor, benchmark
-- **Zaawansowane:** Smart Defrag (SSD-aware), file recovery, asystent AI
+### 🛡️ Audyt prywatności
+- **Privacy Score** — punktowa ocena bezpieczeństwa telefonu (0–100)
+- **Skaner APK** z bazą znanych trackerów
+- **3 profile**: Balanced / Strict / Game Mode
+- **Czyszczenie 15+ przeglądarek** (Chrome, Firefox, Brave, Opera, Edge…)
+- Kontrola DNS i blokada śledzenia
 
-## Wymagania
+### ⚡ Tryby i automatyzacja
+- **Game / Travel / Focus / Privacy Mode** — jeden przełącznik konfiguruje pół telefonu
+- **Auto-reguły** wyzwalane zdarzeniami (niski poziom pamięci, ładowanie, Wi-Fi, godzina)
 
-- Windows 10 (build 1809+) lub Windows 11
-- x64
-- ~50 MB miejsca na dysku
-- ~100 MB RAM podczas pracy
+### 📊 Bateria i wydajność
+- Historia cykli ładowania z oceną zdrowia akumulatora
+- Monitor zużycia CPU, RAM i temperatury w czasie rzeczywistym
+- Ranking aplikacji najbardziej żarłocznych
 
-## Licencja
+### 🤖 Asystent AI (opcjonalnie)
+Integracja z **Cerebras**, **Groq**, **OpenRouter** — podajesz własny klucz API, dostajesz spersonalizowane rekomendacje. Pełna prywatność — klucz lokalnie, zero pośrednika.
 
-MIT — zobacz [LICENSE](LICENSE).
+## 🔒 Prywatność
+
+**FreeAndroidDoctor przetwarza wszystkie dane lokalnie na Twoim telefonie.**
+
+- ❌ Nie wymaga konta użytkownika
+- ❌ Nie wysyła Twoich plików, kontaktów ani statystyk
+- ❌ Nie zbiera danych poza standardowym Advertising ID (tylko w wersji Free, do reklam AdMob)
+- ✅ Pełna zgodność z RODO
+- ✅ Pełna [polityka prywatności](https://caytec.github.io/FreeAndroidDoctor/privacy-android.html)
+
+## 💎 Wersje aplikacji
+
+| Funkcja | Free | PRO |
+|---|---|---|
+| Czyszczenie systemu | ✅ | ✅ |
+| Audyt prywatności | ✅ (3/dzień) | ✅ bez limitu |
+| Tryby pracy | ✅ (1/dzień) | ✅ bez limitu |
+| Czyszczenie przeglądarek | ✅ (1×/dzień) | ✅ bez limitu |
+| Asystent AI | ✅ | ✅ |
+| Reklamy | tak (AdMob) | brak |
+| Automatyzacja zaawansowana | — | ✅ |
+
+**Cennik PRO**: 9,99 zł/mies · 49,99 zł/rok · 99 zł jednorazowo (Lifetime)
+
+## 📲 Instalacja
+
+1. Pobierz APK z [zakładki Releases](https://github.com/caytec/FreeAndroidDoctor/releases/latest)
+2. Otwórz pobrany plik na telefonie
+3. Zezwól na instalację z nieznanego źródła (jednorazowo dla Twojej przeglądarki)
+4. Zainstaluj i uruchom — gotowe!
+
+## 🛠️ Budowanie ze źródeł
+
+Wymagania: Android Studio Hedgehog+ · JDK 17 · Android SDK 35
+
+```bash
+git clone https://github.com/caytec/FreeAndroidDoctor.git
+cd FreeAndroidDoctor/android
+cp admob.properties.template admob.properties  # wklej własne unit IDs (lub zostaw test IDs Google)
+./gradlew :app:assembleFreeDebug
+```
+
+APK ląduje w `android/app/build/outputs/apk/free/debug/`.
+
+## 🤝 Wkład
+
+Pull requesty mile widziane. Przed otwarciem PR:
+
+```bash
+./gradlew :app:testFreeDebugUnitTest
+./gradlew :app:lintFreeDebug
+```
+
+## 📄 Licencja
+
+Proprietary © 2026 caytec. Kod publicznie dostępny do wglądu, audytu bezpieczeństwa i edukacji. Komercyjne wykorzystanie, redystrybucja lub modyfikacja wymagają pisemnej zgody autora.
+
+## 📬 Kontakt
+
+- **Bug reports / feature requests**: [GitHub Issues](https://github.com/caytec/FreeAndroidDoctor/issues)
+- **Email**: coopaisolutions@gmail.com
+- **Wersja Windows (osobny produkt)**: [freesystemdoctor.pl](https://freesystemdoctor.pl)

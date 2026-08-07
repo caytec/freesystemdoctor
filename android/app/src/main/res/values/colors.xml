@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="ic_launcher_background">#0F1B2D</color>
+    <!-- Matches LightBg in ui/theme/Color.kt; night variant in values-night/. -->
+    <color name="window_background">#F6F8FC</color>
+</resources>

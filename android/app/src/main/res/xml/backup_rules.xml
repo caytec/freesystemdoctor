@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- EncryptedSharedPreferences ciphertext is useless (and crash-prone:
+     AEADBadTagException) after restore on a different device because the
+     Keystore master key never leaves the original device — exclude all of it.
+     The vault holds user-hidden files; its index and blobs stay local-only. -->
+<full-backup-content>
+    <exclude domain="sharedpref" path="fsd_secure_keys.xml" />
+    <exclude domain="sharedpref" path="fsd_cloud_backup_key.xml" />
+    <exclude domain="file" path="vault/" />
+    <!-- Entitlement cache: excluded so a backup/restore (or adb backup) can't be
+         used to inject a forged Pro/trial/tool-unlock state. Google Play is the
+         source of truth and re-reconciles on next launch. -->
+    <exclude domain="file" path="datastore/fsd_pro.preferences_pb" />
+    <exclude domain="file" path="app_growth/" />
+    <exclude domain="file" path="corpse/" />
+    <exclude domain="file" path="notif_stats/" />
+</full-backup-content>
