@@ -21,7 +21,9 @@ class AIAskPage(tk.Frame):
         self._app = app_ref
         self._busy = False
         self._thinking = None
+        self._installing = False
         self._build_ui()
+        self._refresh_local_status()
         self._greet()
 
     def _build_ui(self):
@@ -31,6 +33,21 @@ class AIAskPage(tk.Frame):
 
         body = tk.Frame(self, bg=T.BG)
         body.pack(fill="both", expand=True, padx=16, pady=12)
+
+        self._local_card = Card(body)
+        self._local_card.pack(fill="x", pady=(0, 10))
+        row = tk.Frame(self._local_card, bg=T.PANEL)
+        row.pack(fill="x", padx=12, pady=10)
+        self._local_dot = tk.Label(row, text="○", bg=T.PANEL, fg=T.FG2,
+                                   font=(T.FONT_FAMILY, 12))
+        self._local_dot.pack(side="left", padx=(0, 6))
+        self._local_lbl = tk.Label(row, text="Checking local AI…", bg=T.PANEL,
+                                   fg=T.FG2, font=T.FONT_SMALL, anchor="w")
+        self._local_lbl.pack(side="left", fill="x", expand=True)
+        self._local_btn = ActionButton(row, text="Install (≈490 MB)", width=170,
+                                       command=self._install_local)
+        self._local_prog = ProgressBar(self._local_card)
+        # packed on demand in _install_local
 
         # Scrollable chat area
         wrap = tk.Frame(body, bg=T.BG)
@@ -56,6 +73,65 @@ class AIAskPage(tk.Frame):
         self._entry.bind("<Return>", lambda e: self._send())
         self._ask_btn = ActionButton(bar, text="Ask", width=90, command=self._send)
         self._ask_btn.pack(side="left")
+
+    # ── local AI status / install ───────────────────────────────────────────
+    def _refresh_local_status(self):
+        def work():
+            try:
+                from engine import local_llm
+                status = local_llm.get_status()
+            except Exception as e:
+                status = {"installed": False, "running": False, "error": str(e)}
+            self.after(0, self._apply_local_status, status)
+
+        threading.Thread(target=work, daemon=True).start()
+
+    def _apply_local_status(self, status: dict):
+        if status.get("installed"):
+            self._local_dot.config(fg=T.SUCCESS, text="●")
+            self._local_lbl.config(
+                text=f"Local AI installed ({status.get('model_name', 'model')}) "
+                     "— works fully offline.", fg=T.FG)
+            self._local_btn.pack_forget()
+        else:
+            self._local_dot.config(fg=T.FG2, text="○")
+            self._local_lbl.config(
+                text="No local AI yet — answers use the cloud (or nothing, "
+                     "if offline). Install a small model that runs entirely "
+                     "on this PC.", fg=T.FG2)
+            if not self._installing:
+                self._local_btn.pack(side="right")
+
+    def _install_local(self):
+        if self._installing:
+            return
+        self._installing = True
+        self._local_btn.pack_forget()
+        self._local_lbl.config(text="Downloading local AI…", fg=T.FG2)
+        self._local_prog.pack(fill="x", padx=12, pady=(0, 10))
+        self._local_prog.set(0)
+
+        def progress(pct, msg):
+            self.after(0, lambda: (self._local_prog.set(pct),
+                                   self._local_lbl.config(text=str(msg))))
+
+        def work():
+            try:
+                from engine import local_llm
+                ok, msg = local_llm.download_and_install(progress_cb=progress)
+                if ok:
+                    local_llm.start_server()
+            except Exception as e:
+                ok, msg = False, str(e)
+            self.after(0, self._install_done, ok, msg)
+
+        threading.Thread(target=work, daemon=True).start()
+
+    def _install_done(self, ok: bool, msg: str):
+        self._installing = False
+        self._local_prog.pack_forget()
+        self._local_lbl.config(text=msg, fg=T.SUCCESS if ok else T.DANGER)
+        self._refresh_local_status()
 
     def _greet(self):
         self._bubble(
@@ -97,9 +173,10 @@ class AIAskPage(tk.Frame):
 
         if result.get("error") and not result.get("text"):
             self._bubble(
-                "I couldn't reach an AI model. Set an API key "
-                "(ANTHROPIC_API_KEY / GROQ_API_KEY / …) or run a local model with "
-                "“ollama serve”. Details: " + str(result["error"]),
+                "I couldn't reach an AI model. Install the local AI above "
+                "(no internet needed once installed), or set a cloud API key "
+                "(ANTHROPIC_API_KEY / GROQ_API_KEY / …). "
+                "Details: " + str(result["error"]),
                 who="assistant", error=True,
                 suggested_key=result.get("suggested_key"))
             return

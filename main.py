@@ -60,7 +60,67 @@ def _check_deps():
     return missing
 
 
+def _run_local_ai_installer_ui():
+    """Standalone progress window for `--install-local-ai`.
+
+    Launched by the installer (opt-in task) right after setup finishes, so
+    the local model is ready the first time the user opens Ask-your-PC. Does
+    NOT need administrator rights, so it deliberately runs before
+    _ensure_admin() — a UAC prompt here would be an unexplained surprise for
+    something that only writes to the user's own AppData.
+    """
+    import tkinter as tk
+    from tkinter import ttk
+
+    root = tk.Tk()
+    root.title("FreeSystemDoctor — Setting up local AI")
+    root.geometry("440x150")
+    root.resizable(False, False)
+    try:
+        root.attributes("-topmost", True)
+    except Exception:
+        pass
+
+    tk.Label(root, text="Setting up the local AI assistant…",
+             font=("Segoe UI", 11, "bold")).pack(pady=(18, 4))
+    status = tk.StringVar(value="Starting…")
+    tk.Label(root, textvariable=status, font=("Segoe UI", 9)).pack(pady=(0, 10))
+    bar = ttk.Progressbar(root, length=380, mode="determinate", maximum=100)
+    bar.pack(pady=(0, 14))
+    tk.Label(root, text="You can close this — it continues in the background,\n"
+                        "and FreeSystemDoctor works fine without it.",
+             font=("Segoe UI", 8), fg="#888888", justify="center").pack()
+
+    def progress(pct, msg):
+        def apply():
+            try:
+                bar["value"] = pct
+                status.set(str(msg))
+            except Exception:
+                pass
+        root.after(0, apply)
+
+    def work():
+        try:
+            from engine import local_llm
+            ok, msg = local_llm.download_and_install(progress_cb=progress)
+            if ok:
+                local_llm.start_server()
+            root.after(0, lambda: status.set(msg))
+        except Exception as e:
+            root.after(0, lambda: status.set(f"Setup failed: {e}"))
+        root.after(2500, root.destroy)
+
+    import threading
+    threading.Thread(target=work, daemon=True).start()
+    root.mainloop()
+
+
 def main():
+    if len(sys.argv) > 1 and sys.argv[1] == "--install-local-ai":
+        _run_local_ai_installer_ui()
+        return
+
     _ensure_admin()
 
     missing = _check_deps()

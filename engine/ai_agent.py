@@ -154,7 +154,7 @@ def set_ollama_model(model: str):
 
 def get_api_names() -> list[str]:
     """Return list of API display names for the GUI dropdown."""
-    return ["auto"] + [name for name, *_ in API_REGISTRY] + ["Ollama"]
+    return ["auto"] + [name for name, *_ in API_REGISTRY] + ["Ollama", "Local AI"]
 
 
 def set_preferred_api(name: str):
@@ -790,6 +790,31 @@ def _call_ollama(data: dict, stream_cb=None, mode: str = "full"):
     return content, None
 
 
+# ── bundled local LLM caller (installed by us — no separate app needed) ───────
+
+def _call_local_llm(data: dict, stream_cb=None, mode: str = "full"):
+    """Call the local model FreeSystemDoctor can install for itself
+    (engine.local_llm — llama.cpp + Qwen2.5-0.5B). Always uses the compact
+    prompt: this model is far smaller than anything Ollama users typically
+    run, and only reliable when asked to explain numbers we already measured,
+    not to recall facts."""
+    from . import local_llm
+    if not local_llm.is_installed():
+        return None, "Local AI: not installed"
+    prompt = _build_compact_prompt(data, mode)
+    _logger.info(f"Calling local LLM (mode={mode})")
+    content, err = local_llm.chat(
+        [{"role": "user", "content": prompt}], max_tokens=400, temperature=0.5)
+    if err:
+        return None, f"Local AI: {err}"
+    if stream_cb:
+        try:
+            stream_cb(content)
+        except Exception:
+            pass
+    return content, None
+
+
 # Map display name → caller function
 _CALLERS = {
     "Anthropic":  call_anthropic,
@@ -797,10 +822,13 @@ _CALLERS = {
     "Groq":       _call_groq,
     "OpenRouter": _call_openrouter,
     "Ollama":     _call_ollama,
+    "Local AI":   _call_local_llm,
 }
 
-# Default chain order — Ollama first (free, local, private); cloud APIs as fallback
-_DEFAULT_CHAIN = ["Ollama", "Anthropic", "Cerebras", "Groq", "OpenRouter"]
+# Default chain order — our bundled local model first (always available once
+# installed, zero setup), then Ollama for users who run their own, then cloud
+# APIs as fallback.
+_DEFAULT_CHAIN = ["Local AI", "Ollama", "Anthropic", "Cerebras", "Groq", "OpenRouter"]
 
 
 # ── structured output parser ──────────────────────────────────────────────────
@@ -939,6 +967,13 @@ def analyze_system(stream_cb: Callable = None, mode: str = "full") -> HealthRepo
 
 def _ask_provider(name: str, prompt: str) -> tuple[Optional[str], Optional[str]]:
     """Send an arbitrary prompt to a single provider. Returns (text, error)."""
+    if name == "Local AI":
+        from . import local_llm
+        if not local_llm.is_installed():
+            return None, "Local AI: not installed"
+        return local_llm.chat([{"role": "user", "content": prompt}],
+                              max_tokens=400, temperature=0.5)
+
     if name == "Ollama":
         if not requests:
             return None, "Ollama: requests not installed"
@@ -1003,9 +1038,23 @@ def _ask_provider(name: str, prompt: str) -> tuple[Optional[str], Optional[str]]
          "max_tokens": 600, "temperature": 0.6})
 
 
-def ask(prompt: str) -> tuple[Optional[str], Optional[str]]:
+# Providers whose model is guaranteed small (we control exactly what's
+# installed) — these get compact_prompt when the caller supplies one. Ollama
+# is deliberately excluded: the user could have any size model installed
+# there, and ask() has no way to know which.
+_SMALL_PROVIDERS = {"Local AI"}
+
+
+def ask(prompt: str,
+        compact_prompt: Optional[str] = None) -> tuple[Optional[str], Optional[str]]:
     """Run an arbitrary prompt through the same provider chain as analyze_system
-    (Ollama-first ⇒ offline-capable). Returns (answer_text, error)."""
+    (local-first ⇒ offline-capable). Returns (answer_text, error).
+
+    A tiny local model can't reliably follow a long prompt built for GPT-class
+    models — pass `compact_prompt` (short, rigidly structured) and it's used
+    automatically for providers in _SMALL_PROVIDERS; every other provider
+    still gets the full `prompt`.
+    """
     if PREFERRED_API == "auto":
         chain = _DEFAULT_CHAIN
     else:
@@ -1013,7 +1062,9 @@ def ask(prompt: str) -> tuple[Optional[str], Optional[str]]:
 
     errors: list[str] = []
     for name in chain:
-        text, err = _ask_provider(name, prompt)
+        use_prompt = compact_prompt if (compact_prompt and name in _SMALL_PROVIDERS) \
+            else prompt
+        text, err = _ask_provider(name, use_prompt)
         if text:
             return text, None
         if err:

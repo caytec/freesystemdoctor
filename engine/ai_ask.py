@@ -70,15 +70,26 @@ INTENT_TOOL_MAP: list[tuple[tuple[str, ...], str]] = [
 
 
 def _context() -> dict:
+    """Lightweight snapshot for a chat turn.
+
+    Deliberately does NOT call ai_agent.collect_system_data() — that also
+    gathers hardware.py's WMI details (~6 PowerShell calls, seconds each),
+    which this prompt never uses. A quick question about "why is my PC slow"
+    shouldn't spend several seconds on data it won't show.
+    """
+    from . import system_info
     try:
-        data = ai_agent.collect_system_data()
+        live = system_info.get_live_metrics() or {}
     except Exception:
-        data = {}
-    cpu = data.get("cpu_percent") or data.get("cpu") or "?"
-    ram = data.get("ram_percent") or data.get("memory_percent") or data.get("ram") or "?"
-    score = data.get("health_score", "?")
-    issues = data.get("detected_issues", []) or []
-    return {"cpu": cpu, "ram": ram, "score": score, "issues": ", ".join(issues[:4]) or "none noted"}
+        live = {}
+    try:
+        score, issues = system_info.get_health_score()
+    except Exception:
+        score, issues = "?", []
+    cpu = live.get("cpu_pct", "?")
+    ram = live.get("ram_pct", "?")
+    return {"cpu": cpu, "ram": ram, "score": score,
+            "issues": ", ".join(issues[:4]) or "none noted"}
 
 
 def _build_prompt(query: str, ctx: dict) -> str:
@@ -93,6 +104,27 @@ def _build_prompt(query: str, ctx: dict) -> str:
         "Do not invent features. If one tool best helps, end your reply with a final line "
         "exactly in the form:\nTOOL: <key>\n"
         "where <key> is one of the keys above. If no tool fits, omit the TOOL line."
+    )
+
+
+def _build_compact_prompt(query: str, ctx: dict) -> str:
+    """Short, rigid template for a tiny (sub-1B) local model.
+
+    The full prompt's 30-line tool catalog and word-count instructions get
+    ignored by a model this size — it just emits a wall of "TOOL:" lines
+    instead of an answer (verified empirically). A tiny model IS reliable at
+    filling in a short, strict two-line template, so that's what it gets.
+    """
+    keys = ", ".join(TOOL_CATALOG.keys())
+    return (
+        f"PC status: CPU {ctx['cpu']}%, RAM {ctx['ram']}%, health "
+        f"{ctx['score']}/100, issues: {ctx['issues']}.\n"
+        f'Question: "{query}"\n\n'
+        "Reply with exactly two lines. Line 1: ONE short plain-language "
+        "sentence answering the question — no lists, no headers. "
+        "Line 2: exactly one of:\n"
+        f"TOOL: <key>   — the single best key from: {keys}\n"
+        "TOOL: NONE    — if none fit"
     )
 
 
@@ -121,7 +153,8 @@ def answer(query: str) -> dict:
 
     ctx = _context()
     prompt = _build_prompt(query, ctx)
-    text, err = ai_agent.ask(prompt)
+    compact = _build_compact_prompt(query, ctx)
+    text, err = ai_agent.ask(prompt, compact_prompt=compact)
 
     if not text:
         return {"text": "", "suggested_key": _keyword_fallback(query),

@@ -158,7 +158,7 @@ class AIAgentPage(tk.Frame):
         self._pref_var = tk.StringVar(value="auto")
         self._pref_combo = ttk.Combobox(
             sel_row, textvariable=self._pref_var,
-            values=["auto", "Ollama"] + [n for n, *_ in _APIS],
+            values=["auto", "Local AI", "Ollama"] + [n for n, *_ in _APIS],
             state="readonly", width=14, font=T.FONT_SMALL,
         )
         self._pref_combo.pack(side="left", padx=(6, 0))
@@ -536,7 +536,8 @@ class AIAgentPage(tk.Frame):
         self._analyzing = True
         self._progress.indeterminate(True)
         pref = self._pref_var.get()
-        chain_desc = pref if pref != "auto" else "Ollama → Anthropic → Cerebras → Groq → OpenRouter"
+        chain_desc = pref if pref != "auto" else \
+            "Local AI → Ollama → Anthropic → Cerebras → Groq → OpenRouter"
         self._status_lbl.config(
             text=f"🔄 {icon} {mode_label} in progress… ({chain_desc})", fg=T.FG2)
         self._api_lbl.config(text="")

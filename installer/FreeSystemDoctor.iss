@@ -70,12 +70,17 @@ Name: "polish";  MessagesFile: "compiler:Languages\Polish.isl"
 english.PartnerPageCaption=Recommended free tools (optional)
 english.PartnerPageDesc=Hand-picked partner apps. Tick any you'd like to try — nothing is installed; ticked links simply open in your browser after setup.
 english.PartnerIntro=All boxes are unchecked by default. These are affiliate links: if you sign up we may earn a small commission at no extra cost to you, which keeps FreeSystemDoctor free. You can skip this page entirely.
+english.LocalAiGroup=Local AI assistant
+english.LocalAiTask=Download the local AI assistant (~490 MB, works fully offline)
 polish.PartnerPageCaption=Polecane darmowe narzędzia (opcjonalnie)
 polish.PartnerPageDesc=Ręcznie wybrane aplikacje partnerów. Zaznacz te, które chcesz wypróbować — nic nie jest instalowane; zaznaczone linki otworzą się w przeglądarce po instalacji.
 polish.PartnerIntro=Wszystkie pola są domyślnie odznaczone. To linki afiliacyjne: jeśli się zarejestrujesz, możemy otrzymać niewielką prowizję bez dodatkowych kosztów dla Ciebie, co utrzymuje FreeSystemDoctor za darmo. Tę stronę możesz pominąć.
+polish.LocalAiGroup=Lokalny asystent AI
+polish.LocalAiTask=Pobierz lokalnego asystenta AI (~490 MB, działa całkowicie offline)
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
+Name: "installlocalai"; Description: "{cm:LocalAiTask}"; GroupDescription: "{cm:LocalAiGroup}"
 
 [Files]
 Source: "{#SourceDir}\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
@@ -88,6 +93,13 @@ Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"
 Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
 
 [Run]
+; Opt-in local AI download — gated purely by the Tasks-page checkbox above,
+; so it does NOT also appear as a Finish-page checkbox (that would be a
+; confusing second, redundant prompt for the same choice). Runs the
+; just-installed exe with a flag that shows only a small progress window
+; (see main.py) and downloads in the background; the app launch below is
+; unaffected either way.
+Filename: "{app}\{#MyAppExeName}"; Parameters: "--install-local-ai"; Flags: nowait runasoriginaluser; Tasks: installlocalai
 ; Launch the app (opt-out checkbox, checked) — standard.
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#MyAppName}}"; Flags: nowait postinstall skipifsilent
 ; Open the thank-you page (opt-out checkbox, checked) — benign, free tips only.
