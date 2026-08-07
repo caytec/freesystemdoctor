@@ -1,7 +1,12 @@
 {
-  "updated": "2026-08-07T18:02:25.441029Z",
-  "count": 56,
+  "updated": "2026-08-07T21:00:34.068614Z",
+  "count": 57,
   "commits": [
+    {
+      "sha": "bff15fbbeac6667be8341bbf33d45db34681b8f3",
+      "date": "2026-08-07T22:59:13+02:00",
+      "msg": "feat(ai): bundled local LLM (llama.cpp + Qwen2.5-0.5B) for offline PC Q&A"
+    },
     {
       "sha": "8c387d9aee99a670bbc94756bec4dbd30a246662",
       "date": "2026-08-07T20:01:31+02:00",
