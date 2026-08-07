@@ -150,6 +150,11 @@ object ServiceLocator {
     val trackerScannerEngine: com.freeandroiddoctor.android.engine.privacy.TrackerScannerEngine by lazy {
         com.freeandroiddoctor.android.engine.privacy.TrackerScannerEngine(appContext)
     }
+    val regressionDetectiveEngine: com.freeandroiddoctor.android.engine.performance.RegressionDetectiveEngine by lazy {
+        com.freeandroiddoctor.android.engine.performance.RegressionDetectiveEngine(
+            appContext, appInsightsEngine, dataUsageEngine,
+        )
+    }
     val performanceEngine: com.freeandroiddoctor.android.engine.performance.PerformanceEngine by lazy {
         com.freeandroiddoctor.android.engine.performance.PerformanceEngine(
             appContext, storageEngine, memoryEngine, batteryFreedomEngine, dataUsageEngine,

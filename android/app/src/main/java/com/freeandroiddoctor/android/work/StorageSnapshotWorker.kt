@@ -33,6 +33,8 @@ class StorageSnapshotWorker(
         // Same daily cadence feeds the per-app growth trends ("App X grew 2 GB
         // this week"). Failure here must not fail the free-space forecast.
         runCatching { ServiceLocator.appGrowthEngine.recordToday() }
+        // Same cadence feeds the regression detective's health history.
+        runCatching { ServiceLocator.regressionDetectiveEngine.recordToday() }
         val report = engine.forecast()
         maybeWarn(report)
         return Result.success()

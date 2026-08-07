@@ -917,4 +917,17 @@
     <string name="perf_cache_body">About %1$s can be reclaimed from other apps\' caches. This frees STORAGE, not speed — caches exist to avoid work, so the next launch of a trimmed app is slower.</string>
     <string name="perf_cache_action">Reclaim cache space</string>
     <string name="perf_cache_result">Freed %1$s</string>
+    <!-- Update 2.1.0: performance regression detective -->
+    <string name="tool_regression">What slowed my phone?</string>
+    <string name="regress_note">Keeps a daily record of how well your device behaves and lines it up against app installs and updates. It can show that things got worse right after a particular app arrived — something no other maintenance app tracks.</string>
+    <string name="regress_gathering_title">Building a baseline</string>
+    <string name="regress_gathering_body">%1$d of 3 daily readings collected. Once there is enough history, installs can be compared against how the device behaved before and after.</string>
+    <string name="regress_sample_now">Take a reading now</string>
+    <string name="regress_none">No app lines up with a regression across %1$d readings.</string>
+    <string name="regress_header">Apps that coincide with a regression: %1$d</string>
+    <string name="regress_since_install">Installed %1$s</string>
+    <string name="regress_since_update">Updated %1$s</string>
+    <string name="regress_awake">Device stays awake %1$d points more of the time since then</string>
+    <string name="regress_background">About %1$s/day more background traffic since then</string>
+    <string name="regress_disclaimer">This is a correlation, not proof. An app installed on an otherwise bad day will show up here too. Use it as a lead worth checking — not a verdict.</string>
 </resources>

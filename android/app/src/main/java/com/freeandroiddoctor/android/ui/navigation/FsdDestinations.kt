@@ -109,6 +109,7 @@ object ToolRoutes {
     const val BATTERY_FREEDOM = "tool/battery_freedom"
     const val POSTURE = "tool/posture"
 
-    // Update 2.1.0: real performance diagnosis
+    // Update 2.1.0: real performance diagnosis + regression detective
     const val PERFORMANCE = "tool/performance"
+    const val REGRESSION = "tool/regression"
 }
