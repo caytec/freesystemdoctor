@@ -933,4 +933,23 @@
     <string name="regress_awake">Od tego czasu urządzenie jest wybudzone o %1$d punktów dłużej</string>
     <string name="regress_background">Od tego czasu około %1$s/dzień więcej ruchu w tle</string>
     <string name="regress_disclaimer">To korelacja, nie dowód. Aplikacja zainstalowana w akurat gorszym dniu też się tu pojawi. Traktuj to jako trop wart sprawdzenia — nie jako werdykt.</string>
+    <!-- Update 2.1.0: Shizuku Turbo -->
+    <string name="tool_turbo">Turbo (Shizuku)</string>
+    <string name="turbo_note">Funkcje opcjonalne. Shizuku pozwala tej aplikacji uruchomić kilka uprzywilejowanych poleceń po tym, jak TY sparujesz je przez ADB — rzeczy, na które Android inaczej nie pozwala żadnej aplikacji. Wszystko tutaj jest jawne, jednorazowe i odwracalne.</string>
+    <string name="turbo_unavailable_title">Shizuku nie działa</string>
+    <string name="turbo_unavailable_body">Zainstaluj aplikację Shizuku i uruchom ją (parowanie przez debugowanie bezprzewodowe na Androidzie 11+ albo jednorazowa komenda ADB). Do tego czasu nic na tym ekranie nie działa — a reszta aplikacji działa bez tego bez przeszkód.</string>
+    <string name="turbo_denied_title">Potrzebne uprawnienie</string>
+    <string name="turbo_denied_body">Shizuku działa, ale nie przyznało jeszcze dostępu tej aplikacji.</string>
+    <string name="turbo_grant">Poproś o uprawnienie Shizuku</string>
+    <string name="turbo_trim_title">Wyczyść cache wszystkich aplikacji</string>
+    <string name="turbo_trim_body">Prosi system o wyczyszczenie cache we wszystkich zainstalowanych aplikacjach. Odzyskuje MIEJSCE, nie prędkość — wyczyszczona aplikacja odbuduje cache przy kolejnym uruchomieniu, więc to uruchomienie będzie wolniejsze.</string>
+    <string name="turbo_trim_action">Wyczyść cały cache</string>
+    <string name="turbo_anim_title">Przyspiesz animacje dwukrotnie</string>
+    <string name="turbo_anim_body">Ustawia trzy systemowe skale animacji na 0,5x. Każde przejście kończy się mniej więcej dwa razy szybciej, co jest realnie usuniętym opóźnieniem — zwykle około 150 ms na animację. Nie przyspiesza to aplikacji, pamięci ani renderowania.</string>
+    <string name="turbo_anim_action">Ustaw animacje na 0,5x</string>
+    <string name="turbo_anim_revert">Przywróć normalną prędkość (1,0x)</string>
+    <string name="turbo_done">Gotowe.</string>
+    <string name="turbo_failed">To polecenie się nie powiodło.</string>
+    <string name="turbo_failed_detail">To polecenie się nie powiodło: %1$s</string>
+    <string name="turbo_footer">Shizuku daje dostęp na poziomie powłoki, dlatego lista poleceń, które ta aplikacja może uruchomić, jest stała i walidowana. Jeśli Shizuku będzie niedostępne, powyższe funkcje po prostu znikną i nic więcej się nie zmieni.</string>
 </resources>

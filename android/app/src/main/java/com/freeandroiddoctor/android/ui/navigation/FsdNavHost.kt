@@ -116,6 +116,7 @@ import com.freeandroiddoctor.android.ui.freedom.BatteryFreedomScreen
 import com.freeandroiddoctor.android.ui.posture.PostureScreen
 import com.freeandroiddoctor.android.ui.performance.PerformanceScreen
 import com.freeandroiddoctor.android.ui.regression.RegressionScreen
+import com.freeandroiddoctor.android.ui.turbo.TurboScreen
 import com.freeandroiddoctor.android.ui.modes.ModesScreen
 import com.freeandroiddoctor.android.ui.automation.AutoRulesScreen
 import com.freeandroiddoctor.android.ui.theme.appBackgroundBrush
@@ -186,6 +187,7 @@ private val toolTitles: Map<String, Int> = mapOf(
     ToolRoutes.POSTURE to R.string.tool_posture,
     ToolRoutes.PERFORMANCE to R.string.tool_performance,
     ToolRoutes.REGRESSION to R.string.tool_regression,
+    ToolRoutes.TURBO to R.string.tool_turbo,
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -392,6 +394,7 @@ fun MainScaffold() {
             composable(ToolRoutes.POSTURE) { PostureScreen() }
             composable(ToolRoutes.PERFORMANCE) { PerformanceScreen() }
             composable(ToolRoutes.REGRESSION) { RegressionScreen() }
+            composable(ToolRoutes.TURBO) { TurboScreen() }
         }
         }
     }

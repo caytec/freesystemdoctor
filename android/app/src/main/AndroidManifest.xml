@@ -96,6 +96,16 @@
                 android:resource="@xml/clean_widget_info" />
         </receiver>
 
+        <!-- Shizuku: optional privileged layer, only active once the user pairs it
+             over ADB and grants permission. The app is fully usable without it. -->
+        <provider
+            android:name="rikka.shizuku.ShizukuProvider"
+            android:authorities="${applicationId}.shizuku"
+            android:multiprocess="false"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="android.permission.INTERACT_ACROSS_USERS_FULL" />
+
         <!-- Non-exported: only our own PendingIntent (widget button) may trigger
              a cache clean; other apps can't spoof the action. -->
         <receiver

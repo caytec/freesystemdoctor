@@ -986,4 +986,23 @@
     <string name="regress_awake">Device stays awake %1$d points more of the time since then</string>
     <string name="regress_background">About %1$s/day more background traffic since then</string>
     <string name="regress_disclaimer">This is a correlation, not proof. An app installed on an otherwise bad day will show up here too. Use it as a lead worth checking — not a verdict.</string>
+    <!-- Update 2.1.0: Shizuku Turbo -->
+    <string name="tool_turbo">Turbo (Shizuku)</string>
+    <string name="turbo_note">Optional power features. Shizuku lets this app run a few privileged commands after YOU pair it over ADB — things Android otherwise allows no app to do. Everything here is explicit, one-off and reversible.</string>
+    <string name="turbo_unavailable_title">Shizuku not running</string>
+    <string name="turbo_unavailable_body">Install the Shizuku app and start it (wireless debugging pairing on Android 11+, or a one-off ADB command). Nothing on this screen works until then — and the rest of this app works fine without it.</string>
+    <string name="turbo_denied_title">Permission needed</string>
+    <string name="turbo_denied_body">Shizuku is running but has not granted this app access yet.</string>
+    <string name="turbo_grant">Request Shizuku permission</string>
+    <string name="turbo_trim_title">Clear every app\'s cache</string>
+    <string name="turbo_trim_body">Asks the system to trim cached data across all installed apps. This recovers STORAGE, not speed — a trimmed app rebuilds its cache on next launch, so that launch is slower.</string>
+    <string name="turbo_trim_action">Trim all caches</string>
+    <string name="turbo_anim_title">Halve UI animation speed</string>
+    <string name="turbo_anim_body">Sets the three system animation scales to 0.5x. Each transition finishes in roughly half the time, which is real latency removed — typically 150 ms or so per animation. It does not make apps, storage or rendering faster.</string>
+    <string name="turbo_anim_action">Set animations to 0.5x</string>
+    <string name="turbo_anim_revert">Restore normal speed (1.0x)</string>
+    <string name="turbo_done">Done.</string>
+    <string name="turbo_failed">That command did not succeed.</string>
+    <string name="turbo_failed_detail">That command did not succeed: %1$s</string>
+    <string name="turbo_footer">Shizuku grants shell-level access, so we keep the list of commands this app can run fixed and validated. If Shizuku is ever unavailable, every feature above simply disappears and nothing else changes.</string>
 </resources>

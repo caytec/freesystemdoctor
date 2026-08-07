@@ -171,6 +171,11 @@ dependencies {
     implementation(libs.androidx.profileinstaller)
     // Read/strip photo metadata (EXIF GPS, device, timestamps) fully on-device.
     implementation(libs.androidx.exifinterface)
+    // Optional privileged layer. The app must remain fully useful without it:
+    // Shizuku requires the user to pair over ADB, and AOSP is considering
+    // restricting on-device ADB, which would disable it entirely.
+    implementation(libs.shizuku.api)
+    implementation(libs.shizuku.provider)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.process)
     implementation(libs.androidx.lifecycle.runtime.compose)

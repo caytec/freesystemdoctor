@@ -60,6 +60,7 @@ import androidx.compose.material.icons.filled.Troubleshoot
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.PhoneAndroid
 import androidx.compose.material.icons.filled.Policy
+import androidx.compose.material.icons.filled.RocketLaunch
 import androidx.compose.material.icons.filled.PhotoLibrary
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.Security
@@ -169,6 +170,7 @@ private val toolGroups = listOf(
             Tool(R.string.tool_memory, Icons.Filled.Memory, ToolRoutes.MEMORY),
             Tool(R.string.tool_performance, Icons.Filled.Speed, ToolRoutes.PERFORMANCE),
             Tool(R.string.tool_regression, Icons.Filled.Troubleshoot, ToolRoutes.REGRESSION),
+            Tool(R.string.tool_turbo, Icons.Filled.RocketLaunch, ToolRoutes.TURBO, advanced = true),
             Tool(R.string.tool_focus, Icons.Filled.DoNotDisturbOn, ToolRoutes.FOCUS),
             Tool(R.string.tool_game_boost, Icons.Filled.SportsEsports, ToolRoutes.GAME_BOOST, advanced = true),
             Tool(R.string.tool_speed, Icons.Filled.Speed, ToolRoutes.SPEED_TEST),

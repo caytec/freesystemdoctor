@@ -112,4 +112,7 @@ object ToolRoutes {
     // Update 2.1.0: real performance diagnosis + regression detective
     const val PERFORMANCE = "tool/performance"
     const val REGRESSION = "tool/regression"
+
+    // Update 2.1.0: Shizuku Turbo (optional privileged actions)
+    const val TURBO = "tool/turbo"
 }
