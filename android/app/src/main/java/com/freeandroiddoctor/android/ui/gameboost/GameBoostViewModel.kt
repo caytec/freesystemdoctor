@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.freeandroiddoctor.android.core.di.ServiceLocator
 import com.freeandroiddoctor.android.engine.gameboost.BoostResult
 import com.freeandroiddoctor.android.engine.gameboost.InstalledGame
+import com.freeandroiddoctor.android.service.GameBoostResults
 import com.freeandroiddoctor.android.service.GameBoostService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -41,6 +42,12 @@ class GameBoostViewModel(app: Application) : AndroidViewModel(app) {
 
     init {
         refresh()
+        // The boost itself runs once, in the service; we just mirror its real result.
+        viewModelScope.launch {
+            GameBoostResults.last.collect { result ->
+                if (result != null) _ui.value = _ui.value.copy(lastResult = result)
+            }
+        }
     }
 
     fun refresh() {
@@ -76,21 +83,15 @@ class GameBoostViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     fun boostOnly() {
-        viewModelScope.launch {
-            val result = engine.runBoost()
-            _ui.value = _ui.value.copy(lastResult = result)
-            // Start the session service so the user can end it cleanly.
-            GameBoostService.start(getApplication(), enterDnd = enterDnd.value, launchPackage = null)
-            _ui.value = _ui.value.copy(sessionRunning = true)
-        }
+        GameBoostResults.clear()
+        _ui.value = _ui.value.copy(lastResult = null, sessionRunning = true)
+        GameBoostService.start(getApplication(), enterDnd = enterDnd.value, launchPackage = null)
     }
 
     fun boostAndLaunch(pkg: String) {
-        viewModelScope.launch {
-            val result = engine.runBoost()
-            _ui.value = _ui.value.copy(lastResult = result, sessionRunning = true)
-            GameBoostService.start(getApplication(), enterDnd = enterDnd.value, launchPackage = pkg)
-        }
+        GameBoostResults.clear()
+        _ui.value = _ui.value.copy(lastResult = null, sessionRunning = true)
+        GameBoostService.start(getApplication(), enterDnd = enterDnd.value, launchPackage = pkg)
     }
 
     fun endSession() {

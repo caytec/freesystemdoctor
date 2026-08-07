@@ -63,8 +63,13 @@ class JunkScannerEngine(private val context: Context) {
         listOfNotNull(context.cacheDir, context.externalCacheDir).forEach { dir ->
             dir.walkBottomUp().forEach { file ->
                 if (file != dir && file.isFile) {
-                    freed += file.length()
-                    if (file.delete()) count++
+                    // Read the size first, but only count it once the delete succeeds —
+                    // otherwise we'd report bytes that are still on disk.
+                    val size = file.length()
+                    if (file.delete()) {
+                        freed += size
+                        count++
+                    }
                 }
             }
         }

@@ -75,11 +75,21 @@ fun MemoryScreen(
         item("note") { InfoBanner(stringResource(R.string.memory_note)) }
 
         item("free-btn") {
-            Button(
-                onClick = viewModel::freeBackground,
-                enabled = !state.working,
-                modifier = Modifier.fillMaxWidth(),
-            ) { Text(stringResource(R.string.memory_free)) }
+            // Android 14+ restricts killBackgroundProcesses to our own processes, so the
+            // button would do literally nothing. Explain that instead of faking a result.
+            if (viewModel.reclaimSupported) {
+                Button(
+                    onClick = viewModel::freeBackground,
+                    enabled = !state.working,
+                    modifier = Modifier.fillMaxWidth(),
+                ) { Text(stringResource(R.string.memory_free)) }
+            } else {
+                Text(
+                    stringResource(R.string.memory_reclaim_unsupported),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
         }
 
         item("freed-text") {

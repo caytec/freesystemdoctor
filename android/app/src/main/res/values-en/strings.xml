@@ -363,7 +363,7 @@
     <string name="pro_benefit_schedule">Automatic scheduled cleaning</string>
     <string name="pro_benefit_monitor">Live status-bar monitor</string>
     <string name="pro_benefit_support">Support development</string>
-    <string name="pro_benefit_game_boost">Game Booster — one-tap real boost + per-game profiles</string>
+    <string name="pro_benefit_game_boost">Game Booster — Do Not Disturb, cache purge and ad-free sessions, plus your game list</string>
     <string name="pro_benefit_history_export">Full cleaning history + CSV export</string>
     <string name="pro_benefit_ai_unlimited">Unlimited AI Assistant analyses</string>
     <string name="pro_buy">Subscribe</string>
@@ -560,7 +560,7 @@
     <string name="game_boost_result_title">Last boost</string>
     <string name="game_boost_result_ram">RAM freed: %1$s (real delta)</string>
     <string name="game_boost_result_cache">Cache purged: %1$s</string>
-    <string name="game_boost_result_sustained">Sustained performance mode supported on this device.</string>
+    <string name="game_boost_result_sustained">This device supports sustained performance mode (the system decides when to use it).</string>
 
     <string name="tool_cleaning_history">Cleaning history</string>
     <string name="cleaning_history_title">Cleaning history</string>
@@ -884,4 +884,8 @@
     <string name="posture_kind_overlay">Screen overlay — can draw over other apps</string>
     <string name="posture_kind_all_files">All-files access — can read your whole storage</string>
     <string name="posture_manage">Review</string>
+    <!-- Update 2.1.0: honest reporting where the platform blocks us -->
+    <string name="memory_reclaim_unsupported">Android 14 and newer no longer let any app clear another app\'s background processes — so a "free RAM" button here would do nothing. Cached apps are frozen at zero CPU anyway. Use Background freedom and Performance to find what is genuinely slowing the device.</string>
+    <string name="game_boost_result_ram_unsupported">RAM reclaim: not available on Android 14+ (the system blocks it for all apps).</string>
+    <string name="game_boost_result_dnd">Do Not Disturb: on for this session.</string>
 </resources>

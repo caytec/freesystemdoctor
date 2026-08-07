@@ -125,11 +125,16 @@ fun GameBoostScreen(viewModel: GameBoostViewModel = viewModel()) {
                             style = MaterialTheme.typography.titleSmall,
                             fontWeight = FontWeight.SemiBold,
                         )
+                        // Only claim a RAM figure where the platform actually allows it.
                         Text(
-                            stringResource(
-                                R.string.game_boost_result_ram,
-                                ByteFormatter.format(result.ramFreedBytes),
-                            ),
+                            if (result.ramReclaimSupported) {
+                                stringResource(
+                                    R.string.game_boost_result_ram,
+                                    ByteFormatter.format(result.ramFreedBytes),
+                                )
+                            } else {
+                                stringResource(R.string.game_boost_result_ram_unsupported)
+                            },
                             style = MaterialTheme.typography.bodyMedium,
                         )
                         Text(
@@ -139,6 +144,12 @@ fun GameBoostScreen(viewModel: GameBoostViewModel = viewModel()) {
                             ),
                             style = MaterialTheme.typography.bodyMedium,
                         )
+                        if (result.dndApplied) {
+                            Text(
+                                stringResource(R.string.game_boost_result_dnd),
+                                style = MaterialTheme.typography.bodyMedium,
+                            )
+                        }
                         if (result.sustainedPerformanceSupported) {
                             Text(
                                 stringResource(R.string.game_boost_result_sustained),

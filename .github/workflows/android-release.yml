@@ -7,7 +7,7 @@ name: Android Release
 # Required repository secrets (Settings → Secrets and variables → Actions):
 #   KEYSTORE_BASE64   – base64 of android/release.jks
 #                       Generate: base64 -w0 android/release.jks | pbcopy
-#   KEYSTORE_PASSWORD – keystore password (fsdRelease2026! or whatever yours is)
+#   KEYSTORE_PASSWORD – keystore password
 #   KEY_ALIAS         – key alias (fsd)
 #   KEY_PASSWORD      – key password
 
@@ -27,6 +27,11 @@ permissions:
 jobs:
   release:
     runs-on: ubuntu-latest
+    # Job-level env so step-level `if:` guards can actually read it. Previously
+    # KEYSTORE_BASE64 was declared inside the step it guarded, so the condition was
+    # evaluated before it existed and the keystore was never decoded.
+    env:
+      KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
     defaults:
       run:
         working-directory: android
@@ -44,21 +49,29 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
 
       - name: Decode keystore
-        if: ${{ env.KEYSTORE_BASE64 != '' }}
-        env:
-          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+        if: env.KEYSTORE_BASE64 != ''
         run: echo "$KEYSTORE_BASE64" | base64 -d > release.jks
+
+      - name: Fail fast if the signing key is missing
+        if: env.KEYSTORE_BASE64 == ''
+        run: |
+          echo "::error::KEYSTORE_BASE64 secret is not set - the release would be UNSIGNED."
+          echo "Set KEYSTORE_BASE64 / KEYSTORE_PASSWORD / KEY_ALIAS / KEY_PASSWORD in repo secrets."
+          exit 1
 
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
-      - name: Build signed release APK + AAB (free flavor)
+      - name: Build signed release APK + AAB (free and pro flavors)
         env:
           KEYSTORE_FILE: release.jks
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-        run: ./gradlew --no-daemon assembleFreeRelease bundleFreeRelease
+        run: >-
+          ./gradlew --no-daemon
+          assembleFreeRelease bundleFreeRelease
+          assembleProRelease
 
       - name: Rename artifacts for clean filenames
         run: |
@@ -67,6 +80,17 @@ jobs:
              ../dist/FreeAndroidDoctor-free.apk
           cp app/build/outputs/bundle/freeRelease/app-free-release.aab \
              ../dist/FreeAndroidDoctor-free.aab
+          cp app/build/outputs/apk/pro/release/app-pro-release.apk \
+             ../dist/FreeAndroidDoctor-pro.apk
+        working-directory: android
+
+      - name: Verify the artifacts are actually signed
+        run: |
+          BT=$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -1)
+          for f in ../dist/FreeAndroidDoctor-free.apk ../dist/FreeAndroidDoctor-pro.apk; do
+            echo "Verifying $f"
+            "$BT/apksigner" verify --print-certs "$f"
+          done
         working-directory: android
 
       # Permanent public URL after this step:
@@ -97,7 +121,8 @@ jobs:
           " \
             --latest \
             ../dist/FreeAndroidDoctor-free.apk \
-            ../dist/FreeAndroidDoctor-free.aab
+            ../dist/FreeAndroidDoctor-free.aab \
+            ../dist/FreeAndroidDoctor-pro.apk
         working-directory: android
 
       - name: Upload APK artifact (fallback)

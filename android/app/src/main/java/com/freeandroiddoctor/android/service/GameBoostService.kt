@@ -56,7 +56,9 @@ class GameBoostService : Service() {
                 val launchPackage = intent?.getStringExtra(EXTRA_LAUNCH_PACKAGE)
 
                 scope.launch {
-                    runCatching { ServiceLocator.gameBoostEngine.runBoost() }
+                    // Do DND and the launch FIRST, so runBoost() can report what actually
+                    // happened instead of hardcoded flags. The ViewModel no longer calls
+                    // runBoost() itself — this is the single execution per session.
                     if (enterDnd && ServiceLocator.focusEngine.hasDndAccess()) {
                         previousDndFilter = ServiceLocator.focusEngine.enterDnd()
                         dndWasApplied = true
@@ -65,12 +67,19 @@ class GameBoostService : Service() {
                     runCatching {
                         ServiceLocator.appOpenAdManager.suppressForMillis(SUPPRESS_MS)
                     }
+                    var launched = false
                     if (launchPackage != null) {
                         runCatching {
                             ServiceLocator.gameBoostEngine.launchIntent(launchPackage)
-                                ?.let { startActivity(it) }
+                                ?.let { startActivity(it); launched = true }
                         }
                     }
+                    runCatching {
+                        ServiceLocator.gameBoostEngine.runBoost(
+                            dndApplied = dndWasApplied,
+                            gameLaunched = launched,
+                        )
+                    }.onSuccess { GameBoostResults.publish(it) }
                 }
             }
         }

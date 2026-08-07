@@ -363,7 +363,7 @@
     <string name="pro_benefit_schedule">Automatyczne zaplanowane czyszczenie</string>
     <string name="pro_benefit_monitor">Monitor na żywo na pasku stanu</string>
     <string name="pro_benefit_support">Wsparcie rozwoju</string>
-    <string name="pro_benefit_game_boost">Game Booster — jeden tap, realny boost + profile gier</string>
+    <string name="pro_benefit_game_boost">Game Booster — Nie przeszkadzać, czyszczenie cache i sesje bez reklam, plus lista gier</string>
     <string name="pro_benefit_history_export">Pełna historia czyszczeń + eksport CSV</string>
     <string name="pro_benefit_ai_unlimited">Nielimitowane analizy asystenta AI</string>
     <string name="pro_buy">Subskrybuj</string>
@@ -560,7 +560,7 @@
     <string name="game_boost_result_title">Ostatni boost</string>
     <string name="game_boost_result_ram">Zwolniony RAM: %1$s (prawdziwa różnica)</string>
     <string name="game_boost_result_cache">Wyczyszczony cache: %1$s</string>
-    <string name="game_boost_result_sustained">Sustained-performance mode obsługiwany na tym urządzeniu.</string>
+    <string name="game_boost_result_sustained">To urządzenie obsługuje tryb sustained performance (o jego użyciu decyduje system).</string>
 
     <!-- Update 11: Historia czyszczenia (lifetime free, pełna + CSV PRO) -->
     <string name="tool_cleaning_history">Historia czyszczenia</string>
@@ -887,4 +887,8 @@
     <string name="posture_kind_overlay">Nakładka na ekran — może rysować nad innymi aplikacjami</string>
     <string name="posture_kind_all_files">Dostęp do wszystkich plików — może czytać całą pamięć</string>
     <string name="posture_manage">Sprawdź</string>
+    <!-- Update 2.1.0: uczciwe raportowanie tam, gdzie system nas blokuje -->
+    <string name="memory_reclaim_unsupported">Android 14 i nowszy nie pozwala już żadnej aplikacji czyścić procesów w tle innych aplikacji — przycisk „zwolnij RAM" nic by tu nie zrobił. Aplikacje w cache i tak są zamrożone przy zerowym CPU. Użyj Swobody w tle i Wydajności, żeby znaleźć to, co naprawdę spowalnia urządzenie.</string>
+    <string name="game_boost_result_ram_unsupported">Odzyskiwanie RAM: niedostępne na Androidzie 14+ (system blokuje to wszystkim aplikacjom).</string>
+    <string name="game_boost_result_dnd">Nie przeszkadzać: włączone na czas sesji.</string>
 </resources>

@@ -16,6 +16,8 @@ data class MemoryUiState(
     val info: MemoryInfo? = null,
     val working: Boolean = false,
     val lastFreedBytes: Long? = null,
+    /** Set when the platform (Android 14+) refuses to reclaim other apps at all. */
+    val reclaimUnsupported: Boolean = false,
     val largeApps: List<AppListItem> = emptyList(),
     val loadingApps: Boolean = false,
 )
@@ -37,12 +39,23 @@ class MemoryViewModel : ViewModel() {
         }
     }
 
+    /** True when the platform still permits reclaiming other apps' background processes. */
+    val reclaimSupported: Boolean get() = engine.canReclaimOtherApps
+
     fun freeBackground() {
         if (_state.value.working) return
-        _state.update { it.copy(working = true, lastFreedBytes = null) }
+        _state.update { it.copy(working = true, lastFreedBytes = null, reclaimUnsupported = false) }
         viewModelScope.launch {
-            val freed = engine.freeBackground()
-            _state.update { it.copy(working = false, lastFreedBytes = freed, info = engine.read()) }
+            val result = engine.freeBackground()
+            _state.update {
+                it.copy(
+                    working = false,
+                    // Only surface a byte figure when the platform actually did something.
+                    lastFreedBytes = if (result.supported) result.freedBytes else null,
+                    reclaimUnsupported = !result.supported,
+                    info = engine.read(),
+                )
+            }
         }
     }
 

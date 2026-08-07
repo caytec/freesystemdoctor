@@ -17,6 +17,8 @@ data class InstalledGame(
 )
 
 data class BoostResult(
+    /** False on Android 14+, where the platform refuses to reclaim other apps at all. */
+    val ramReclaimSupported: Boolean,
     val ramFreedBytes: Long,
     val cacheFreedBytes: Long,
     val dndApplied: Boolean,
@@ -81,14 +83,23 @@ class GameBoostEngine(
      * Performs the boost. Caller is responsible for DND (via [GameBoostService]) — this
      * engine only frees RAM + purges this-app cache and returns honest deltas.
      */
-    suspend fun runBoost(): BoostResult = withContext(Dispatchers.IO) {
-        val ramFreed = runCatching { memory.freeBackground() }.getOrDefault(0L)
+    /**
+     * [dndApplied] and [gameLaunched] are decided by the caller (the foreground service
+     * owns DND and the launch intent), so they are passed in rather than guessed here.
+     */
+    suspend fun runBoost(
+        dndApplied: Boolean = false,
+        gameLaunched: Boolean = false,
+    ): BoostResult = withContext(Dispatchers.IO) {
+        val reclaim = runCatching { memory.freeBackground() }
+            .getOrDefault(MemoryEngine.ReclaimResult(supported = false, freedBytes = 0L))
         val cacheFreed = runCatching { junk.cleanAppCache().bytesFreed }.getOrDefault(0L)
         BoostResult(
-            ramFreedBytes = ramFreed,
+            ramReclaimSupported = reclaim.supported,
+            ramFreedBytes = reclaim.freedBytes,
             cacheFreedBytes = cacheFreed,
-            dndApplied = false,
-            gameLaunched = false,
+            dndApplied = dndApplied,
+            gameLaunched = gameLaunched,
             sustainedPerformanceSupported = sustainedPerformanceSupported(),
         )
     }

@@ -51,7 +51,8 @@ class FocusSessionService : Service() {
                 startedAt = System.currentTimeMillis()
                 ensureChannel(this)
                 startForegroundCompat(buildNotification())
-                scope.launch { ServiceLocator.memoryEngine.freeBackground() }
+                // Best-effort only; on Android 14+ the platform refuses this and we don't pretend.
+                scope.launch { runCatching { ServiceLocator.memoryEngine.freeBackground() } }
                 previousFilter = ServiceLocator.focusEngine.enterDnd()
                 tick?.cancel()
                 tick = scope.launch {
