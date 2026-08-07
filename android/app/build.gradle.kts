@@ -38,8 +38,8 @@ android {
         applicationId = "com.freeandroiddoctor.android"
         minSdk = 26
         targetSdk = 35
-        versionCode = 9
-        versionName = "2.0.0"
+        versionCode = 10
+        versionName = "2.1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         resourceConfigurations += listOf("en", "pl")

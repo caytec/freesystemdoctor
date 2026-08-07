@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="whats_new_title">Co nowego w 2.0</string>
+    <string name="whats_new_title">Co nowego w 2.1</string>
     <string name="whats_new_dismiss">Rozumiem</string>
     <string-array name="whats_new_items">
-        <item>NOWOŚĆ: Pakiet Prywatność i bezpieczeństwo — skan ryzyka APK, prywatność sieci, dane przeglądarek</item>
-        <item>NOWOŚĆ: Profile prywatności (Wyważony / Rygorystyczny / Gra) — przejdź przez odbieranie uprawnień w jednym przepływie</item>
-        <item>NOWOŚĆ: Tryby — Gra / Podróż / Skupienie / Prywatność / Oszczędzanie pamięci, jeden dotyk by zastosować i przywrócić</item>
-        <item>NOWOŚĆ: Auto-reguły — reaguj na niskie miejsce, ładowanie, start, harmonogramy i otwarte Wi-Fi</item>
-        <item>Odświeżona strona główna: kafelek Wyniku prywatności i chip aktywnego trybu w pasku górnym</item>
-        <item>Wersja darmowa z dziennymi limitami (3 audyty, 1 profil, 1 zmiana trybu). PRO usuwa limit</item>
-        <item>Wciąż uczciwie: każdy wynik pochodzi z PackageManager, ConnectivityManager i StorageStatsManager — bez wywołań sieciowych</item>
+        <item>NOWE: Wydajność — znajduje to, co naprawdę spowalnia urządzenie: dławienie termiczne, brak miejsca, aplikacje gadające w tle, słaby głęboki sen</item>
+        <item>NOWE: Co spowolniło telefon? — codziennie zapisuje kondycję i pokazuje, która instalacja zbiega się z pogorszeniem</item>
+        <item>NOWE: Turbo (Shizuku, opcjonalne) — wyczyść cache wszystkich aplikacji i przyspiesz animacje dwukrotnie, z cofnięciem jednym kliknięciem</item>
+        <item>Odzyskiwanie cache innych aplikacji bez Shizuku, bezpośrednio przez system</item>
+        <item>UCZCIWA POPRAWKA: Android 14 blokuje czyszczenie procesów innych aplikacji. Nasz przycisk „zwolnij RAM" nic nie robił na nowych telefonach — teraz to wyjaśnia zamiast pokazywać zmyśloną liczbę</item>
+        <item>Game Boost raportuje, co faktycznie zrobił (Nie przeszkadzać, cache) i nie uruchamia się już dwa razy na kliknięcie</item>
+        <item>Tryby naprawdę wyciszają powiadomienia i blokują aplikacje, zamiast tylko je wymieniać</item>
     </string-array>
 </resources>

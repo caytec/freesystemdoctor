@@ -7,11 +7,17 @@
         <exclude domain="sharedpref" path="fsd_cloud_backup_key.xml" />
         <exclude domain="file" path="vault/" />
         <exclude domain="file" path="datastore/fsd_pro.preferences_pb" />
+        <exclude domain="file" path="app_growth/" />
+        <exclude domain="file" path="corpse/" />
+        <exclude domain="file" path="notif_stats/" />
     </cloud-backup>
     <device-transfer>
         <exclude domain="sharedpref" path="fsd_secure_keys.xml" />
         <exclude domain="sharedpref" path="fsd_cloud_backup_key.xml" />
         <exclude domain="file" path="vault/" />
         <exclude domain="file" path="datastore/fsd_pro.preferences_pb" />
+        <exclude domain="file" path="app_growth/" />
+        <exclude domain="file" path="corpse/" />
+        <exclude domain="file" path="notif_stats/" />
     </device-transfer>
 </data-extraction-rules>

@@ -40,3 +40,11 @@
 # Play Core review-ktx references an annotation from a newer play-services-tasks
 # that isn't on its classpath; safe to ignore (annotation only, no runtime effect).
 -dontwarn com.google.android.gms.common.annotation.**
+
+# Shizuku: we reach the private static Shizuku.newProcess by reflection, and the
+# library ships an empty proguard.txt. Without these keeps R8 removes or renames
+# it (it has no callers inside the AAR), getDeclaredMethod throws, and every
+# Turbo action silently fails in release builds while working fine in debug.
+-keep class rikka.shizuku.Shizuku { *; }
+-keep class rikka.shizuku.ShizukuRemoteProcess { *; }
+-keep class rikka.shizuku.ShizukuProvider { *; }

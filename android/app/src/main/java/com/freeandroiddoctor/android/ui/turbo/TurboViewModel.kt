@@ -37,22 +37,29 @@ class TurboViewModel : ViewModel() {
         refreshStatus()
     }
 
+    private suspend fun setAnimationScales(scale: Float): List<ShizukuManager.ShellResult> =
+        ShizukuCommand.SetAnimationScale.Key.entries.map { key ->
+            shizuku.run(ShizukuCommand.SetAnimationScale(key, scale))
+        }
+
     fun run(action: TurboAction) {
         if (_state.value.running != null) return
         _state.value = _state.value.copy(running = action, lastSucceeded = null, lastMessage = null)
         viewModelScope.launch {
-            val command = when (action) {
-                TurboAction.TRIM_CACHES -> ShizukuCommand.TrimCaches()
-                TurboAction.FAST_ANIMATIONS -> ShizukuCommand.SetAnimationScale(0.5f)
-                TurboAction.NORMAL_ANIMATIONS -> ShizukuCommand.SetAnimationScale(1.0f)
+            // The three animation scales are three separate shell-free commands, so the
+            // action succeeds only if all of them do.
+            val results = when (action) {
+                TurboAction.TRIM_CACHES -> listOf(shizuku.run(ShizukuCommand.TrimCaches()))
+                TurboAction.FAST_ANIMATIONS -> setAnimationScales(0.5f)
+                TurboAction.NORMAL_ANIMATIONS -> setAnimationScales(1.0f)
             }
-            val result = shizuku.run(command)
+            val failure = results.firstOrNull { !it.ok }
             _state.value = _state.value.copy(
                 running = null,
                 lastAction = action,
-                lastSucceeded = result.ok,
+                lastSucceeded = failure == null,
                 // Only surface stderr on failure, and never the command itself.
-                lastMessage = if (result.ok) null else result.stderr.take(200).ifBlank { null },
+                lastMessage = failure?.stderr?.take(200)?.ifBlank { null },
                 status = shizuku.status(),
             )
         }

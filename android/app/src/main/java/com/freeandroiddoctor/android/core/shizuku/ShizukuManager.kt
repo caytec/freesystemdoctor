@@ -3,7 +3,9 @@ package com.freeandroiddoctor.android.core.shizuku
 import android.content.Context
 import android.content.pm.PackageManager
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runInterruptible
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeoutOrNull
 import rikka.shizuku.Shizuku
 
 /**
@@ -62,12 +64,20 @@ class ShizukuManager(@Suppress("UNUSED_PARAMETER") context: Context) {
     /**
      * Runs one command from [ShizukuCommand]. This is the only entry point — there is
      * intentionally no overload taking a free-form string.
+     *
+     * Every command is additionally checked against [ALLOWED_BINARIES] at this trust
+     * boundary, so even a future [ShizukuCommand] subclass cannot smuggle in a shell.
      */
     suspend fun run(command: ShizukuCommand): ShellResult = withContext(Dispatchers.IO) {
         if (status() != Status.Granted) {
             return@withContext ShellResult(-1, "", "Shizuku not granted")
         }
-        exec(command.argv())
+        val argv = command.argv()
+        if (argv.isEmpty() || argv[0] !in ALLOWED_BINARIES) {
+            return@withContext ShellResult(-1, "", "Command not allowed")
+        }
+        withTimeoutOrNull(EXEC_TIMEOUT_MS) { runInterruptible { exec(argv) } }
+            ?: ShellResult(-1, "", "Timed out")
     }
 
     /**
@@ -77,26 +87,59 @@ class ShizukuManager(@Suppress("UNUSED_PARAMETER") context: Context) {
      *
      * If a future Shizuku release renames or removes it, this degrades to a failed
      * ShellResult and every caller falls back to its no-Shizuku path; nothing crashes.
+     * (proguard-rules.pro keeps the method so R8 can't strip it in release builds.)
      */
-    private fun exec(argv: Array<String>): ShellResult = runCatching {
-        val method = Shizuku::class.java.getDeclaredMethod(
-            "newProcess",
-            Array<String>::class.java,
-            Array<String>::class.java,
-            String::class.java,
-        ).apply { isAccessible = true }
+    private fun exec(argv: Array<String>): ShellResult {
+        var process: Process? = null
+        return runCatching {
+            val method = Shizuku::class.java.getDeclaredMethod(
+                "newProcess",
+                Array<String>::class.java,
+                Array<String>::class.java,
+                String::class.java,
+            ).apply { isAccessible = true }
 
-        // argv is passed as an array, so the arguments are never re-parsed by a shell.
-        val process = method.invoke(null, argv, null, null) as Process
-        val stdout = process.inputStream.bufferedReader().use { it.readText() }
-        val stderr = process.errorStream.bufferedReader().use { it.readText() }
-        val exit = process.waitFor()
-        ShellResult(exit, stdout, stderr)
-    }.getOrElse { ShellResult(-1, "", it.message.orEmpty()) }
+            // argv is passed as an array, so the arguments are never re-parsed by a shell.
+            val p = (method.invoke(null, argv, null, null) as Process).also { process = it }
+
+            // Drain stderr on a separate thread: reading the streams sequentially
+            // deadlocks if the child fills the stderr pipe buffer while we are still
+            // blocked on stdout. Output is capped so a chatty command can't push
+            // megabytes into UI state.
+            val errBuffer = StringBuilder()
+            val errThread = Thread {
+                runCatching {
+                    p.errorStream.bufferedReader().use { r ->
+                        r.forEachLine { if (errBuffer.length < MAX_OUTPUT) errBuffer.appendLine(it) }
+                    }
+                }
+            }.apply { isDaemon = true; start() }
+
+            val out = StringBuilder()
+            p.inputStream.bufferedReader().use { r ->
+                r.forEachLine { if (out.length < MAX_OUTPUT) out.appendLine(it) }
+            }
+            errThread.join(STREAM_JOIN_MS)
+
+            ShellResult(p.waitFor(), out.toString(), errBuffer.toString())
+        }.getOrElse {
+            ShellResult(-1, "", it.message.orEmpty())
+        }.also {
+            // Always release the remote process, including on timeout/cancellation.
+            runCatching { process?.destroy() }
+        }
+    }
 
     companion object {
         const val PERMISSION_REQUEST_CODE = 4711
+
+        /** No shell interpreters here, by design. */
+        private val ALLOWED_BINARIES = setOf("pm", "am", "cmd", "settings")
+        private const val EXEC_TIMEOUT_MS = 60_000L
+        private const val STREAM_JOIN_MS = 2_000L
+        private const val MAX_OUTPUT = 64 * 1024
     }
+
 }
 
 /**
@@ -116,16 +159,24 @@ sealed class ShizukuCommand {
         override fun argv() = arrayOf("pm", "trim-caches", "${gigabytes.coerceIn(1, 9999)}G")
     }
 
-    /** Halves (or restores) the three animation scales. */
-    data class SetAnimationScale(val scale: Float) : ShizukuCommand() {
-        private val safe = scale.coerceIn(0f, 10f).toString()
-        override fun argv() = arrayOf(
-            "sh", "-c",
-            // Fixed template; `safe` is a clamped float, never user text.
-            "settings put global window_animation_scale $safe && " +
-                "settings put global transition_animation_scale $safe && " +
-                "settings put global animator_duration_scale $safe",
-        )
+    /**
+     * Sets ONE animation scale. There is deliberately no `sh -c` variant chaining the
+     * three together: keeping every command shell-free is the invariant this whole class
+     * rests on, so callers issue three of these instead.
+     *
+     * NaN survives `coerceIn` (all its comparisons are false), which would write the
+     * literal "NaN" into a global setting — so it is mapped to 1.0 explicitly.
+     */
+    data class SetAnimationScale(val key: Key, val scale: Float) : ShizukuCommand() {
+        enum class Key(val setting: String) {
+            WINDOW("window_animation_scale"),
+            TRANSITION("transition_animation_scale"),
+            ANIMATOR("animator_duration_scale"),
+        }
+
+        private val safe = (if (scale.isNaN()) 1f else scale.coerceIn(0f, 10f)).toString()
+
+        override fun argv() = arrayOf("settings", "put", "global", key.setting, safe)
     }
 
     data class ForceStop(val packageName: String) : ShizukuCommand() {

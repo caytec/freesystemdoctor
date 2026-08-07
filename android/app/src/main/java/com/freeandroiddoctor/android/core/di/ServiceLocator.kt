@@ -238,6 +238,7 @@ object ServiceLocator {
     val appModesEngine: com.freeandroiddoctor.android.engine.modes.AppModesEngine by lazy {
         com.freeandroiddoctor.android.engine.modes.AppModesEngine(
             modeStore, privacyProfileStore, settingsRepository, workScheduler,
+            focusEngine, appLockEngine,
         )
     }
     val autoRulesEngine: com.freeandroiddoctor.android.engine.automation.AutoRulesEngine by lazy {

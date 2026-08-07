@@ -35,6 +35,11 @@ data class ModeSnapshot(
     val priorDarkTheme: Boolean? = null,
     val priorScheduledClean: Boolean? = null,
     val activatedAt: Long = 0L,
+    /** Interruption filter before the mode snoozed notifications; null if untouched. */
+    val priorDndFilter: Int? = null,
+    /** Locked packages before the mode added its own; null if untouched. */
+    val priorLockedPackages: Set<String>? = null,
+    val priorAppLockEnabled: Boolean? = null,
 )
 
 class ModeStore(private val context: Context) {

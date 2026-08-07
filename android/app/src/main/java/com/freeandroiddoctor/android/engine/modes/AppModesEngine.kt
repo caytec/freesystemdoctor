@@ -9,6 +9,8 @@ import com.freeandroiddoctor.android.data.privacy.PrivacyProfile
 import com.freeandroiddoctor.android.data.privacy.PrivacyProfileStore
 import com.freeandroiddoctor.android.data.settings.AppSettings
 import com.freeandroiddoctor.android.data.settings.SettingsRepository
+import com.freeandroiddoctor.android.engine.focus.FocusEngine
+import com.freeandroiddoctor.android.engine.lock.AppLockEngine
 import com.freeandroiddoctor.android.work.WorkScheduler
 import kotlinx.coroutines.flow.first
 
@@ -22,6 +24,8 @@ class AppModesEngine(
     private val privacyStore: PrivacyProfileStore,
     private val settings: SettingsRepository,
     private val workScheduler: WorkScheduler,
+    private val focus: FocusEngine,
+    private val appLock: AppLockEngine,
 ) {
 
     suspend fun activate(mode: AppMode) {
@@ -30,11 +34,37 @@ class AppModesEngine(
         }
 
         val current: AppSettings = settings.settings.first()
+
+        // Snooze notifications for real, via the same DND path FocusEngine uses.
+        // Requires the user to have granted notification-policy access; without it we
+        // simply don't claim to have done it.
+        val priorDnd = if (mode.snoozeAllNotifications && focus.hasDndAccess()) {
+            focus.enterDnd()
+        } else {
+            null
+        }
+
+        // Actually lock the mode's apps, remembering what was locked before.
+        val priorLocked: Set<String>?
+        val priorLockEnabled: Boolean?
+        if (mode.lockedAppPackages.isNotEmpty()) {
+            priorLocked = appLock.lockedOnce()
+            priorLockEnabled = appLock.isEnabledOnce()
+            appLock.setLocked(priorLocked + mode.lockedAppPackages)
+            appLock.setEnabled(true)
+        } else {
+            priorLocked = null
+            priorLockEnabled = null
+        }
+
         val snapshot = ModeSnapshot(
             activeModeId = mode.id,
             priorDarkTheme = mode.applyDarkTheme?.let { current.darkTheme },
             priorScheduledClean = if (mode.pauseScheduledClean) current.scheduledCleaning else null,
             activatedAt = System.currentTimeMillis(),
+            priorDndFilter = priorDnd,
+            priorLockedPackages = priorLocked,
+            priorAppLockEnabled = priorLockEnabled,
         )
 
         mode.applyDarkTheme?.let { settings.setDarkTheme(it) }
@@ -82,6 +112,10 @@ class AppModesEngine(
             settings.setScheduledCleaning(wasOn)
             workScheduler.setScheduledCleaning(wasOn)
         }
+        // Undo exactly what activation changed, and nothing else.
+        snapshot.priorDndFilter?.let { runCatching { focus.restoreDnd(it) } }
+        snapshot.priorLockedPackages?.let { runCatching { appLock.setLocked(it) } }
+        snapshot.priorAppLockEnabled?.let { runCatching { appLock.setEnabled(it) } }
         privacyStore.setActiveProfile(null)
     }
 }

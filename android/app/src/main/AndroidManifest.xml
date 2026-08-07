@@ -31,6 +31,9 @@
          granted the overlay special access (Settings.canDrawOverlays gate in UI). -->
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+    <!-- Anti-tapjacking: lets MainActivity hide untrusted overlays while our
+         sensitive screens (vault unlock, paywall) are on top. Normal-level. -->
+    <uses-permission android:name="android.permission.HIDE_OVERLAY_WINDOWS" />
     <!-- Core cleaner functionality: storage/permission/battery analysis of every
          installed app. Declared for Play Console with the "device search" /
          cleaner exemption; without it Android 11+ filters the package list. -->
@@ -117,9 +120,11 @@
             android:exported="false"
             android:foregroundServiceType="dataSync" />
 
+        <!-- BOOT_COMPLETED is a protected broadcast; the system delivers it to
+             non-exported manifest receivers, so exporting buys nothing. -->
         <receiver
             android:name=".service.BootReceiver"
-            android:exported="true"
+            android:exported="false"
             android:enabled="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
@@ -172,7 +177,7 @@
 
         <receiver
             android:name=".service.UninstallWatcherReceiver"
-            android:exported="true"
+            android:exported="false"
             android:enabled="true">
             <intent-filter>
                 <action android:name="android.intent.action.PACKAGE_FULLY_REMOVED" />
