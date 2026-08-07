@@ -1,7 +1,12 @@
 {
-  "updated": "2026-08-07T17:39:59.939399Z",
-  "count": 55,
+  "updated": "2026-08-07T18:02:25.441029Z",
+  "count": 56,
   "commits": [
+    {
+      "sha": "8c387d9aee99a670bbc94756bec4dbd30a246662",
+      "date": "2026-08-07T20:01:31+02:00",
+      "msg": "feat(brand+ui): rebrand to kajetankupaj.pl, richer visuals and motion"
+    },
     {
       "sha": "b92de49b1818e2d07b3c86d7e91e169461816b54",
       "date": "2026-08-07T19:39:13+02:00",
