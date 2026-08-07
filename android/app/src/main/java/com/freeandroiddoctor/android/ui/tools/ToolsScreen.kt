@@ -56,11 +56,13 @@ import androidx.compose.material.icons.filled.TrendingDown
 import androidx.compose.material.icons.filled.TrendingUp
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.PhoneAndroid
+import androidx.compose.material.icons.filled.Policy
 import androidx.compose.material.icons.filled.PhotoLibrary
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.Timelapse
 import androidx.compose.material.icons.filled.Tune
+import androidx.compose.material.icons.filled.VerifiedUser
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.Wifi
 import androidx.compose.material3.Card
@@ -187,6 +189,8 @@ private val toolGroups = listOf(
             Tool(R.string.tool_watchdog, Icons.Filled.NewReleases, ToolRoutes.WATCHDOG),
             Tool(R.string.tool_phone_home, Icons.Filled.NetworkCell, ToolRoutes.PHONE_HOME),
             Tool(R.string.tool_trackers, Icons.Filled.Visibility, ToolRoutes.TRACKERS),
+            Tool(R.string.tool_app_trust, Icons.Filled.VerifiedUser, ToolRoutes.APP_TRUST),
+            Tool(R.string.tool_apk_inspect, Icons.Filled.Policy, ToolRoutes.APK_INSPECT),
         ),
     ),
     // Update 14: Automation

@@ -866,4 +866,43 @@
     <string name="growth_header">Biggest changes over %1$d days</string>
     <string name="growth_stable">No app changed significantly in the last %1$d days.</string>
     <string name="growth_current">Now: %1$s</string>
+    <!-- Update 20: Composite per-app trust score -->
+    <string name="tool_app_trust">App trust score</string>
+    <string name="trust_note">Combines four local signals — embedded trackers, granted dangerous permissions, static risk flags and background network traffic — into one score per app, and shows exactly why each app scored what it did. Computed on your device; no verdict is fetched from a server.</string>
+    <string name="trust_scan">Rate my apps</string>
+    <string name="trust_phase_trackers">Scanning for trackers…</string>
+    <string name="trust_phase_permissions">Auditing permissions…</string>
+    <string name="trust_phase_risk">Checking risk signals…</string>
+    <string name="trust_phase_network">Reading background traffic…</string>
+    <string name="trust_phase_combining">Combining results…</string>
+    <string name="trust_average_title">Average trust score</string>
+    <string name="trust_average_subtitle">across %1$d installed apps</string>
+    <string name="trust_least_header">Least trusted first</string>
+    <string name="trust_empty">No user-installed apps to rate.</string>
+    <string name="trust_score_of">Trust %1$d/100</string>
+    <string name="trust_no_findings">No findings — nothing counted against this app.</string>
+    <string name="trust_reason_trackers">%1$d tracking SDKs</string>
+    <string name="trust_reason_permissions">%1$d dangerous permissions granted</string>
+    <string name="trust_reason_risk">static risk signals (score %1$d)</string>
+    <string name="trust_reason_traffic">%1$d MB sent in the background</string>
+    <string name="trust_background_detail">Background traffic: %1$s</string>
+    <string name="trust_manage">App settings</string>
+    <!-- Update 21: Pre-install APK inspector -->
+    <string name="tool_apk_inspect">APK inspector</string>
+    <string name="apkinspect_note">Check an APK file BEFORE you install it: which permissions it will request, which tracking SDKs it contains, and whether it would replace an installed app with a different signing certificate. The file is only read — never installed, never uploaded.</string>
+    <string name="apkinspect_pick">Pick an APK file</string>
+    <string name="apkinspect_working">Reading the archive…</string>
+    <string name="apkinspect_failed">This file could not be read as an APK.</string>
+    <string name="apkinspect_version">Version %1$s (build %2$d)</string>
+    <string name="apkinspect_sdk">Requires Android API %1$d+ · targets API %2$d</string>
+    <string name="apkinspect_installed_yes">An app with this package name is already installed.</string>
+    <string name="apkinspect_installed_no">Not currently installed.</string>
+    <string name="apkinspect_trackers_header">Tracking SDKs: %1$d</string>
+    <string name="apkinspect_trackers_none">No known tracking SDKs detected.</string>
+    <string name="apkinspect_perms_header">Dangerous permissions requested: %1$d</string>
+    <string name="apkinspect_perms_none">No dangerous permissions requested.</string>
+    <string name="apkinspect_warn_signature_title">Different signing certificate</string>
+    <string name="apkinspect_warn_signature_body">An app with this package name is installed but signed by someone else. A genuine update always keeps the same certificate — treat this file as untrusted.</string>
+    <string name="apkinspect_warn_debug_title">Debug-signed build</string>
+    <string name="apkinspect_warn_debug_body">This APK is marked debuggable. That is normal for development builds, but a debuggable app exposes its data to other tools on the device.</string>
 </resources>

@@ -150,6 +150,14 @@ object ServiceLocator {
     val trackerScannerEngine: com.freeandroiddoctor.android.engine.privacy.TrackerScannerEngine by lazy {
         com.freeandroiddoctor.android.engine.privacy.TrackerScannerEngine(appContext)
     }
+    val apkInspectorEngine: com.freeandroiddoctor.android.engine.privacy.ApkInspectorEngine by lazy {
+        com.freeandroiddoctor.android.engine.privacy.ApkInspectorEngine(appContext)
+    }
+    val appTrustEngine: com.freeandroiddoctor.android.engine.trust.AppTrustEngine by lazy {
+        com.freeandroiddoctor.android.engine.trust.AppTrustEngine(
+            trackerScannerEngine, permissionAuditEngine, apkStaticScannerEngine, dataUsageEngine,
+        )
+    }
     val permissionSnapshotStore: com.freeandroiddoctor.android.data.watchdog.PermissionSnapshotStore by lazy {
         com.freeandroiddoctor.android.data.watchdog.PermissionSnapshotStore(appContext)
     }

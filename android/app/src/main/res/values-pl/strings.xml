@@ -813,4 +813,43 @@
     <string name="growth_header">Największe zmiany w ciągu %1$d dni</string>
     <string name="growth_stable">Żadna aplikacja nie zmieniła się znacząco w ciągu ostatnich %1$d dni.</string>
     <string name="growth_current">Teraz: %1$s</string>
+    <!-- Update 20: Złożona ocena zaufania aplikacji -->
+    <string name="tool_app_trust">Ocena zaufania aplikacji</string>
+    <string name="trust_note">Łączy cztery lokalne sygnały — osadzone trackery, przyznane wrażliwe uprawnienia, statyczne flagi ryzyka i ruch sieciowy w tle — w jedną ocenę na aplikację i pokazuje dokładnie, dlaczego dana aplikacja dostała taki wynik. Liczone na Twoim urządzeniu; żaden werdykt nie jest pobierany z serwera.</string>
+    <string name="trust_scan">Oceń moje aplikacje</string>
+    <string name="trust_phase_trackers">Skanowanie trackerów…</string>
+    <string name="trust_phase_permissions">Audyt uprawnień…</string>
+    <string name="trust_phase_risk">Sprawdzanie sygnałów ryzyka…</string>
+    <string name="trust_phase_network">Odczyt ruchu w tle…</string>
+    <string name="trust_phase_combining">Łączenie wyników…</string>
+    <string name="trust_average_title">Średnia ocena zaufania</string>
+    <string name="trust_average_subtitle">z %1$d zainstalowanych aplikacji</string>
+    <string name="trust_least_header">Od najmniej zaufanych</string>
+    <string name="trust_empty">Brak aplikacji użytkownika do oceny.</string>
+    <string name="trust_score_of">Zaufanie %1$d/100</string>
+    <string name="trust_no_findings">Brak zastrzeżeń — nic nie działa na niekorzyść tej aplikacji.</string>
+    <string name="trust_reason_trackers">%1$d SDK śledzących</string>
+    <string name="trust_reason_permissions">%1$d przyznanych wrażliwych uprawnień</string>
+    <string name="trust_reason_risk">statyczne sygnały ryzyka (wynik %1$d)</string>
+    <string name="trust_reason_traffic">%1$d MB wysłane w tle</string>
+    <string name="trust_background_detail">Ruch w tle: %1$s</string>
+    <string name="trust_manage">Ustawienia aplikacji</string>
+    <!-- Update 21: Inspektor APK przed instalacją -->
+    <string name="tool_apk_inspect">Inspektor APK</string>
+    <string name="apkinspect_note">Sprawdź plik APK ZANIM go zainstalujesz: o jakie uprawnienia poprosi, jakie SDK śledzące zawiera i czy podmieniłby zainstalowaną aplikację certyfikatem innego wydawcy. Plik jest tylko odczytywany — nigdy instalowany ani wysyłany.</string>
+    <string name="apkinspect_pick">Wybierz plik APK</string>
+    <string name="apkinspect_working">Odczytywanie archiwum…</string>
+    <string name="apkinspect_failed">Nie udało się odczytać tego pliku jako APK.</string>
+    <string name="apkinspect_version">Wersja %1$s (build %2$d)</string>
+    <string name="apkinspect_sdk">Wymaga Androida API %1$d+ · celuje w API %2$d</string>
+    <string name="apkinspect_installed_yes">Aplikacja o tej nazwie pakietu jest już zainstalowana.</string>
+    <string name="apkinspect_installed_no">Obecnie niezainstalowana.</string>
+    <string name="apkinspect_trackers_header">SDK śledzące: %1$d</string>
+    <string name="apkinspect_trackers_none">Nie wykryto znanych SDK śledzących.</string>
+    <string name="apkinspect_perms_header">Żądane wrażliwe uprawnienia: %1$d</string>
+    <string name="apkinspect_perms_none">Brak żądanych wrażliwych uprawnień.</string>
+    <string name="apkinspect_warn_signature_title">Inny certyfikat podpisu</string>
+    <string name="apkinspect_warn_signature_body">Aplikacja o tej nazwie pakietu jest zainstalowana, ale podpisana przez kogoś innego. Prawdziwa aktualizacja zawsze zachowuje ten sam certyfikat — potraktuj ten plik jako niezaufany.</string>
+    <string name="apkinspect_warn_debug_title">Kompilacja debug</string>
+    <string name="apkinspect_warn_debug_body">Ten APK jest oznaczony jako debugowalny. To normalne dla wersji deweloperskich, ale debugowalna aplikacja wystawia swoje dane innym narzędziom na urządzeniu.</string>
 </resources>

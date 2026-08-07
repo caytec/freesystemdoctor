@@ -110,6 +110,8 @@ import com.freeandroiddoctor.android.ui.watchdog.PermissionWatchdogScreen
 import com.freeandroiddoctor.android.ui.phonehome.PhoneHomeScreen
 import com.freeandroiddoctor.android.ui.trackers.TrackerScannerScreen
 import com.freeandroiddoctor.android.ui.growth.AppGrowthScreen
+import com.freeandroiddoctor.android.ui.trust.AppTrustScreen
+import com.freeandroiddoctor.android.ui.apkinspect.ApkInspectScreen
 import com.freeandroiddoctor.android.ui.modes.ModesScreen
 import com.freeandroiddoctor.android.ui.automation.AutoRulesScreen
 import com.freeandroiddoctor.android.ui.theme.appBackgroundBrush
@@ -174,6 +176,8 @@ private val toolTitles: Map<String, Int> = mapOf(
     ToolRoutes.PHONE_HOME to R.string.tool_phone_home,
     ToolRoutes.TRACKERS to R.string.tool_trackers,
     ToolRoutes.APP_GROWTH to R.string.tool_app_growth,
+    ToolRoutes.APP_TRUST to R.string.tool_app_trust,
+    ToolRoutes.APK_INSPECT to R.string.tool_apk_inspect,
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -374,6 +378,8 @@ fun MainScaffold() {
             composable(ToolRoutes.PHONE_HOME) { PhoneHomeScreen() }
             composable(ToolRoutes.TRACKERS) { TrackerScannerScreen() }
             composable(ToolRoutes.APP_GROWTH) { AppGrowthScreen() }
+            composable(ToolRoutes.APP_TRUST) { AppTrustScreen() }
+            composable(ToolRoutes.APK_INSPECT) { ApkInspectScreen() }
         }
         }
     }

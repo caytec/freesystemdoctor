@@ -98,4 +98,10 @@ object ToolRoutes {
 
     // Update 19: Per-app storage growth trends
     const val APP_GROWTH = "tool/app_growth"
+
+    // Update 20: Composite per-app trust score
+    const val APP_TRUST = "tool/app_trust"
+
+    // Update 21: Pre-install APK inspector
+    const val APK_INSPECT = "tool/apk_inspect"
 }
