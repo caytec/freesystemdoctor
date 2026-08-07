@@ -112,6 +112,8 @@ import com.freeandroiddoctor.android.ui.trackers.TrackerScannerScreen
 import com.freeandroiddoctor.android.ui.growth.AppGrowthScreen
 import com.freeandroiddoctor.android.ui.trust.AppTrustScreen
 import com.freeandroiddoctor.android.ui.apkinspect.ApkInspectScreen
+import com.freeandroiddoctor.android.ui.freedom.BatteryFreedomScreen
+import com.freeandroiddoctor.android.ui.posture.PostureScreen
 import com.freeandroiddoctor.android.ui.modes.ModesScreen
 import com.freeandroiddoctor.android.ui.automation.AutoRulesScreen
 import com.freeandroiddoctor.android.ui.theme.appBackgroundBrush
@@ -178,6 +180,8 @@ private val toolTitles: Map<String, Int> = mapOf(
     ToolRoutes.APP_GROWTH to R.string.tool_app_growth,
     ToolRoutes.APP_TRUST to R.string.tool_app_trust,
     ToolRoutes.APK_INSPECT to R.string.tool_apk_inspect,
+    ToolRoutes.BATTERY_FREEDOM to R.string.tool_battery_freedom,
+    ToolRoutes.POSTURE to R.string.tool_posture,
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -380,6 +384,8 @@ fun MainScaffold() {
             composable(ToolRoutes.APP_GROWTH) { AppGrowthScreen() }
             composable(ToolRoutes.APP_TRUST) { AppTrustScreen() }
             composable(ToolRoutes.APK_INSPECT) { ApkInspectScreen() }
+            composable(ToolRoutes.BATTERY_FREEDOM) { BatteryFreedomScreen() }
+            composable(ToolRoutes.POSTURE) { PostureScreen() }
         }
         }
     }

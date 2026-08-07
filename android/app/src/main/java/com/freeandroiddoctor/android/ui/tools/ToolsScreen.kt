@@ -25,6 +25,7 @@ import androidx.compose.material.icons.filled.Backup
 import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.BatteryAlert
 import androidx.compose.material.icons.filled.BatteryChargingFull
+import androidx.compose.material.icons.filled.Bedtime
 import androidx.compose.material.icons.filled.BlurOn
 import androidx.compose.material.icons.filled.CleaningServices
 import androidx.compose.material.icons.filled.PieChart
@@ -39,6 +40,7 @@ import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.DeleteSweep
 import androidx.compose.material.icons.filled.DoNotDisturbOn
 import androidx.compose.material.icons.filled.Folder
+import androidx.compose.material.icons.filled.HealthAndSafety
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Insights
 import androidx.compose.material.icons.filled.LocalHospital
@@ -191,6 +193,7 @@ private val toolGroups = listOf(
             Tool(R.string.tool_trackers, Icons.Filled.Visibility, ToolRoutes.TRACKERS),
             Tool(R.string.tool_app_trust, Icons.Filled.VerifiedUser, ToolRoutes.APP_TRUST),
             Tool(R.string.tool_apk_inspect, Icons.Filled.Policy, ToolRoutes.APK_INSPECT),
+            Tool(R.string.tool_posture, Icons.Filled.HealthAndSafety, ToolRoutes.POSTURE),
         ),
     ),
     // Update 14: Automation

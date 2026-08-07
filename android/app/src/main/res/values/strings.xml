@@ -905,4 +905,39 @@
     <string name="apkinspect_warn_signature_body">An app with this package name is installed but signed by someone else. A genuine update always keeps the same certificate — treat this file as untrusted.</string>
     <string name="apkinspect_warn_debug_title">Debug-signed build</string>
     <string name="apkinspect_warn_debug_body">This APK is marked debuggable. That is normal for development builds, but a debuggable app exposes its data to other tools on the device.</string>
+    <!-- Update 22: Battery freedom auditor + security posture -->
+    <string name="tool_battery_freedom">Background freedom</string>
+    <string name="freedom_note">Killing apps does nothing — Android restarts them. What really drives background drain is which apps are EXEMPT from battery optimisation. This lists them and takes you to the screen where the exemption can actually be revoked.</string>
+    <string name="freedom_awake_title">CPU awake since boot</string>
+    <string name="freedom_awake_subtitle">%1$d h in deep sleep out of %2$d h since boot</string>
+    <string name="freedom_header">Apps exempt from battery optimisation: %1$d</string>
+    <string name="freedom_empty">No app is exempt — Android can put every app to sleep.</string>
+    <string name="freedom_fix">Review</string>
+    <string name="freedom_open_system">Open system battery-optimisation list</string>
+    <string name="freedom_limits">Per-app wakelocks and App Standby buckets are not shown: reading them for other apps needs ADB or Shizuku, so we don\'t guess at them.</string>
+
+    <string name="tool_posture">Security checkup</string>
+    <string name="posture_note">Read-only hygiene check of your device settings, plus an inventory of the apps holding far-reaching permissions. This is not an antivirus and nothing is sent anywhere.</string>
+    <string name="posture_score_title">Security posture</string>
+    <string name="posture_score_subtitle">Android %1$s · patch %2$s</string>
+    <string name="posture_checks_header">Checks</string>
+    <string name="posture_check_patch">Security patch is %1$d days old</string>
+    <string name="posture_check_os">Android API level %1$d</string>
+    <string name="posture_check_lock_ok">Screen lock is set</string>
+    <string name="posture_check_lock_fail">No secure screen lock — anyone can open your phone</string>
+    <string name="posture_check_biometric_ok">Strong biometrics available</string>
+    <string name="posture_check_biometric_warn">No strong biometrics enrolled</string>
+    <string name="posture_check_adb_ok">USB debugging off</string>
+    <string name="posture_check_adb_warn">USB debugging is ON — turn it off when not developing</string>
+    <string name="posture_check_devopts_ok">Developer options off</string>
+    <string name="posture_check_devopts_warn">Developer options are enabled</string>
+    <string name="posture_check_sideloaded">%1$d apps installed outside an app store</string>
+    <string name="posture_power_header">Apps with far-reaching permissions: %1$d</string>
+    <string name="posture_power_note">Accessibility, notification access, screen overlay and all-files access let an app read or control much of your phone. Legitimate apps use them — but this is also where stalkerware hides. Review anything you don\'t recognise.</string>
+    <string name="posture_power_empty">No app holds these permissions.</string>
+    <string name="posture_kind_accessibility">Accessibility service — can read the screen and act for you</string>
+    <string name="posture_kind_notifications">Notification access — can read every notification</string>
+    <string name="posture_kind_overlay">Screen overlay — can draw over other apps</string>
+    <string name="posture_kind_all_files">All-files access — can read your whole storage</string>
+    <string name="posture_manage">Review</string>
 </resources>

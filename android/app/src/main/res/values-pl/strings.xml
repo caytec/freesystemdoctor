@@ -852,4 +852,39 @@
     <string name="apkinspect_warn_signature_body">Aplikacja o tej nazwie pakietu jest zainstalowana, ale podpisana przez kogoś innego. Prawdziwa aktualizacja zawsze zachowuje ten sam certyfikat — potraktuj ten plik jako niezaufany.</string>
     <string name="apkinspect_warn_debug_title">Kompilacja debug</string>
     <string name="apkinspect_warn_debug_body">Ten APK jest oznaczony jako debugowalny. To normalne dla wersji deweloperskich, ale debugowalna aplikacja wystawia swoje dane innym narzędziom na urządzeniu.</string>
+    <!-- Update 22: Audyt swobody bateryjnej + kontrola bezpieczeństwa -->
+    <string name="tool_battery_freedom">Swoboda w tle</string>
+    <string name="freedom_note">Ubijanie aplikacji nic nie daje — Android je restartuje. O zużyciu w tle decyduje to, które aplikacje są ZWOLNIONE z optymalizacji baterii. Tu je zobaczysz i przejdziesz do ekranu, gdzie zwolnienie da się faktycznie cofnąć.</string>
+    <string name="freedom_awake_title">Procesor wybudzony od startu</string>
+    <string name="freedom_awake_subtitle">%1$d h w głębokim śnie z %2$d h od uruchomienia</string>
+    <string name="freedom_header">Aplikacje zwolnione z optymalizacji baterii: %1$d</string>
+    <string name="freedom_empty">Żadna aplikacja nie jest zwolniona — Android może uśpić każdą.</string>
+    <string name="freedom_fix">Sprawdź</string>
+    <string name="freedom_open_system">Otwórz systemową listę optymalizacji baterii</string>
+    <string name="freedom_limits">Nie pokazujemy blokad wybudzenia ani kubełków App Standby dla innych aplikacji: ich odczyt wymaga ADB lub Shizuku, więc ich nie zgadujemy.</string>
+
+    <string name="tool_posture">Kontrola bezpieczeństwa</string>
+    <string name="posture_note">Kontrola higieny ustawień urządzenia (tylko odczyt) oraz spis aplikacji z daleko idącymi uprawnieniami. To nie jest antywirus i nic nie jest nigdzie wysyłane.</string>
+    <string name="posture_score_title">Stan bezpieczeństwa</string>
+    <string name="posture_score_subtitle">Android %1$s · poprawki %2$s</string>
+    <string name="posture_checks_header">Kontrole</string>
+    <string name="posture_check_patch">Poprawki bezpieczeństwa sprzed %1$d dni</string>
+    <string name="posture_check_os">Android API %1$d</string>
+    <string name="posture_check_lock_ok">Blokada ekranu ustawiona</string>
+    <string name="posture_check_lock_fail">Brak bezpiecznej blokady ekranu — każdy otworzy Twój telefon</string>
+    <string name="posture_check_biometric_ok">Dostępna silna biometria</string>
+    <string name="posture_check_biometric_warn">Brak zarejestrowanej silnej biometrii</string>
+    <string name="posture_check_adb_ok">Debugowanie USB wyłączone</string>
+    <string name="posture_check_adb_warn">Debugowanie USB WŁĄCZONE — wyłącz, gdy nie programujesz</string>
+    <string name="posture_check_devopts_ok">Opcje programisty wyłączone</string>
+    <string name="posture_check_devopts_warn">Opcje programisty są włączone</string>
+    <string name="posture_check_sideloaded">%1$d aplikacji zainstalowanych spoza sklepu</string>
+    <string name="posture_power_header">Aplikacje z daleko idącymi uprawnieniami: %1$d</string>
+    <string name="posture_power_note">Ułatwienia dostępu, dostęp do powiadomień, nakładka na ekran i dostęp do wszystkich plików pozwalają aplikacji czytać lub kontrolować większość telefonu. Używają ich też uczciwe aplikacje — ale tu właśnie ukrywa się stalkerware. Sprawdź wszystko, czego nie rozpoznajesz.</string>
+    <string name="posture_power_empty">Żadna aplikacja nie ma tych uprawnień.</string>
+    <string name="posture_kind_accessibility">Ułatwienia dostępu — może czytać ekran i działać za Ciebie</string>
+    <string name="posture_kind_notifications">Dostęp do powiadomień — może czytać każde powiadomienie</string>
+    <string name="posture_kind_overlay">Nakładka na ekran — może rysować nad innymi aplikacjami</string>
+    <string name="posture_kind_all_files">Dostęp do wszystkich plików — może czytać całą pamięć</string>
+    <string name="posture_manage">Sprawdź</string>
 </resources>

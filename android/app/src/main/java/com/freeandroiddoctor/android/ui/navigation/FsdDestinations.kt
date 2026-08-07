@@ -104,4 +104,8 @@ object ToolRoutes {
 
     // Update 21: Pre-install APK inspector
     const val APK_INSPECT = "tool/apk_inspect"
+
+    // Update 22: Battery freedom auditor + security posture checkup
+    const val BATTERY_FREEDOM = "tool/battery_freedom"
+    const val POSTURE = "tool/posture"
 }
