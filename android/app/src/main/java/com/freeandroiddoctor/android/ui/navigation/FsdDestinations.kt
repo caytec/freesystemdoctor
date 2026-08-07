@@ -108,4 +108,7 @@ object ToolRoutes {
     // Update 22: Battery freedom auditor + security posture checkup
     const val BATTERY_FREEDOM = "tool/battery_freedom"
     const val POSTURE = "tool/posture"
+
+    // Update 2.1.0: real performance diagnosis
+    const val PERFORMANCE = "tool/performance"
 }

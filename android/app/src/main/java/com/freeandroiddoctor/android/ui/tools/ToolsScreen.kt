@@ -166,6 +166,7 @@ private val toolGroups = listOf(
         R.string.tools_group_system,
         listOf(
             Tool(R.string.tool_memory, Icons.Filled.Memory, ToolRoutes.MEMORY),
+            Tool(R.string.tool_performance, Icons.Filled.Speed, ToolRoutes.PERFORMANCE),
             Tool(R.string.tool_focus, Icons.Filled.DoNotDisturbOn, ToolRoutes.FOCUS),
             Tool(R.string.tool_game_boost, Icons.Filled.SportsEsports, ToolRoutes.GAME_BOOST, advanced = true),
             Tool(R.string.tool_speed, Icons.Filled.Speed, ToolRoutes.SPEED_TEST),

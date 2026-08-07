@@ -891,4 +891,33 @@
     <string name="memory_reclaim_unsupported">Android 14 i nowszy nie pozwala już żadnej aplikacji czyścić procesów w tle innych aplikacji — przycisk „zwolnij RAM" nic by tu nie zrobił. Aplikacje w cache i tak są zamrożone przy zerowym CPU. Użyj Swobody w tle i Wydajności, żeby znaleźć to, co naprawdę spowalnia urządzenie.</string>
     <string name="game_boost_result_ram_unsupported">Odzyskiwanie RAM: niedostępne na Androidzie 14+ (system blokuje to wszystkim aplikacjom).</string>
     <string name="game_boost_result_dnd">Nie przeszkadzać: włączone na czas sesji.</string>
+    <!-- Update 2.1.0: realna diagnoza wydajności -->
+    <string name="tool_performance">Wydajność</string>
+    <string name="perf_note">Znajduje to, co naprawdę spowalnia urządzenie. Bez przycisku „boost": od Androida 14 żadna aplikacja nie może czyścić procesów innych aplikacji, a te w cache i tak są zamrożone przy zerowym CPU. To są przyczyny, które faktycznie mają znaczenie.</string>
+    <string name="perf_summary_title">Kontrola wydajności</string>
+    <string name="perf_summary_healthy">Nic nie hamuje urządzenia</string>
+    <string name="perf_summary_issues">Znaleziono problemów: %1$d</string>
+    <string name="perf_headroom">Zapas termiczny: %1$d%% progu dławienia</string>
+    <string name="perf_headroom_unavailable">To urządzenie nie raportuje zapasu termicznego</string>
+    <string name="perf_nothing_found">Obecnie nie wykryto wąskich gardeł.</string>
+    <string name="perf_thermal_title">Dławienie termiczne</string>
+    <string name="perf_thermal_body">Urządzenie jest na %1$d%% swojego limitu termicznego i samo się spowalnia, żeby ostygnąć. Zdejmij z ładowarki, wyjmij z etui lub schowaj przed słońcem.</string>
+    <string name="perf_storage_critical_title">Pamięć prawie pełna</string>
+    <string name="perf_storage_critical_body">Wolne tylko %1$d%%. Pamięć flash realnie tu zwalnia: system plików uruchamia agresywne odśmiecanie, a dysk traci szybki bufor zapisu.</string>
+    <string name="perf_storage_low_title">Mało wolnego miejsca</string>
+    <string name="perf_storage_low_body">Wolne %1$d%%. Poniżej mniej więcej 15%% wydajność zapisu zaczyna spadać.</string>
+    <string name="perf_exemptions_title">Aplikacje zwolnione z optymalizacji baterii</string>
+    <string name="perf_exemptions_body">%1$d aplikacji może swobodnie działać w tle. Otwórz Swobodę w tle, żeby je przejrzeć.</string>
+    <string name="perf_sleep_title">Urządzenie rzadko śpi</string>
+    <string name="perf_sleep_body">Procesor był wybudzony przez %1$d%% czasu od uruchomienia. Coś go trzyma.</string>
+    <string name="perf_talkers_title">Aplikacje aktywne w tle</string>
+    <string name="perf_talkers_body">%1$d aplikacji wysyłało dane, gdy z nich nie korzystałeś. Szczegóły w monitorze phone-home.</string>
+    <string name="perf_memory_title">Presja pamięci</string>
+    <string name="perf_memory_body">System zgłasza niski poziom pamięci. Pomaga odinstalowanie lub ograniczenie ciężkiej aplikacji; ubijanie procesów nie.</string>
+    <string name="perf_uptime_title">Długi czas pracy</string>
+    <string name="perf_uptime_body">Działa %1$d dni bez restartu. Ponowne uruchomienie czyści wycieki pamięci i zablokowane wakelocki — czasem to jest prawdziwe rozwiązanie.</string>
+    <string name="perf_cache_title">Odzyskaj cache aplikacji</string>
+    <string name="perf_cache_body">Około %1$s można odzyskać z cache innych aplikacji. To zwalnia MIEJSCE, nie prędkość — cache istnieje, by unikać pracy, więc kolejne uruchomienie wyczyszczonej aplikacji będzie wolniejsze.</string>
+    <string name="perf_cache_action">Odzyskaj miejsce z cache</string>
+    <string name="perf_cache_result">Zwolniono %1$s</string>
 </resources>

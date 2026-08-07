@@ -888,4 +888,33 @@
     <string name="memory_reclaim_unsupported">Android 14 and newer no longer let any app clear another app\'s background processes — so a "free RAM" button here would do nothing. Cached apps are frozen at zero CPU anyway. Use Background freedom and Performance to find what is genuinely slowing the device.</string>
     <string name="game_boost_result_ram_unsupported">RAM reclaim: not available on Android 14+ (the system blocks it for all apps).</string>
     <string name="game_boost_result_dnd">Do Not Disturb: on for this session.</string>
+    <!-- Update 2.1.0: real performance diagnosis -->
+    <string name="tool_performance">Performance</string>
+    <string name="perf_note">Finds what is genuinely slowing this device down. No "boost" button: since Android 14 no app can clear another app\'s processes, and cached apps are already frozen at zero CPU. These are the causes that actually matter.</string>
+    <string name="perf_summary_title">Performance check</string>
+    <string name="perf_summary_healthy">Nothing holding it back</string>
+    <string name="perf_summary_issues">%1$d issues found</string>
+    <string name="perf_headroom">Thermal headroom: %1$d%% of the throttling threshold</string>
+    <string name="perf_headroom_unavailable">Thermal headroom not reported by this device</string>
+    <string name="perf_nothing_found">No bottlenecks detected right now.</string>
+    <string name="perf_thermal_title">Thermal throttling</string>
+    <string name="perf_thermal_body">The device is at %1$d%% of its thermal limit and is slowing itself down to cool off. Take it off the charger, out of its case or out of direct sun.</string>
+    <string name="perf_storage_critical_title">Storage almost full</string>
+    <string name="perf_storage_critical_body">Only %1$d%% free. Flash storage genuinely slows down here: the filesystem runs aggressive garbage collection and the drive loses its fast write cache.</string>
+    <string name="perf_storage_low_title">Storage running low</string>
+    <string name="perf_storage_low_body">%1$d%% free. Below about 15%% write performance starts to degrade.</string>
+    <string name="perf_exemptions_title">Apps exempt from battery optimisation</string>
+    <string name="perf_exemptions_body">%1$d apps may run freely in the background. Open Background freedom to review them.</string>
+    <string name="perf_sleep_title">Device rarely sleeps</string>
+    <string name="perf_sleep_body">The CPU stayed awake %1$d%% of the time since boot. Something is holding it up.</string>
+    <string name="perf_talkers_title">Apps active in the background</string>
+    <string name="perf_talkers_body">%1$d apps sent data while you were not using them. Open the Phone-home monitor for details.</string>
+    <string name="perf_memory_title">Memory pressure</string>
+    <string name="perf_memory_body">The system reports it is low on memory. Uninstalling or restricting a heavy app helps; killing processes does not.</string>
+    <string name="perf_uptime_title">Long uptime</string>
+    <string name="perf_uptime_body">Running for %1$d days without a restart. A reboot clears leaked memory and stuck wakelocks — occasionally it is the real fix.</string>
+    <string name="perf_cache_title">Reclaim app caches</string>
+    <string name="perf_cache_body">About %1$s can be reclaimed from other apps\' caches. This frees STORAGE, not speed — caches exist to avoid work, so the next launch of a trimmed app is slower.</string>
+    <string name="perf_cache_action">Reclaim cache space</string>
+    <string name="perf_cache_result">Freed %1$s</string>
 </resources>
