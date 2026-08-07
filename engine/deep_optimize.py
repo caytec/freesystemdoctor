@@ -62,6 +62,31 @@ def _restore_value(key):
     return (_load_state().get("backups") or {}).get(key, None)
 
 
+def _clear_backups(*keys: str) -> None:
+    """Forget backups after a successful revert.
+
+    _backup() is write-once so an apply/revert pair round-trips exactly. But if
+    the entry survived the revert, a later apply would keep the stale value and
+    the *next* revert would restore a setting from a previous session instead
+    of what the user had a moment ago. Clearing here keeps each cycle honest.
+    """
+    state = _load_state()
+    backups = state.get("backups") or {}
+    changed = False
+    for key in keys:
+        if key.endswith("*"):
+            prefix = key[:-1]
+            for k in [k for k in backups if k.startswith(prefix)]:
+                backups.pop(k, None)
+                changed = True
+        elif key in backups:
+            backups.pop(key, None)
+            changed = True
+    if changed:
+        state["backups"] = backups
+        _save_state(state)
+
+
 def _run(cmd: list[str], timeout: int = 60) -> tuple[int, str]:
     try:
         r = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout,
@@ -462,6 +487,101 @@ def cleanup_component_store(reset_base: bool = False,
     return False, (out.strip().splitlines() or ["DISM failed"])[-1][:200]
 
 
+# ── 9. NTFS filesystem behaviour ─────────────────────────────────────────────
+
+_FS_PATH = r"SYSTEM\CurrentControlSet\Control\FileSystem"
+_PREFETCH_PATH = (r"SYSTEM\CurrentControlSet\Control\Session Manager"
+                  r"\Memory Management\PrefetchParameters")
+
+
+def get_last_access_status() -> bool:
+    """True when last-access timestamps are already disabled."""
+    val = _reg_get(winreg.HKEY_LOCAL_MACHINE, _FS_PATH,
+                   "NtfsDisableLastAccessUpdate", 0)
+    # Win10+ uses 0x80000000-style flags; bit 0 set means "disabled"
+    return bool(int(val) & 1) if isinstance(val, int) else False
+
+
+def apply_disable_last_access() -> tuple[bool, str]:
+    """Stop NTFS writing a timestamp every time a file is merely read."""
+    old = _reg_get(winreg.HKEY_LOCAL_MACHINE, _FS_PATH,
+                   "NtfsDisableLastAccessUpdate", 0)
+    _backup("NtfsDisableLastAccessUpdate", int(old))
+    if _reg_set(winreg.HKEY_LOCAL_MACHINE, _FS_PATH,
+                "NtfsDisableLastAccessUpdate", 1):
+        return True, "Last-access timestamps off — fewer pointless SSD writes"
+    return False, "Access denied — run as administrator"
+
+
+def revert_disable_last_access() -> tuple[bool, str]:
+    old = _restore_value("NtfsDisableLastAccessUpdate")
+    if _reg_set(winreg.HKEY_LOCAL_MACHINE, _FS_PATH,
+                "NtfsDisableLastAccessUpdate", int(old) if old is not None else 0):
+        return True, "Last-access timestamps restored"
+    return False, "Access denied"
+
+
+def get_8dot3_status() -> bool:
+    return _reg_get(winreg.HKEY_LOCAL_MACHINE, _FS_PATH,
+                    "NtfsDisable8dot3NameCreation", 0) == 1
+
+
+def apply_disable_8dot3() -> tuple[bool, str]:
+    """Stop generating MS-DOS 8.3 short names for every new file."""
+    old = _reg_get(winreg.HKEY_LOCAL_MACHINE, _FS_PATH,
+                   "NtfsDisable8dot3NameCreation", 0)
+    _backup("NtfsDisable8dot3NameCreation", int(old))
+    if _reg_set(winreg.HKEY_LOCAL_MACHINE, _FS_PATH,
+                "NtfsDisable8dot3NameCreation", 1):
+        return True, "8.3 short-name creation off (affects new files only)"
+    return False, "Access denied — run as administrator"
+
+
+def revert_disable_8dot3() -> tuple[bool, str]:
+    old = _restore_value("NtfsDisable8dot3NameCreation")
+    if _reg_set(winreg.HKEY_LOCAL_MACHINE, _FS_PATH,
+                "NtfsDisable8dot3NameCreation",
+                int(old) if old is not None else 0):
+        return True, "8.3 short-name creation restored"
+    return False, "Access denied"
+
+
+def _system_drive_is_ssd() -> bool:
+    """Only offer prefetcher changes on an SSD — on a hard disk the prefetcher
+    genuinely helps and turning it off would slow boot down."""
+    rc, out = _ps(
+        "Get-PhysicalDisk -ErrorAction SilentlyContinue | "
+        "Where-Object { $_.DeviceId -eq 0 } | "
+        "Select-Object -ExpandProperty MediaType", timeout=45)
+    return rc == 0 and "ssd" in (out or "").lower()
+
+
+def get_prefetch_status() -> bool:
+    return _reg_get(winreg.HKEY_LOCAL_MACHINE, _PREFETCH_PATH,
+                    "EnablePrefetcher", 3) == 0
+
+
+def apply_disable_prefetch() -> tuple[bool, str]:
+    for name in ("EnablePrefetcher", "EnableSuperfetch"):
+        old = _reg_get(winreg.HKEY_LOCAL_MACHINE, _PREFETCH_PATH, name, 3)
+        _backup(f"prefetch::{name}", int(old))
+    ok = _reg_set(winreg.HKEY_LOCAL_MACHINE, _PREFETCH_PATH,
+                  "EnablePrefetcher", 0)
+    _reg_set(winreg.HKEY_LOCAL_MACHINE, _PREFETCH_PATH, "EnableSuperfetch", 0)
+    if ok:
+        return True, "Prefetcher off — pointless on an SSD (reboot to apply)"
+    return False, "Access denied — run as administrator"
+
+
+def revert_disable_prefetch() -> tuple[bool, str]:
+    ok = True
+    for name, default in (("EnablePrefetcher", 3), ("EnableSuperfetch", 3)):
+        old = _restore_value(f"prefetch::{name}")
+        ok &= _reg_set(winreg.HKEY_LOCAL_MACHINE, _PREFETCH_PATH, name,
+                       int(old) if old is not None else default)
+    return ok, "Prefetcher settings restored (reboot to apply)"
+
+
 # ── tweak catalogue (drives the UI) ──────────────────────────────────────────
 
 def get_tweaks() -> list[dict]:
@@ -522,7 +642,44 @@ def get_tweaks() -> list[dict]:
             "risk": "low", "reboot": False,
             "optimized": get_mouse_accel_status(),
         },
+        {
+            "id": "last_access",
+            "name": "No last-access timestamps",
+            "desc": "NTFS writes a timestamp every time a file is read — even "
+                    "when nothing changed. Turning it off removes a constant "
+                    "trickle of pointless SSD writes.",
+            "impact": "Fewer background disk writes",
+            "risk": "low", "reboot": True,
+            "optimized": get_last_access_status(),
+        },
+        {
+            "id": "no_8dot3",
+            "name": "No MS-DOS 8.3 short names",
+            "desc": "Windows still generates a 1980s-style short name for "
+                    "every new file. Skipping it speeds up writes and "
+                    "directory listings in large folders.",
+            "impact": "Faster file creation in big folders",
+            "risk": "low", "reboot": True,
+            "optimized": get_8dot3_status(),
+        },
     ]
+
+
+def get_ssd_tweaks() -> list[dict]:
+    """Tweaks that only make sense on an SSD. Kept separate because probing
+    the disk type is slow, so the UI can load the main list first."""
+    if not _system_drive_is_ssd():
+        return []
+    return [{
+        "id": "no_prefetch",
+        "name": "Disable prefetcher (SSD only)",
+        "desc": "The prefetcher pre-loads files to hide hard-disk seek time. "
+                "An SSD has no seek time, so it is pure overhead. Detected "
+                "an SSD system drive, so this is safe here.",
+        "impact": "Less background disk activity",
+        "risk": "low", "reboot": True,
+        "optimized": get_prefetch_status(),
+    }]
 
 
 _APPLY = {
@@ -534,6 +691,9 @@ _APPLY = {
     "kernel_ram": apply_kernel_in_ram,
     "power_throttle": apply_disable_power_throttling,
     "raw_mouse": apply_raw_mouse_input,
+    "last_access": apply_disable_last_access,
+    "no_8dot3": apply_disable_8dot3,
+    "no_prefetch": apply_disable_prefetch,
 }
 
 _REVERT = {
@@ -542,17 +702,66 @@ _REVERT = {
     "kernel_ram": revert_kernel_in_ram,
     "power_throttle": revert_power_throttling,
     "raw_mouse": revert_raw_mouse_input,
+    "last_access": revert_disable_last_access,
+    "no_8dot3": revert_disable_8dot3,
+    "no_prefetch": revert_disable_prefetch,
 }
+
+
+def _tweak_name(tweak_id: str) -> str:
+    for t in get_tweaks():
+        if t["id"] == tweak_id:
+            return t["name"]
+    return tweak_id
+
+
+def _drop_orphaned_backup(tweak_id: str) -> None:
+    """If a tweak isn't currently applied, any backup it left behind is stale.
+
+    Self-heals state written by older builds, which kept backups forever: a
+    revert would otherwise restore a value captured in some past session
+    instead of what the user had immediately before applying.
+    """
+    try:
+        for t in get_tweaks():
+            if t["id"] != tweak_id:
+                continue
+            if t.get("optimized") is False:
+                _clear_backups(*_BACKUP_KEYS.get(tweak_id, ()))
+            return
+    except Exception:
+        pass
 
 
 def apply_tweak(tweak_id: str) -> tuple[bool, str]:
     fn = _APPLY.get(tweak_id)
     if not fn:
         return False, "Unknown tweak"
+    _drop_orphaned_backup(tweak_id)
     try:
-        return fn()
+        ok, msg = fn()
     except Exception as exc:
-        return False, str(exc)
+        ok, msg = False, str(exc)
+    try:
+        from . import change_ledger
+        change_ledger.record("deep_optimize", tweak_id, _tweak_name(tweak_id),
+                             ok, msg)
+    except Exception:
+        pass
+    return ok, msg
+
+
+# Backup keys owned by each tweak, cleared once it is reverted.
+_BACKUP_KEYS = {
+    "vbs":            ("vbs_was_enabled",),
+    "quantum":        ("Win32PrioritySeparation",),
+    "kernel_ram":     ("DisablePagingExecutive",),
+    "power_throttle": ("PowerThrottlingOff",),
+    "raw_mouse":      ("mouse::*",),
+    "last_access":    ("NtfsDisableLastAccessUpdate",),
+    "no_8dot3":       ("NtfsDisable8dot3NameCreation",),
+    "no_prefetch":    ("prefetch::*",),
+}
 
 
 def revert_tweak(tweak_id: str) -> tuple[bool, str]:
@@ -560,6 +769,9 @@ def revert_tweak(tweak_id: str) -> tuple[bool, str]:
     if not fn:
         return False, "This tweak has no automatic revert"
     try:
-        return fn()
+        ok, msg = fn()
     except Exception as exc:
         return False, str(exc)
+    if ok:
+        _clear_backups(*_BACKUP_KEYS.get(tweak_id, ()))
+    return ok, msg

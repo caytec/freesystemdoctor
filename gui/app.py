@@ -77,6 +77,8 @@ from .page_publisher        import PublisherPage
 from .page_deep_optimize   import DeepOptimizePage
 from .page_gpu_boost       import GpuBoostPage
 from .page_ultimate_boost  import UltimateBoostPage
+from .page_ram_master      import RamMasterPage
+from .page_undo_center     import UndoCenterPage
 from .page_speed_test      import SpeedTestPage
 from .page_duplicates      import DuplicatesPage
 from .page_debloat         import DebloatPage
@@ -158,6 +160,8 @@ _NAV_CATEGORIES = [
             ("svc_opt",    "⚙",  "Service Optim.",  ServiceOptimizerPage),
             ("startup",    "🚀", "Startup Insights",StartupInsightsPage),
             ("deep_opt",   "🔬", "Deep Optimize",   DeepOptimizePage),
+            ("ram_master", "🧠", "RAM Master",      RamMasterPage),
+            ("undo",       "↩",  "Undo Center",     UndoCenterPage),
         ],
     },
     # ── Gaming ────────────────────────────────────────────────────────────────
@@ -279,7 +283,7 @@ SIMPLE_KEYS = {
     # AI / Auto
     "ai_ask", "wizard",
     # Performance
-    "care", "speedup", "turbo",
+    "care", "speedup", "turbo", "ram_master", "undo",
     # Gaming
     "ultimate", "game",
     # Cleaning

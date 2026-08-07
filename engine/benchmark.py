@@ -94,8 +94,12 @@ def cpu_benchmark(
                 pass
 
         # Use multiprocessing to bypass the GIL — gives a real multi-core score.
-        # Falls back to threading if multiprocessing isn't available (e.g. frozen
-        # PyInstaller exe with the spawn-method limitation).
+        # Falls back to threading if multiprocessing isn't available.
+        #
+        # REQUIRES multiprocessing.freeze_support() at the top of main.py. In a
+        # PyInstaller build each spawned worker re-launches the exe, and without
+        # it every worker would start a second copy of the whole application.
+        # Do not remove that call.
         total_ops = 0
         elapsed = 0.0
         try:

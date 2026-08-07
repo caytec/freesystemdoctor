@@ -30,7 +30,12 @@ if not logger.handlers:
 # ---------------------------------------------------------------------------
 # State file
 # ---------------------------------------------------------------------------
-_STATE_FILE = os.path.join(_LOG_DIR, "turbo_state.json")
+from . import _perf as _perf_helpers
+
+# Lives in ~/.fsd, not %TEMP% — %TEMP% is wiped by disk cleanup (including our
+# own), which would strand Turbo in the "on" state with no way back.
+_STATE_FILE = _perf_helpers.durable_state_path(
+    "turbo_state.json", legacy_path=os.path.join(_LOG_DIR, "turbo_state.json"))
 
 # ---------------------------------------------------------------------------
 # Turbo profile definition
@@ -140,11 +145,8 @@ def _load_state() -> dict:
 
 
 def _save_state(state: dict) -> None:
-    try:
-        with open(_STATE_FILE, "w", encoding="utf-8") as f:
-            json.dump(state, f, indent=2)
-    except Exception as exc:
-        logger.warning("_save_state failed: %s", exc)
+    if not _perf_helpers.save_json_atomic(_STATE_FILE, state):
+        logger.warning("_save_state failed for %s", _STATE_FILE)
 
 
 # ---------------------------------------------------------------------------
@@ -305,14 +307,17 @@ def _restore_notifications(prev_value: Optional[int]) -> None:
 # ---------------------------------------------------------------------------
 
 def _free_ram() -> None:
-    """Attempt to free standby list via EmptyWorkingSet trick."""
+    """Free RAM by trimming working sets and dropping low-priority cache.
+
+    This used to run PowerShell's [System.GC]::Collect(), which only collects
+    the child shell's own .NET heap — it freed nothing on the system and made
+    Turbo's "RAM freed" claim meaningless.
+    """
     try:
-        _run_powershell(
-            "[System.GC]::Collect(); [System.GC]::WaitForPendingFinalizers()",
-            timeout=10,
-        )
-    except Exception:
-        pass
+        from . import ram_master
+        ram_master.deep_clean(level="quick")
+    except Exception as exc:
+        logger.debug("_free_ram: %s", exc)
 
 
 # ---------------------------------------------------------------------------

@@ -29,6 +29,72 @@ class RamDaemon:
         self.clean_count: int = 0
         self.on_clean_callback = None  # callable(freed_mb)
 
+        # ── ISLC-style standby policy (opt-in, OFF by default) ────────────
+        # The standby list is a disk cache, not waste. Purging it too eagerly
+        # forces re-reads from disk and makes things slower, which is why this
+        # is off unless the user turns it on. When on, it only fires under
+        # genuine pressure: little free RAM *and* a large standby list to
+        # reclaim.
+        self.standby_policy_enabled: bool = False
+        self.standby_free_below_mb: int = 1024
+        self.standby_above_mb: int = 1024
+        self.standby_purge_count: int = 0
+        self.last_standby_freed_mb: int = 0
+        self._load_policy()
+
+    # ── persisted policy ──────────────────────────────────────────────────────
+
+    def _load_policy(self):
+        try:
+            from engine import app_settings
+            self.standby_policy_enabled = bool(
+                app_settings.get("ram_standby_policy_enabled", False))
+            self.standby_free_below_mb = int(
+                app_settings.get("ram_standby_free_below_mb", 1024))
+            self.standby_above_mb = int(
+                app_settings.get("ram_standby_above_mb", 1024))
+        except Exception:
+            pass
+
+    def save_policy(self, enabled: bool, free_below_mb: int,
+                    standby_above_mb: int) -> None:
+        self.standby_policy_enabled = bool(enabled)
+        self.standby_free_below_mb = max(128, int(free_below_mb))
+        self.standby_above_mb = max(128, int(standby_above_mb))
+        try:
+            from engine import app_settings
+            app_settings.set("ram_standby_policy_enabled",
+                             self.standby_policy_enabled)
+            app_settings.set("ram_standby_free_below_mb",
+                             self.standby_free_below_mb)
+            app_settings.set("ram_standby_above_mb", self.standby_above_mb)
+        except Exception:
+            pass
+
+    def _check_standby_policy(self):
+        """Purge the standby list only under real memory pressure."""
+        if not self.standby_policy_enabled:
+            return
+        try:
+            from engine import ram_master
+            comp = ram_master.get_memory_composition()
+            standby = comp.get("standby_mb")
+            if standby is None:
+                return  # counters unavailable — never guess
+            free_mb = comp.get("free_mb", 0)
+            if (free_mb < self.standby_free_below_mb
+                    and standby > self.standby_above_mb):
+                before = psutil.virtual_memory().available
+                ram_master._set_memory_list(
+                    ram_master.MEMORY_PURGE_STANDBY_LIST)
+                time.sleep(0.4)
+                after = psutil.virtual_memory().available
+                self.last_standby_freed_mb = max(
+                    0, (after - before) // (1024 * 1024))
+                self.standby_purge_count += 1
+        except Exception:
+            pass
+
     # ── lifecycle ─────────────────────────────────────────────────────────────
 
     def start(self):
@@ -48,12 +114,16 @@ class RamDaemon:
 
     def _run(self):
         while not self._stop_event.wait(self.interval_sec):
-            if not self.enabled or not _PSUTIL:
+            if not _PSUTIL:
                 continue
             try:
-                pct = psutil.virtual_memory().percent
-                if pct >= self.threshold_pct:
-                    self._do_clean()
+                if self.enabled:
+                    pct = psutil.virtual_memory().percent
+                    if pct >= self.threshold_pct:
+                        self._do_clean()
+                # Independent of the %-trim above: the standby policy has its
+                # own opt-in flag and its own pressure test.
+                self._check_standby_policy()
             except Exception:
                 pass
 
@@ -109,6 +179,11 @@ class RamDaemon:
             "last_freed_mb": self.last_freed_mb,
             "total_freed_mb": self.total_freed_mb,
             "clean_count": self.clean_count,
+            "standby_policy_enabled": self.standby_policy_enabled,
+            "standby_free_below_mb": self.standby_free_below_mb,
+            "standby_above_mb": self.standby_above_mb,
+            "standby_purge_count": self.standby_purge_count,
+            "last_standby_freed_mb": self.last_standby_freed_mb,
         }
 
 

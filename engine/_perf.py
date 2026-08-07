@@ -49,6 +49,44 @@ def run_powershell(script: str, timeout: int = 30) -> subprocess.CompletedProces
     )
 
 
+# ── Durable state files ───────────────────────────────────────────────────────
+
+def durable_state_path(filename: str, legacy_path: str | None = None) -> str:
+    """Path for a state file that must survive disk cleanup.
+
+    Revert data used to live under %TEMP%, which Disk Cleanup, Storage Sense —
+    and this application's own cleaners — delete. Losing it makes a tweak
+    permanently unrevertable, so state now lives in ~/.fsd. If a legacy file is
+    still present it is migrated once, then left in place harmlessly.
+    """
+    target_dir = os.path.join(os.path.expanduser("~"), ".fsd")
+    target = os.path.join(target_dir, filename)
+    try:
+        os.makedirs(target_dir, exist_ok=True)
+        if (legacy_path and not os.path.exists(target)
+                and os.path.exists(legacy_path)):
+            import shutil
+            shutil.copy2(legacy_path, target)
+    except Exception:
+        # A migration failure must never stop the caller from working.
+        pass
+    return target
+
+
+def save_json_atomic(path: str, data) -> bool:
+    """Write JSON via a temp file + replace, so a crash can't truncate it."""
+    import json
+    try:
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        tmp = path + ".tmp"
+        with open(tmp, "w", encoding="utf-8") as f:
+            json.dump(data, f, indent=2)
+        os.replace(tmp, path)
+        return True
+    except Exception:
+        return False
+
+
 # ── TTL cache ─────────────────────────────────────────────────────────────────
 
 class TTLCache:

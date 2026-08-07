@@ -39,7 +39,13 @@ if not logger.handlers:
     logger.addHandler(_fh)
     logger.setLevel(logging.DEBUG)
 
-_STATE_FILE = os.path.join(_LOG_DIR, "cpu_optimizer_state.json")
+from . import _perf as _perf_helpers
+
+# ~/.fsd, not %TEMP%: this file holds the only copy of the user's original
+# power settings, and %TEMP% is wiped by disk cleanup (ours included).
+_STATE_FILE = _perf_helpers.durable_state_path(
+    "cpu_optimizer_state.json",
+    legacy_path=os.path.join(_LOG_DIR, "cpu_optimizer_state.json"))
 
 # ---------------------------------------------------------------------------
 # Constants — Power scheme GUIDs and subgroup/setting GUIDs
@@ -126,11 +132,8 @@ def _load_state() -> dict:
 
 
 def _save_state(state: dict) -> None:
-    try:
-        with open(_STATE_FILE, "w", encoding="utf-8") as f:
-            json.dump(state, f, indent=2)
-    except Exception as exc:
-        logger.warning("_save_state failed: %s", exc)
+    if not _perf_helpers.save_json_atomic(_STATE_FILE, state):
+        logger.warning("_save_state failed for %s", _STATE_FILE)
 
 
 # ---------------------------------------------------------------------------
@@ -401,6 +404,21 @@ def _deep_restore(key):
     return (_load_state().get("deep_backups") or {}).get(key)
 
 
+def _clear_deep_backups(*keys: str) -> None:
+    """Drop backups after a successful revert so the next apply captures the
+    user's current values instead of restoring ones from an old session."""
+    state = _load_state()
+    backups = state.get("deep_backups") or {}
+    changed = False
+    for key in keys:
+        if key in backups:
+            backups.pop(key, None)
+            changed = True
+    if changed:
+        state["deep_backups"] = backups
+        _save_state(state)
+
+
 # ── live CPU snapshot (proof, not promises) ─────────────────────────────────
 
 def get_cpu_snapshot() -> dict:
@@ -579,6 +597,18 @@ def get_deep_tweaks() -> list[dict]:
 
 
 def apply_deep_tweak(tweak_id: str) -> tuple[bool, str]:
+    ok, msg = _apply_deep_tweak_inner(tweak_id)
+    try:
+        from . import change_ledger
+        name = next((t["name"] for t in get_deep_tweaks()
+                     if t["id"] == tweak_id), tweak_id)
+        change_ledger.record("cpu_optimizer", tweak_id, name, ok, msg)
+    except Exception:
+        pass
+    return ok, msg
+
+
+def _apply_deep_tweak_inner(tweak_id: str) -> tuple[bool, str]:
     try:
         if tweak_id == "epp":
             ac, dcv = _query_alias("PERFEPP")
@@ -655,6 +685,8 @@ def revert_deep_tweak(tweak_id: str) -> tuple[bool, str]:
                                   "SUB_PROCESSOR", "SHORTSCHEDPOLICY",
                                   str(saved2[1]))
                     _powercfg("/setactive", "SCHEME_CURRENT")
+            if ok == 0:
+                _clear_deep_backups(alias, "SHORTSCHEDPOLICY")
             return ok == 0, f"{alias} restored to AC={ac}, DC={dcv}"
         if tweak_id == "timer_res":
             release_timer_resolution()
@@ -669,6 +701,7 @@ def revert_deep_tweak(tweak_id: str) -> tuple[bool, str]:
             else:
                 _reg_write(winreg.HKEY_LOCAL_MACHINE, KERNEL_KEY,
                            "GlobalTimerResolutionRequests", int(saved))
+            _clear_deep_backups("GlobalTimerResolutionRequests")
             return True, "Timer resolution released and flag restored"
         return False, "Unknown tweak"
     except Exception as exc:

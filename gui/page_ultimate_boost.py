@@ -71,12 +71,26 @@ class UltimateBoostPage(tk.Frame):
         chk.pack(pady=(8, 2))
 
         btns = tk.Frame(card, bg=T.PANEL)
-        btns.pack(pady=(6, 8))
+        btns.pack(pady=(6, 4))
         self._boost_btn = ActionButton(btns, text="🚀 ULTIMATE BOOST",
                                        width=220, command=self._on_boost)
         self._boost_btn.pack(side="left", padx=(0, 10))
         ActionButton(btns, text="↺ Revert everything", width=170,
                      secondary=True, command=self._on_revert).pack(side="left")
+
+        # ── A/B verification — the thing no competitor does ──────────────
+        vrow = tk.Frame(card, bg=T.PANEL)
+        vrow.pack(pady=(6, 4))
+        ActionButton(vrow, text="🔬 Verify tweaks (measure & auto-undo)",
+                     width=300, secondary=True,
+                     command=self._on_verify).pack()
+        tk.Label(card,
+                 text="Verification applies tweaks one at a time, measures the "
+                      "machine before and after, and automatically undoes any "
+                      "that made it worse. Takes a few minutes — it samples "
+                      "your PC's own noise level first so the verdict is real.",
+                 bg=T.PANEL, fg=T.FG2, font=T.FONT_MICRO,
+                 justify="center", wraplength=640).pack(padx=16, pady=(0, 4))
 
         self._prog = ProgressBar(card)
         self._prog.pack(fill="x", padx=24, pady=(4, 6))
@@ -198,6 +212,59 @@ class UltimateBoostPage(tk.Frame):
             f"{r['ok_count']}/{r['total']} steps applied.\n\n"
             "Some changes (HAGS, timer flag) reach full effect after a "
             "reboot. Revert any time from this page.")
+
+    def _on_verify(self):
+        if self._busy:
+            return
+        if not messagebox.askyesno(
+                "Verify tweaks",
+                "Apply performance tweaks one at a time, measuring your PC "
+                "before and after each one?\n\n"
+                "Anything that measurably makes things WORSE is undone "
+                "automatically. This takes a few minutes and your PC should be "
+                "otherwise idle for the measurements to mean anything."):
+            return
+        self._busy = True
+        self._log_line("═══ VERIFY (measure → keep or undo) ═══", "head")
+
+        def progress(msg, pct):
+            self.after(0, self._set_progress, str(msg), int(pct))
+
+        def work():
+            try:
+                rep = ub.verify_tweaks(progress_cb=progress)
+                self.after(0, self._show_verify, rep)
+            except Exception as e:
+                self.after(0, self._log_line, f"✗ Fatal: {e}", "fail")
+            finally:
+                self._busy = False
+
+        threading.Thread(target=work, daemon=True).start()
+
+    def _show_verify(self, rep: dict):
+        for r in rep["results"]:
+            verdict = r.get("verdict", "")
+            tag = {"improved": "ok", "no_change": None,
+                   "worse_reverted": "fail", "worse_kept": "fail",
+                   "apply_failed": "fail"}.get(verdict)
+            mark = {"improved": "✓", "no_change": "=", "worse_reverted": "↩",
+                    "worse_kept": "!", "apply_failed": "✗"}.get(verdict, "·")
+            self._log_line(f"  {mark} {r['name']} — {r.get('summary', '')}", tag)
+            for d in (r.get("comparison", {}).get("metrics", {}) or {}).values():
+                if d["verdict"] == "unchanged":
+                    continue
+                self._log_line(
+                    f"      {d['label']}: {d['before']} → {d['after']} "
+                    f"{d['unit']}  ({d['verdict']}, noise ±{d['noise_floor']})")
+        self._log_line(
+            f"═══ {rep['kept']}/{rep['total']} kept, "
+            f"{rep['reverted']} automatically undone ═══", "head")
+        self._set_progress("Verification complete.", 100)
+        messagebox.showinfo(
+            "Verification complete",
+            f"{rep['kept']} of {rep['total']} tweaks kept.\n"
+            f"{rep['reverted']} were undone automatically because they "
+            f"measurably made things worse.")
 
     def _on_revert(self):
         if self._busy:

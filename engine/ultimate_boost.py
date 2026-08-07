@@ -91,6 +91,59 @@ def _measure(dpc_seconds: int = 2) -> dict:
 
 # ── the sequence ─────────────────────────────────────────────────────────────
 
+def verify_tweaks(tweaks: list[tuple[str, str, str]] | None = None,
+                  progress_cb: ProgressCb = None) -> dict:
+    """Apply tweaks one at a time, measuring each — and automatically undo any
+    that made the machine measurably worse.
+
+    Every other optimizer applies changes and asserts they helped. This checks.
+    Slow by nature (roughly 25-40 s per tweak) because it takes several
+    baseline samples to work out this machine's own measurement noise first.
+
+    tweaks: list of (module, tweak_id, display name). Defaults to the
+    low-risk, no-reboot tweaks — the only ones whose effect a measurement
+    taken seconds later can actually detect.
+    """
+    from engine import boost_verifier
+
+    if tweaks is None:
+        tweaks = [
+            ("deep_optimize", "quantum", "Foreground CPU priority"),
+            ("deep_optimize", "power_throttle", "CPU power throttling off"),
+            ("cpu_optimizer", "epp", "Energy-Performance Preference → 0"),
+            ("cpu_optimizer", "boost_pol", "Turbo boost policy → 100%"),
+            ("gpu_boost", "pcie_aspm", "PCIe link power management off"),
+        ]
+
+    results: list[dict] = []
+    for i, (module, tweak_id, name) in enumerate(tweaks):
+        base = int((i / max(1, len(tweaks))) * 100)
+        span = int(100 / max(1, len(tweaks)))
+
+        def sub(msg, pct, _b=base, _s=span):
+            if progress_cb:
+                try:
+                    progress_cb(msg, _b + int(pct * _s / 100))
+                except Exception:
+                    pass
+
+        try:
+            rep = boost_verifier.verify_tweak(module, tweak_id, name,
+                                              samples=3, with_cpu=True,
+                                              progress_cb=sub)
+        except Exception as exc:
+            rep = {"name": name, "verdict": "apply_failed", "reverted": False,
+                   "summary": str(exc), "comparison": {}}
+        rep["module"] = module
+        rep["tweak_id"] = tweak_id
+        results.append(rep)
+
+    kept = sum(1 for r in results if r["verdict"] in ("improved", "no_change"))
+    reverted = sum(1 for r in results if r.get("reverted"))
+    return {"results": results, "kept": kept, "reverted": reverted,
+            "total": len(results)}
+
+
 def run_ultimate_boost(extreme: bool = False,
                        progress_cb: ProgressCb = None) -> dict:
     """Run every boost layer in order. Returns a full report:
@@ -203,10 +256,18 @@ def run_ultimate_boost(extreme: bool = False,
         steps.append({"name": "Background bloat closed", "ok": False,
                       "msg": str(exc)[:200]})
 
-    emit("RAM: trimming working sets…", 82)
-    step("Working-set trim", gbst.trim_memory_before_launch)
-    emit("RAM: purging standby memory list…", 86)
-    step("Standby memory purge", gbst.clear_standby_memory)
+    emit("RAM: deep clean (working sets, modified, standby, file cache)…", 82)
+    try:
+        from engine import ram_master
+        rep = ram_master.deep_clean(level="deep")
+        for s in rep["stages"]:
+            steps.append({"name": s["label"], "ok": s["ok"],
+                          "msg": (f"freed {s['freed_mb']} MB"
+                                  if s["ok"] else s["msg"])[:200]})
+        applied.append("ram_deep")
+    except Exception as exc:
+        steps.append({"name": "RAM deep clean", "ok": False,
+                      "msg": str(exc)[:200]})
 
     emit("NETWORK: low-latency stack (no Nagle, no throttling)…", 90)
     step("Low-latency network", gbst.apply_low_latency_network, "network")

@@ -170,14 +170,16 @@ def _run_network_health(cb: ProgressCB) -> list[dict]:
 def _run_ram_boost(cb: ProgressCB) -> list[dict]:
     steps: list[dict] = []
 
-    _emit(cb, "Trimming memory of running apps…", 15)
+    _emit(cb, "Deep RAM clean (working sets, cache, standby list)…", 15)
     try:
-        from engine import memory_optimizer
-        trimmed, skipped = memory_optimizer.trim_working_sets()
-        steps.append({"name": "Memory trim", "ok": True,
-                      "detail": f"{trimmed} process(es) trimmed, {skipped} protected"})
+        from engine import ram_master
+        rep = ram_master.deep_clean(level="normal")
+        for s in rep["stages"]:
+            steps.append({"name": s["label"], "ok": s["ok"],
+                          "detail": (f"freed {s['freed_mb']} MB"
+                                     if s["ok"] else s["msg"])})
     except Exception as e:
-        steps.append({"name": "Memory trim", "ok": False, "detail": str(e)})
+        steps.append({"name": "Deep RAM clean", "ok": False, "detail": str(e)})
 
     _emit(cb, "Closing background bloat…", 60)
     try:

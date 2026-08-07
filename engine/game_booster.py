@@ -108,22 +108,37 @@ _BLOAT_PROCESSES = {
     "WhatsApp.exe", "Telegram.exe", "Signal.exe",
 }
 
-_BACKUP_DIR = Path(os.environ.get("TEMP", ".")) / "FSDGameBackup"
+# ~/.fsd, not %TEMP%: this file is the only record of the settings Boost
+# changed. %TEMP% is wiped by disk cleanup (including this app's own cleaners),
+# which would leave a boosted machine with no way to revert.
+_BACKUP_DIR = Path(os.path.expanduser("~")) / ".fsd"
 _STATE_FILE = _BACKUP_DIR / "boost_state.json"
+_LEGACY_STATE_FILE = Path(os.environ.get("TEMP", ".")) / "FSDGameBackup" / "boost_state.json"
 
 
 # ── helpers ───────────────────────────────────────────────────────────────────
 
 def _ensure_backup_dir():
     _BACKUP_DIR.mkdir(parents=True, exist_ok=True)
+    # One-time migration of a boost applied by an older build.
+    try:
+        if not _STATE_FILE.exists() and _LEGACY_STATE_FILE.exists():
+            _STATE_FILE.write_text(
+                _LEGACY_STATE_FILE.read_text(encoding="utf-8"),
+                encoding="utf-8")
+    except Exception:
+        pass
 
 
 def _read_state() -> dict:
-    if _STATE_FILE.exists():
+    # Reads can happen before any write, so migrate here too — otherwise a
+    # boost applied by an older build would look like "never boosted".
+    for path in (_STATE_FILE, _LEGACY_STATE_FILE):
         try:
-            return json.loads(_STATE_FILE.read_text(encoding="utf-8"))
+            if path.exists():
+                return json.loads(path.read_text(encoding="utf-8"))
         except Exception:
-            pass
+            continue
     return {}
 
 

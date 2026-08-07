@@ -304,6 +304,14 @@ class DeepOptimizePage(tk.Frame):
         def work():
             tweaks = dopt.get_tweaks()
             self.after(0, lambda: self._render_tweaks(tweaks))
+            # Probing the disk type is slow, so SSD-only tweaks are appended
+            # once they're known rather than delaying the whole list.
+            try:
+                ssd = dopt.get_ssd_tweaks()
+                if ssd:
+                    self.after(0, lambda: self._render_tweaks(tweaks + ssd))
+            except Exception:
+                pass
 
         threading.Thread(target=work, daemon=True).start()
 

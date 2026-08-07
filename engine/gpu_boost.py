@@ -87,6 +87,27 @@ def _restore_value(key):
     return (_load_state().get("backups") or {}).get(key)
 
 
+def _clear_backups(*keys: str) -> None:
+    """Forget backups after a successful revert, so the next apply captures the
+    user's current values rather than resurrecting ones from an old session.
+    A trailing '*' clears by prefix."""
+    state = _load_state()
+    backups = state.get("backups") or {}
+    changed = False
+    for key in keys:
+        if key.endswith("*"):
+            prefix = key[:-1]
+            for k in [k for k in backups if k.startswith(prefix)]:
+                backups.pop(k, None)
+                changed = True
+        elif key in backups:
+            backups.pop(key, None)
+            changed = True
+    if changed:
+        state["backups"] = backups
+        _save_state(state)
+
+
 def _run(cmd: list[str], timeout: int = 30) -> tuple[int, str]:
     try:
         r = subprocess.run(cmd, capture_output=True, text=True,
@@ -537,15 +558,56 @@ _REVERT = {
 }
 
 
+def _tweak_name(tweak_id: str) -> str:
+    for t in get_tweaks():
+        if t["id"] == tweak_id:
+            return t["name"]
+    return tweak_id
+
+
+def _drop_orphaned_backup(tweak_id: str) -> None:
+    """A backup for a tweak that isn't currently applied is stale — drop it,
+    so the revert after this apply restores what the user has right now rather
+    than a value captured in an earlier session."""
+    try:
+        for t in get_tweaks():
+            if t["id"] != tweak_id:
+                continue
+            if t.get("optimized") is False:
+                _clear_backups(*_BACKUP_KEYS.get(tweak_id, ()))
+            return
+    except Exception:
+        pass
+
+
 def apply_tweak(tweak_id: str) -> tuple[bool, str]:
     fn = _APPLY.get(tweak_id)
     if not fn:
         return False, "Unknown tweak"
+    _drop_orphaned_backup(tweak_id)
     try:
-        return fn()
+        ok, msg = fn()
     except Exception as exc:
         logger.exception("apply_tweak(%s)", tweak_id)
-        return False, str(exc)
+        ok, msg = False, str(exc)
+    try:
+        from . import change_ledger
+        change_ledger.record("gpu_boost", tweak_id, _tweak_name(tweak_id),
+                             ok, msg)
+    except Exception:
+        pass
+    return ok, msg
+
+
+# Backup keys owned by each tweak, cleared once it is reverted.
+_BACKUP_KEYS = {
+    "hags":           ("HwSchMode",),
+    "pcie_aspm":      ("ASPM",),
+    "windowed_optim": ("DirectXUserGlobalSettings",),
+    "game_capture":   ("cap::*",),
+    "mpo":            ("OverlayTestMode",),
+    "nv_max_perf":    ("nv::*",),
+}
 
 
 def revert_tweak(tweak_id: str) -> tuple[bool, str]:
@@ -553,7 +615,10 @@ def revert_tweak(tweak_id: str) -> tuple[bool, str]:
     if not fn:
         return False, "Unknown tweak"
     try:
-        return fn()
+        ok, msg = fn()
     except Exception as exc:
         logger.exception("revert_tweak(%s)", tweak_id)
         return False, str(exc)
+    if ok:
+        _clear_backups(*_BACKUP_KEYS.get(tweak_id, ()))
+    return ok, msg

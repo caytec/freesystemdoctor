@@ -1,7 +1,15 @@
 """Entry point for FreeSystemDoctor."""
 
+import multiprocessing
 import sys
 import os
+
+# MUST run before anything else. The CPU benchmark spawns worker processes; in
+# a PyInstaller build every worker re-launches this exe from the top, so
+# without freeze_support() each one would run main() again — a UAC prompt and
+# a new window per core. freeze_support() intercepts those children and is a
+# no-op when not frozen.
+multiprocessing.freeze_support()
 
 # Ensure repo root is on the path when run directly
 sys.path.insert(0, os.path.dirname(__file__))
