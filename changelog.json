@@ -1,7 +1,12 @@
 {
-  "updated": "2026-08-06T23:36:29.810711Z",
-  "count": 54,
+  "updated": "2026-08-07T17:39:59.939399Z",
+  "count": 55,
   "commits": [
+    {
+      "sha": "b92de49b1818e2d07b3c86d7e91e169461816b54",
+      "date": "2026-08-07T19:39:13+02:00",
+      "msg": "feat(v2.3): RAM Master, A/B auto-rollback verification, Undo Center"
+    },
     {
       "sha": "a13e9371e33145b483bb8be70d3f5554f2f26b30",
       "date": "2026-08-07T01:35:45+02:00",
